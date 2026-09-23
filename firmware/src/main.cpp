@@ -1,27 +1,13 @@
 #include <Arduino.h>
+#include <math.h>
 
 #include "Config.h"
+#include "output/UsbPcmSink.h"
 
 namespace {
 
-enum class PacketType : uint8_t {
-    Audio = 0x01,
-    Status = 0x02,
-};
-
-#pragma pack(push, 1)
-struct PacketHeader {
-    uint8_t magic[2];
-    uint8_t version;
-    uint8_t type;
-    uint16_t payloadLength;
-    uint32_t sequence;
-};
-#pragma pack(pop)
-
-static_assert(sizeof(PacketHeader) == 10, "Unexpected packet header size");
-
-uint32_t statusSequence = 0;
+UsbPcmSink sink;
+volatile bool streamEnabled = false;
 String commandBuffer;
 
 void sendStatus() {
@@ -29,17 +15,17 @@ void sendStatus() {
         String("{\"name\":\"DubSiren\",\"protocol\":1,\"sampleRate\":") +
         Config::kSampleRate + ",\"blockSamples\":" + Config::kBlockSamples +
         ",\"firmware\":\"" + Config::kFirmwareVersion + "\"}";
-    const PacketHeader header{{'D', 'S'}, Config::kProtocolVersion,
-                              static_cast<uint8_t>(PacketType::Status),
-                              static_cast<uint16_t>(json.length()), statusSequence++};
-    Serial.write(reinterpret_cast<const uint8_t *>(&header), sizeof(header));
-    Serial.write(reinterpret_cast<const uint8_t *>(json.c_str()), json.length());
+    sink.writeStatus(json.c_str(), json.length());
 }
 
 void handleCommand(String command) {
     command.trim();
     if (command == "HELLO") {
         sendStatus();
+    } else if (command == "STREAM 1") {
+        streamEnabled = true;
+    } else if (command == "STREAM 0") {
+        streamEnabled = false;
     }
 }
 
@@ -59,11 +45,34 @@ void pollCommands() {
     }
 }
 
+void audioTask(void *) {
+    int16_t block[Config::kBlockSamples];
+    float phase = 0.0f;
+    constexpr float phaseIncrement = 440.0f / Config::kSampleRate;
+    TickType_t nextWake = xTaskGetTickCount();
+
+    while (true) {
+        for (size_t i = 0; i < Config::kBlockSamples; ++i) {
+            block[i] = static_cast<int16_t>(sinf(phase * TWO_PI) * 8192.0f);
+            phase += phaseIncrement;
+            if (phase >= 1.0f) {
+                phase -= 1.0f;
+            }
+        }
+        if (streamEnabled) {
+            sink.write(block, Config::kBlockSamples);
+        }
+        vTaskDelayUntil(&nextWake, pdMS_TO_TICKS(Config::kBlockDurationMs));
+    }
+}
+
 }  // namespace
 
 void setup() {
     Serial.begin(115200);
     commandBuffer.reserve(128);
+    sink.begin();
+    xTaskCreatePinnedToCore(audioTask, "audio", 4096, nullptr, 2, nullptr, 1);
 }
 
 void loop() {
