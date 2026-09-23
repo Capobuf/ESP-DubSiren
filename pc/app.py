@@ -1,4 +1,3 @@
-import math
 import queue
 import tkinter as tk
 from tkinter import messagebox, ttk
@@ -6,22 +5,9 @@ from tkinter import messagebox, ttk
 from serial.tools import list_ports
 
 from audio_player import AudioPlayer
+from control_ranges import CONTROL_SPECS, ControlSpec
 from protocol import PROTOCOL_VERSION
 from transport import SerialTransport
-
-
-DEFAULTS = {
-    "TUNE_HZ": 220.0,
-    "LFO_RATE_HZ": 0.70,
-    "LFO_DEPTH_OCT": 1.0,
-    "DECAY_MS": 120.0,
-    "DELAY_MS": 360.0,
-    "FEEDBACK": 0.62,
-    "ECHO_LEVEL": 0.45,
-    "HPF_HZ": 60.0,
-    "LPF_HZ": 7000.0,
-    "MASTER": 0.50,
-}
 
 
 class SliderControl(ttk.Frame):
@@ -30,27 +16,21 @@ class SliderControl(ttk.Frame):
         parent: tk.Misc,
         label: str,
         command_name: str,
-        minimum: float,
-        maximum: float,
-        initial: float,
-        formatter,
+        spec: ControlSpec,
         callback,
-        logarithmic: bool = False,
     ) -> None:
         super().__init__(parent)
         self.command_name = command_name
-        self.minimum = minimum
-        self.maximum = maximum
-        self.formatter = formatter
+        self.spec = spec
         self.callback = callback
-        self.logarithmic = logarithmic
-        self.value = initial
+        self.value = spec.default
 
         ttk.Label(self, text=label, width=12).grid(row=0, column=0, sticky="w")
         self.scale = tk.Scale(
             self,
-            from_=0,
-            to=1000,
+            from_=0.0,
+            to=1.0,
+            resolution=0.001,
             orient=tk.HORIZONTAL,
             showvalue=False,
             highlightthickness=0,
@@ -60,24 +40,15 @@ class SliderControl(ttk.Frame):
         self.value_label = ttk.Label(self, width=12, anchor="e")
         self.value_label.grid(row=0, column=2, sticky="e")
         self.columnconfigure(1, weight=1)
-        self.scale.set(self._to_position(initial))
-        self._show_value(initial)
+        self.scale.set(self._to_position(spec.default))
+        self._show_value(spec.default)
         self.scale.bind("<ButtonRelease-1>", self._released)
 
     def _to_position(self, value: float) -> float:
-        if self.logarithmic:
-            ratio = math.log(value / self.minimum) / math.log(
-                self.maximum / self.minimum
-            )
-        else:
-            ratio = (value - self.minimum) / (self.maximum - self.minimum)
-        return ratio * 1000.0
+        return self.spec.to_normalized(value)
 
     def _from_position(self, position: float) -> float:
-        ratio = position / 1000.0
-        if self.logarithmic:
-            return self.minimum * (self.maximum / self.minimum) ** ratio
-        return self.minimum + (self.maximum - self.minimum) * ratio
+        return self.spec.from_normalized(position)
 
     def _changed(self, position: str) -> None:
         self.value = self._from_position(float(position))
@@ -88,7 +59,7 @@ class SliderControl(ttk.Frame):
         self.callback(self.command_name, self.value, True)
 
     def _show_value(self, value: float) -> None:
-        self.value_label.configure(text=self.formatter(value))
+        self.value_label.configure(text=self.spec.formatter(value))
 
 
 class DubSirenApp:
@@ -166,9 +137,7 @@ class DubSirenApp:
             ("SINE1", "SINE2", "TEST_TONE", "SQUARE"),
             self._mode_changed,
         )
-        self._add_slider(
-            siren, "Tune", "TUNE_HZ", 30, 9000, lambda v: f"{v:.0f} Hz", True
-        )
+        self._add_slider(siren, "Tune", "TUNE_HZ")
         self._combo_row(
             siren,
             "LFO Shape",
@@ -187,31 +156,9 @@ class DubSirenApp:
             ),
             self._lfo_shape_changed,
         )
-        self._add_slider(
-            siren,
-            "Rate",
-            "LFO_RATE_HZ",
-            0.05,
-            20,
-            lambda v: f"{v:.2f} Hz",
-            True,
-        )
-        self._add_slider(
-            siren,
-            "Depth",
-            "LFO_DEPTH_OCT",
-            0,
-            2,
-            lambda v: f"{v:.2f} oct",
-        )
-        self._add_slider(
-            siren,
-            "Decay",
-            "DECAY_MS",
-            0,
-            3000,
-            lambda v: f"{v:.0f} ms",
-        )
+        self._add_slider(siren, "Rate", "LFO_RATE_HZ")
+        self._add_slider(siren, "Depth", "LFO_DEPTH_OCT")
+        self._add_slider(siren, "Decay", "DECAY_MS")
 
         mod_row = ttk.Frame(siren)
         mod_row.pack(fill="x", pady=7)
@@ -234,62 +181,18 @@ class DubSirenApp:
             command=lambda: self._send_bool("HOLD", self.hold_var.get()),
         ).pack(side="left", fill="x", expand=True, padx=(3, 0))
 
-        self._add_slider(
-            echo,
-            "Time",
-            "DELAY_MS",
-            50,
-            1000,
-            lambda v: f"{v:.0f} ms",
-        )
-        self._add_slider(
-            echo,
-            "Feedback",
-            "FEEDBACK",
-            0,
-            1.05,
-            lambda v: f"{v * 100:.0f} %",
-        )
-        self._add_slider(
-            echo,
-            "Echo Level",
-            "ECHO_LEVEL",
-            0,
-            1,
-            lambda v: f"{v * 100:.0f} %",
-        )
-        self._add_slider(
-            echo,
-            "High Pass",
-            "HPF_HZ",
-            50,
-            7000,
-            lambda v: f"{v:.0f} Hz",
-            True,
-        )
-        self._add_slider(
-            echo,
-            "Low Pass",
-            "LPF_HZ",
-            200,
-            19000,
-            lambda v: f"{v:.0f} Hz",
-            True,
-        )
+        self._add_slider(echo, "Time", "DELAY_MS")
+        self._add_slider(echo, "Feedback", "FEEDBACK")
+        self._add_slider(echo, "Echo Level", "ECHO_LEVEL")
+        self._add_slider(echo, "High Pass", "HPF_HZ")
+        self._add_slider(echo, "Low Pass", "LPF_HZ")
         echo_cut = ttk.Button(echo, text="ECHO CUT")
         echo_cut.pack(fill="x", pady=12)
         self._bind_momentary(echo_cut, "ECHO_CUT")
 
         master = ttk.LabelFrame(outer, text="MASTER", padding=8)
         master.pack(fill="x", pady=(10, 0))
-        self._add_slider(
-            master,
-            "Volume",
-            "MASTER",
-            0,
-            1,
-            lambda v: f"{v * 100:.0f} %",
-        )
+        self._add_slider(master, "Volume", "MASTER")
         self._update_manual_buttons()
 
     def _combo_row(self, parent, label, variable, values, callback) -> None:
@@ -307,21 +210,13 @@ class DubSirenApp:
         parent,
         label,
         command_name,
-        minimum,
-        maximum,
-        formatter,
-        logarithmic=False,
     ) -> None:
         slider = SliderControl(
             parent,
             label,
             command_name,
-            minimum,
-            maximum,
-            DEFAULTS[command_name],
-            formatter,
+            CONTROL_SPECS[command_name],
             self._slider_changed,
-            logarithmic,
         )
         slider.pack(fill="x", pady=2)
         self.sliders[command_name] = slider
