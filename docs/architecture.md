@@ -11,9 +11,11 @@ CommandParser -> synchronized ControlStore
                          |
                   block snapshot
                          |
-ControlState -> AudioEngine -> Oscillator -> Envelope
-                                      |          |
-                                      +-> Delay -> HPF -> LPF
+ControlState -> AudioEngine -> pulse PolyBLEP -> RC voicing -> DC blocker
+                                      |                         |
+                                      +-> Envelope -------------+
+                                      |
+                                      +-> Delay -> HPF -> LPF -> feedback saturation
                                                    |
                               dry + wet -> master -> soft clip -> int16
                                                                       |
@@ -36,9 +38,17 @@ and serializes AUDIO and STATUS writes with a mutex.
 
 The one-second delay is a fixed 48,000-sample int16 ring buffer in internal RAM
 (96 kB). It does not use or require PSRAM. Delay reads are fractional and use
-linear interpolation. HPF and LPF are local RBJ biquads; coefficients change
-only when their cutoff changes. A single cubic `softClip` implementation
-protects both feedback and final output.
+linear interpolation. HPF and LPF are local RBJ biquads with Q 1.0;
+coefficients change only when their cutoff changes. The feedback path uses
+asymmetric saturation before the delay write, while the existing cubic
+`softClip` remains the final safety limiter.
+
+The V2 oscillator starts from a variable-duty band-limited pulse. SINE1 uses
+three tracking one-poles; SINE2 uses two with a higher tracking ratio and more
+asymmetry. TEST_TONE adds a click-free rhythmic gate. SQUARE selects high/low
+frequency targets with a 2.5 ms anti-click slew while preserving oscillator
+phase. Filter coefficients are refreshed every 16 samples; measured render
+telemetry is exposed in STATUS as `renderUs` and `maxRenderUs`.
 
 ## PC concurrency
 

@@ -10,6 +10,7 @@ enum class SirenMode {
 };
 
 enum class LfoShape {
+    Classic,
     Triangle,
     Square,
     SawUp,
@@ -24,7 +25,7 @@ enum class LfoShape {
 struct ControlState {
     SirenMode mode = SirenMode::Sine1;
     float tuneHz = 220.0f;
-    LfoShape lfoShape = LfoShape::Triangle;
+    LfoShape lfoShape = LfoShape::Classic;
     float lfoRateHz = 0.70f;
     float lfoDepthOctaves = 1.0f;
     float decayMs = 120.0f;
@@ -39,6 +40,7 @@ struct ControlState {
     float lowPassHz = 7000.0f;
     bool echoCut = false;
     float masterVolume = 0.50f;
+    bool voicingV2 = true;
 };
 
 class ControlStore {

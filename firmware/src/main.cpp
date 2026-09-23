@@ -11,13 +11,17 @@ AudioEngine engine;
 ControlStore controls;
 CommandParser commandParser(controls);
 volatile bool streamEnabled = false;
+volatile uint32_t lastRenderUs = 0;
+volatile uint32_t maximumRenderUs = 0;
 String commandBuffer;
 
 void sendStatus() {
     const String json =
         String("{\"name\":\"DubSiren\",\"protocol\":1,\"sampleRate\":") +
         Config::kSampleRate + ",\"blockSamples\":" + Config::kBlockSamples +
-        ",\"firmware\":\"" + Config::kFirmwareVersion + "\"}";
+        ",\"firmware\":\"" + Config::kFirmwareVersion +
+        "\",\"renderUs\":" + lastRenderUs + ",\"maxRenderUs\":" +
+        maximumRenderUs + "}";
     sink.writeStatus(json.c_str(), json.length());
 }
 
@@ -56,7 +60,11 @@ void audioTask(void *) {
 
     while (true) {
         const ControlState snapshot = controls.snapshot();
+        const uint32_t renderStartUs = micros();
         engine.render(snapshot, block, Config::kBlockSamples);
+        const uint32_t elapsedUs = micros() - renderStartUs;
+        lastRenderUs = elapsedUs;
+        if (elapsedUs > maximumRenderUs) maximumRenderUs = elapsedUs;
         if (streamEnabled) {
             sink.write(block, Config::kBlockSamples);
         }

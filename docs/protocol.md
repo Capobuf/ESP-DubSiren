@@ -19,7 +19,7 @@ Control commands:
 ```text
 SET MODE SINE1|SINE2|TEST_TONE|SQUARE
 SET TUNE_HZ <30..9000>
-SET LFO_SHAPE TRIANGLE|SQUARE|SAW_UP|SAW_DOWN|ASYM_UP|ASYM_DOWN|PULSE_25|PULSE_75|MANUAL
+SET LFO_SHAPE CLASSIC|TRIANGLE|SQUARE|SAW_UP|SAW_DOWN|ASYM_UP|ASYM_DOWN|PULSE_25|PULSE_75|MANUAL
 SET LFO_RATE_HZ <0.05..20>
 SET LFO_DEPTH_OCT <0..2>
 SET DECAY_MS <0..3000>
@@ -34,6 +34,12 @@ HOLD 0|1
 MOD_UP 0|1
 MOD_DOWN 0|1
 ECHO_CUT 0|1
+```
+
+Development A/B command (V2 is the boot default):
+
+```text
+SET VOICING LEGACY|V2
 ```
 
 Finite numeric values are clamped to their valid range. Malformed and unknown
@@ -55,8 +61,12 @@ An AUDIO payload is always 960 bytes: 480 signed int16 mono PCM samples at
 48,000 Hz. A STATUS payload is UTF-8 JSON. `HELLO` currently returns:
 
 ```json
-{"name":"DubSiren","protocol":1,"sampleRate":48000,"blockSamples":480,"firmware":"0.1.0"}
+{"name":"DubSiren","protocol":1,"sampleRate":48000,"blockSamples":480,"firmware":"0.2.0","renderUs":6045,"maxRenderUs":6045}
 ```
+
+`renderUs` is the most recent 480-sample render time and `maxRenderUs` is the
+maximum observed since boot. They are diagnostic fields; packet framing and
+protocol version remain unchanged.
 
 There is no CRC because USB is the reliable transport. The Python parser scans
 again for `DS` after invalid data or lost framing and rejects AUDIO payloads of

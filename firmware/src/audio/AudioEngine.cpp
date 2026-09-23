@@ -21,7 +21,7 @@ int16_t toInt16(float value) {
 
 AudioEngine::AudioEngine()
     : tuneHz_(220.0f), depthOctaves_(1.0f), echoLevel_(0.45f),
-      masterVolume_(0.50f) {}
+      masterVolume_(0.50f), oscillatorFrequencyHz_(220.0f) {}
 
 void AudioEngine::begin() {
     delay_.begin(360.0f, 60.0f, 7000.0f, Config::kSampleRate);
@@ -43,15 +43,31 @@ void AudioEngine::render(const ControlState &controls, int16_t *output,
         const float modulation =
             lfo_.next(controls.lfoShape, controls.lfoRateHz, controls.modUp,
                       controls.modDown, Config::kSampleRate);
-        const float frequency =
-            clampFrequency(tuneHz_ * exp2f(depthOctaves_ * modulation));
-        float dry = oscillator_.next(controls.mode, frequency,
-                                     Config::kSampleRate);
-        if (controls.mode == SirenMode::TestTone && !lfo_.gate()) {
-            dry = 0.0f;
+        float frequencyTarget;
+        float oscillatorModulation = modulation;
+        float frequencySmoothing = 0.0137929f;  // 1.5 ms RC at 48 kHz.
+        if (controls.voicingV2 && controls.mode == SirenMode::Square) {
+            oscillatorModulation = lfo_.gate() ? 1.0f : -1.0f;
+            frequencyTarget = clampFrequency(
+                tuneHz_ * exp2f(depthOctaves_ * oscillatorModulation));
+            frequencySmoothing = 0.00829871f;  // 2.5 ms anti-click slew.
+        } else if (controls.voicingV2 &&
+                   controls.mode == SirenMode::TestTone) {
+            frequencyTarget = clampFrequency(tuneHz_);
+        } else {
+            frequencyTarget = clampFrequency(
+                tuneHz_ * exp2f(depthOctaves_ * modulation));
         }
-        dry *= envelope_.next(controls.trigger || controls.hold,
-                              controls.decayMs, Config::kSampleRate);
+        oscillatorFrequencyHz_ +=
+            (frequencyTarget - oscillatorFrequencyHz_) * frequencySmoothing;
+        const float envelopeLevel = envelope_.next(
+            controls.trigger || controls.hold, controls.decayMs,
+            Config::kSampleRate);
+        float dry = oscillator_.next(
+            controls.mode, oscillatorFrequencyHz_, oscillatorModulation,
+            envelopeLevel, lfo_.gate(), Config::kSampleRate,
+            controls.voicingV2);
+        dry *= envelopeLevel;
 
         const float wet = delay_.process(dry, controls.feedback,
                                          Config::kSampleRate);

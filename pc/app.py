@@ -112,7 +112,7 @@ class DubSirenApp:
         self.port_var = tk.StringVar()
         self.connection_var = tk.StringVar(value="Disconnected")
         self.mode_var = tk.StringVar(value="SINE1")
-        self.lfo_shape_var = tk.StringVar(value="TRIANGLE")
+        self.lfo_shape_var = tk.StringVar(value="CLASSIC")
         self.hold_var = tk.BooleanVar(value=False)
 
         self._build_ui()
@@ -174,6 +174,7 @@ class DubSirenApp:
             "LFO Shape",
             self.lfo_shape_var,
             (
+                "CLASSIC",
                 "TRIANGLE",
                 "SQUARE",
                 "SAW_UP",

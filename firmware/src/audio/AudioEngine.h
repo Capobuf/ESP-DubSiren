@@ -24,4 +24,5 @@ private:
     float depthOctaves_;
     float echoLevel_;
     float masterVolume_;
+    float oscillatorFrequencyHz_;
 };

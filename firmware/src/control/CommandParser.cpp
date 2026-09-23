@@ -30,6 +30,10 @@ bool CommandParser::parse(const String &rawCommand) {
             if (!parseMode(valueText, state.mode)) return false;
         } else if (name == "LFO_SHAPE") {
             if (!parseLfoShape(valueText, state.lfoShape)) return false;
+        } else if (name == "VOICING") {
+            if (valueText == "V2") state.voicingV2 = true;
+            else if (valueText == "LEGACY") state.voicingV2 = false;
+            else return false;
         } else if (!parseFloat(valueText, value)) {
             return false;
         } else if (name == "TUNE_HZ") {
@@ -114,7 +118,8 @@ bool CommandParser::parseMode(const String &text, SirenMode &mode) {
 }
 
 bool CommandParser::parseLfoShape(const String &text, LfoShape &shape) {
-    if (text == "TRIANGLE") shape = LfoShape::Triangle;
+    if (text == "CLASSIC") shape = LfoShape::Classic;
+    else if (text == "TRIANGLE") shape = LfoShape::Triangle;
     else if (text == "SQUARE") shape = LfoShape::Square;
     else if (text == "SAW_UP") shape = LfoShape::SawUp;
     else if (text == "SAW_DOWN") shape = LfoShape::SawDown;

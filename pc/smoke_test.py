@@ -59,10 +59,11 @@ class SmokeTest:
 
     def run(self) -> None:
         status = self.statuses[-1]
+        print("STATUS", status)
         assert status["protocol"] == 1
         assert status["sampleRate"] == 48_000
         assert status["blockSamples"] == 480
-        print("STATUS", status)
+        assert status["maxRenderUs"] < 10_000
 
         self.send(
             "SET MODE SINE1",
@@ -145,6 +146,7 @@ class SmokeTest:
         shape_hashes = {}
         self.send("SET LFO_RATE_HZ 8", "SET LFO_DEPTH_OCT 1")
         for shape in (
+            "CLASSIC",
             "TRIANGLE",
             "SQUARE",
             "SAW_UP",
@@ -157,8 +159,42 @@ class SmokeTest:
             self.send(f"SET LFO_SHAPE {shape}")
             self.settle(0.05)
             shape_hashes[shape] = hashlib.sha256(self.grab(15)).hexdigest()[:12]
-        assert len(set(shape_hashes.values())) == 8
+        assert len(set(shape_hashes.values())) == 9
         print("LFO_SHAPES", shape_hashes)
+
+        self.send(
+            "SET VOICING V2",
+            "SET MODE SQUARE",
+            "SET TUNE_HZ 220",
+            "SET LFO_RATE_HZ 2",
+            "SET LFO_DEPTH_OCT 1",
+            "SET ECHO_LEVEL 0",
+            "HOLD 1",
+        )
+        self.settle(0.15)
+        square_pcm = self.grab(120)
+        square_chunks = [
+            metrics(square_pcm[index:index + 4_800])[2]
+            for index in range(0, len(square_pcm), 4_800)
+        ]
+        assert min(square_chunks) < 140 and max(square_chunks) > 400
+        print("SQUARE_HIGH_LOW", {"min_hz": min(square_chunks),
+                                  "max_hz": max(square_chunks)})
+
+        self.send(
+            "SET MODE TEST_TONE",
+            "SET LFO_RATE_HZ 2",
+            "SET LFO_DEPTH_OCT 0",
+        )
+        self.settle(0.15)
+        test_pcm = self.grab(120)
+        test_levels = [
+            metrics(test_pcm[index:index + 4_800])[0]
+            for index in range(0, len(test_pcm), 4_800)
+        ]
+        assert min(test_levels) < 100 and max(test_levels) > 5_000
+        print("TEST_GATE", {"min_rms": min(test_levels),
+                            "max_rms": max(test_levels)})
 
         self.send(
             "SET LFO_DEPTH_OCT 0",
@@ -196,6 +232,13 @@ class SmokeTest:
         assert hashlib.sha256(filtered).digest() != hashlib.sha256(feedback_pcm[: len(filtered)]).digest()
         print("FEEDBACK_FILTERS", {"rms": feedback_rms, "peak": feedback_peak})
 
+        self.send("SET HPF_HZ 50", "SET LPF_HZ 7000", "SET DELAY_MS 900")
+        live_change_pcm = self.grab(40)
+        assert hashlib.sha256(live_change_pcm).digest() != hashlib.sha256(
+            feedback_pcm[: len(live_change_pcm)]
+        ).digest()
+        print("DELAY_LIVE_CHANGE", "ok")
+
         self.send("STREAM 0", "HOLD 0", "TRIGGER 0")
         time.sleep(0.15)
         self.drain()
@@ -205,6 +248,12 @@ class SmokeTest:
         self.status_event.clear()
         self.transport.send("HELLO")
         assert self.status_event.wait(1)
+        final_status = self.statuses[-1]
+        assert final_status["maxRenderUs"] < 10_000
+        print("RENDER_BUDGET", {
+            "last_us": final_status["renderUs"],
+            "max_us": final_status["maxRenderUs"],
+        })
         print("STOP_RESYNC", "ok")
 
     def close(self) -> None:

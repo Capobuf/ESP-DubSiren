@@ -7,7 +7,10 @@
 
 namespace {
 
-constexpr float kFilterQ = 0.707f;
+constexpr float ECHO_FILTER_Q = 1.0f;
+constexpr float kFeedbackSaturationDrive = 1.35f;
+constexpr float kFeedbackSaturationAsymmetry = 0.018f;
+constexpr float kFeedbackSaturationGain = 0.72f;
 
 int16_t floatToInt16(float value) {
     const float limited = value < -1.0f ? -1.0f : (value > 1.0f ? 1.0f : value);
@@ -34,11 +37,11 @@ void Delay::setParameters(float delayMs, float highPassHz, float lowPassHz,
     targetDelayMs_ = delayMs;
     if (highPassHz != highPassHz_) {
         highPassHz_ = highPassHz;
-        highPass_.setHighPass(highPassHz_, sampleRate, kFilterQ);
+        highPass_.setHighPass(highPassHz_, sampleRate, ECHO_FILTER_Q);
     }
     if (lowPassHz != lowPassHz_) {
         lowPassHz_ = lowPassHz;
-        lowPass_.setLowPass(lowPassHz_, sampleRate, kFilterQ);
+        lowPass_.setLowPass(lowPassHz_, sampleRate, ECHO_FILTER_Q);
     }
 }
 
@@ -61,7 +64,11 @@ float Delay::process(float dry, float feedback, float sampleRate) {
     const float sample1 = buffer_[i1] / 32768.0f;
     const float delayed = sample0 + (sample1 - sample0) * fraction;
     const float filtered = lowPass_.process(highPass_.process(delayed));
-    const float feedbackInput = softClip(dry + filtered * feedback);
+    const float saturatedFeedback =
+        analogSaturate(filtered * feedback, kFeedbackSaturationDrive,
+                       kFeedbackSaturationAsymmetry) *
+        kFeedbackSaturationGain;
+    const float feedbackInput = softClip(dry + saturatedFeedback);
     buffer_[writeIndex_] = floatToInt16(feedbackInput);
     writeIndex_ = (writeIndex_ + 1) % kBufferSamples;
     return filtered;

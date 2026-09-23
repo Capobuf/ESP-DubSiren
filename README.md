@@ -4,6 +4,11 @@ Dub siren controllata da una GUI Windows. Il DSP gira interamente sull'ESP32-S3;
 il PC riceve PCM mono già elaborato e lo inoltra senza resampling alla scheda audio.
 Il PCM5102A non è usato in questa milestone.
 
+Il motore V2 usa oscillatori pulse PolyBLEP, shaping RC mode-specifico,
+saturazione asimmetrica e un LFO CLASSIC a carica/scarica esponenziale. Il
+comando di debug `SET VOICING LEGACY|V2` permette il confronto a parità di
+controlli; V2 è il default.
+
 ## Requisiti Windows
 
 - ESP32-S3 DevKitC-1 collegata con un cavo USB dati

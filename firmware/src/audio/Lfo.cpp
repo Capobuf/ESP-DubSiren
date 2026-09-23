@@ -2,16 +2,50 @@
 
 #include <math.h>
 
+namespace {
+
+// Internal RC proportions are intentionally slightly different. They are
+// grouped here so they can become controls later without changing the model.
+constexpr float kChargeRatio = 0.18f;
+constexpr float kFallRatio = 0.24f;
+constexpr float kManualReferenceCycleSeconds = 0.22f;
+
+float rcCoefficient(float tauSeconds, float sampleRate) {
+    const float safeTau = tauSeconds < 0.001f ? 0.001f : tauSeconds;
+    return 1.0f - expf(-1.0f / (safeTau * sampleRate));
+}
+
+}  // namespace
+
+Lfo::Lfo()
+    : phase_(0.0f), manualValue_(0.0f), classicValue_(-1.0f),
+      lastRateHz_(-1.0f), lastSampleRate_(-1.0f), chargeCoefficient_(0.0f),
+      fallCoefficient_(0.0f), manualChargeCoefficient_(0.0f),
+      manualFallCoefficient_(0.0f) {}
+
 float Lfo::next(LfoShape shape, float rateHz, bool modUp, bool modDown,
                 float sampleRate) {
+    updateCoefficients(rateHz, sampleRate);
+
     if (shape == LfoShape::Manual) {
         const float target = modUp == modDown ? 0.0f : (modUp ? 1.0f : -1.0f);
-        const float coefficient = 1.0f / (0.04f * sampleRate);
+        const float coefficient = target > manualValue_
+                                      ? manualChargeCoefficient_
+                                      : manualFallCoefficient_;
         manualValue_ += (target - manualValue_) * coefficient;
         return manualValue_;
     }
 
-    const float value = automaticValue(shape, phase_);
+    float value;
+    if (shape == LfoShape::Classic) {
+        const float target = phase_ < 0.5f ? 1.0f : -1.0f;
+        const float coefficient = target > classicValue_ ? chargeCoefficient_
+                                                          : fallCoefficient_;
+        classicValue_ += (target - classicValue_) * coefficient;
+        value = classicValue_;
+    } else {
+        value = automaticValue(shape, phase_);
+    }
     phase_ += rateHz / sampleRate;
     if (phase_ >= 1.0f) {
         phase_ -= floorf(phase_);
@@ -19,8 +53,26 @@ float Lfo::next(LfoShape shape, float rateHz, bool modUp, bool modDown,
     return value;
 }
 
+void Lfo::updateCoefficients(float rateHz, float sampleRate) {
+    if (rateHz == lastRateHz_ && sampleRate == lastSampleRate_) return;
+    lastRateHz_ = rateHz;
+    lastSampleRate_ = sampleRate;
+
+    const float halfCycleSeconds = 0.5f / rateHz;
+    chargeCoefficient_ =
+        rcCoefficient(halfCycleSeconds * kChargeRatio, sampleRate);
+    fallCoefficient_ =
+        rcCoefficient(halfCycleSeconds * kFallRatio, sampleRate);
+    manualChargeCoefficient_ = rcCoefficient(
+        kManualReferenceCycleSeconds * kChargeRatio, sampleRate);
+    manualFallCoefficient_ =
+        rcCoefficient(kManualReferenceCycleSeconds * kFallRatio, sampleRate);
+}
+
 float Lfo::automaticValue(LfoShape shape, float phase) {
     switch (shape) {
+        case LfoShape::Classic:
+            return 0.0f;
         case LfoShape::Triangle:
             return 1.0f - 4.0f * fabsf(phase - 0.5f);
         case LfoShape::Square:
