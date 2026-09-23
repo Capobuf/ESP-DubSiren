@@ -1,12 +1,15 @@
 #include <Arduino.h>
-#include <math.h>
-
 #include "Config.h"
+#include "audio/AudioEngine.h"
+#include "control/CommandParser.h"
 #include "output/UsbPcmSink.h"
 
 namespace {
 
 UsbPcmSink sink;
+AudioEngine engine;
+ControlStore controls;
+CommandParser commandParser(controls);
 volatile bool streamEnabled = false;
 String commandBuffer;
 
@@ -26,6 +29,8 @@ void handleCommand(String command) {
         streamEnabled = true;
     } else if (command == "STREAM 0") {
         streamEnabled = false;
+    } else {
+        commandParser.parse(command);
     }
 }
 
@@ -47,18 +52,11 @@ void pollCommands() {
 
 void audioTask(void *) {
     int16_t block[Config::kBlockSamples];
-    float phase = 0.0f;
-    constexpr float phaseIncrement = 440.0f / Config::kSampleRate;
     TickType_t nextWake = xTaskGetTickCount();
 
     while (true) {
-        for (size_t i = 0; i < Config::kBlockSamples; ++i) {
-            block[i] = static_cast<int16_t>(sinf(phase * TWO_PI) * 8192.0f);
-            phase += phaseIncrement;
-            if (phase >= 1.0f) {
-                phase -= 1.0f;
-            }
-        }
+        const ControlState snapshot = controls.snapshot();
+        engine.render(snapshot, block, Config::kBlockSamples);
         if (streamEnabled) {
             sink.write(block, Config::kBlockSamples);
         }
@@ -72,7 +70,8 @@ void setup() {
     Serial.begin(115200);
     commandBuffer.reserve(128);
     sink.begin();
-    xTaskCreatePinnedToCore(audioTask, "audio", 4096, nullptr, 2, nullptr, 1);
+    engine.begin();
+    xTaskCreatePinnedToCore(audioTask, "audio", 6144, nullptr, 2, nullptr, 1);
 }
 
 void loop() {
