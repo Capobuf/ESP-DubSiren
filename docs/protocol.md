@@ -42,8 +42,12 @@ Development A/B command (V2 is the boot default):
 SET VOICING LEGACY|V2
 ```
 
-Finite numeric values are clamped to their valid range. Malformed and unknown
-commands are ignored. Parsing occurs outside the audio task.
+These limits are the absolute DSP/protocol ranges. The desktop GUI exposes a
+narrower performance range for selected controls, but still sends physical
+values such as `SET TUNE_HZ 220.0`; normalized slider positions are never part
+of the protocol. Finite numeric values are clamped to the absolute ranges.
+Malformed and unknown commands are ignored. Parsing occurs outside the audio
+task.
 
 ## ESP to PC
 
