@@ -1,28 +1,82 @@
 #include <Arduino.h>
+#include <atomic>
+
 #include "Config.h"
 #include "audio/AudioEngine.h"
 #include "control/CommandParser.h"
+#include "output/I2sPcm5102Sink.h"
 #include "output/UsbPcmSink.h"
 
 namespace {
 
-UsbPcmSink sink;
+enum class OutputMode : uint8_t {
+    Pc,
+    Gpio,
+    Both,
+};
+
+UsbPcmSink usbSink;
+I2sPcm5102Sink i2sSink;
 AudioEngine engine;
 ControlStore controls;
 CommandParser commandParser(controls);
-volatile bool streamEnabled = false;
-volatile uint32_t lastRenderUs = 0;
-volatile uint32_t maximumRenderUs = 0;
+std::atomic<bool> streamEnabled{false};
+std::atomic<OutputMode> outputMode{OutputMode::Both};
+std::atomic<uint32_t> lastRenderUs{0};
+std::atomic<uint32_t> maximumRenderUs{0};
+std::atomic<uint32_t> lastCycleUs{0};
+std::atomic<uint32_t> maximumCycleUs{0};
+bool i2sReady = false;
 String commandBuffer;
 
+const char *outputModeName(OutputMode mode) {
+    switch (mode) {
+        case OutputMode::Pc:
+            return "PC";
+        case OutputMode::Gpio:
+            return "GPIO";
+        case OutputMode::Both:
+            return "BOTH";
+    }
+    return "PC";
+}
+
+bool parseOutputMode(const String &value, OutputMode &mode) {
+    if (value == "PC") {
+        mode = OutputMode::Pc;
+    } else if (value == "GPIO") {
+        mode = OutputMode::Gpio;
+    } else if (value == "BOTH") {
+        mode = OutputMode::Both;
+    } else {
+        return false;
+    }
+    return true;
+}
+
+void updateMaximum(std::atomic<uint32_t> &maximum, uint32_t value) {
+    uint32_t observed = maximum.load(std::memory_order_relaxed);
+    while (value > observed &&
+           !maximum.compare_exchange_weak(observed, value,
+                                          std::memory_order_relaxed)) {
+    }
+}
+
 void sendStatus() {
+    const OutputMode mode = outputMode.load(std::memory_order_relaxed);
     const String json =
         String("{\"name\":\"DubSiren\",\"protocol\":1,\"sampleRate\":") +
         Config::kSampleRate + ",\"blockSamples\":" + Config::kBlockSamples +
         ",\"firmware\":\"" + Config::kFirmwareVersion +
-        "\",\"renderUs\":" + lastRenderUs + ",\"maxRenderUs\":" +
-        maximumRenderUs + "}";
-    sink.writeStatus(json.c_str(), json.length());
+        "\",\"renderUs\":" + lastRenderUs.load(std::memory_order_relaxed) +
+        ",\"maxRenderUs\":" +
+        maximumRenderUs.load(std::memory_order_relaxed) +
+        ",\"cycleUs\":" + lastCycleUs.load(std::memory_order_relaxed) +
+        ",\"maxCycleUs\":" +
+        maximumCycleUs.load(std::memory_order_relaxed) +
+        ",\"output\":\"" + outputModeName(mode) +
+        "\",\"i2sReady\":" + (i2sReady ? "true" : "false") + "}";
+    usbSink.writeStatus(json.c_str(), json.length());
 }
 
 void handleCommand(String command) {
@@ -30,9 +84,15 @@ void handleCommand(String command) {
     if (command == "HELLO") {
         sendStatus();
     } else if (command == "STREAM 1") {
-        streamEnabled = true;
+        streamEnabled.store(true, std::memory_order_release);
     } else if (command == "STREAM 0") {
-        streamEnabled = false;
+        streamEnabled.store(false, std::memory_order_release);
+    } else if (command.startsWith("SET OUTPUT ")) {
+        OutputMode requested;
+        if (parseOutputMode(command.substring(11), requested) &&
+            (requested == OutputMode::Pc || i2sReady)) {
+            outputMode.store(requested, std::memory_order_release);
+        }
     } else {
         commandParser.parse(command);
     }
@@ -57,17 +117,37 @@ void pollCommands() {
 void audioTask(void *) {
     int16_t block[Config::kBlockSamples];
     TickType_t nextWake = xTaskGetTickCount();
+    bool i2sWasActive = false;
 
     while (true) {
+        const uint32_t cycleStartUs = micros();
         const ControlState snapshot = controls.snapshot();
         const uint32_t renderStartUs = micros();
         engine.render(snapshot, block, Config::kBlockSamples);
-        const uint32_t elapsedUs = micros() - renderStartUs;
-        lastRenderUs = elapsedUs;
-        if (elapsedUs > maximumRenderUs) maximumRenderUs = elapsedUs;
-        if (streamEnabled) {
-            sink.write(block, Config::kBlockSamples);
+        const uint32_t renderUs = micros() - renderStartUs;
+        lastRenderUs.store(renderUs, std::memory_order_relaxed);
+        updateMaximum(maximumRenderUs, renderUs);
+
+        const bool enabled = streamEnabled.load(std::memory_order_acquire);
+        const OutputMode mode = outputMode.load(std::memory_order_acquire);
+        const bool pcActive =
+            enabled && (mode == OutputMode::Pc || mode == OutputMode::Both);
+        const bool i2sActive =
+            enabled && i2sReady &&
+            (mode == OutputMode::Gpio || mode == OutputMode::Both);
+        if (pcActive) {
+            usbSink.write(block, Config::kBlockSamples);
         }
+        if (i2sActive) {
+            i2sSink.write(block, Config::kBlockSamples);
+        } else if (i2sWasActive) {
+            i2sSink.silence();
+        }
+        i2sWasActive = i2sActive;
+
+        const uint32_t cycleUs = micros() - cycleStartUs;
+        lastCycleUs.store(cycleUs, std::memory_order_relaxed);
+        updateMaximum(maximumCycleUs, cycleUs);
         vTaskDelayUntil(&nextWake, pdMS_TO_TICKS(Config::kBlockDurationMs));
     }
 }
@@ -77,7 +157,11 @@ void audioTask(void *) {
 void setup() {
     Serial.begin(115200);
     commandBuffer.reserve(128);
-    sink.begin();
+    usbSink.begin();
+    i2sReady = i2sSink.begin();
+    if (!i2sReady) {
+        outputMode.store(OutputMode::Pc, std::memory_order_relaxed);
+    }
     engine.begin();
     xTaskCreatePinnedToCore(audioTask, "audio", 6144, nullptr, 2, nullptr, 1);
 }

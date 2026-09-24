@@ -12,7 +12,13 @@ Connection commands:
 HELLO
 STREAM 1
 STREAM 0
+SET OUTPUT PC|GPIO|BOTH
 ```
+
+`STREAM` is the global audio enable. With streaming enabled, `PC` emits USB
+AUDIO packets, `GPIO` writes only to the PCM5102A I2S sink, and `BOTH` writes
+the same rendered PCM block to both sinks. In GPIO-only mode USB remains active
+for commands, HELLO, STATUS, controls, and triggers.
 
 Control commands:
 
@@ -65,12 +71,14 @@ An AUDIO payload is always 960 bytes: 480 signed int16 mono PCM samples at
 48,000 Hz. A STATUS payload is UTF-8 JSON. `HELLO` currently returns:
 
 ```json
-{"name":"DubSiren","protocol":1,"sampleRate":48000,"blockSamples":480,"firmware":"0.2.0","renderUs":6045,"maxRenderUs":6045}
+{"name":"DubSiren","protocol":1,"sampleRate":48000,"blockSamples":480,"firmware":"0.3.0","renderUs":6045,"maxRenderUs":6045,"cycleUs":6090,"maxCycleUs":6090,"output":"BOTH","i2sReady":true}
 ```
 
 `renderUs` is the most recent 480-sample render time and `maxRenderUs` is the
-maximum observed since boot. They are diagnostic fields; packet framing and
-protocol version remain unchanged.
+maximum observed since boot. `cycleUs` and `maxCycleUs` include selected output
+writes. `output` reports the active routing selection and `i2sReady` reports
+whether I2S initialization succeeded. These are diagnostic/status additions;
+packet framing and protocol version remain unchanged.
 
 There is no CRC because USB is the reliable transport. The Python parser scans
 again for `DS` after invalid data or lost framing and rejects AUDIO payloads of

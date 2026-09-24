@@ -1,8 +1,8 @@
 # ESP32-S3 Dub Siren
 
-Dub siren controllata da una GUI Windows. Il DSP gira interamente sull'ESP32-S3;
-il PC riceve PCM mono già elaborato e lo inoltra senza resampling alla scheda audio.
-Il PCM5102A non è usato in questa milestone.
+Dub siren controllata da una GUI Windows. Il DSP gira interamente sull'ESP32-S3
+e il PCM mono già elaborato può essere inviato al PC, a un DAC PCM5102A via
+I2S, oppure a entrambe le destinazioni senza resampling.
 
 Il motore V2 usa oscillatori pulse PolyBLEP, shaping RC mode-specifico,
 saturazione asimmetrica e un LFO CLASSIC a carica/scarica esponenziale. Il
@@ -12,6 +12,7 @@ controlli; V2 è il default.
 ## Requisiti Windows
 
 - ESP32-S3 DevKitC-1 collegata con un cavo USB dati
+- modulo DAC PCM5102A per l'uscita audio GPIO
 - VS Code con estensione PlatformIO IDE, oppure PlatformIO Core 6.x
 - Python 3.11 o successivo (verificato con Python 3.13.14)
 - uscita audio Windows
@@ -48,6 +49,20 @@ solo **RESET/EN**.
 In VS Code sono equivalenti i comandi **PlatformIO: Build** e
 **PlatformIO: Upload**.
 
+## Collegamento PCM5102A
+
+Il DAC usa I2S Philips standard a 48 kHz, stereo 16 bit. Il firmware duplica
+ogni campione mono sui canali sinistro e destro; il PCM5102A ricava internamente
+il clock necessario e non richiede MCLK dall'ESP32.
+
+```text
+ESP32 GPIO16 -> PCM5102A BCK
+ESP32 GPIO17 -> PCM5102A LCK
+ESP32 GPIO18 -> PCM5102A DIN
+PCM5102A SCL/SCK -> GND
+PCM5102A FMT -> GND
+```
+
 ## Avvio
 
 Dalla cartella `pc`:
@@ -59,9 +74,10 @@ run.bat
 La GUI si apre anche senza ESP collegata. Poi:
 
 1. premere **Refresh** e scegliere la COM Espressif;
-2. premere **Connect** e attendere `Connected · firmware 0.1.0`;
-3. premere **Start Audio**;
-4. usare **TRIGGER** oppure attivare **HOLD**.
+2. scegliere **PC**, **PCM5102A** o **Both** nel selettore Output;
+3. premere **Connect** e attendere `Connected · firmware 0.3.0`;
+4. premere **Start Audio**;
+5. usare **TRIGGER** oppure attivare **HOLD**.
 
 **Stop Audio** arresta il flusso; **Disconnect** chiude ordinatamente audio,
 thread e seriale. Per un controllo automatico dell'hardware collegato:

@@ -57,6 +57,33 @@ class SmokeTest:
         time.sleep(seconds)
         self.drain()
 
+    def verify_output_routing(self) -> None:
+        assert self.statuses[-1]["i2sReady"] is True
+
+        self.send("SET OUTPUT PC", "STREAM 1")
+        self.settle(0.10)
+        self.grab(3)
+
+        self.send("SET OUTPUT GPIO")
+        time.sleep(0.15)
+        self.drain()
+        time.sleep(0.08)
+        assert self.audio.empty(), "GPIO mode still produced USB AUDIO packets"
+
+        self.status_event.clear()
+        self.send("HELLO")
+        assert self.status_event.wait(1), "STATUS timeout in GPIO mode"
+        assert self.statuses[-1]["output"] == "GPIO"
+        time.sleep(0.08)
+        assert self.audio.empty(), "HELLO in GPIO mode enabled USB AUDIO"
+
+        self.send("SET OUTPUT BOTH")
+        time.sleep(0.25)
+        self.drain()
+        self.grab(3)
+        self.send("SET OUTPUT PC")
+        print("OUTPUT_ROUTING", "PC/GPIO/BOTH USB behavior ok")
+
     def run(self) -> None:
         status = self.statuses[-1]
         print("STATUS", status)
@@ -64,8 +91,11 @@ class SmokeTest:
         assert status["sampleRate"] == 48_000
         assert status["blockSamples"] == 480
         assert status["maxRenderUs"] < 10_000
+        assert status["output"] in ("PC", "GPIO", "BOTH")
+        self.verify_output_routing()
 
         self.send(
+            "SET OUTPUT PC",
             "SET MODE SINE1",
             "SET LFO_SHAPE TRIANGLE",
             "SET LFO_DEPTH_OCT 0",
@@ -250,9 +280,12 @@ class SmokeTest:
         assert self.status_event.wait(1)
         final_status = self.statuses[-1]
         assert final_status["maxRenderUs"] < 10_000
+        assert final_status["maxCycleUs"] < 10_000
         print("RENDER_BUDGET", {
             "last_us": final_status["renderUs"],
             "max_us": final_status["maxRenderUs"],
+            "last_cycle_us": final_status["cycleUs"],
+            "max_cycle_us": final_status["maxCycleUs"],
         })
         print("STOP_RESYNC", "ok")
 

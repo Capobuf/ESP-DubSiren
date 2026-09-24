@@ -76,6 +76,7 @@ class Capture:
 
     def configure(self) -> None:
         self.send(
+            "SET OUTPUT PC",
             "SET TUNE_HZ 220",
             "SET LFO_SHAPE TRIANGLE",
             "SET LFO_RATE_HZ 4",

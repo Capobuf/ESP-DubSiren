@@ -7,5 +7,8 @@ constexpr uint32_t kSampleRate = 48000;
 constexpr size_t kBlockSamples = 480;
 constexpr uint32_t kBlockDurationMs = 10;
 constexpr uint8_t kProtocolVersion = 1;
-constexpr char kFirmwareVersion[] = "0.2.0";
+constexpr char kFirmwareVersion[] = "0.3.0";
+constexpr int kI2sBclkPin = 16;
+constexpr int kI2sLrckPin = 17;
+constexpr int kI2sDataPin = 18;
 }

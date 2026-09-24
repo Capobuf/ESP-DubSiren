@@ -9,6 +9,12 @@ from control_ranges import CONTROL_SPECS, ControlSpec
 from protocol import PROTOCOL_VERSION
 from transport import SerialTransport
 
+OUTPUT_VALUES = {
+    "PC": "PC",
+    "PCM5102A": "GPIO",
+    "Both": "BOTH",
+}
+
 
 class SliderControl(ttk.Frame):
     def __init__(
@@ -75,7 +81,9 @@ class DubSirenApp:
         )
         self.player = AudioPlayer(self.audio_queue)
         self.protocol_ok = False
+        self.i2s_ready: bool | None = None
         self.streaming = False
+        self.active_output: str | None = None
         self.pending_sends: dict[str, str] = {}
         self.sliders: dict[str, SliderControl] = {}
         self.momentary_active: set[str] = set()
@@ -85,6 +93,7 @@ class DubSirenApp:
         self.mode_var = tk.StringVar(value="SINE1")
         self.lfo_shape_var = tk.StringVar(value="CLASSIC")
         self.hold_var = tk.BooleanVar(value=False)
+        self.output_var = tk.StringVar(value="Both")
 
         self._build_ui()
         self.refresh_ports()
@@ -110,6 +119,16 @@ class DubSirenApp:
             connection, text="Connect", command=self.toggle_connection
         )
         self.connect_button.pack(side="left", padx=3)
+        ttk.Label(connection, text="Output").pack(side="left", padx=(12, 0))
+        self.output_combo = ttk.Combobox(
+            connection,
+            textvariable=self.output_var,
+            values=tuple(OUTPUT_VALUES),
+            state="readonly",
+            width=10,
+        )
+        self.output_combo.pack(side="left", padx=6)
+        self.output_combo.bind("<<ComboboxSelected>>", self._output_changed)
         self.audio_button = ttk.Button(
             connection,
             text="Start Audio",
@@ -269,6 +288,48 @@ class DubSirenApp:
     def _send_bool(self, name: str, value: bool) -> None:
         self._send(f"{name} {1 if value else 0}")
 
+    def _selected_output(self) -> str:
+        return OUTPUT_VALUES[self.output_var.get()]
+
+    @staticmethod
+    def _uses_pc(output: str) -> bool:
+        return output in ("PC", "BOTH")
+
+    @staticmethod
+    def _uses_i2s(output: str) -> bool:
+        return output in ("GPIO", "BOTH")
+
+    def _output_changed(self, _event=None) -> None:
+        selected = self._selected_output()
+        if self._uses_i2s(selected) and self.i2s_ready is False:
+            self.output_var.set("PC")
+            messagebox.showerror(
+                "PCM5102A output",
+                "The ESP32 I2S output is not available. Output was set to PC.",
+            )
+            selected = "PC"
+
+        if not self.protocol_ok or not self.transport.connected:
+            return
+
+        previous = self.active_output
+        player_started = False
+        if self.streaming and self._uses_pc(selected) and not self._uses_pc(
+            previous or "GPIO"
+        ):
+            self._drain_audio_queue()
+            self.player.start()
+            player_started = True
+
+        self._send(f"SET OUTPUT {selected}")
+        self.active_output = selected
+
+        if self.streaming and not self._uses_pc(selected):
+            self.player.stop()
+            self._drain_audio_queue()
+        elif player_started:
+            self.root.after(100, self._check_player)
+
     def _send(self, command: str) -> None:
         if not self.transport.connected:
             return
@@ -309,6 +370,8 @@ class DubSirenApp:
         self._global_release()
         self.transport.disconnect()
         self.protocol_ok = False
+        self.i2s_ready = None
+        self.active_output = None
         self.connection_var.set("Disconnected")
         self.connect_button.configure(text="Connect")
         self.audio_button.configure(text="Start Audio", state="disabled")
@@ -324,12 +387,24 @@ class DubSirenApp:
     def start_audio(self) -> None:
         if not self.protocol_ok or not self.transport.connected:
             return
+        selected = self._selected_output()
+        if self._uses_i2s(selected) and not self.i2s_ready:
+            self.output_var.set("PC")
+            selected = "PC"
+            messagebox.showerror(
+                "PCM5102A output",
+                "The ESP32 I2S output is not available. Output was set to PC.",
+            )
         self._drain_audio_queue()
-        self.player.start()
+        if self._uses_pc(selected):
+            self.player.start()
+        self._send(f"SET OUTPUT {selected}")
         self._send("STREAM 1")
+        self.active_output = selected
         self.streaming = True
         self.audio_button.configure(text="Stop Audio")
-        self.root.after(100, self._check_player)
+        if self._uses_pc(selected):
+            self.root.after(100, self._check_player)
 
     def stop_audio(self) -> None:
         if self.transport.connected:
@@ -340,11 +415,13 @@ class DubSirenApp:
         self._drain_audio_queue()
 
     def _check_player(self) -> None:
-        if self.streaming and self.player.error is not None:
+        if not self.streaming or not self._uses_pc(self._selected_output()):
+            return
+        if self.player.error is not None:
             error = self.player.error
             self.stop_audio()
             messagebox.showerror("Audio output", str(error))
-        elif self.streaming:
+        else:
             self.root.after(100, self._check_player)
 
     def _drain_audio_queue(self) -> None:
@@ -370,6 +447,14 @@ class DubSirenApp:
             self.root.after(0, self.disconnect)
             return
         self.protocol_ok = True
+        self.i2s_ready = status.get("i2sReady") is True
+        if self._uses_i2s(self._selected_output()) and not self.i2s_ready:
+            self.output_var.set("PC")
+            messagebox.showerror(
+                "PCM5102A output",
+                "The ESP32 reported that I2S initialization failed. "
+                "Output was set to PC.",
+            )
         self.connection_var.set(
             f"Connected · firmware {status.get('firmware', '?')}"
         )
@@ -377,6 +462,9 @@ class DubSirenApp:
         self._synchronize_controls()
 
     def _synchronize_controls(self) -> None:
+        selected = self._selected_output()
+        self._send(f"SET OUTPUT {selected}")
+        self.active_output = selected
         self._send(f"SET MODE {self.mode_var.get()}")
         self._send(f"SET LFO_SHAPE {self.lfo_shape_var.get()}")
         for name, slider in self.sliders.items():
