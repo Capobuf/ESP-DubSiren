@@ -91,6 +91,9 @@ class DubSirenApp:
         self.port_var = tk.StringVar()
         self.connection_var = tk.StringVar(value="Disconnected")
         self.mode_var = tk.StringVar(value="SINE1")
+        self.profile_var = tk.StringVar(value="EXTENDED")
+        self.classic_pitch_var = tk.StringVar(value="MID")
+        self.classic_mod_var = tk.StringVar(value="MEDIUM")
         self.lfo_shape_var = tk.StringVar(value="CLASSIC")
         self.hold_var = tk.BooleanVar(value=False)
         self.output_var = tk.StringVar(value="Both")
@@ -140,6 +143,16 @@ class DubSirenApp:
             side="right", padx=6
         )
 
+        profile_row = ttk.Frame(outer)
+        profile_row.pack(fill="x", pady=(0, 10))
+        ttk.Label(profile_row, text="Profile:").pack(side="left")
+        self.profile_combo = ttk.Combobox(
+            profile_row, textvariable=self.profile_var,
+            values=("CLASSIC", "EXTENDED"), state="readonly", width=14,
+        )
+        self.profile_combo.pack(side="left", padx=8)
+        self.profile_combo.bind("<<ComboboxSelected>>", self._profile_changed)
+
         columns = ttk.Frame(outer)
         columns.pack(fill="both", expand=True)
         siren = ttk.LabelFrame(columns, text="SIREN", padding=8)
@@ -156,9 +169,16 @@ class DubSirenApp:
             ("SINE1", "SINE2", "TEST_TONE", "SQUARE"),
             self._mode_changed,
         )
-        self._add_slider(siren, "Tune", "TUNE_HZ")
+        self.classic_controls = ttk.Frame(siren)
+        self._combo_row(self.classic_controls, "Pitch", self.classic_pitch_var,
+                        ("LOW", "MID", "HIGH"), self._classic_pitch_changed)
+        self._combo_row(self.classic_controls, "Modulation", self.classic_mod_var,
+                        ("SLOW", "MEDIUM", "FAST", "MANUAL"),
+                        self._classic_mod_changed)
+        self.extended_controls = ttk.Frame(siren)
+        self._add_slider(self.extended_controls, "Tune", "TUNE_HZ")
         self._combo_row(
-            siren,
+            self.extended_controls,
             "LFO Shape",
             self.lfo_shape_var,
             (
@@ -175,9 +195,10 @@ class DubSirenApp:
             ),
             self._lfo_shape_changed,
         )
-        self._add_slider(siren, "Rate", "LFO_RATE_HZ")
-        self._add_slider(siren, "Depth", "LFO_DEPTH_OCT")
-        self._add_slider(siren, "Decay", "DECAY_MS")
+        self._add_slider(self.extended_controls, "Rate", "LFO_RATE_HZ")
+        self._add_slider(self.extended_controls, "Depth", "LFO_DEPTH_OCT")
+        self._add_slider(self.extended_controls, "Decay", "DECAY_MS")
+        self.extended_controls.pack(fill="x")
 
         mod_row = ttk.Frame(siren)
         mod_row.pack(fill="x", pady=7)
@@ -212,6 +233,7 @@ class DubSirenApp:
         master = ttk.LabelFrame(outer, text="MASTER", padding=8)
         master.pack(fill="x", pady=(10, 0))
         self._add_slider(master, "Volume", "MASTER")
+        self._update_profile_ui()
         self._update_manual_buttons()
 
     def _combo_row(self, parent, label, variable, values, callback) -> None:
@@ -261,8 +283,40 @@ class DubSirenApp:
         self._update_manual_buttons()
         self._send(f"SET LFO_SHAPE {self.lfo_shape_var.get()}")
 
+    def _profile_changed(self, _event=None) -> None:
+        self._global_release()
+        self._update_profile_ui()
+        if self.profile_var.get() == "CLASSIC":
+            self._classic_pitch_changed()
+            self._classic_mod_changed()
+            self._send("SET PROFILE CLASSIC")
+        else:
+            self._send("SET PROFILE EXTENDED")
+            self._send(f"SET LFO_SHAPE {self.lfo_shape_var.get()}")
+        self._update_manual_buttons()
+
+    def _classic_pitch_changed(self, _event=None) -> None:
+        self._send(f"SET CLASSIC_PITCH {self.classic_pitch_var.get()}")
+
+    def _classic_mod_changed(self, _event=None) -> None:
+        if self.classic_mod_var.get() != "MANUAL":
+            self._global_release()
+        self._update_manual_buttons()
+        self._send(f"SET CLASSIC_MOD {self.classic_mod_var.get()}")
+
+    def _update_profile_ui(self) -> None:
+        if self.profile_var.get() == "CLASSIC":
+            self.extended_controls.pack_forget()
+            self.classic_controls.pack(fill="x", before=self.mod_down_button.master)
+        else:
+            self.classic_controls.pack_forget()
+            self.extended_controls.pack(fill="x", before=self.mod_down_button.master)
+
     def _update_manual_buttons(self) -> None:
-        state = "normal" if self.lfo_shape_var.get() == "MANUAL" else "disabled"
+        manual = (self.classic_mod_var.get() == "MANUAL"
+                  if self.profile_var.get() == "CLASSIC"
+                  else self.lfo_shape_var.get() == "MANUAL")
+        state = "normal" if manual else "disabled"
         self.mod_down_button.configure(state=state)
         self.mod_up_button.configure(state=state)
 
@@ -466,9 +520,12 @@ class DubSirenApp:
         self._send(f"SET OUTPUT {selected}")
         self.active_output = selected
         self._send(f"SET MODE {self.mode_var.get()}")
+        self._send(f"SET CLASSIC_PITCH {self.classic_pitch_var.get()}")
+        self._send(f"SET CLASSIC_MOD {self.classic_mod_var.get()}")
         self._send(f"SET LFO_SHAPE {self.lfo_shape_var.get()}")
         for name, slider in self.sliders.items():
             self._send_parameter(name, slider.value)
+        self._send(f"SET PROFILE {self.profile_var.get()}")
         self._send_bool("TRIGGER", False)
         self._send_bool("HOLD", self.hold_var.get())
         self._send_bool("MOD_UP", False)

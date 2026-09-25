@@ -22,7 +22,14 @@ enum class LfoShape {
     Manual,
 };
 
+enum class PerformanceProfile { Classic, Extended };
+enum class ClassicPitch { Low, Mid, High };
+enum class ClassicModulation { Slow, Medium, Fast, Manual };
+
 struct ControlState {
+    PerformanceProfile profile = PerformanceProfile::Extended;
+    ClassicPitch classicPitch = ClassicPitch::Mid;
+    ClassicModulation classicModulation = ClassicModulation::Medium;
     SirenMode mode = SirenMode::Sine1;
     float tuneHz = 220.0f;
     LfoShape lfoShape = LfoShape::Classic;

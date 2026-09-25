@@ -24,6 +24,9 @@ Control commands:
 
 ```text
 SET MODE SINE1|SINE2|TEST_TONE|SQUARE
+SET PROFILE CLASSIC|EXTENDED
+SET CLASSIC_PITCH LOW|MID|HIGH
+SET CLASSIC_MOD SLOW|MEDIUM|FAST|MANUAL
 SET TUNE_HZ <30..9000>
 SET LFO_SHAPE CLASSIC|TRIANGLE|SQUARE|SAW_UP|SAW_DOWN|ASYM_UP|ASYM_DOWN|PULSE_25|PULSE_75|MANUAL
 SET LFO_RATE_HZ <0.05..20>
@@ -55,6 +58,13 @@ of the protocol. Finite numeric values are clamped to the absolute ranges.
 Malformed and unknown commands are ignored. Parsing occurs outside the audio
 task.
 
+The boot profile is EXTENDED for compatibility. CLASSIC uses firmware presets:
+LOW/MID/HIGH = 110/220/440 Hz, SLOW/MEDIUM/FAST = 0.35/0.70/2.80 Hz,
+depth = 1 octave, decay = 120 ms and the RC-like LFO. MANUAL selects the same
+RC manual response as the extended MANUAL shape. Existing continuous settings
+remain stored while CLASSIC is active and take effect again in EXTENDED.
+Profile, mode and shape changes preserve the oscillator phase and echo tail.
+
 ## ESP to PC
 
 Every packet begins with this packed, 10-byte little-endian header:
@@ -71,12 +81,14 @@ An AUDIO payload is always 960 bytes: 480 signed int16 mono PCM samples at
 48,000 Hz. A STATUS payload is UTF-8 JSON. `HELLO` currently returns:
 
 ```json
-{"name":"DubSiren","protocol":1,"sampleRate":48000,"blockSamples":480,"firmware":"0.3.0","renderUs":6045,"maxRenderUs":6045,"cycleUs":6090,"maxCycleUs":6090,"output":"BOTH","i2sReady":true}
+{"name":"DubSiren","protocol":1,"sampleRate":48000,"blockSamples":480,"firmware":"0.4.0","renderUs":0,"maxRenderUs":0,"cycleUs":0,"maxCycleUs":0,"maxUsbWriteUs":0,"maxI2sWriteUs":0,"output":"BOTH","i2sReady":true}
 ```
 
-`renderUs` is the most recent 480-sample render time and `maxRenderUs` is the
+Timing zeros above are placeholders, not measured performance. `renderUs` is the
+most recent 480-sample render time and `maxRenderUs` is the
 maximum observed since boot. `cycleUs` and `maxCycleUs` include selected output
-writes. `output` reports the active routing selection and `i2sReady` reports
+writes. `maxUsbWriteUs` and `maxI2sWriteUs` isolate the maximum time spent in
+each output write. `output` reports the active routing selection and `i2sReady` reports
 whether I2S initialization succeeded. These are diagnostic/status additions;
 packet framing and protocol version remain unchanged.
 

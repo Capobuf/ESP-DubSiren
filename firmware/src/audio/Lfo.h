@@ -11,6 +11,7 @@ public:
 
 private:
     void updateCoefficients(float rateHz, float sampleRate);
+    float transition(LfoShape shape, float value, float sampleRate);
     static float automaticValue(LfoShape shape, float phase);
     float phase_;
     float manualValue_;
@@ -21,4 +22,9 @@ private:
     float fallCoefficient_;
     float manualChargeCoefficient_;
     float manualFallCoefficient_;
+    LfoShape currentShape_;
+    float lastOutput_;
+    float shapeOffset_;
+    unsigned shapeTransitionRemaining_;
+    unsigned coefficientCountdown_;
 };

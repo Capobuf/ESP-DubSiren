@@ -28,6 +28,21 @@ bool CommandParser::parse(const String &rawCommand) {
 
         if (name == "MODE") {
             if (!parseMode(valueText, state.mode)) return false;
+        } else if (name == "PROFILE") {
+            if (valueText == "CLASSIC") state.profile = PerformanceProfile::Classic;
+            else if (valueText == "EXTENDED") state.profile = PerformanceProfile::Extended;
+            else return false;
+        } else if (name == "CLASSIC_PITCH") {
+            if (valueText == "LOW") state.classicPitch = ClassicPitch::Low;
+            else if (valueText == "MID") state.classicPitch = ClassicPitch::Mid;
+            else if (valueText == "HIGH") state.classicPitch = ClassicPitch::High;
+            else return false;
+        } else if (name == "CLASSIC_MOD") {
+            if (valueText == "SLOW") state.classicModulation = ClassicModulation::Slow;
+            else if (valueText == "MEDIUM") state.classicModulation = ClassicModulation::Medium;
+            else if (valueText == "FAST") state.classicModulation = ClassicModulation::Fast;
+            else if (valueText == "MANUAL") state.classicModulation = ClassicModulation::Manual;
+            else return false;
         } else if (name == "LFO_SHAPE") {
             if (!parseLfoShape(valueText, state.lfoShape)) return false;
         } else if (name == "VOICING") {

@@ -38,7 +38,10 @@ the state concurrently.
 block is routed through the `AudioSink` interface to `UsbPcmSink`,
 `I2sPcm5102Sink`, or both. `UsbPcmSink` adds the binary framing and serializes
 AUDIO and STATUS writes with a mutex. STATUS remains available over USB even
-when USB AUDIO packets are disabled.
+when USB AUDIO packets are disabled. Hardware CDC's TX ring is set to 8192 bytes
+before USB startup, so a 970-byte audio packet can be queued without waiting
+for the default 256-byte ring to drain. Packet writes complete any partial
+`Serial.write` before another packet starts.
 
 `I2sPcm5102Sink` duplicates each of the 480 mono int16 samples into a stereo
 left/right frame and writes the resulting 960 values to I2S DMA. ESP32-S3 is
@@ -48,10 +51,20 @@ the audio task remains paced at one rendered block every 10 ms.
 
 The one-second delay is a fixed 48,000-sample int16 ring buffer in internal RAM
 (96 kB). It does not use or require PSRAM. Delay reads are fractional and use
-linear interpolation. HPF and LPF are local RBJ biquads with Q 1.0;
-coefficients change only when their cutoff changes. The feedback path uses
+linear interpolation. Delay time follows a 25 ms one-pole smoother limited to
+2000 ms of delay movement per second. A live sweep therefore bends pitch without
+jumping the read head. HPF and LPF are local RBJ biquads with Q 1.0;
+their cutoffs follow 18 ms smoothing and coefficients refresh every 64 samples
+without resetting filter state. The feedback path uses
 asymmetric saturation before the delay write, while the existing cubic
 `softClip` remains the final safety limiter.
+
+`SmoothedParameter` handles sample-rate tune, depth, rate, feedback, echo level,
+master, delay and filter cutoff changes. The LFO retains phase across shape
+changes and fades the modulation offset over 10 ms. Mode changes render both
+voicings at the same oscillator phase for a 6 ms crossfade. Neither transition
+resets the delay or its feedback state. CLASSIC preset selection happens inside
+the firmware; EXTENDED retains the full control state for switching back.
 
 The V2 oscillator starts from a variable-duty band-limited pulse. SINE1 uses
 three tracking one-poles; SINE2 uses two with a higher tracking ratio and more
@@ -60,6 +73,11 @@ frequency targets with a 2.5 ms anti-click slew while preserving oscillator
 phase. Filter coefficients are refreshed every 16 samples; measured render
 telemetry is exposed in STATUS as `renderUs` and `maxRenderUs`. `cycleUs` and
 `maxCycleUs` measure rendering plus the selected output writes.
+
+The preset pitch, rate, RC curves, smoothing, voicing and saturation constants
+are project tuning points. Timbre calibration against a physical instrument
+remains future work requiring recordings or measurements. No circuit or audio
+identity with a third-party device is claimed.
 
 ## PC concurrency
 

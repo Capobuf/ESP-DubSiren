@@ -45,6 +45,27 @@ Oscillator::Oscillator() : phase_(0.0f) {}
 float Oscillator::next(SirenMode mode, float frequencyHz, float modulation,
                        float envelopeLevel, bool lfoGate, float sampleRate,
                        bool voicingV2) {
+    const float output = renderVoice(mode, frequencyHz, modulation,
+                                     envelopeLevel, lfoGate, sampleRate, voicingV2);
+    advance(frequencyHz / sampleRate);
+    return output;
+}
+
+float Oscillator::nextTransition(SirenMode from, SirenMode to, float mix,
+                                 float frequencyHz, float modulation,
+                                 float envelopeLevel, bool lfoGate,
+                                 float sampleRate, bool voicingV2) {
+    const float oldVoice = renderVoice(from, frequencyHz, modulation,
+                                      envelopeLevel, lfoGate, sampleRate, voicingV2);
+    const float newVoice = renderVoice(to, frequencyHz, modulation,
+                                      envelopeLevel, lfoGate, sampleRate, voicingV2);
+    advance(frequencyHz / sampleRate);
+    return oldVoice + (newVoice - oldVoice) * mix;
+}
+
+float Oscillator::renderVoice(SirenMode mode, float frequencyHz,
+                              float modulation, float envelopeLevel,
+                              bool lfoGate, float sampleRate, bool voicingV2) {
     const float increment = frequencyHz / sampleRate;
     float output;
     if (voicingV2 && mode == SirenMode::Sine1) {
@@ -64,11 +85,14 @@ float Oscillator::next(SirenMode mode, float frequencyHz, float modulation,
         if (mode == SirenMode::TestTone && !lfoGate) output = 0.0f;
     }
 
+    return output;
+}
+
+void Oscillator::advance(float increment) {
     phase_ += increment;
     if (phase_ >= 1.0f) {
         phase_ -= floorf(phase_);
     }
-    return output;
 }
 
 float Oscillator::nextLegacy(SirenMode mode, float phaseIncrement) const {

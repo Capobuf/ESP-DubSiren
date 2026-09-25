@@ -5,6 +5,25 @@ performance range exposed by the desktop UI. The GUI maps its normalized
 slider position to a physical value and sends that value, in the units shown,
 over USB. It never sends the normalized position.
 
+The Profile selector offers **CLASSIC** and **EXTENDED**. EXTENDED exposes the
+complete set of continuous controls below. CLASSIC shows Mode, three Pitch
+positions, four Modulation positions, the performance buttons, delay, feedback,
+echo level, echo HPF/LPF, Echo Cut and Master. CLASSIC fixes LFO depth to 1 octave,
+decay to 120 ms, and uses the RC-like LFO shape. MANUAL enables MOD DOWN and
+MOD UP; automatic modulation disables them. The firmware applies these preset
+values even when controlled without the desktop UI. Returning to EXTENDED
+restores its retained tune, rate, shape, depth and decay settings.
+
+| CLASSIC selector | Project preset |
+|---|---:|
+| Pitch LOW / MID / HIGH | 110 / 220 / 440 Hz |
+| Modulation SLOW / MEDIUM / FAST | 0.35 / 0.70 / 2.80 Hz |
+| Modulation MANUAL | RC response to MOD DOWN / MOD UP |
+
+These are internal starting values derived from the project's range, not
+measurements of another siren. They and the RC charge/fall ratios are centralized
+for later listening-based calibration.
+
 | Control | Absolute DSP/protocol range | Performance UI range / default | UI mapping |
 |---|---|---|---|
 | Mode | SINE1 | SINE1 | rounded SINE1, brighter SINE2, gated TEST_TONE, high/low SQUARE |
@@ -34,6 +53,9 @@ anti-click pitch slew. TEST_TONE uses the LFO as a half-cycle gate with 2 ms
 attack and 4 ms release.
 
 ECHO CUT mutes only the wet output. It does not clear or stop the delay line, so
-the tail returns on release. Tune, LFO depth, delay time, echo level and master
-are smoothed in the firmware. Slider commands are throttled to approximately
+the tail returns on release. Tune (12 ms), depth (15 ms), LFO rate (20 ms),
+feedback (18 ms), echo level and master (15 ms), delay time (25 ms), and echo
+filter cutoffs (18 ms) are smoothed in firmware. Delay movement is additionally
+limited to 2000 ms/s while fractional reads preserve pitch bending. LFO shape
+and Siren Mode transitions last 10 ms and 6 ms respectively. Slider commands are throttled to approximately
 25 ms during dragging and the final release value is sent immediately.

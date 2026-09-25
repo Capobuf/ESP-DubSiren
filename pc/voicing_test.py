@@ -52,12 +52,14 @@ class Capture:
     def __init__(self, port: str) -> None:
         self.audio: queue.Queue[bytes] = queue.Queue(maxsize=300)
         self.status_event = threading.Event()
+        self.last_status: dict = {}
         self.transport = SerialTransport(self.audio, self._status)
         self.transport.connect(port)
         if not self.status_event.wait(2.0):
             raise RuntimeError("STATUS timeout")
 
-    def _status(self, _status: dict) -> None:
+    def _status(self, status: dict) -> None:
+        self.last_status = status
         self.status_event.set()
 
     def send(self, *commands: str) -> None:

@@ -9,8 +9,16 @@ public:
     float next(SirenMode mode, float frequencyHz, float modulation,
                float envelopeLevel, bool lfoGate, float sampleRate,
                bool voicingV2);
+    float nextTransition(SirenMode from, SirenMode to, float mix,
+                         float frequencyHz, float modulation,
+                         float envelopeLevel, bool lfoGate, float sampleRate,
+                         bool voicingV2);
 
 private:
+    float renderVoice(SirenMode mode, float frequencyHz, float modulation,
+                      float envelopeLevel, bool lfoGate, float sampleRate,
+                      bool voicingV2);
+    void advance(float increment);
     struct VoiceState {
         OnePoleLowPass filters[3];
         DcBlocker dcBlocker;

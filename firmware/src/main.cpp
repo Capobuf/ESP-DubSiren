@@ -26,6 +26,8 @@ std::atomic<uint32_t> lastRenderUs{0};
 std::atomic<uint32_t> maximumRenderUs{0};
 std::atomic<uint32_t> lastCycleUs{0};
 std::atomic<uint32_t> maximumCycleUs{0};
+std::atomic<uint32_t> maximumUsbWriteUs{0};
+std::atomic<uint32_t> maximumI2sWriteUs{0};
 bool i2sReady = false;
 String commandBuffer;
 
@@ -74,6 +76,10 @@ void sendStatus() {
         ",\"cycleUs\":" + lastCycleUs.load(std::memory_order_relaxed) +
         ",\"maxCycleUs\":" +
         maximumCycleUs.load(std::memory_order_relaxed) +
+        ",\"maxUsbWriteUs\":" +
+        maximumUsbWriteUs.load(std::memory_order_relaxed) +
+        ",\"maxI2sWriteUs\":" +
+        maximumI2sWriteUs.load(std::memory_order_relaxed) +
         ",\"output\":\"" + outputModeName(mode) +
         "\",\"i2sReady\":" + (i2sReady ? "true" : "false") + "}";
     usbSink.writeStatus(json.c_str(), json.length());
@@ -136,10 +142,14 @@ void audioTask(void *) {
             enabled && i2sReady &&
             (mode == OutputMode::Gpio || mode == OutputMode::Both);
         if (pcActive) {
+            const uint32_t writeStartUs = micros();
             usbSink.write(block, Config::kBlockSamples);
+            updateMaximum(maximumUsbWriteUs, micros() - writeStartUs);
         }
         if (i2sActive) {
+            const uint32_t writeStartUs = micros();
             i2sSink.write(block, Config::kBlockSamples);
+            updateMaximum(maximumI2sWriteUs, micros() - writeStartUs);
         } else if (i2sWasActive) {
             i2sSink.silence();
         }
@@ -155,6 +165,9 @@ void audioTask(void *) {
 }  // namespace
 
 void setup() {
+    // One packet is 970 bytes; the driver's 256-byte default causes writes to
+    // wait for USB during the audio task. Allocate the ring before CDC begins.
+    Serial.setTxBufferSize(8192);
     Serial.begin(115200);
     commandBuffer.reserve(128);
     usbSink.begin();

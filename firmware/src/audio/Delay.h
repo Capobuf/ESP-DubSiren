@@ -4,6 +4,7 @@
 #include <stdint.h>
 
 #include "Biquad.h"
+#include "SmoothedParameter.h"
 
 class Delay {
 public:
@@ -19,10 +20,12 @@ public:
 private:
     int16_t buffer_[kBufferSamples];
     size_t writeIndex_;
-    float delayMs_;
-    float targetDelayMs_;
-    float highPassHz_;
-    float lowPassHz_;
+    SmoothedParameter delayMs_;
+    SmoothedParameter highPassHz_;
+    SmoothedParameter lowPassHz_;
+    unsigned filterUpdateCountdown_;
+    float appliedHighPassHz_;
+    float appliedLowPassHz_;
     Biquad highPass_;
     Biquad lowPass_;
 };

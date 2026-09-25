@@ -7,6 +7,7 @@
 #include "Envelope.h"
 #include "Lfo.h"
 #include "Oscillator.h"
+#include "SmoothedParameter.h"
 #include "control/ControlState.h"
 
 class AudioEngine {
@@ -20,9 +21,15 @@ private:
     Lfo lfo_;
     Envelope envelope_;
     Delay delay_;
-    float tuneHz_;
-    float depthOctaves_;
-    float echoLevel_;
-    float masterVolume_;
+    SmoothedParameter tuneHz_;
+    SmoothedParameter depthOctaves_;
+    SmoothedParameter rateHz_;
+    SmoothedParameter feedback_;
+    SmoothedParameter echoLevel_;
+    SmoothedParameter masterVolume_;
     float oscillatorFrequencyHz_;
+    SirenMode previousMode_;
+    SirenMode currentMode_;
+    unsigned modeTransitionRemaining_;
+    bool modeInitialized_;
 };

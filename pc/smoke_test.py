@@ -173,6 +173,23 @@ class SmokeTest:
         self.send("MOD_UP 0", "MOD_DOWN 0")
         print("MANUAL", {"up_hz": hz_up, "down_hz": hz_down, "both_hz": hz_both})
 
+        self.send("SET MODE SINE1", "SET CLASSIC_MOD MANUAL",
+                  "SET PROFILE CLASSIC")
+        classic_hz = []
+        for pitch in ("LOW", "MID", "HIGH"):
+            self.send(f"SET CLASSIC_PITCH {pitch}")
+            self.settle(0.20)
+            classic_hz.append(metrics(self.grab(40))[2])
+        assert 105 <= classic_hz[0] <= 115
+        assert 215 <= classic_hz[1] <= 225
+        assert 430 <= classic_hz[2] <= 450
+        self.send("SET PROFILE EXTENDED", "SET LFO_DEPTH_OCT 0",
+                  "SET TUNE_HZ 220")
+        self.settle(0.20)
+        assert 215 <= metrics(self.grab(30))[2] <= 225
+        print("CLASSIC_PROFILE", {"low_mid_high_hz": classic_hz,
+                                  "extended_restored": True})
+
         shape_hashes = {}
         self.send("SET LFO_RATE_HZ 8", "SET LFO_DEPTH_OCT 1")
         for shape in (
@@ -279,14 +296,16 @@ class SmokeTest:
         self.transport.send("HELLO")
         assert self.status_event.wait(1)
         final_status = self.statuses[-1]
-        assert final_status["maxRenderUs"] < 10_000
-        assert final_status["maxCycleUs"] < 10_000
         print("RENDER_BUDGET", {
             "last_us": final_status["renderUs"],
             "max_us": final_status["maxRenderUs"],
             "last_cycle_us": final_status["cycleUs"],
             "max_cycle_us": final_status["maxCycleUs"],
+            "max_usb_write_us": final_status.get("maxUsbWriteUs"),
+            "max_i2s_write_us": final_status.get("maxI2sWriteUs"),
         })
+        assert final_status["maxRenderUs"] < 10_000
+        assert final_status["maxCycleUs"] < 10_000
         print("STOP_RESYNC", "ok")
 
     def close(self) -> None:

@@ -1,6 +1,7 @@
 #include "Lfo.h"
 
 #include <math.h>
+#include "PerformanceConfig.h"
 
 namespace {
 
@@ -21,11 +22,18 @@ Lfo::Lfo()
     : phase_(0.0f), manualValue_(0.0f), classicValue_(-1.0f),
       lastRateHz_(-1.0f), lastSampleRate_(-1.0f), chargeCoefficient_(0.0f),
       fallCoefficient_(0.0f), manualChargeCoefficient_(0.0f),
-      manualFallCoefficient_(0.0f) {}
+      manualFallCoefficient_(0.0f), currentShape_(LfoShape::Classic),
+      lastOutput_(-1.0f), shapeOffset_(0.0f), shapeTransitionRemaining_(0),
+      coefficientCountdown_(0) {}
 
 float Lfo::next(LfoShape shape, float rateHz, bool modUp, bool modDown,
                 float sampleRate) {
-    updateCoefficients(rateHz, sampleRate);
+    if (coefficientCountdown_ == 0) {
+        updateCoefficients(rateHz, sampleRate);
+        coefficientCountdown_ = PerformanceConfig::kLfoCoefficientUpdateSamples - 1;
+    } else {
+        --coefficientCountdown_;
+    }
 
     if (shape == LfoShape::Manual) {
         const float target = modUp == modDown ? 0.0f : (modUp ? 1.0f : -1.0f);
@@ -33,7 +41,7 @@ float Lfo::next(LfoShape shape, float rateHz, bool modUp, bool modDown,
                                       ? manualChargeCoefficient_
                                       : manualFallCoefficient_;
         manualValue_ += (target - manualValue_) * coefficient;
-        return manualValue_;
+        return transition(shape, manualValue_, sampleRate);
     }
 
     float value;
@@ -50,6 +58,23 @@ float Lfo::next(LfoShape shape, float rateHz, bool modUp, bool modDown,
     if (phase_ >= 1.0f) {
         phase_ -= floorf(phase_);
     }
+    return transition(shape, value, sampleRate);
+}
+
+float Lfo::transition(LfoShape shape, float value, float sampleRate) {
+    const unsigned duration = static_cast<unsigned>(
+        PerformanceConfig::kLfoShapeTransitionMs * sampleRate * 0.001f);
+    if (shape != currentShape_) {
+        currentShape_ = shape;
+        shapeOffset_ = lastOutput_ - value;
+        shapeTransitionRemaining_ = duration;
+    }
+    if (shapeTransitionRemaining_ > 0) {
+        value += shapeOffset_ * static_cast<float>(shapeTransitionRemaining_) /
+                 static_cast<float>(duration);
+        --shapeTransitionRemaining_;
+    }
+    lastOutput_ = value;
     return value;
 }
 

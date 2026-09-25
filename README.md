@@ -75,7 +75,7 @@ La GUI si apre anche senza ESP collegata. Poi:
 
 1. premere **Refresh** e scegliere la COM Espressif;
 2. scegliere **PC**, **PCM5102A** o **Both** nel selettore Output;
-3. premere **Connect** e attendere `Connected · firmware 0.3.0`;
+3. premere **Connect** e attendere `Connected · firmware 0.4.0`;
 4. premere **Start Audio**;
 5. usare **TRIGGER** oppure attivare **HOLD**.
 
@@ -88,3 +88,27 @@ thread e seriale. Per un controllo automatico dell'hardware collegato:
 
 Dettagli: [architettura](docs/architecture.md), [protocollo](docs/protocol.md) e
 [controlli](docs/controls.md).
+
+Per creare dieci brevi WAV di confronto direttamente dal PCM firmware (con la
+scheda collegata), eseguire dalla cartella `pc`:
+
+```powershell
+.venv\Scripts\python.exe performance_capture.py COM6
+```
+
+Lo script stampa la directory temporanea che contiene i WAV. Usare
+`--output-dir <percorso>` per scegliere una destinazione persistente. Il profilo
+CLASSIC offre preset di progetto, non una riproduzione misurata di altri modelli.
+
+## Test
+
+```powershell
+pc\.venv\Scripts\python.exe -m unittest discover -s pc -p "test_*.py"
+pc\.venv\Scripts\python.exe tests\native\run.py
+pc\.venv\Scripts\python.exe -m platformio run -d firmware
+```
+
+Il test nativo usa Zig C++ (`pip install ziglang`) oppure il compilatore indicato
+da `CXX`; esegue parser e DSP senza scheda. Con hardware collegato, leggere
+`renderUs`, `maxRenderUs`, `cycleUs` e `maxCycleUs` da STATUS durante gli scenari
+di sweep e verificare che restino sotto 10.000 µs per blocco.
