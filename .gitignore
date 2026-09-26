@@ -3,3 +3,8 @@
 __pycache__/
 *.py[cod]
 .DS_Store
+
+# KiCad local editor state and automatic history
+*.kicad_prl
+**/.history/
+~*.lck
