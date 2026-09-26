@@ -1,0 +1,162 @@
+[
+  {
+    "description": "Label connected to only one pin: Etichetta \"BTN_TRIGGER\"",
+    "items": [
+      {
+        "description": "Etichetta \"BTN_TRIGGER\"",
+        "uuid": "4408b281-ee80-48a6-9472-950062baa9eb",
+        "x": 0.508,
+        "y": 2.3622
+      }
+    ],
+    "rule": "isolated_pin_label",
+    "severity": "warning",
+    "sheet": "/",
+    "x": 0.508,
+    "y": 2.3622
+  },
+  {
+    "description": "Label connected to only one pin: Etichetta \"POT_TUNE\"",
+    "items": [
+      {
+        "description": "Etichetta \"POT_TUNE\"",
+        "uuid": "e9050ed5-8ee1-4ac0-b152-84f8a66c3158",
+        "x": 0.6731,
+        "y": 1.6002
+      }
+    ],
+    "rule": "isolated_pin_label",
+    "severity": "warning",
+    "sheet": "/",
+    "x": 0.6731,
+    "y": 1.6002
+  },
+  {
+    "description": "Label connected to only one pin: Etichetta \"POT_FEEDBACK\"",
+    "items": [
+      {
+        "description": "Etichetta \"POT_FEEDBACK\"",
+        "uuid": "64ab4b31-a14a-40be-bc13-e4e379eee213",
+        "x": 0.6731,
+        "y": 1.905
+      }
+    ],
+    "rule": "isolated_pin_label",
+    "severity": "warning",
+    "sheet": "/",
+    "x": 0.6731,
+    "y": 1.905
+  },
+  {
+    "description": "Label connected to only one pin: Etichetta \"BTN_MOD_DOWN\"",
+    "items": [
+      {
+        "description": "Etichetta \"BTN_MOD_DOWN\"",
+        "uuid": "ca5fc600-5fac-4c5d-bd43-f15e1138251a",
+        "x": 0.8636,
+        "y": 2.3622
+      }
+    ],
+    "rule": "isolated_pin_label",
+    "severity": "warning",
+    "sheet": "/",
+    "x": 0.8636,
+    "y": 2.3622
+  },
+  {
+    "description": "Label connected to only one pin: Etichetta \"POT_LFO_RATE\"",
+    "items": [
+      {
+        "description": "Etichetta \"POT_LFO_RATE\"",
+        "uuid": "bf2e568f-8d89-4c9d-9f4b-494e7e14ff0a",
+        "x": 1.0541,
+        "y": 1.6002
+      }
+    ],
+    "rule": "isolated_pin_label",
+    "severity": "warning",
+    "sheet": "/",
+    "x": 1.0541,
+    "y": 1.6002
+  },
+  {
+    "description": "Label connected to only one pin: Etichetta \"POT_ECHO_LEVEL\"",
+    "items": [
+      {
+        "description": "Etichetta \"POT_ECHO_LEVEL\"",
+        "uuid": "ac70fb5c-1169-4bd8-93c5-0b044692f175",
+        "x": 1.0541,
+        "y": 1.905
+      }
+    ],
+    "rule": "isolated_pin_label",
+    "severity": "warning",
+    "sheet": "/",
+    "x": 1.0541,
+    "y": 1.905
+  },
+  {
+    "description": "Label connected to only one pin: Etichetta \"BTN_MOD_UP\"",
+    "items": [
+      {
+        "description": "Etichetta \"BTN_MOD_UP\"",
+        "uuid": "5f53a4b3-905e-4e0a-818b-e4a60e1a755b",
+        "x": 1.2192,
+        "y": 2.3622
+      }
+    ],
+    "rule": "isolated_pin_label",
+    "severity": "warning",
+    "sheet": "/",
+    "x": 1.2192,
+    "y": 2.3622
+  },
+  {
+    "description": "Label connected to only one pin: Etichetta \"POT_DELAY\"",
+    "items": [
+      {
+        "description": "Etichetta \"POT_DELAY\"",
+        "uuid": "ea46baf8-b235-4ace-bd08-859d18ca5794",
+        "x": 1.4351,
+        "y": 1.6002
+      }
+    ],
+    "rule": "isolated_pin_label",
+    "severity": "warning",
+    "sheet": "/",
+    "x": 1.4351,
+    "y": 1.6002
+  },
+  {
+    "description": "Label connected to only one pin: Etichetta \"POT_MASTER\"",
+    "items": [
+      {
+        "description": "Etichetta \"POT_MASTER\"",
+        "uuid": "b50597e0-e246-4373-9a19-ec6aec048e08",
+        "x": 1.4351,
+        "y": 1.905
+      }
+    ],
+    "rule": "isolated_pin_label",
+    "severity": "warning",
+    "sheet": "/",
+    "x": 1.4351,
+    "y": 1.905
+  },
+  {
+    "description": "Label connected to only one pin: Etichetta \"BTN_ECHO_CUT\"",
+    "items": [
+      {
+        "description": "Etichetta \"BTN_ECHO_CUT\"",
+        "uuid": "15101a2b-87c1-4808-8d1f-1a5f51862ba1",
+        "x": 1.5748,
+        "y": 2.3622
+      }
+    ],
+    "rule": "isolated_pin_label",
+    "severity": "warning",
+    "sheet": "/",
+    "x": 1.5748,
+    "y": 2.3622
+  }
+]

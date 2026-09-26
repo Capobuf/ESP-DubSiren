@@ -1,0 +1,868 @@
+{
+  "violations": [
+    {
+      "severity": "warning",
+      "description": "I'impronta 'Potentiometer_Alps_RK09L_Single_Vertical' non corrisponde alla copia nella libreria 'Potentiometer_THT'",
+      "rule": "lib_footprint_mismatch",
+      "pos": {
+        "x": 70.5,
+        "y": 11.5
+      },
+      "items": [
+        {
+          "description": "Impronta RV3",
+          "pos": {
+            "x": 70.5,
+            "y": 11.5
+          },
+          "uuid": "1dfbf227-5296-4063-b6f6-7ddd79d7b665",
+          "ownership_status": "resolved",
+          "item_kind": "footprint",
+          "layer": "F.Cu",
+          "owner": {
+            "kind": "board"
+          }
+        }
+      ]
+    },
+    {
+      "severity": "warning",
+      "description": "I'impronta 'Potentiometer_Alps_RK09L_Single_Vertical' non corrisponde alla copia nella libreria 'Potentiometer_THT'",
+      "rule": "lib_footprint_mismatch",
+      "pos": {
+        "x": 70.5,
+        "y": 33.5
+      },
+      "items": [
+        {
+          "description": "Impronta RV6",
+          "pos": {
+            "x": 70.5,
+            "y": 33.5
+          },
+          "uuid": "4cca8b47-b016-4122-8e7d-ae74740181ab",
+          "ownership_status": "resolved",
+          "item_kind": "footprint",
+          "layer": "F.Cu",
+          "owner": {
+            "kind": "board"
+          }
+        }
+      ]
+    },
+    {
+      "severity": "warning",
+      "description": "I'impronta 'Potentiometer_Alps_RK09L_Single_Vertical' non corrisponde alla copia nella libreria 'Potentiometer_THT'",
+      "rule": "lib_footprint_mismatch",
+      "pos": {
+        "x": 12.5,
+        "y": 11.5
+      },
+      "items": [
+        {
+          "description": "Impronta RV1",
+          "pos": {
+            "x": 12.5,
+            "y": 11.5
+          },
+          "uuid": "69d5dd7a-7fbf-4a28-9fe2-a15449a27945",
+          "ownership_status": "resolved",
+          "item_kind": "footprint",
+          "layer": "F.Cu",
+          "owner": {
+            "kind": "board"
+          }
+        }
+      ]
+    },
+    {
+      "severity": "warning",
+      "description": "I'impronta 'Potentiometer_Alps_RK09L_Single_Vertical' non corrisponde alla copia nella libreria 'Potentiometer_THT'",
+      "rule": "lib_footprint_mismatch",
+      "pos": {
+        "x": 41.5,
+        "y": 11.5
+      },
+      "items": [
+        {
+          "description": "Impronta RV2",
+          "pos": {
+            "x": 41.5,
+            "y": 11.5
+          },
+          "uuid": "7d9de275-3dd3-43f4-a60b-6753d18c697e",
+          "ownership_status": "resolved",
+          "item_kind": "footprint",
+          "layer": "F.Cu",
+          "owner": {
+            "kind": "board"
+          }
+        }
+      ]
+    },
+    {
+      "severity": "warning",
+      "description": "I'impronta 'Potentiometer_Alps_RK09L_Single_Vertical' non corrisponde alla copia nella libreria 'Potentiometer_THT'",
+      "rule": "lib_footprint_mismatch",
+      "pos": {
+        "x": 12.5,
+        "y": 33.5
+      },
+      "items": [
+        {
+          "description": "Impronta RV4",
+          "pos": {
+            "x": 12.5,
+            "y": 33.5
+          },
+          "uuid": "a2eb888e-9ebf-4864-a4a0-c048ecb821f9",
+          "ownership_status": "resolved",
+          "item_kind": "footprint",
+          "layer": "F.Cu",
+          "owner": {
+            "kind": "board"
+          }
+        }
+      ]
+    },
+    {
+      "severity": "warning",
+      "description": "I'impronta 'Potentiometer_Alps_RK09L_Single_Vertical' non corrisponde alla copia nella libreria 'Potentiometer_THT'",
+      "rule": "lib_footprint_mismatch",
+      "pos": {
+        "x": 41.5,
+        "y": 33.5
+      },
+      "items": [
+        {
+          "description": "Impronta RV5",
+          "pos": {
+            "x": 41.5,
+            "y": 33.5
+          },
+          "uuid": "c448fd21-040b-41bd-971c-4ca1705c1d9b",
+          "ownership_status": "resolved",
+          "item_kind": "footprint",
+          "layer": "F.Cu",
+          "owner": {
+            "kind": "board"
+          }
+        }
+      ]
+    },
+    {
+      "severity": "warning",
+      "description": "I'impronta 'ESP32-S3-DevKitC-1_N16R8' non corrisponde alla copia nella libreria 'ESP-DubSiren'",
+      "rule": "lib_footprint_mismatch",
+      "pos": {
+        "x": 62.0,
+        "y": 36.0
+      },
+      "items": [
+        {
+          "description": "Impronta U1",
+          "pos": {
+            "x": 62.0,
+            "y": 36.0
+          },
+          "uuid": "26fa7acd-bf7c-450f-9cd7-253990cde8fc",
+          "ownership_status": "resolved",
+          "item_kind": "footprint",
+          "layer": "B.Cu",
+          "owner": {
+            "kind": "board"
+          }
+        }
+      ]
+    },
+    {
+      "severity": "warning",
+      "description": "I'impronta 'PCM5102A_BREAKOUT_PROVISIONAL' non corrisponde alla copia nella libreria 'ESP-DubSiren'",
+      "rule": "lib_footprint_mismatch",
+      "pos": {
+        "x": 18.0,
+        "y": 36.0
+      },
+      "items": [
+        {
+          "description": "Impronta U2",
+          "pos": {
+            "x": 18.0,
+            "y": 36.0
+          },
+          "uuid": "9ca76d1d-55b1-4f4d-ac79-98a7b7d45568",
+          "ownership_status": "resolved",
+          "item_kind": "footprint",
+          "layer": "B.Cu",
+          "owner": {
+            "kind": "board"
+          }
+        }
+      ]
+    },
+    {
+      "severity": "warning",
+      "description": "Silkscreen clipped by solder mask",
+      "rule": "silk_over_copper",
+      "pos": {
+        "x": 14.0,
+        "y": 57.5
+      },
+      "items": [
+        {
+          "description": "Campo riferimento di SW2",
+          "pos": {
+            "x": 14.0,
+            "y": 57.5
+          },
+          "uuid": "26f346f1-253a-4550-89ba-7eda583ca0e5",
+          "ownership_status": "resolved",
+          "item_kind": "property",
+          "layer": "F.SilkS",
+          "owner": {
+            "kind": "footprint",
+            "reference": "SW2",
+            "uuid": "3f831569-5eaf-4b90-8d8b-a1caff42484c"
+          }
+        },
+        {
+          "description": "Piazzola PTH  2 [GND] di SW2",
+          "pos": {
+            "x": 12.73,
+            "y": 58.5
+          },
+          "uuid": "2b269105-a9a3-453b-abbd-5e9f6f4059f2",
+          "ownership_status": "resolved",
+          "item_kind": "pad",
+          "owner": {
+            "kind": "footprint",
+            "reference": "SW2",
+            "uuid": "3f831569-5eaf-4b90-8d8b-a1caff42484c"
+          }
+        }
+      ]
+    },
+    {
+      "severity": "warning",
+      "description": "Silkscreen clipped by solder mask",
+      "rule": "silk_over_copper",
+      "pos": {
+        "x": 14.0,
+        "y": 57.5
+      },
+      "items": [
+        {
+          "description": "Campo riferimento di SW2",
+          "pos": {
+            "x": 14.0,
+            "y": 57.5
+          },
+          "uuid": "26f346f1-253a-4550-89ba-7eda583ca0e5",
+          "ownership_status": "resolved",
+          "item_kind": "property",
+          "layer": "F.SilkS",
+          "owner": {
+            "kind": "footprint",
+            "reference": "SW2",
+            "uuid": "3f831569-5eaf-4b90-8d8b-a1caff42484c"
+          }
+        },
+        {
+          "description": "Piazzola PTH  1 [/BTN_MOD_DOWN] di SW2",
+          "pos": {
+            "x": 15.27,
+            "y": 58.5
+          },
+          "uuid": "ee30a6f2-debb-4dec-b270-f6dbd7dc7bfb",
+          "ownership_status": "resolved",
+          "item_kind": "pad",
+          "owner": {
+            "kind": "footprint",
+            "reference": "SW2",
+            "uuid": "3f831569-5eaf-4b90-8d8b-a1caff42484c"
+          }
+        }
+      ]
+    },
+    {
+      "severity": "warning",
+      "description": "Silkscreen clipped by solder mask",
+      "rule": "silk_over_copper",
+      "pos": {
+        "x": 37.33,
+        "y": 57.5
+      },
+      "items": [
+        {
+          "description": "Campo riferimento di SW1",
+          "pos": {
+            "x": 37.33,
+            "y": 57.5
+          },
+          "uuid": "6e75eeaa-9ea1-47be-9e41-81470b9daf07",
+          "ownership_status": "resolved",
+          "item_kind": "property",
+          "layer": "F.SilkS",
+          "owner": {
+            "kind": "footprint",
+            "reference": "SW1",
+            "uuid": "667388e7-e094-43eb-a180-6a7092110dce"
+          }
+        },
+        {
+          "description": "Piazzola PTH  2 [GND] di SW1",
+          "pos": {
+            "x": 36.059999,
+            "y": 58.5
+          },
+          "uuid": "9585302c-9f97-4da0-a45b-b46cab6ab5fd",
+          "ownership_status": "resolved",
+          "item_kind": "pad",
+          "owner": {
+            "kind": "footprint",
+            "reference": "SW1",
+            "uuid": "667388e7-e094-43eb-a180-6a7092110dce"
+          }
+        }
+      ]
+    },
+    {
+      "severity": "warning",
+      "description": "Silkscreen clipped by solder mask",
+      "rule": "silk_over_copper",
+      "pos": {
+        "x": 37.33,
+        "y": 57.5
+      },
+      "items": [
+        {
+          "description": "Campo riferimento di SW1",
+          "pos": {
+            "x": 37.33,
+            "y": 57.5
+          },
+          "uuid": "6e75eeaa-9ea1-47be-9e41-81470b9daf07",
+          "ownership_status": "resolved",
+          "item_kind": "property",
+          "layer": "F.SilkS",
+          "owner": {
+            "kind": "footprint",
+            "reference": "SW1",
+            "uuid": "667388e7-e094-43eb-a180-6a7092110dce"
+          }
+        },
+        {
+          "description": "Piazzola PTH  1 [/BTN_TRIGGER] di SW1",
+          "pos": {
+            "x": 38.6,
+            "y": 58.5
+          },
+          "uuid": "66d96d22-80f9-4a83-8ee6-d3c2afe0964e",
+          "ownership_status": "resolved",
+          "item_kind": "pad",
+          "owner": {
+            "kind": "footprint",
+            "reference": "SW1",
+            "uuid": "667388e7-e094-43eb-a180-6a7092110dce"
+          }
+        }
+      ]
+    },
+    {
+      "severity": "warning",
+      "description": "Silkscreen clipped by solder mask",
+      "rule": "silk_over_copper",
+      "pos": {
+        "x": 60.67,
+        "y": 57.5
+      },
+      "items": [
+        {
+          "description": "Campo riferimento di SW3",
+          "pos": {
+            "x": 60.67,
+            "y": 57.5
+          },
+          "uuid": "132b56d3-c2d7-4c35-aaa6-1781c71eaf33",
+          "ownership_status": "resolved",
+          "item_kind": "property",
+          "layer": "F.SilkS",
+          "owner": {
+            "kind": "footprint",
+            "reference": "SW3",
+            "uuid": "d8c0c9fd-6d59-4f2a-bc2d-d6538ddfa79d"
+          }
+        },
+        {
+          "description": "Piazzola PTH  2 [GND] di SW3",
+          "pos": {
+            "x": 59.4,
+            "y": 58.5
+          },
+          "uuid": "e3d06cf5-790f-41b6-bd05-a79fe1b8cb39",
+          "ownership_status": "resolved",
+          "item_kind": "pad",
+          "owner": {
+            "kind": "footprint",
+            "reference": "SW3",
+            "uuid": "d8c0c9fd-6d59-4f2a-bc2d-d6538ddfa79d"
+          }
+        }
+      ]
+    },
+    {
+      "severity": "warning",
+      "description": "Silkscreen clipped by solder mask",
+      "rule": "silk_over_copper",
+      "pos": {
+        "x": 84.0,
+        "y": 57.5
+      },
+      "items": [
+        {
+          "description": "Campo riferimento di SW4",
+          "pos": {
+            "x": 84.0,
+            "y": 57.5
+          },
+          "uuid": "4b276baa-a416-4fd0-8d1e-03f4d389c836",
+          "ownership_status": "resolved",
+          "item_kind": "property",
+          "layer": "F.SilkS",
+          "owner": {
+            "kind": "footprint",
+            "reference": "SW4",
+            "uuid": "778ad8a7-e8b0-466d-8e89-05f42afd3dbd"
+          }
+        },
+        {
+          "description": "Piazzola PTH  2 [GND] di SW4",
+          "pos": {
+            "x": 82.73,
+            "y": 58.5
+          },
+          "uuid": "d1ad0528-13cf-40e8-81ee-f1c04cf542b8",
+          "ownership_status": "resolved",
+          "item_kind": "pad",
+          "owner": {
+            "kind": "footprint",
+            "reference": "SW4",
+            "uuid": "778ad8a7-e8b0-466d-8e89-05f42afd3dbd"
+          }
+        }
+      ]
+    },
+    {
+      "severity": "warning",
+      "description": "Silkscreen clipped by solder mask",
+      "rule": "silk_over_copper",
+      "pos": {
+        "x": 84.0,
+        "y": 57.5
+      },
+      "items": [
+        {
+          "description": "Campo riferimento di SW4",
+          "pos": {
+            "x": 84.0,
+            "y": 57.5
+          },
+          "uuid": "4b276baa-a416-4fd0-8d1e-03f4d389c836",
+          "ownership_status": "resolved",
+          "item_kind": "property",
+          "layer": "F.SilkS",
+          "owner": {
+            "kind": "footprint",
+            "reference": "SW4",
+            "uuid": "778ad8a7-e8b0-466d-8e89-05f42afd3dbd"
+          }
+        },
+        {
+          "description": "Piazzola PTH  1 [/BTN_ECHO_CUT] di SW4",
+          "pos": {
+            "x": 85.27,
+            "y": 58.5
+          },
+          "uuid": "253e02cc-8a2c-47ad-b96d-6179d41e3db5",
+          "ownership_status": "resolved",
+          "item_kind": "pad",
+          "owner": {
+            "kind": "footprint",
+            "reference": "SW4",
+            "uuid": "778ad8a7-e8b0-466d-8e89-05f42afd3dbd"
+          }
+        }
+      ]
+    },
+    {
+      "severity": "warning",
+      "description": "Silkscreen clipped by solder mask",
+      "rule": "silk_over_copper",
+      "pos": {
+        "x": 60.67,
+        "y": 57.5
+      },
+      "items": [
+        {
+          "description": "Campo riferimento di SW3",
+          "pos": {
+            "x": 60.67,
+            "y": 57.5
+          },
+          "uuid": "132b56d3-c2d7-4c35-aaa6-1781c71eaf33",
+          "ownership_status": "resolved",
+          "item_kind": "property",
+          "layer": "F.SilkS",
+          "owner": {
+            "kind": "footprint",
+            "reference": "SW3",
+            "uuid": "d8c0c9fd-6d59-4f2a-bc2d-d6538ddfa79d"
+          }
+        },
+        {
+          "description": "Piazzola PTH  1 [/BTN_MOD_UP] di SW3",
+          "pos": {
+            "x": 61.94,
+            "y": 58.5
+          },
+          "uuid": "b67aaa15-daf5-4f42-af52-448e7ed4654d",
+          "ownership_status": "resolved",
+          "item_kind": "pad",
+          "owner": {
+            "kind": "footprint",
+            "reference": "SW3",
+            "uuid": "d8c0c9fd-6d59-4f2a-bc2d-d6538ddfa79d"
+          }
+        }
+      ]
+    }
+  ],
+  "unconnected_items": [],
+  "schematic_parity": [
+    {
+      "severity": "warning",
+      "description": "Il campo 'Description' è diverso(CS: '', Schema: 'Potentiometer')",
+      "rule": "footprint_symbol_field_mismatch",
+      "pos": {
+        "x": 12.5,
+        "y": 11.5
+      },
+      "items": [
+        {
+          "description": "Impronta RV1",
+          "pos": {
+            "x": 12.5,
+            "y": 11.5
+          },
+          "uuid": "69d5dd7a-7fbf-4a28-9fe2-a15449a27945",
+          "ownership_status": "resolved",
+          "item_kind": "footprint",
+          "layer": "F.Cu",
+          "owner": {
+            "kind": "board"
+          }
+        }
+      ]
+    },
+    {
+      "severity": "warning",
+      "description": "Il campo 'Description' è diverso(CS: '', Schema: 'Potentiometer')",
+      "rule": "footprint_symbol_field_mismatch",
+      "pos": {
+        "x": 41.5,
+        "y": 11.5
+      },
+      "items": [
+        {
+          "description": "Impronta RV2",
+          "pos": {
+            "x": 41.5,
+            "y": 11.5
+          },
+          "uuid": "7d9de275-3dd3-43f4-a60b-6753d18c697e",
+          "ownership_status": "resolved",
+          "item_kind": "footprint",
+          "layer": "F.Cu",
+          "owner": {
+            "kind": "board"
+          }
+        }
+      ]
+    },
+    {
+      "severity": "warning",
+      "description": "Il campo 'Description' è diverso(CS: '', Schema: 'Potentiometer')",
+      "rule": "footprint_symbol_field_mismatch",
+      "pos": {
+        "x": 70.5,
+        "y": 11.5
+      },
+      "items": [
+        {
+          "description": "Impronta RV3",
+          "pos": {
+            "x": 70.5,
+            "y": 11.5
+          },
+          "uuid": "1dfbf227-5296-4063-b6f6-7ddd79d7b665",
+          "ownership_status": "resolved",
+          "item_kind": "footprint",
+          "layer": "F.Cu",
+          "owner": {
+            "kind": "board"
+          }
+        }
+      ]
+    },
+    {
+      "severity": "warning",
+      "description": "Il campo 'Description' è diverso(CS: '', Schema: 'Potentiometer')",
+      "rule": "footprint_symbol_field_mismatch",
+      "pos": {
+        "x": 12.5,
+        "y": 33.5
+      },
+      "items": [
+        {
+          "description": "Impronta RV4",
+          "pos": {
+            "x": 12.5,
+            "y": 33.5
+          },
+          "uuid": "a2eb888e-9ebf-4864-a4a0-c048ecb821f9",
+          "ownership_status": "resolved",
+          "item_kind": "footprint",
+          "layer": "F.Cu",
+          "owner": {
+            "kind": "board"
+          }
+        }
+      ]
+    },
+    {
+      "severity": "warning",
+      "description": "Il campo 'Description' è diverso(CS: '', Schema: 'Potentiometer')",
+      "rule": "footprint_symbol_field_mismatch",
+      "pos": {
+        "x": 41.5,
+        "y": 33.5
+      },
+      "items": [
+        {
+          "description": "Impronta RV5",
+          "pos": {
+            "x": 41.5,
+            "y": 33.5
+          },
+          "uuid": "c448fd21-040b-41bd-971c-4ca1705c1d9b",
+          "ownership_status": "resolved",
+          "item_kind": "footprint",
+          "layer": "F.Cu",
+          "owner": {
+            "kind": "board"
+          }
+        }
+      ]
+    },
+    {
+      "severity": "warning",
+      "description": "Il campo 'Description' è diverso(CS: '', Schema: 'Potentiometer')",
+      "rule": "footprint_symbol_field_mismatch",
+      "pos": {
+        "x": 70.5,
+        "y": 33.5
+      },
+      "items": [
+        {
+          "description": "Impronta RV6",
+          "pos": {
+            "x": 70.5,
+            "y": 33.5
+          },
+          "uuid": "4cca8b47-b016-4122-8e7d-ae74740181ab",
+          "ownership_status": "resolved",
+          "item_kind": "footprint",
+          "layer": "F.Cu",
+          "owner": {
+            "kind": "board"
+          }
+        }
+      ]
+    },
+    {
+      "severity": "warning",
+      "description": "Il campo 'Description' è diverso(CS: '', Schema: 'Push button switch, generic, two pins')",
+      "rule": "footprint_symbol_field_mismatch",
+      "pos": {
+        "x": 37.33,
+        "y": 58.5
+      },
+      "items": [
+        {
+          "description": "Impronta SW1",
+          "pos": {
+            "x": 37.33,
+            "y": 58.5
+          },
+          "uuid": "667388e7-e094-43eb-a180-6a7092110dce",
+          "ownership_status": "resolved",
+          "item_kind": "footprint",
+          "layer": "F.Cu",
+          "owner": {
+            "kind": "board"
+          }
+        }
+      ]
+    },
+    {
+      "severity": "warning",
+      "description": "Il campo 'Description' è diverso(CS: '', Schema: 'Push button switch, generic, two pins')",
+      "rule": "footprint_symbol_field_mismatch",
+      "pos": {
+        "x": 14.0,
+        "y": 58.5
+      },
+      "items": [
+        {
+          "description": "Impronta SW2",
+          "pos": {
+            "x": 14.0,
+            "y": 58.5
+          },
+          "uuid": "3f831569-5eaf-4b90-8d8b-a1caff42484c",
+          "ownership_status": "resolved",
+          "item_kind": "footprint",
+          "layer": "F.Cu",
+          "owner": {
+            "kind": "board"
+          }
+        }
+      ]
+    },
+    {
+      "severity": "warning",
+      "description": "Il campo 'Description' è diverso(CS: '', Schema: 'Push button switch, generic, two pins')",
+      "rule": "footprint_symbol_field_mismatch",
+      "pos": {
+        "x": 60.67,
+        "y": 58.5
+      },
+      "items": [
+        {
+          "description": "Impronta SW3",
+          "pos": {
+            "x": 60.67,
+            "y": 58.5
+          },
+          "uuid": "d8c0c9fd-6d59-4f2a-bc2d-d6538ddfa79d",
+          "ownership_status": "resolved",
+          "item_kind": "footprint",
+          "layer": "F.Cu",
+          "owner": {
+            "kind": "board"
+          }
+        }
+      ]
+    },
+    {
+      "severity": "warning",
+      "description": "Il campo 'Description' è diverso(CS: '', Schema: 'Push button switch, generic, two pins')",
+      "rule": "footprint_symbol_field_mismatch",
+      "pos": {
+        "x": 84.0,
+        "y": 58.5
+      },
+      "items": [
+        {
+          "description": "Impronta SW4",
+          "pos": {
+            "x": 84.0,
+            "y": 58.5
+          },
+          "uuid": "778ad8a7-e8b0-466d-8e89-05f42afd3dbd",
+          "ownership_status": "resolved",
+          "item_kind": "footprint",
+          "layer": "F.Cu",
+          "owner": {
+            "kind": "board"
+          }
+        }
+      ]
+    },
+    {
+      "severity": "warning",
+      "description": "Il campo 'Datasheet' è diverso(CS: '', Schema: 'https://docs.espressif.com/projects/esp-dev-kits/en/latest/esp32s3/esp32-s3-devkitc-1/user_guide_v1.0.html')",
+      "rule": "footprint_symbol_field_mismatch",
+      "pos": {
+        "x": 62.0,
+        "y": 36.0
+      },
+      "items": [
+        {
+          "description": "Impronta U1",
+          "pos": {
+            "x": 62.0,
+            "y": 36.0
+          },
+          "uuid": "26fa7acd-bf7c-450f-9cd7-253990cde8fc",
+          "ownership_status": "resolved",
+          "item_kind": "footprint",
+          "layer": "B.Cu",
+          "owner": {
+            "kind": "board"
+          }
+        }
+      ]
+    },
+    {
+      "severity": "warning",
+      "description": "Il campo 'Datasheet' è diverso(CS: '', Schema: 'https://www.ti.com/lit/ds/symlink/pcm5102a.pdf')",
+      "rule": "footprint_symbol_field_mismatch",
+      "pos": {
+        "x": 18.0,
+        "y": 36.0
+      },
+      "items": [
+        {
+          "description": "Impronta U2",
+          "pos": {
+            "x": 18.0,
+            "y": 36.0
+          },
+          "uuid": "9ca76d1d-55b1-4f4d-ac79-98a7b7d45568",
+          "ownership_status": "resolved",
+          "item_kind": "footprint",
+          "layer": "B.Cu",
+          "owner": {
+            "kind": "board"
+          }
+        }
+      ]
+    },
+    {
+      "severity": "warning",
+      "description": "Extra footprint",
+      "rule": "extra_footprint",
+      "pos": {
+        "x": 49.0,
+        "y": 36.0
+      },
+      "items": [
+        {
+          "description": "Impronta MECH1",
+          "pos": {
+            "x": 49.0,
+            "y": 36.0
+          },
+          "uuid": "e99ae148-9a7f-416b-b9b0-123d13f9a80e",
+          "ownership_status": "resolved",
+          "item_kind": "footprint",
+          "layer": "F.Cu",
+          "owner": {
+            "kind": "board"
+          }
+        }
+      ]
+    }
+  ]
+}
