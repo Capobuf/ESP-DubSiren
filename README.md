@@ -112,3 +112,9 @@ Il test nativo usa Zig C++ (`pip install ziglang`) oppure il compilatore indicat
 da `CXX`; esegue parser e DSP senza scheda. Con hardware collegato, leggere
 `renderUs`, `maxRenderUs`, `cycleUs` e `maxCycleUs` da STATUS durante gli scenari
 di sweep e verificare che restino sotto 10.000 µs per blocco.
+
+## Hardware PCB V1
+
+La revisione hardware diretta con ESP32-S3-WROOM-1, USB-C, ADC, I/O expander e
+DAC Adafruit 6421 è documentata in [pcb/README.md](pcb/README.md). Il layout
+corrente è pre-produzione e non deve essere inviato in fabbricazione.
