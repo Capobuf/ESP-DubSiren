@@ -1,0 +1,17 @@
+#VRML V2.0 utf8
+# Generated mechanical envelope from Switchcraft customer drawing 27929 Rev B.
+Transform {
+  translation 0 1.772 2.461
+  children [
+    Shape { appearance Appearance { material Material { diffuseColor 0.08 0.08 0.08 } }
+      geometry Box { size 11.220 4.921 4.921 } }
+    Transform { translation -2.657 -3.250 0 children [
+      Transform { rotation 1 0 0 1.570796 children [
+        Shape { appearance Appearance { material Material { diffuseColor 0.92 0.92 0.92 } }
+          geometry Cylinder { radius 2.067 height 3.228 } } ] } ] }
+    Transform { translation 2.657 -3.250 0 children [
+      Transform { rotation 1 0 0 1.570796 children [
+        Shape { appearance Appearance { material Material { diffuseColor 0.75 0.08 0.08 } }
+          geometry Cylinder { radius 2.067 height 3.228 } } ] } ] }
+  ]
+}
