@@ -71,7 +71,22 @@ Dalla cartella `pc`:
 run.bat
 ```
 
-La GUI si apre anche senza ESP collegata. Poi:
+La GUI funziona sia con l'ESP32-S3 reale sia senza hardware tramite **Virtual ESP**.
+Il Virtual ESP compila e usa direttamente gli stessi sorgenti C++ DSP/control
+del firmware; la libreria host viene ricompilata automaticamente quando quei
+sorgenti cambiano.
+
+Per lavorare senza hardware:
+
+1. scegliere **Virtual ESP** nel selettore Device;
+2. premere **Connect**;
+3. premere **Start Audio**;
+4. usare normalmente tutti i controlli della sirena.
+
+In modalità Virtual ESP l'uscita è sempre **PC**. La catena fisica
+I2S -> PCM5102A -> uscita analogica non è emulata.
+
+Con l'hardware reale:
 
 1. premere **Refresh** e scegliere la COM Espressif;
 2. scegliere **PC**, **PCM5102A** o **Both** nel selettore Output;
