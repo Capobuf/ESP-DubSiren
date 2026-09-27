@@ -40,12 +40,30 @@ LFO_SHAPES = (
 )
 LFO_LABELS = {value: value.replace("_", " ") for value in LFO_SHAPES}
 SYNDRUM_WAVES = ("SINE", "TRIANGLE", "SQUARE")
+ECHO_FILTER_DEADBAND = 0.05
+
+
+def echo_filter_amount(value: float) -> float:
+    distance = max(0.0, min(1.0, abs(value)))
+    if distance <= ECHO_FILTER_DEADBAND:
+        return 0.0
+    return (distance - ECHO_FILTER_DEADBAND) / (1.0 - ECHO_FILTER_DEADBAND)
+
 
 def format_echo_filter(value: float) -> str:
-    if abs(value) < 0.05:
+    amount = echo_filter_amount(value)
+    if amount == 0.0:
         return "FLAT"
-    amount = min(100, round(abs(value) * 100))
-    return f"{'LP' if value < 0 else 'HP'} {amount}%"
+    return f"{'LP' if value < 0 else 'HP'} {round(amount * 100)}%"
+
+
+def echo_filter_frequencies(value: float) -> tuple[float, float]:
+    amount = echo_filter_amount(value)
+    if amount == 0.0:
+        return 60.0, 16000.0
+    if value < 0.0:
+        return 60.0, 16000.0 * ((400.0 / 16000.0) ** amount)
+    return 60.0 * ((4000.0 / 60.0) ** amount), 16000.0
 
 
 ECHO_FILTER_SPEC = ControlSpec(-1.0, 1.0, 0.0, format_echo_filter)
@@ -68,7 +86,7 @@ class DialControl(ttk.Frame):
         command_name: str,
         spec: ControlSpec,
         callback,
-        diameter: int = 112,
+        diameter: int = 104,
     ) -> None:
         super().__init__(parent)
         self.command_name = command_name
@@ -169,6 +187,101 @@ class DialControl(ttk.Frame):
             cx + 4,
             cy + 4,
             fill="#c7ccd2",
+            outline="",
+        )
+
+
+class PanelButton(ttk.Frame):
+    def __init__(self, parent: tk.Misc, text: str) -> None:
+        super().__init__(parent)
+        self._text = text
+        self._state = "normal"
+        self._pressed = False
+        self.label = ttk.Label(self, text=text, anchor="center")
+        self.label.pack(fill="x")
+        self.canvas = tk.Canvas(
+            self,
+            width=88,
+            height=70,
+            bg="#1b1f24",
+            highlightthickness=0,
+            cursor="hand2",
+        )
+        self.canvas.pack()
+        self.canvas.bind("<ButtonPress-1>", self._show_pressed)
+        self.canvas.bind("<ButtonRelease-1>", self._show_released)
+        self._draw()
+
+    def bind(self, sequence=None, func=None, add=None):
+        return self.canvas.bind(sequence, func, add)
+
+    def configure(self, cnf=None, **kwargs):
+        if cnf:
+            kwargs.update(cnf)
+        if "text" in kwargs:
+            self._text = kwargs.pop("text")
+            self.label.configure(text=self._text)
+        if "state" in kwargs:
+            self._state = kwargs.pop("state")
+            self.canvas.configure(
+                cursor="arrow" if self._state == "disabled" else "hand2"
+            )
+        if kwargs:
+            super().configure(**kwargs)
+        self._draw()
+
+    config = configure
+
+    def cget(self, key):
+        if key == "text":
+            return self._text
+        if key == "state":
+            return self._state
+        return super().cget(key)
+
+    def instate(self, statespec=None, callback=None, *args):
+        disabled = self._state == "disabled"
+        matches = statespec == ["disabled"] and disabled
+        if callback is not None and matches:
+            return callback(*args)
+        return matches
+
+    def set_pressed(self, pressed: bool) -> None:
+        self._pressed = pressed and self._state != "disabled"
+        self._draw()
+
+    def _show_pressed(self, _event) -> None:
+        self.set_pressed(True)
+
+    def _show_released(self, _event) -> None:
+        self.set_pressed(False)
+
+    def _draw(self) -> None:
+        self.canvas.delete("all")
+        disabled = self._state == "disabled"
+        rim = "#3d4349" if disabled else "#8c959f"
+        cap = (
+            "#3b4147"
+            if disabled
+            else ("#a8322c" if self._pressed else "#c83c34")
+        )
+        inset = 8 if self._pressed else 5
+        self.canvas.create_oval(11, 4, 77, 68, fill="#111418", outline=rim, width=3)
+        self.canvas.create_oval(
+            16,
+            inset + 4,
+            72,
+            inset + 58,
+            fill=cap,
+            outline="#68201d" if not disabled else "#30353a",
+            width=2,
+        )
+        self.canvas.create_oval(
+            28,
+            inset + 13,
+            60,
+            inset + 25,
+            fill="#e76a60" if not disabled else "#4b5157",
             outline="",
         )
 
@@ -430,7 +543,7 @@ class PhysicalDubSirenApp(DubSirenApp):
             rowspan=2,
             padx=12,
             pady=8,
-            sticky="nsew",
+            sticky="",
         )
         ttk.Label(
             display_frame,
@@ -465,10 +578,10 @@ class PhysicalDubSirenApp(DubSirenApp):
         for column in range(4):
             buttons.columnconfigure(column, weight=1, uniform="buttons")
 
-        self.trigger_button = ttk.Button(buttons, text="TRIGGER")
-        self.mod_down_button = ttk.Button(buttons, text="DIVE")
-        self.mod_up_button = ttk.Button(buttons, text="RISE")
-        self.echo_cut_button = ttk.Button(buttons, text="ECHO CUT")
+        self.trigger_button = PanelButton(buttons, text="TRIGGER")
+        self.mod_down_button = PanelButton(buttons, text="DIVE")
+        self.mod_up_button = PanelButton(buttons, text="RISE")
+        self.echo_cut_button = PanelButton(buttons, text="ECHO CUT")
         for index, button in enumerate(
             (
                 self.trigger_button,
@@ -482,7 +595,6 @@ class PhysicalDubSirenApp(DubSirenApp):
                 column=index,
                 sticky="ew",
                 padx=6,
-                ipady=12,
             )
 
         self._bind_momentary(self.trigger_button, "TRIGGER")
@@ -498,7 +610,7 @@ class PhysicalDubSirenApp(DubSirenApp):
             "MASTER",
             CONTROL_SPECS["MASTER"],
             self._panel_parameter_changed,
-            diameter=82,
+            diameter=74,
         )
         self.master_dial.pack(side="left", padx=8)
         self.dials["MASTER"] = self.master_dial
@@ -622,6 +734,48 @@ class PhysicalDubSirenApp(DubSirenApp):
                 "VOICE",
                 VOICE_LABELS[self.mode_var.get()],
             ),
+        ]
+
+        if self.mode_var.get() == "SYNDRUM":
+            items.extend(
+                [
+                    (
+                        "SYNDRUM_WAVE",
+                        "DRUM WAVE",
+                        self.syndrum_wave_var.get(),
+                    ),
+                    (
+                        "SYNDRUM_SWEEP",
+                        "DRUM SWEEP",
+                        CONTROL_SPECS["SYNDRUM_SWEEP"].formatter(
+                            self.parameter_values["SYNDRUM_SWEEP"]
+                        ),
+                    ),
+                ]
+            )
+
+        if self.mode_var.get() in TRANSIENT_MODES:
+            items.extend(
+                [
+                    (
+                        "DECAY_MS",
+                        "DECAY",
+                        CONTROL_SPECS["DECAY_MS"].formatter(
+                            self.parameter_values["DECAY_MS"]
+                        ),
+                    ),
+                    (
+                        "ECHO_LOOP",
+                        "ECHO LOOP",
+                        "ON" if self.echo_loop_var.get() else "OFF",
+                    ),
+                    ("BACK", "BACK", ""),
+                ]
+            )
+            return items
+
+        items.extend(
+            [
             (
                 "LFO_SHAPE",
                 "LFO SHAPE",
@@ -675,27 +829,8 @@ class PhysicalDubSirenApp(DubSirenApp):
                 "HOLD",
                 "ON" if self.hold_var.get() else "OFF",
             ),
-        ]
-
-        if self.mode_var.get() == "SYNDRUM":
-            items.insert(
-                2,
-                (
-                    "SYNDRUM_WAVE",
-                    "DRUM WAVE",
-                    self.syndrum_wave_var.get(),
-                ),
-            )
-            items.insert(
-                3,
-                (
-                    "SYNDRUM_SWEEP",
-                    "DRUM SWEEP",
-                    CONTROL_SPECS["SYNDRUM_SWEEP"].formatter(
-                        self.parameter_values["SYNDRUM_SWEEP"]
-                    ),
-                ),
-            )
+            ]
+        )
 
         items.append(("BACK", "BACK", ""))
         return items
@@ -713,6 +848,7 @@ class PhysicalDubSirenApp(DubSirenApp):
                 ]
             )
         elif key == "LFO_SHAPE":
+            self._global_release()
             current = LFO_SHAPES.index(self.lfo_shape_var.get())
             self.lfo_shape_var.set(
                 LFO_SHAPES[
@@ -794,19 +930,7 @@ class PhysicalDubSirenApp(DubSirenApp):
         )
 
     def _apply_echo_filter(self) -> None:
-        macro = self.echo_filter_macro
-        if abs(macro) < 0.001:
-            hpf, lpf = 60.0, 16000.0
-        elif macro < 0.0:
-            hpf = 60.0
-            lpf = 16000.0 * (
-                (400.0 / 16000.0) ** -macro
-            )
-        else:
-            hpf = 50.0 * (
-                (4000.0 / 50.0) ** macro
-            )
-            lpf = 16000.0
+        hpf, lpf = echo_filter_frequencies(self.echo_filter_macro)
 
         self.parameter_values["HPF_HZ"] = hpf
         self.parameter_values["LPF_HZ"] = lpf
@@ -823,6 +947,7 @@ class PhysicalDubSirenApp(DubSirenApp):
         )
 
     def _set_mode(self, mode: str) -> None:
+        self._global_release()
         self.mode_var.set(mode)
         if (
             mode in TRANSIENT_MODES
@@ -845,6 +970,16 @@ class PhysicalDubSirenApp(DubSirenApp):
             text="MOD UP" if manual else "RISE",
             state="disabled" if transient else "normal",
         )
+
+    def _global_release(self, _event=None) -> None:
+        super()._global_release(_event)
+        for button in (
+            self.trigger_button,
+            self.mod_down_button,
+            self.mod_up_button,
+            self.echo_cut_button,
+        ):
+            button.set_pressed(False)
 
     def _show_overlay(
         self,

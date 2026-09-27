@@ -7,6 +7,8 @@ from physical_ui import (
     TRANSIENT_MODES,
     VOICE_VALUES,
     PhysicalDubSirenApp,
+    echo_filter_frequencies,
+    format_echo_filter,
 )
 
 
@@ -27,6 +29,29 @@ class FakeWidget:
 
     def configure(self, **kwargs):
         self.config.update(kwargs)
+
+    def instate(self, _statespec):
+        return self.config.get("state") == "disabled"
+
+    def set_pressed(self, pressed):
+        self.config["pressed"] = pressed
+
+
+class FakeRoot:
+    def __init__(self):
+        self.callbacks = {}
+        self.cancelled = []
+        self.next_token = 0
+
+    def after(self, _delay, callback):
+        self.next_token += 1
+        token = f"after-{self.next_token}"
+        self.callbacks[token] = callback
+        return token
+
+    def after_cancel(self, token):
+        self.cancelled.append(token)
+        self.callbacks.pop(token, None)
 
 
 class FakeTransport:
@@ -49,8 +74,13 @@ def make_app() -> PhysicalDubSirenApp:
     app.echo_filter_macro = 0.0
     app.mod_down_button = FakeWidget()
     app.mod_up_button = FakeWidget()
+    app.trigger_button = FakeWidget()
+    app.echo_cut_button = FakeWidget()
     app.transport = FakeTransport()
     app.active_output = None
+    app.momentary_active = set()
+    app.pending_sends = {}
+    app.root = FakeRoot()
     app.commands = []
     app._send = app.commands.append
     app._refresh_display = lambda: None
@@ -93,8 +123,21 @@ class PhysicalUiTests(unittest.TestCase):
 
         app.mode_var.set("SYNDRUM")
         keys = [key for key, _label, _value in app._menu_items()]
-        self.assertIn("SYNDRUM_WAVE", keys)
-        self.assertIn("SYNDRUM_SWEEP", keys)
+        self.assertEqual(
+            keys,
+            [
+                "VOICE",
+                "SYNDRUM_WAVE",
+                "SYNDRUM_SWEEP",
+                "DECAY_MS",
+                "ECHO_LOOP",
+                "BACK",
+            ],
+        )
+
+        app.mode_var.set("GUNSHOT")
+        keys = [key for key, _label, _value in app._menu_items()]
+        self.assertEqual(keys, ["VOICE", "DECAY_MS", "ECHO_LOOP", "BACK"])
 
     def test_transient_voice_clears_hold_and_disables_mod_buttons(self):
         app = make_app()
@@ -178,6 +221,62 @@ class PhysicalUiTests(unittest.TestCase):
             app.parameter_values["LPF_HZ"],
             16000.0,
         )
+
+    def test_echo_filter_has_a_flat_deadband_and_smooth_safe_sides(self):
+        self.assertEqual(format_echo_filter(-0.05), "FLAT")
+        self.assertEqual(format_echo_filter(0.05), "FLAT")
+        self.assertEqual(echo_filter_frequencies(-0.05), (60.0, 16000.0))
+        self.assertEqual(echo_filter_frequencies(0.05), (60.0, 16000.0))
+
+        low_hpf, low_lpf = echo_filter_frequencies(-0.5)
+        high_hpf, high_lpf = echo_filter_frequencies(0.5)
+        self.assertEqual(low_hpf, 60.0)
+        self.assertGreater(low_lpf, 400.0)
+        self.assertLess(low_lpf, 16000.0)
+        self.assertGreater(high_hpf, 60.0)
+        self.assertLess(high_hpf, 4000.0)
+        self.assertEqual(high_lpf, 16000.0)
+
+        low_end = echo_filter_frequencies(-1.0)
+        high_end = echo_filter_frequencies(1.0)
+        self.assertAlmostEqual(low_end[0], 60.0)
+        self.assertAlmostEqual(low_end[1], 400.0)
+        self.assertAlmostEqual(high_end[0], 4000.0)
+        self.assertAlmostEqual(high_end[1], 16000.0)
+        self.assertEqual(format_echo_filter(-1.0), "LP 100%")
+        self.assertEqual(format_echo_filter(1.0), "HP 100%")
+
+    def test_filter_throttle_is_cancelled_and_final_value_is_always_sent(self):
+        app = make_app()
+        app._show_overlay = lambda *_args: None
+
+        app._panel_parameter_changed("ECHO_FILTER", -0.4, False)
+        first_token = app.pending_sends["ECHO_FILTER"]
+        app._panel_parameter_changed("ECHO_FILTER", 0.6, False)
+        second_token = app.pending_sends["ECHO_FILTER"]
+
+        self.assertIn(first_token, app.root.cancelled)
+        self.assertNotEqual(first_token, second_token)
+        self.assertEqual(app.commands, [])
+
+        app._panel_parameter_changed("ECHO_FILTER", 1.0, True)
+        self.assertIn(second_token, app.root.cancelled)
+        self.assertNotIn("ECHO_FILTER", app.pending_sends)
+        self.assertEqual(
+            app.commands[-2:],
+            ["SET HPF_HZ 4000", "SET LPF_HZ 16000"],
+        )
+
+    def test_mode_change_releases_active_momentary_controls(self):
+        app = make_app()
+        app.momentary_active.update(("TRIGGER", "MOD_DOWN"))
+
+        app._set_mode("GUNSHOT")
+
+        self.assertEqual(app.momentary_active, set())
+        self.assertIn("TRIGGER 0", app.commands)
+        self.assertIn("MOD_DOWN 0", app.commands)
+        self.assertEqual(app.commands[-1], "SET MODE GUNSHOT")
 
     def test_synchronization_keeps_extended_as_internal_engine_profile(self):
         app = make_app()

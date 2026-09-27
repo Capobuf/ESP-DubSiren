@@ -1,3 +1,4 @@
+import queue
 import unittest
 
 from app import DubSirenApp
@@ -38,18 +39,30 @@ class FakeWidget:
 class FakeRoot:
     def __init__(self):
         self.scheduled = []
+        self.cancelled = []
 
     def after(self, delay, callback):
         self.scheduled.append((delay, callback))
+
+    def after_cancel(self, token):
+        self.cancelled.append(token)
 
 
 class FakeTransport:
     connected = True
 
+    def __init__(self):
+        self.disconnects = 0
+
+    def disconnect(self):
+        self.connected = False
+        self.disconnects += 1
+
 
 def make_app(output: str) -> DubSirenApp:
     app = object.__new__(DubSirenApp)
     app.output_var = FakeVariable(output)
+    app.connection_var = FakeVariable("Connected")
     app.i2s_ready = True
     app.protocol_ok = True
     app.streaming = False
@@ -57,7 +70,13 @@ def make_app(output: str) -> DubSirenApp:
     app.transport = FakeTransport()
     app.player = FakePlayer()
     app.audio_button = FakeWidget()
+    app.connect_button = FakeWidget()
+    app.port_combo = FakeWidget()
+    app.output_combo = FakeWidget()
     app.root = FakeRoot()
+    app.pending_sends = {}
+    app.momentary_active = set()
+    app.ui_events = queue.Queue()
     app.commands = []
     app.drains = 0
     app._send = app.commands.append
@@ -66,6 +85,7 @@ def make_app(output: str) -> DubSirenApp:
         app.drains += 1
 
     app._drain_audio_queue = drain
+    app.refresh_ports = lambda: None
     return app
 
 
@@ -109,6 +129,22 @@ class OutputRoutingTests(unittest.TestCase):
         self.assertEqual(app.commands, ["SET OUTPUT GPIO"])
         self.assertEqual(app.player.stops, 1)
         self.assertEqual(app.drains, 1)
+
+    def test_disconnect_cancels_debounce_releases_buttons_and_drops_status(self):
+        app = make_app("PC")
+        app.pending_sends["TUNE_HZ"] = "timer-1"
+        app.momentary_active.add("TRIGGER")
+        app.ui_events.put(("status", {"protocol": 1}))
+
+        app.disconnect()
+
+        self.assertEqual(app.root.cancelled, ["timer-1"])
+        self.assertEqual(app.pending_sends, {})
+        self.assertEqual(app.momentary_active, set())
+        self.assertEqual(app.commands[:2], ["TRIGGER 0", "STREAM 0"])
+        self.assertTrue(app.ui_events.empty())
+        self.assertEqual(app.transport.disconnects, 1)
+        self.assertFalse(app.protocol_ok)
 
 
 if __name__ == "__main__":
