@@ -13,13 +13,8 @@ BUILD_DIR = ROOT / "virtual_esp" / "bin"
 
 SOURCES = [
     ROOT / "virtual_esp" / "virtual_esp.cpp",
-    ROOT / "firmware" / "src" / "audio" / "AudioEngine.cpp",
-    ROOT / "firmware" / "src" / "audio" / "Biquad.cpp",
-    ROOT / "firmware" / "src" / "audio" / "Delay.cpp",
-    ROOT / "firmware" / "src" / "audio" / "Envelope.cpp",
-    ROOT / "firmware" / "src" / "audio" / "Lfo.cpp",
-    ROOT / "firmware" / "src" / "audio" / "Oscillator.cpp",
-    ROOT / "firmware" / "src" / "control" / "CommandParser.cpp",
+    *sorted((ROOT / "firmware" / "src" / "audio").glob("*.cpp")),
+    *sorted((ROOT / "firmware" / "src" / "control").glob("*.cpp")),
 ]
 
 
