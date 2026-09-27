@@ -539,11 +539,15 @@ class PhysicalDubSirenApp(DubSirenApp):
                 self._send_parameter(name, value)
         else:
             callback = (
-                self._apply_echo_filter
+                self._flush_echo_filter
                 if name == "ECHO_FILTER"
                 else lambda parameter=name: self._flush_panel_parameter(parameter)
             )
             self.pending_sends[name] = self.root.after(25, callback)
+
+    def _flush_echo_filter(self) -> None:
+        self.pending_sends.pop("ECHO_FILTER", None)
+        self._apply_echo_filter()
 
     def _flush_panel_parameter(self, name: str) -> None:
         self.pending_sends.pop(name, None)
