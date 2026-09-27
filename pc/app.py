@@ -318,7 +318,12 @@ class DubSirenApp:
         self.sliders[command_name] = slider
 
     def _bind_momentary(self, button: ttk.Button, command: str) -> None:
-        button.bind("<ButtonPress-1>", lambda _event: self._press(command))
+        def pressed(_event) -> None:
+            if button.instate(["disabled"]):
+                return
+            self._press(command)
+
+        button.bind("<ButtonPress-1>", pressed, add="+")
 
     def _press(self, command: str) -> None:
         self.momentary_active.add(command)
@@ -522,9 +527,11 @@ class DubSirenApp:
         self.port_combo.configure(state="disabled")
 
     def disconnect(self) -> None:
-        self.stop_audio()
+        self._cancel_pending_sends()
         self._global_release()
+        self.stop_audio()
         self.transport.disconnect()
+        self._drain_ui_events()
         self.protocol_ok = False
         self.i2s_ready = None
         self.active_output = None
@@ -588,6 +595,19 @@ class DubSirenApp:
             except queue.Empty:
                 break
 
+    def _drain_ui_events(self) -> None:
+        while True:
+            try:
+                self.ui_events.get_nowait()
+            except queue.Empty:
+                break
+
+    def _cancel_pending_sends(self) -> None:
+        tokens = tuple(self.pending_sends.values())
+        self.pending_sends.clear()
+        for token in tokens:
+            self.root.after_cancel(token)
+
     def _poll_ui_events(self) -> None:
         try:
             while True:
@@ -599,6 +619,8 @@ class DubSirenApp:
         self.root.after(50, self._poll_ui_events)
 
     def _handle_status(self, status: object) -> None:
+        if not self.transport.connected:
+            return
         if not isinstance(status, dict) or status.get("protocol") != PROTOCOL_VERSION:
             self.connection_var.set("Protocol mismatch")
             self.root.after(0, self.disconnect)
@@ -654,6 +676,7 @@ class DubSirenApp:
         if self.transport.connected:
             self.disconnect()
         else:
+            self._cancel_pending_sends()
             self.player.stop()
         self.root.destroy()
 

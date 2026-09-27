@@ -5,4 +5,4 @@ if not exist .venv\Scripts\python.exe (
     echo Run setup.bat first.
     exit /b 1
 )
-.venv\Scripts\python.exe app.py
+.venv\Scripts\python.exe physical_ui.py

@@ -1,22 +1,22 @@
 # Controls
 
 The firmware's absolute DSP/protocol range is intentionally wider than the
-performance range exposed by the desktop UI. The GUI maps its normalized
-slider position to a physical value and sends that value, in the units shown,
-over USB. It never sends the normalized position.
+performance range exposed by the desktop UI. The GUI maps each knob or encoder
+position to a physical value and sends that value, in the units shown, over
+USB. It never sends the normalized position.
 
-The Profile selector offers **CLASSIC** and **EXTENDED**. EXTENDED exposes the
-complete set of continuous controls below. CLASSIC shows Mode, three Pitch
-positions, four Modulation positions, the performance buttons, delay, feedback,
-echo level, echo HPF/LPF, Echo Cut and Master. CLASSIC fixes LFO depth to 1 octave,
-decay to 120 ms, and uses the RC-like LFO shape. The firmware applies these
-preset values even when controlled without the desktop UI. In MANUAL the two
-buttons control the LFO; with automatic modulation they become DIVE and RISE.
-Returning to EXTENDED restores its retained tune, rate, shape, depth and decay
-settings.
-CLASSIC exposes only the four original modes and always keeps its modulation
-active. If any EXTENDED-only mode is selected when switching to CLASSIC, the
-GUI selects and sends SINE1.
+The default `physical_ui.py` surface presents one instrument and keeps the
+firmware on the EXTENDED profile internally. It exposes Tune, Rate, Echo,
+Delay, Feedback and a single echo Filter macro as the six front knobs; Depth
+and the other secondary parameters are in the encoder menu. The separate rear
+MASTER maps directly to `SET MASTER`.
+
+The older `app.py` interface remains available as a technical/debug tool. Its
+Profile selector can still exercise the firmware's CLASSIC preset behavior:
+three fixed pitches, four modulation positions, one-octave depth, 120 ms decay
+and the RC-like LFO. CLASSIC supports the four original modes and always keeps
+modulation active. These protocol behaviors remain for compatibility but are
+not a primary concept in the default UI.
 
 | CLASSIC selector | Project preset |
 |---|---:|
