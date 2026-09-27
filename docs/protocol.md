@@ -23,7 +23,7 @@ for commands, HELLO, STATUS, controls, and triggers.
 Control commands:
 
 ```text
-SET MODE SINE1|SINE2|TEST_TONE|SQUARE|LICKSHOT|SONAR
+SET MODE SINE1|SINE2|TEST_TONE|SQUARE|LICKSHOT|SONAR|SYNDRUM|GUNSHOT
 SET PROFILE CLASSIC|EXTENDED
 SET CLASSIC_PITCH LOW|MID|HIGH
 SET CLASSIC_MOD SLOW|MEDIUM|FAST|MANUAL
@@ -32,6 +32,10 @@ SET LFO_SHAPE CLASSIC|TRIANGLE|SQUARE|SAW_UP|SAW_DOWN|ASYM_UP|ASYM_DOWN|PULSE_25
 SET LFO_RATE_HZ <0.05..20>
 SET LFO_DEPTH_OCT <0..2>
 SET DECAY_MS <0..3000>
+SET SWEEP <0..1>
+SET SWEEP_MS <50..3000>
+SET SYNDRUM_WAVE SINE|TRIANGLE|SQUARE
+SET SYNDRUM_SWEEP <-3..3>
 SET DELAY_MS <50..1000>
 SET FEEDBACK <0..1.05>
 SET ECHO_LEVEL <0..1>
@@ -58,9 +62,18 @@ SET VOICING LEGACY|V2
 These limits are the absolute DSP/protocol ranges. The desktop GUI exposes a
 narrower performance range for selected controls, but still sends physical
 values such as `SET TUNE_HZ 220.0`; normalized slider positions are never part
-of the protocol. Finite numeric values are clamped to the absolute ranges.
-Malformed and unknown commands are ignored. Parsing occurs outside the audio
-task.
+of the protocol. Existing finite numeric controls are clamped to their absolute
+ranges. The additive 0.6.0 controls SWEEP, SWEEP_MS and SYNDRUM_SWEEP reject
+out-of-range values without changing `ControlState`. Malformed and unknown
+commands are ignored. Parsing occurs outside the audio task.
+
+SWEEP defaults to 0 and SWEEP_MS to 650 ms. On tonal modes, a TRIGGER or HOLD
+rising edge begins below the selected pitch and LFO rate and converges to them.
+SYNDRUM and GUNSHOT instead respond only to a TRIGGER rising edge and use
+DECAY_MS as their autonomous amplitude envelope; keeping TRIGGER high or using
+HOLD does not sustain them. SYNDRUM_SWEEP is signed: positive starts above Tune
+and descends, negative starts below and rises. The normal LFO, DIVE/RISE and
+global Dynamic Sweep do not affect either transient mode.
 
 The new booleans default to `MODULATION 1`, `RETRIGGER 0`, `ECHO_SPIN 0` and
 `ECHO_LOOP 0`. MODULATION disables only the audible LFO contribution; the LFO
@@ -100,7 +113,7 @@ An AUDIO payload is always 960 bytes: 480 signed int16 mono PCM samples at
 48,000 Hz. A STATUS payload is UTF-8 JSON. `HELLO` currently returns:
 
 ```json
-{"name":"DubSiren","protocol":1,"sampleRate":48000,"blockSamples":480,"firmware":"0.5.0","renderUs":0,"maxRenderUs":0,"cycleUs":0,"maxCycleUs":0,"maxUsbWriteUs":0,"maxI2sWriteUs":0,"output":"BOTH","i2sReady":true}
+{"name":"DubSiren","protocol":1,"sampleRate":48000,"blockSamples":480,"firmware":"0.6.0","renderUs":0,"maxRenderUs":0,"cycleUs":0,"maxCycleUs":0,"maxUsbWriteUs":0,"maxI2sWriteUs":0,"output":"BOTH","i2sReady":true}
 ```
 
 Timing zeros above are placeholders, not measured performance. `renderUs` is the

@@ -11,9 +11,10 @@ CommandParser -> synchronized ControlStore
                          |
                   block snapshot
                          |
-ControlState -> LFO / modulation -> oscillator -> amplitude envelope
-                                                |
-                                      pulse / sine voicing
+ControlState -> rising-edge detection -> tonal oscillator + gated envelope
+                         |           \-> Syndrum carrier + one-shot envelope
+                         |           \-> filtered xorshift noise + one-shot
+                         \-> shared Dynamic Sweep (tonal modes only)
                                                 |
                     delay -> dry + wet -> master -> soft clip -> int16
                                                                       |
@@ -76,6 +77,13 @@ a shape-aware deterministic state; oscillator phase, filters and delay tails
 continue uninterrupted. Disabling modulation zeros the LFO pitch contribution
 without stopping its internal phase. CLASSIC always keeps its modulation active.
 
+The same rising-edge detection starts a cached-coefficient `OneShotEnvelope`
+for Dynamic Sweep. Its decaying value offsets tonal pitch by as much as -2
+octaves and slows LFO rate by as much as 3 octaves, then converges continuously
+to the selected Tune and Rate. `SWEEP=0` bypasses both offsets. Triggering may
+therefore restart sweep and, when RETRIGGER is enabled, reset the LFO in the
+same block without resetting oscillator phase or delay.
+
 The V2 oscillator starts from a variable-duty band-limited pulse. SINE1 uses
 three tracking one-poles; SINE2 uses two with a higher tracking ratio and more
 asymmetry. TEST_TONE adds a click-free rhythmic gate. SQUARE selects high/low
@@ -87,10 +95,21 @@ measured render
 telemetry is exposed in STATUS as `renderUs` and `maxRenderUs`. `cycleUs` and
 `maxCycleUs` measure rendering plus the selected output writes.
 
-The preset pitch, rate, RC curves, smoothing, voicing and saturation constants
-are project tuning points. Timbre calibration against a physical instrument
-remains future work requiring recordings or measurements. No circuit or audio
-identity with a third-party device is claimed.
+SYNDRUM and GUNSHOT are transient modes. A TRIGGER rising edge starts their
+independent amplitude envelope; HOLD, the normal LFO, DIVE/RISE and Dynamic
+Sweep do not affect them. Syndrum reuses the oscillator phase for a true sine,
+PolyBLEP-integrated triangle or PolyBLEP square carrier and applies its own
+signed pitch sweep. Gunshot uses a fixed-seed xorshift32 stream blended with an
+existing one-pole low-pass. Neither allocates memory or resets the delay.
+Transitions involving a transient use the same 6 ms transition budget to avoid
+an abrupt boundary.
+
+The preset pitch, rate, RC curves, smoothing, transient voicing and saturation
+constants are project tuning points. Timbre calibration against a physical
+instrument remains future work requiring recordings or measurements. No
+circuit or audio identity with a third-party device is claimed. Syndrum follows
+the broad behavior of analog percussion synthesis; Gunshot is procedural
+synthesis rather than sample playback.
 
 ## PC concurrency
 

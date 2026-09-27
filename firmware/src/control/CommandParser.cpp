@@ -45,6 +45,8 @@ bool CommandParser::parse(const String &rawCommand) {
             else return false;
         } else if (name == "LFO_SHAPE") {
             if (!parseLfoShape(valueText, state.lfoShape)) return false;
+        } else if (name == "SYNDRUM_WAVE") {
+            if (!parseSyndrumWave(valueText, state.syndrumWave)) return false;
         } else if (name == "VOICING") {
             if (valueText == "V2") state.voicingV2 = true;
             else if (valueText == "LEGACY") state.voicingV2 = false;
@@ -59,6 +61,15 @@ bool CommandParser::parse(const String &rawCommand) {
             state.lfoDepthOctaves = clampValue(value, 0.0f, 2.0f);
         } else if (name == "DECAY_MS") {
             state.decayMs = clampValue(value, 0.0f, 3000.0f);
+        } else if (name == "SWEEP") {
+            if (value < 0.0f || value > 1.0f) return false;
+            state.sweepAmount = value;
+        } else if (name == "SWEEP_MS") {
+            if (value < 50.0f || value > 3000.0f) return false;
+            state.sweepMs = value;
+        } else if (name == "SYNDRUM_SWEEP") {
+            if (value < -3.0f || value > 3.0f) return false;
+            state.syndrumSweepOctaves = value;
         } else if (name == "DELAY_MS") {
             state.delayMs = clampValue(value, 50.0f, 1000.0f);
         } else if (name == "FEEDBACK") {
@@ -138,6 +149,16 @@ bool CommandParser::parseMode(const String &text, SirenMode &mode) {
     else if (text == "SQUARE") mode = SirenMode::Square;
     else if (text == "LICKSHOT") mode = SirenMode::Lickshot;
     else if (text == "SONAR") mode = SirenMode::Sonar;
+    else if (text == "SYNDRUM") mode = SirenMode::Syndrum;
+    else if (text == "GUNSHOT") mode = SirenMode::Gunshot;
+    else return false;
+    return true;
+}
+
+bool CommandParser::parseSyndrumWave(const String &text, SyndrumWave &wave) {
+    if (text == "SINE") wave = SyndrumWave::Sine;
+    else if (text == "TRIANGLE") wave = SyndrumWave::Triangle;
+    else if (text == "SQUARE") wave = SyndrumWave::Square;
     else return false;
     return true;
 }

@@ -10,3 +10,16 @@ private:
     float lastDecayMs_;
     float releaseMultiplier_;
 };
+
+class OneShotEnvelope {
+public:
+    OneShotEnvelope();
+    void trigger();
+    float next(float decayMs, float sampleRate);
+    void reset();
+
+private:
+    float level_;
+    float lastDecayMs_;
+    float multiplier_;
+};

@@ -9,7 +9,15 @@ enum class SirenMode {
     Square,
     Lickshot,
     Sonar,
+    Syndrum,
+    Gunshot,
     Count,
+};
+
+enum class SyndrumWave {
+    Sine,
+    Triangle,
+    Square,
 };
 
 enum class LfoShape {
@@ -39,6 +47,10 @@ struct ControlState {
     float lfoRateHz = 0.70f;
     float lfoDepthOctaves = 1.0f;
     float decayMs = 120.0f;
+    float sweepAmount = 0.0f;
+    float sweepMs = 650.0f;
+    SyndrumWave syndrumWave = SyndrumWave::Sine;
+    float syndrumSweepOctaves = 2.0f;
     bool trigger = false;
     bool hold = false;
     bool modUp = false;

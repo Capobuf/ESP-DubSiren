@@ -15,8 +15,8 @@ buttons control the LFO; with automatic modulation they become DIVE and RISE.
 Returning to EXTENDED restores its retained tune, rate, shape, depth and decay
 settings.
 CLASSIC exposes only the four original modes and always keeps its modulation
-active. If LICKSHOT or SONAR is selected when switching to CLASSIC, the GUI
-selects and sends SINE1.
+active. If any EXTENDED-only mode is selected when switching to CLASSIC, the
+GUI selects and sends SINE1.
 
 | CLASSIC selector | Project preset |
 |---|---:|
@@ -30,12 +30,16 @@ for later listening-based calibration.
 
 | Control | Absolute DSP/protocol range | Performance UI range / default | UI mapping |
 |---|---|---|---|
-| Mode | six named modes | SINE1 | rounded SINE1, brighter SINE2, gated TEST_TONE, high/low SQUARE, pulse LICKSHOT, sine SONAR |
+| Mode | eight named modes | SINE1 | six tonal modes plus one-shot SYNDRUM and GUNSHOT |
 | Tune | 30–9000 Hz | 80–1600 Hz / 220 Hz | logarithmic |
 | LFO Shape | CLASSIC | CLASSIC | RC-like CLASSIC, eight geometric shapes, plus MANUAL |
 | LFO Rate | 0.05–20 Hz | 0.15–20 Hz / 0.70 Hz | logarithmic |
 | LFO Depth | 0–2 oct | 0–2 oct / 1 oct | linear; exponential musical pitch modulation remains in the DSP |
 | Decay | 0–3000 ms | 0–1500 ms / 120 ms | quadratic, with more travel for short decays |
+| Sweep | 0–1 | 0–1 / 0 | tonal Dynamic Sweep amount; percentage in UI |
+| Sweep Time | 50–3000 ms | 50–3000 ms / 650 ms | quadratic, with more travel for short times |
+| Syndrum Wave | SINE, TRIANGLE, SQUARE | SINE | visible only in SYNDRUM |
+| Syndrum Sweep | -3–3 oct | -3–3 oct / +2 oct | signed offset converging to Tune; visible only in SYNDRUM |
 | Delay Time | 50–1000 ms | 50–1000 ms / 360 ms | linear; smoothed fractional read position |
 | Feedback | 0–1.05 | 0–1.05 / 0.62 | power curve, exponent 0.8; values above one retain protected self-oscillation |
 | Echo Level | 0–1 | 0–1 / 0.45 | linear wet level |
@@ -47,6 +51,22 @@ for later listening-based calibration.
 global mouse release handler releases them even if the pointer leaves the widget. `HOLD` is
 a toggle and keeps the envelope gate open. `LOOP`, `MOD ON` and `RETRIGGER` are
 checkbuttons.
+
+Dynamic Sweep starts on every rising edge of TRIGGER or HOLD in SINE1, SINE2,
+TEST_TONE, SQUARE, LICKSHOT and SONAR. It begins below/slower than the selected
+Tune and Rate, then converges exponentially. At the default Sweep value 0 the
+0.5.0 tonal behavior is retained. RETRIGGER and Dynamic Sweep can restart on
+the same edge.
+
+SYNDRUM is a one-shot percussion voice. DECAY controls amplitude duration and
+its signed Sweep starts above Tune for positive values (falling pitch), below
+Tune for negative values (rising pitch), or at Tune for zero. GUNSHOT is a
+fixed-seed procedural noise burst with simple low-pass shaping and uses DECAY,
+internally constrained to 20–1500 ms. Neither mode uses the normal LFO,
+DIVE/RISE or global Dynamic Sweep. HOLD cannot sustain them: the GUI clears and
+disables HOLD, disables DIVE/RISE, and exposes the small waveform/pitch frame
+only for SYNDRUM. Both transient voices continue through the normal echo and
+master path.
 
 The CLASSIC LFO alternates between +1 and -1 through unequal RC-like charge and
 fall curves. In MANUAL the buttons are labelled MOD UP and MOD DOWN: UP targets

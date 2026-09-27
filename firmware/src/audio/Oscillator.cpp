@@ -44,7 +44,7 @@ float clampCutoff(float cutoff, float sampleRate) {
 
 }  // namespace
 
-Oscillator::Oscillator() : phase_(0.0f) {}
+Oscillator::Oscillator() : phase_(0.0f), syndrumTriangle_(0.0f) {}
 
 float Oscillator::next(SirenMode mode, float frequencyHz, float modulation,
                        float envelopeLevel, bool lfoGate, float sampleRate,
@@ -65,6 +65,28 @@ float Oscillator::nextTransition(SirenMode from, SirenMode to, float mix,
                                       envelopeLevel, lfoGate, sampleRate, voicingV2);
     advance(frequencyHz / sampleRate);
     return oldVoice + (newVoice - oldVoice) * mix;
+}
+
+float Oscillator::nextSyndrum(SyndrumWave wave, float frequencyHz,
+                              float sampleRate) {
+    const float increment = frequencyHz / sampleRate;
+    float output = 0.0f;
+    if (wave == SyndrumWave::Sine) {
+        output = sinf(phase_ * TWO_PI);
+    } else if (wave == SyndrumWave::Square) {
+        output = bandLimitedPulse(phase_, increment, 0.5f) * 0.72f;
+    } else {
+        // Integrating the PolyBLEP square produces a low-alias triangle while
+        // retaining the shared oscillator phase used by every carrier.
+        const float square = bandLimitedPulse(phase_, increment, 0.5f);
+        syndrumTriangle_ += square * 4.0f * increment;
+        syndrumTriangle_ *= 0.99995f;
+        if (syndrumTriangle_ > 1.0f) syndrumTriangle_ = 1.0f;
+        if (syndrumTriangle_ < -1.0f) syndrumTriangle_ = -1.0f;
+        output = syndrumTriangle_ * 0.88f;
+    }
+    advance(increment);
+    return output;
 }
 
 float Oscillator::renderVoice(SirenMode mode, float frequencyHz,
@@ -118,6 +140,8 @@ float Oscillator::nextLegacy(SirenMode mode, float phaseIncrement) const {
             return bandLimitedPulse(phase_, phaseIncrement, 0.5f);
         case SirenMode::Lickshot:
         case SirenMode::Sonar:
+        case SirenMode::Syndrum:
+        case SirenMode::Gunshot:
         case SirenMode::Count:
             return 0.0f;
     }

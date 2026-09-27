@@ -7,6 +7,7 @@
 #include "Envelope.h"
 #include "Lfo.h"
 #include "Oscillator.h"
+#include "AnalogDsp.h"
 #include "SmoothedParameter.h"
 #include "control/ControlState.h"
 
@@ -20,6 +21,10 @@ private:
     Oscillator oscillator_;
     Lfo lfo_;
     Envelope envelope_;
+    OneShotEnvelope sweepEnvelope_;
+    OneShotEnvelope syndrumEnvelope_;
+    OneShotEnvelope gunshotEnvelope_;
+    OnePoleLowPass gunshotFilter_;
     Delay delay_;
     SmoothedParameter tuneHz_;
     SmoothedParameter depthOctaves_;
@@ -29,10 +34,16 @@ private:
     SmoothedParameter masterVolume_;
     SmoothedParameter performanceBend_;
     float oscillatorFrequencyHz_;
+    float lastDry_;
+    float transitionStartDry_;
+    uint32_t noiseState_;
     SirenMode previousMode_;
     SirenMode currentMode_;
     unsigned modeTransitionRemaining_;
     bool modeInitialized_;
     bool previousTrigger_;
     bool previousHold_;
+
+    static bool isTonalMode(SirenMode mode);
+    float nextGunshot(float envelopeLevel);
 };

@@ -14,6 +14,7 @@ private:
     static bool parseBool(const String &text, bool &value);
     static bool parseMode(const String &text, SirenMode &mode);
     static bool parseLfoShape(const String &text, LfoShape &shape);
+    static bool parseSyndrumWave(const String &text, SyndrumWave &wave);
 
     ControlStore &controls_;
 };

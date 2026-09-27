@@ -43,6 +43,7 @@ def make_app():
     app.classic_pitch_var = FakeVariable("MID")
     app.classic_mod_var = FakeVariable("MEDIUM")
     app.lfo_shape_var = FakeVariable("TRIANGLE")
+    app.syndrum_wave_var = FakeVariable("SINE")
     app.modulation_var = FakeVariable(True)
     app.retrigger_var = FakeVariable(False)
     app.echo_loop_var = FakeVariable(False)
@@ -53,7 +54,14 @@ def make_app():
     app.classic_controls = FakeWidget()
     app.mod_down_button = FakeWidget()
     app.mod_up_button = FakeWidget()
-    app.sliders = {"TUNE_HZ": FakeSlider(220.0)}
+    app.hold_check = FakeWidget()
+    app.syndrum_controls = FakeWidget()
+    app.sliders = {
+        "TUNE_HZ": FakeSlider(220.0),
+        "SWEEP": FakeSlider(0.0),
+        "SWEEP_MS": FakeSlider(650.0),
+        "SYNDRUM_SWEEP": FakeSlider(2.0),
+    }
     app.momentary_active = set()
     app.commands = []
     app._send = app.commands.append
@@ -64,7 +72,8 @@ class PerformanceControlTests(unittest.TestCase):
     def test_extended_and_classic_mode_lists(self):
         self.assertEqual(
             EXTENDED_MODES,
-            ("SINE1", "SINE2", "TEST_TONE", "SQUARE", "LICKSHOT", "SONAR"),
+            ("SINE1", "SINE2", "TEST_TONE", "SQUARE", "LICKSHOT", "SONAR",
+             "SYNDRUM", "GUNSHOT"),
         )
         app = make_app()
         app._update_profile_ui()
@@ -77,11 +86,32 @@ class PerformanceControlTests(unittest.TestCase):
         self.assertIn("SET MODE SINE1", app.commands)
 
         app.commands.clear()
-        for mode in ("LICKSHOT", "SONAR"):
+        for mode in ("LICKSHOT", "SONAR", "SYNDRUM", "GUNSHOT"):
             app.mode_var.set(mode)
             app._mode_changed()
         self.assertEqual(app.commands,
-                         ["SET MODE LICKSHOT", "SET MODE SONAR"])
+                         ["SET MODE LICKSHOT", "SET MODE SONAR",
+                          "SET MODE SYNDRUM", "SET MODE GUNSHOT"])
+
+    def test_transient_mode_controls(self):
+        app = make_app()
+        app.hold_var.set(True)
+        app.mode_var.set("SYNDRUM")
+        app._mode_changed()
+        self.assertFalse(app.hold_var.get())
+        self.assertEqual(app.commands[:2], ["HOLD 0", "SET MODE SYNDRUM"])
+        self.assertEqual(app.hold_check.config["state"], "disabled")
+        self.assertEqual(app.mod_down_button.config["state"], "disabled")
+        self.assertTrue(app.syndrum_controls.pack_calls)
+
+        app.mode_var.set("SINE1")
+        app._mode_changed()
+        self.assertEqual(app.hold_check.config["state"], "normal")
+        self.assertEqual(app.mod_up_button.config["state"], "normal")
+
+        app.mode_var.set("GUNSHOT")
+        app._update_mode_ui()
+        self.assertTrue(app.syndrum_controls.forgotten)
 
     def test_buttons_switch_between_rise_dive_and_manual_labels(self):
         app = make_app()
@@ -103,6 +133,8 @@ class PerformanceControlTests(unittest.TestCase):
         self.assertIn("RETRIGGER 0", app.commands)
         self.assertIn("ECHO_LOOP 0", app.commands)
         self.assertIn("ECHO_SPIN 0", app.commands)
+        self.assertIn("SET SYNDRUM_WAVE SINE", app.commands)
+        self.assertIn("SET SWEEP_MS 650", app.commands)
 
         app.commands.clear()
         app._press("ECHO_SPIN")

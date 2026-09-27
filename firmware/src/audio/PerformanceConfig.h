@@ -19,6 +19,12 @@ constexpr float kDelayMs = 25.0f;
 constexpr float kDelayMaxSlewMsPerSecond = 2000.0f;
 constexpr float kLfoShapeTransitionMs = 10.0f;
 constexpr float kModeTransitionMs = 6.0f;
+constexpr float kSweepPitchOctaves = 2.0f;
+constexpr float kSweepRateOctaves = 3.0f;
+constexpr float kGunshotMinDecayMs = 20.0f;
+constexpr float kGunshotMaxDecayMs = 1500.0f;
+constexpr float kGunshotFilterHz = 1800.0f;
+constexpr float kGunshotOutputGain = 0.42f;
 constexpr unsigned kFilterUpdateSamples = 64;
 constexpr unsigned kLfoCoefficientUpdateSamples = 64;
 

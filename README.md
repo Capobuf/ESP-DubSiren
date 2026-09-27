@@ -9,12 +9,16 @@ saturazione asimmetrica e un LFO CLASSIC a carica/scarica esponenziale. Il
 comando di debug `SET VOICING LEGACY|V2` permette il confronto a parità di
 controlli; V2 è il default.
 
-La revisione firmware 0.5.0 aggiunge due mode da performance: **LICKSHOT**, un
-carrier pulse aperto modulato dall'LFO, e **SONAR**, una sinusoide pura. In
-EXTENDED sono disponibili anche retrigger deterministico dell'LFO, DIVE/RISE,
-ECHO SPIN ed ECHO LOOP. Un airhorn continuo si ottiene con **MODE LICKSHOT +
-MODULATION OFF** (`SET MODE LICKSHOT`, `MODULATION 0`); questi voicing e le relative costanti sono punti di taratura
-interni al progetto.
+La revisione firmware 0.6.0 mantiene i mode 0.5.0 e aggiunge **Dynamic Sweep**
+ai sei engine melodici, il one-shot **SYNDRUM** e il burst procedurale
+**GUNSHOT**. Syndrum usa carrier sine/triangle/square e un pitch transient
+regolabile da -3 a +3 ottave; Gunshot usa rumore deterministico filtrato, non un
+sample. Entrambi condividono delay, Echo Loop/Cut/Spin, master e routing con gli
+altri mode. Un airhorn continuo resta disponibile con **MODE LICKSHOT +
+MODULATION OFF** (`SET MODE LICKSHOT`, `MODULATION 0`). Tutti i voicing e le
+relative costanti sono punti di taratura interni al progetto: non sono cloni
+misurati di dispositivi commerciali. Syndrum è ispirato al comportamento
+generale dei percussion synth analogici.
 
 ## Requisiti Windows
 
@@ -97,7 +101,7 @@ Con l'hardware reale:
 
 1. premere **Refresh** e scegliere la COM Espressif;
 2. scegliere **PC**, **PCM5102A** o **Both** nel selettore Output;
-3. premere **Connect** e attendere `Connected · firmware 0.5.0`;
+3. premere **Connect** e attendere `Connected · firmware 0.6.0`;
 4. premere **Start Audio**;
 5. usare **TRIGGER** oppure attivare **HOLD**.
 
@@ -111,7 +115,7 @@ thread e seriale. Per un controllo automatico dell'hardware collegato:
 Dettagli: [architettura](docs/architecture.md), [protocollo](docs/protocol.md) e
 [controlli](docs/controls.md).
 
-Per creare diciassette brevi WAV di confronto direttamente dal PCM firmware
+Per creare ventisei brevi WAV di confronto direttamente dal PCM firmware
 (con la scheda collegata), eseguire dalla cartella `pc`:
 
 ```powershell
@@ -121,6 +125,9 @@ Per creare diciassette brevi WAV di confronto direttamente dal PCM firmware
 Lo script stampa la directory temporanea che contiene i WAV. Usare
 `--output-dir <percorso>` per scegliere una destinazione persistente. Il profilo
 CLASSIC offre preset di progetto, non una riproduzione misurata di altri modelli.
+Le capture includono Dynamic Sweep su SINE1/LICKSHOT/SONAR, Syndrum up/down e
+sine/square, più Gunshot dry/echo; richiedono hardware reale e non costituiscono
+uno smoke test I2S/DAC.
 
 ## Test
 

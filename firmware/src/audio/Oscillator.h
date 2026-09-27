@@ -13,6 +13,7 @@ public:
                          float frequencyHz, float modulation,
                          float envelopeLevel, bool lfoGate, float sampleRate,
                          bool voicingV2);
+    float nextSyndrum(SyndrumWave wave, float frequencyHz, float sampleRate);
 
 private:
     float renderVoice(SirenMode mode, float frequencyHz, float modulation,
@@ -44,5 +45,6 @@ private:
     float nextSonar() const;
 
     float phase_;
+    float syndrumTriangle_;
     VoiceState voices_[static_cast<int>(SirenMode::Count)];
 };

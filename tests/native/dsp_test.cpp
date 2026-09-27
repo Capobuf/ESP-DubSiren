@@ -3,11 +3,14 @@
 #include <memory>
 #include <stdint.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "audio/AudioEngine.h"
 #include "audio/Delay.h"
+#include "audio/Envelope.h"
 #include "audio/Lfo.h"
 #include "audio/Oscillator.h"
+#include "audio/PerformanceConfig.h"
 #include "audio/SmoothedParameter.h"
 #include "control/CommandParser.h"
 
@@ -53,6 +56,21 @@ void testSmoothing() {
     assert(fabsf(parameter.current() - 1.0f) < 0.0001f);
 }
 
+void testOneShotEnvelope() {
+    OneShotEnvelope envelope;
+    assert(envelope.next(100.0f, kRate) == 0.0f);
+    envelope.trigger();
+    const float first = envelope.next(100.0f, kRate);
+    assert(first > 0.99f && first <= 1.0f);
+    float value = first;
+    for (int i = 0; i < 96000; ++i) value = envelope.next(100.0f, kRate);
+    assert(value == 0.0f);
+    envelope.trigger();
+    assert(envelope.next(100.0f, kRate) > 0.99f);
+    envelope.reset();
+    assert(envelope.next(100.0f, kRate) == 0.0f);
+}
+
 void testParser() {
     ControlStore store;
     CommandParser parser(store);
@@ -74,6 +92,29 @@ void testParser() {
     assert(store.snapshot().mode == SirenMode::Lickshot);
     assert(parser.parse("SET MODE SONAR"));
     assert(store.snapshot().mode == SirenMode::Sonar);
+    assert(parser.parse("SET MODE SYNDRUM"));
+    assert(store.snapshot().mode == SirenMode::Syndrum);
+    assert(parser.parse("SET SYNDRUM_WAVE TRIANGLE"));
+    assert(parser.parse("SET SYNDRUM_SWEEP -2.5"));
+    assert(parser.parse("SET SWEEP 0.75"));
+    assert(parser.parse("SET SWEEP_MS 800"));
+    state = store.snapshot();
+    assert(state.syndrumWave == SyndrumWave::Triangle);
+    assert(state.syndrumSweepOctaves == -2.5f);
+    assert(state.sweepAmount == 0.75f && state.sweepMs == 800.0f);
+    assert(parser.parse("SET MODE GUNSHOT"));
+    assert(store.snapshot().mode == SirenMode::Gunshot);
+    const auto validTransient = store.snapshot();
+    assert(!parser.parse("SET SWEEP 1.1"));
+    assert(!parser.parse("SET SWEEP_MS 49"));
+    assert(!parser.parse("SET SYNDRUM_SWEEP -3.1"));
+    assert(!parser.parse("SET SYNDRUM_WAVE SAW"));
+    state = store.snapshot();
+    assert(state.mode == validTransient.mode &&
+           state.sweepAmount == validTransient.sweepAmount &&
+           state.sweepMs == validTransient.sweepMs &&
+           state.syndrumSweepOctaves == validTransient.syndrumSweepOctaves &&
+           state.syndrumWave == validTransient.syndrumWave);
     assert(parser.parse("MODULATION 0"));
     assert(parser.parse("RETRIGGER 1"));
     assert(parser.parse("ECHO_SPIN 1"));
@@ -84,8 +125,174 @@ void testParser() {
     assert(!parser.parse("MODULATION 2"));
     assert(!parser.parse("SET MODE AIRHORN"));
     const auto unchanged = store.snapshot();
-    assert(unchanged.mode == SirenMode::Sonar && !unchanged.modulationEnabled &&
+    assert(unchanged.mode == SirenMode::Gunshot && !unchanged.modulationEnabled &&
            unchanged.retrigger && unchanged.echoSpin && unchanged.echoLoop);
+}
+
+void testDynamicSweep() {
+    ControlState state;
+    state.mode = SirenMode::Sonar;
+    state.tuneHz = 220.0f;
+    state.lfoDepthOctaves = 0.0f;
+    state.modulationEnabled = false;
+    state.echoLevel = 0.0f;
+    state.masterVolume = 0.8f;
+    state.decayMs = 1000.0f;
+    state.trigger = true;
+
+    auto noSweep = std::make_unique<AudioEngine>();
+    noSweep->begin();
+    int16_t settled[4800];
+    for (int block = 0; block < 10; ++block) {
+        noSweep->render(state, settled + block * 480, 480);
+    }
+    const float noSweepFrequency = estimateFrequency(settled, 4800);
+    assert(noSweepFrequency > 215.0f && noSweepFrequency < 225.0f);
+
+    state.sweepAmount = 1.0f;
+    state.sweepMs = 650.0f;
+    auto swept = std::make_unique<AudioEngine>();
+    swept->begin();
+    int16_t early[4800];
+    for (int block = 0; block < 10; ++block) {
+        swept->render(state, early + block * 480, 480);
+    }
+    const float earlyFrequency = estimateFrequency(early, 4800);
+    assert(earlyFrequency < noSweepFrequency * 0.8f);
+    int16_t block[480];
+    for (int i = 0; i < 300; ++i) swept->render(state, block, 480);
+    int16_t late[4800];
+    for (int i = 0; i < 10; ++i) {
+        swept->render(state, late + i * 480, 480);
+    }
+    const float lateFrequency = estimateFrequency(late, 4800);
+    assert(lateFrequency > 205.0f && lateFrequency < 225.0f);
+    state.trigger = false;
+    swept->render(state, block, 480);
+    state.trigger = true;
+    int16_t retriggered[4800];
+    for (int i = 0; i < 10; ++i) {
+        swept->render(state, retriggered + i * 480, 480);
+    }
+    assert(estimateFrequency(retriggered, 4800) < lateFrequency * 0.8f);
+
+    OneShotEnvelope rateSweep;
+    rateSweep.trigger();
+    float level = rateSweep.next(650.0f, kRate);
+    const float initialRate = 4.0f * exp2f(
+        -level * PerformanceConfig::kSweepRateOctaves);
+    for (int i = 0; i < 240000; ++i) {
+        level = rateSweep.next(650.0f, kRate);
+    }
+    const float convergedRate = 4.0f * exp2f(
+        -level * PerformanceConfig::kSweepRateOctaves);
+    assert(initialRate < 0.6f && convergedRate > 3.95f);
+    rateSweep.trigger();
+    level = rateSweep.next(650.0f, kRate);
+    assert(4.0f * exp2f(-level * PerformanceConfig::kSweepRateOctaves) < 0.6f);
+}
+
+void testSyndrum() {
+    ControlState state;
+    state.mode = SirenMode::Syndrum;
+    state.tuneHz = 220.0f;
+    state.decayMs = 120.0f;
+    state.echoLevel = 0.0f;
+    state.masterVolume = 0.8f;
+    auto engine = std::make_unique<AudioEngine>();
+    engine->begin();
+    int16_t block[480];
+    engine->render(state, block, 480);
+    assert(blockRms(block, 480) == 0.0f);
+    state.hold = true;
+    engine->render(state, block, 480);
+    assert(blockRms(block, 480) == 0.0f);
+    state.hold = false;
+    state.trigger = true;
+    engine->render(state, block, 480);
+    assert(blockRms(block, 480) > 100.0f);
+    for (int i = 0; i < 200; ++i) engine->render(state, block, 480);
+    assert(blockRms(block, 480) < 2.0f);
+    state.trigger = false;
+    engine->render(state, block, 480);
+    state.trigger = true;
+    engine->render(state, block, 480);
+    assert(blockRms(block, 480) > 100.0f);
+
+    float sweptFrequency[3];
+    float convergedFrequency[3];
+    int sweepIndex = 0;
+    for (float sweep : {2.0f, -2.0f, 0.0f}) {
+        auto voice = std::make_unique<AudioEngine>();
+        voice->begin();
+        ControlState pitch = state;
+        pitch.trigger = true;
+        pitch.hold = false;
+        pitch.decayMs = 1000.0f;
+        pitch.syndrumWave = SyndrumWave::Sine;
+        pitch.syndrumSweepOctaves = sweep;
+        int16_t capture[4800];
+        for (int i = 0; i < 10; ++i) {
+            voice->render(pitch, capture + i * 480, 480);
+        }
+        sweptFrequency[sweepIndex] = estimateFrequency(capture, 4800);
+        int16_t settle[480];
+        for (int i = 0; i < 200; ++i) voice->render(pitch, settle, 480);
+        for (int i = 0; i < 10; ++i) {
+            voice->render(pitch, capture + i * 480, 480);
+        }
+        convergedFrequency[sweepIndex++] = estimateFrequency(capture, 4800);
+    }
+    assert(sweptFrequency[0] > 500.0f);
+    assert(sweptFrequency[1] < 100.0f);
+    assert(sweptFrequency[2] > 215.0f && sweptFrequency[2] < 225.0f);
+    assert(sweptFrequency[0] > convergedFrequency[0]);
+    assert(sweptFrequency[1] < convergedFrequency[1]);
+    assert(convergedFrequency[2] > 215.0f && convergedFrequency[2] < 225.0f);
+
+    int16_t waveforms[3][480];
+    int waveIndex = 0;
+    for (SyndrumWave wave : {SyndrumWave::Sine, SyndrumWave::Triangle,
+                             SyndrumWave::Square}) {
+        auto voice = std::make_unique<AudioEngine>();
+        voice->begin();
+        ControlState waveform = state;
+        waveform.trigger = true;
+        waveform.decayMs = 500.0f;
+        waveform.syndrumSweepOctaves = 0.0f;
+        waveform.syndrumWave = wave;
+        voice->render(waveform, waveforms[waveIndex++], 480);
+    }
+    assert(memcmp(waveforms[0], waveforms[1], sizeof(waveforms[0])) != 0);
+    assert(memcmp(waveforms[0], waveforms[2], sizeof(waveforms[0])) != 0);
+}
+
+void testGunshot() {
+    ControlState state;
+    state.mode = SirenMode::Gunshot;
+    state.decayMs = 100.0f;
+    state.echoLevel = 0.0f;
+    state.masterVolume = 0.8f;
+    auto engine = std::make_unique<AudioEngine>();
+    engine->begin();
+    int16_t block[480];
+    engine->render(state, block, 480);
+    assert(blockRms(block, 480) == 0.0f);
+    state.hold = true;
+    engine->render(state, block, 480);
+    assert(blockRms(block, 480) == 0.0f);
+    state.hold = false;
+    state.trigger = true;
+    engine->render(state, block, 480);
+    assert(blockRms(block, 480) > 100.0f);
+    assert(memcmp(block, block + 240, 240 * sizeof(int16_t)) != 0);
+    for (int i = 0; i < 200; ++i) engine->render(state, block, 480);
+    assert(blockRms(block, 480) < 2.0f);
+    state.trigger = false;
+    engine->render(state, block, 480);
+    state.trigger = true;
+    engine->render(state, block, 480);
+    assert(blockRms(block, 480) > 100.0f);
 }
 
 void testLfoShape() {
@@ -323,7 +530,11 @@ void testProfileKeepsTail() {
 
 int main() {
     testSmoothing();
+    testOneShotEnvelope();
     testParser();
+    testDynamicSweep();
+    testSyndrum();
+    testGunshot();
     testLfoShape();
     testLfoReset();
     testNewVoices();

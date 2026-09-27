@@ -14,6 +14,9 @@ class ControlRangeTests(unittest.TestCase):
             "LFO_RATE_HZ": (0.15, 20.0),
             "LFO_DEPTH_OCT": (0.0, 2.0),
             "DECAY_MS": (0.0, 1500.0),
+            "SWEEP": (0.0, 1.0),
+            "SWEEP_MS": (50.0, 3000.0),
+            "SYNDRUM_SWEEP": (-3.0, 3.0),
             "FEEDBACK": (0.0, 1.05),
             "HPF_HZ": (50.0, 4000.0),
             "LPF_HZ": (400.0, 16000.0),
@@ -24,6 +27,7 @@ class ControlRangeTests(unittest.TestCase):
             with self.subTest(name=name, endpoint="maximum"):
                 self.assert_mapping(name, 1.0, maximum)
         self.assert_mapping("DECAY_MS", 0.5, 375.0)
+        self.assert_mapping("SWEEP_MS", 0.5, 787.5)
 
     def test_feedback_curve(self) -> None:
         spec = CONTROL_SPECS["FEEDBACK"]
@@ -40,6 +44,9 @@ class ControlRangeTests(unittest.TestCase):
             "TUNE_HZ": 220.0,
             "LFO_RATE_HZ": 0.70,
             "DECAY_MS": 120.0,
+            "SWEEP": 0.65,
+            "SWEEP_MS": 650.0,
+            "SYNDRUM_SWEEP": -2.0,
             "FEEDBACK": 0.62,
             "HPF_HZ": 60.0,
             "LPF_HZ": 7000.0,
@@ -58,6 +65,9 @@ class ControlRangeTests(unittest.TestCase):
             "LFO_RATE_HZ": (0.70, "0.70 Hz"),
             "LFO_DEPTH_OCT": (1.0, "1.00 oct"),
             "DECAY_MS": (120.0, "120 ms"),
+            "SWEEP": (0.0, "0 %"),
+            "SWEEP_MS": (650.0, "650 ms"),
+            "SYNDRUM_SWEEP": (2.0, "+2.00 oct"),
             "DELAY_MS": (360.0, "360 ms"),
             "FEEDBACK": (0.62, "62 %"),
             "ECHO_LEVEL": (0.45, "45 %"),

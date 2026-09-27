@@ -106,6 +106,15 @@ CONTROL_SPECS = {
     "DECAY_MS": ControlSpec(
         0.0, 1500.0, 120.0, lambda value: f"{value:.0f} ms", "power", 2.0
     ),
+    "SWEEP": ControlSpec(
+        0.0, 1.0, 0.0, lambda value: f"{value * 100:.0f} %"
+    ),
+    "SWEEP_MS": ControlSpec(
+        50.0, 3000.0, 650.0, lambda value: f"{value:.0f} ms", "power", 2.0
+    ),
+    "SYNDRUM_SWEEP": ControlSpec(
+        -3.0, 3.0, 2.0, lambda value: f"{value:+.2f} oct"
+    ),
     "DELAY_MS": ControlSpec(
         50.0, 1000.0, 360.0, lambda value: f"{value:.0f} ms"
     ),

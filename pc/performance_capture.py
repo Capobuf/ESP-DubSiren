@@ -40,7 +40,19 @@ SCENARIOS = (
                "SET LFO_DEPTH_OCT 0", "MODULATION 1")),
 )
 
-CAPTURE_COUNT = len(SCENARIOS) + 6
+TRANSIENT_CAPTURE_NAMES = (
+    "dynamic_sweep_sine1",
+    "dynamic_sweep_lickshot",
+    "dynamic_sweep_sonar",
+    "syndrum_down",
+    "syndrum_up",
+    "syndrum_sine",
+    "syndrum_square",
+    "gunshot_dry",
+    "gunshot_echo",
+)
+
+CAPTURE_COUNT = len(SCENARIOS) + 6 + len(TRANSIENT_CAPTURE_NAMES)
 
 
 def save_wav(path: Path, pcm: bytes) -> None:
@@ -67,6 +79,18 @@ def capture_segments(
         device.send(*commands)
         pcm.extend(device.grab(blocks))
     return bytes(pcm)
+
+
+def capture_triggered(
+    device: Capture, commands: tuple[str, ...], blocks: int = 100
+) -> bytes:
+    device.send("HOLD 0", "TRIGGER 0", *commands)
+    time.sleep(0.12)
+    device.drain()
+    device.send("TRIGGER 1")
+    pcm = device.grab(blocks)
+    device.send("TRIGGER 0")
+    return pcm
 
 
 def main() -> None:
@@ -131,8 +155,58 @@ def main() -> None:
             (("ECHO_CUT 0",), 50),
             (("ECHO_LOOP 0",), 25),
         )))
+        dynamic_base = (
+            "SET PROFILE EXTENDED", "SET TUNE_HZ 220", "SET DECAY_MS 500",
+            "SET LFO_DEPTH_OCT 0", "SET SWEEP 1", "SET SWEEP_MS 650",
+            "SET ECHO_LEVEL 0", "MODULATION 0",
+        )
+        for name, mode in (
+            ("dynamic_sweep_sine1", "SINE1"),
+            ("dynamic_sweep_lickshot", "LICKSHOT"),
+            ("dynamic_sweep_sonar", "SONAR"),
+        ):
+            save_wav(
+                directory / f"{name}.wav",
+                capture_triggered(device, dynamic_base + (f"SET MODE {mode}",)),
+            )
+        syndrum_base = (
+            "SET MODE SYNDRUM", "SET TUNE_HZ 220", "SET DECAY_MS 500",
+            "SET ECHO_LEVEL 0",
+        )
+        for name, wave, sweep in (
+            ("syndrum_down", "SINE", "2"),
+            ("syndrum_up", "SINE", "-2"),
+            ("syndrum_sine", "SINE", "0"),
+            ("syndrum_square", "SQUARE", "0"),
+        ):
+            save_wav(
+                directory / f"{name}.wav",
+                capture_triggered(
+                    device,
+                    syndrum_base + (
+                        f"SET SYNDRUM_WAVE {wave}",
+                        f"SET SYNDRUM_SWEEP {sweep}",
+                    ),
+                ),
+            )
+        gunshot_base = (
+            "SET MODE GUNSHOT", "SET DECAY_MS 450", "SET DELAY_MS 180",
+        )
+        save_wav(
+            directory / "gunshot_dry.wav",
+            capture_triggered(
+                device, gunshot_base + ("SET FEEDBACK 0", "SET ECHO_LEVEL 0")
+            ),
+        )
+        save_wav(
+            directory / "gunshot_echo.wav",
+            capture_triggered(
+                device,
+                gunshot_base + ("SET FEEDBACK 0.60", "SET ECHO_LEVEL 0.65"),
+            ),
+        )
         device.send("ECHO_SPIN 0", "ECHO_LOOP 0", "ECHO_CUT 0",
-                    "MOD_UP 0", "MOD_DOWN 0")
+                    "MOD_UP 0", "MOD_DOWN 0", "TRIGGER 0", "HOLD 0")
         device.status_event.clear()
         device.send("HELLO")
         if not device.status_event.wait(1.0):

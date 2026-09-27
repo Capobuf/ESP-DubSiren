@@ -6,8 +6,10 @@ from pathlib import Path
 from performance_capture import (
     CAPTURE_COUNT,
     SCENARIOS,
+    TRANSIENT_CAPTURE_NAMES,
     capture_segments,
     capture_sequence,
+    capture_triggered,
     save_wav,
 )
 
@@ -22,11 +24,17 @@ class FakeCapture:
     def grab(self, blocks):
         return bytes(blocks * 960)
 
+    def drain(self):
+        pass
+
 
 class PerformanceCaptureTests(unittest.TestCase):
     def test_scenarios_and_sweep_commands(self):
         self.assertEqual(len(SCENARIOS), 11)
-        self.assertEqual(CAPTURE_COUNT, 17)
+        self.assertEqual(CAPTURE_COUNT, 26)
+        self.assertEqual(len(TRANSIENT_CAPTURE_NAMES), 9)
+        self.assertIn("dynamic_sweep_sine1", TRANSIENT_CAPTURE_NAMES)
+        self.assertIn("gunshot_echo", TRANSIENT_CAPTURE_NAMES)
         names = {name for name, _commands in SCENARIOS}
         self.assertTrue({"lickshot_saw_down", "lickshot_triangle",
                          "lickshot_airhorn", "sonar"} <= names)
@@ -44,6 +52,17 @@ class PerformanceCaptureTests(unittest.TestCase):
         self.assertEqual(capture.commands[-3:],
                          ["MOD_UP 1", "MOD_UP 0", "MOD_DOWN 1"])
         self.assertEqual(len(segmented), 5 * 960)
+
+        capture.commands.clear()
+        triggered = capture_triggered(
+            capture, ("SET MODE SYNDRUM", "SET SYNDRUM_SWEEP -2"), 4
+        )
+        self.assertEqual(
+            capture.commands,
+            ["HOLD 0", "TRIGGER 0", "SET MODE SYNDRUM",
+             "SET SYNDRUM_SWEEP -2", "TRIGGER 1", "TRIGGER 0"],
+        )
+        self.assertEqual(len(triggered), 4 * 960)
 
     def test_wav_format(self):
         with tempfile.TemporaryDirectory() as directory:
