@@ -64,10 +64,10 @@ class PhysicalUiTests(unittest.TestCase):
             (
                 ("TUNE", "TUNE_HZ"),
                 ("RATE", "LFO_RATE_HZ"),
-                ("DEPTH", "LFO_DEPTH_OCT"),
+                ("ECHO", "ECHO_LEVEL"),
                 ("DELAY", "DELAY_MS"),
                 ("FEEDBACK", "FEEDBACK"),
-                ("ECHO", "ECHO_LEVEL"),
+                ("FILTER", "ECHO_FILTER"),
             ),
         )
 
@@ -79,10 +79,10 @@ class PhysicalUiTests(unittest.TestCase):
             [
                 "VOICE",
                 "LFO_SHAPE",
+                "LFO_DEPTH_OCT",
                 "DECAY_MS",
                 "SWEEP",
                 "SWEEP_MS",
-                "ECHO_FILTER",
                 "MODULATION",
                 "RETRIGGER",
                 "ECHO_LOOP",
