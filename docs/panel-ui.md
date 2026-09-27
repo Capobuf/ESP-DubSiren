@@ -2,92 +2,122 @@
 
 ## Goal
 
-The desktop application must behave as a software representation of the physical instrument, not as a generic DSP editor. The primary surface therefore mirrors the controls that are intended to be available while performing. Secondary synthesis parameters remain available through the encoder/display.
+The desktop application represents the playable control surface. It sends
+actions and displays controller state; the firmware/VirtualESP C++ controller
+owns pad assignments, priority, combinations, and the sound configurations.
+The PC still contains no oscillator, envelope, filter, or delay implementation.
 
-The DSP and serial protocol remain the source of audio behavior. This UI layer changes how the existing parameters are presented and controlled; it does not create a second audio engine on the PC.
+## Main panel
 
-## Current software control surface
-
-### Front panel
-
-| Physical control | Primary function | DSP/protocol mapping |
+| Physical control | Function | DSP/protocol mapping |
 |---|---|---|
 | POT1 | TUNE | `SET TUNE_HZ` |
 | POT2 | RATE | `SET LFO_RATE_HZ` |
-| POT3 | ECHO | `SET ECHO_LEVEL` |
-| POT4 | DELAY | `SET DELAY_MS` |
-| POT5 | FEEDBACK | `SET FEEDBACK` |
-| POT6 | FILTER | macro over `SET HPF_HZ` / `SET LPF_HZ` |
-| BTN1 | TRIGGER | `TRIGGER 0/1` |
-| BTN2 | DIVE / MOD DOWN | `MOD_DOWN 0/1` |
-| BTN3 | RISE / MOD UP | `MOD_UP 0/1` |
-| BTN4 | ECHO CUT | `ECHO_CUT 0/1` |
-| Encoder rotation | Voice on home; navigation/edit in menu | multiple existing commands |
-| Encoder press | Open/select/edit/confirm | UI state only or existing commands |
-| Display | State, navigation and temporary parameter feedback | UI state |
+| POT3 | ECHO LEVEL | `SET ECHO_LEVEL` |
+| POT4 | ECHO TIME | `SET DELAY_MS` |
+| POT5 | ECHO FEEDBACK | `SET FEEDBACK` |
+| POT6 | ECHO TONE | macro over `SET HPF_HZ` / `SET LPF_HZ` |
+| BTN1–BTN4 | assigned sound pads | `PAD <1..4> 0|1` |
+| Encoder rotation on Home | DEPTH | `SET LFO_DEPTH_OCT` |
+| Encoder press | modifier, or open menu on release | `ENCODER_SWITCH 0|1` |
+| Rear MASTER | final gain | `SET MASTER` |
 
-`DIVE` / `RISE` become `MOD DOWN` / `MOD UP` when the LFO shape is `MANUAL`.
-Transient modes disable the two modulation buttons because the current DSP does not use them.
+The initial pad bank is defined once in `PerformanceController`:
 
-### Rear panel
+| Pad | Assignment | Initial configuration |
+|---|---|---|
+| BTN1 | CLASSIC | SINE1 with the existing CLASSIC modulation |
+| BTN2 | TWO TONE | SQUARE mode with the existing two-pitch behavior |
+| BTN3 | LICKSHOT | LICKSHOT with the existing SAW DOWN gesture |
+| BTN4 | PING | SYNDRUM sine one-shot with its existing sweep/default decay |
 
-`MASTER` remains independent and maps to `SET MASTER`.
+These are configurations of existing modes, not new DSP algorithms. Pad recall
+does not write Tune, Rate, Depth, Echo Level/Time/Feedback/Tone, Master, or the
+delay buffer. Ping uses the documented Syndrum defaults for the options that
+belong to that voice.
 
-## Display UX
+## Priority and release
 
-### Home
+Each pad has an independent pressed state. The last pad pressed controls the
+monophonic engine. Releasing another pad has no effect. Releasing the active pad
+returns control to the most recently pressed remaining pad without creating a
+new activation event; if none remains, the sustained gate releases while a
+one-shot continues its envelope.
 
-The home page shows:
+An activation sequence is stored atomically with the configuration that caused
+it. This lets the audio task distinguish a new attack from a gate that remained
+high and preserves a quick press/release between block snapshots. Switching
+configurations does not reset the delay or echo filters.
 
-- current voice in the largest type;
-- current LFO shape;
-- compact state flags such as `HOLD`, `MOD OFF`, `LOOP` and connection state;
-- a short hint for encoder use in the desktop emulator.
+HOLD is stored per pad only for supported sustained assignments. Selecting or
+playing PING clears hidden holds so a previous sustained sound cannot reappear
+later unexpectedly.
 
-Rotating the encoder on the home page changes the voice. Pressing it opens the menu.
+## Encoder combinations
 
-### Parameter overlay
+On Home, press the encoder first and then a pad:
 
-Moving a physical/front-panel knob temporarily replaces the home page with the parameter name and formatted value. The desktop implementation currently returns to the previous page after 900 ms.
+| Combination | Action |
+|---|---|
+| Encoder + BTN1 | toggle HOLD on the selected pad, when supported |
+| Encoder + BTN2 | previous variant of the selected pad |
+| Encoder + BTN3 | next variant of the selected pad |
+| Encoder + BTN4 | momentary ECHO CUT |
 
-This gives visual confirmation without requiring permanent labels or duplicate sliders on the display.
+The pad press is consumed by the combination and never becomes a note on
+modifier release. ECHO CUT ends when either BTN4 or the encoder is released. A
+plain encoder click opens the menu on release; a click used as a modifier does
+not.
 
-### Encoder menu
+## Display and menu
 
-The menu contains the following entries for tonal voices:
+Home shows the explicitly selected pad, its assignment and variant, Depth, Hold,
+Echo Loop, and link state. The selected pad normally follows the last played
+pad. The menu can select another pad without playing it, then edit only that
+pad's assignment, supported variant, and Hold. Echo Loop remains available as
+a secondary function. If a latched sound differs from the selected pad, Home
+adds a `LIVE Pn` indicator. Back returns to Home.
 
-- Voice
-- LFO Shape
-- Depth
-- Decay
-- Sweep
-- Sweep Time
-- Modulation
-- Retrigger
-- Echo Loop
-- Hold
-- Back
+Knob and encoder changes show a 900 ms value overlay without moving keyboard
+focus. RATE is visibly inactive for PING because Syndrum does not use the normal
+LFO; its stored value is not reassigned or destroyed. Other unsupported sound
+options are omitted rather than sent to an ignored DSP path.
 
-The encoder rotates through entries. Press selects an editable entry; rotation changes its value; press exits edit. Boolean values toggle on press.
+Confirmed pad assignment and variant changes are saved to
+`%APPDATA%\ESP-DubSiren\panel.json`. Only configuration is persisted: pressed
+states, Hold/gates, ECHO CUT, active combinations, and the selected pad are not.
 
-Transient voices only show controls that affect their DSP path. `SYNDRUM` shows Voice, Drum Wave, Drum Sweep, Decay, Echo Loop and Back. `GUNSHOT` shows Voice, Decay, Echo Loop and Back. LFO, modulation, retrigger, global sweep and hold entries are hidden in these modes.
+## Echo Tone and initial state
 
-## Echo filter macro
+Echo Tone preserves the existing musical macro:
 
-The existing independent HPF and LPF parameters are intentionally hidden. The physical FILTER potentiometer exposes one performance macro instead:
+- center deadband: 60 Hz HPF / 16 kHz LPF;
+- turn left: logarithmically lower the LPF to 400 Hz;
+- turn right: logarithmically raise the HPF to 4 kHz.
 
-- center: wide/flat echo path;
-- rotate toward low-pass: lower LPF while keeping HPF near its minimum;
-- rotate toward high-pass: raise HPF while keeping LPF wide.
+The engine boot default is the documented technical state 60 Hz / 7 kHz, which
+the macro cannot represent exactly. The UI therefore displays `CUSTOM 60 Hz /
+7 kHz` and does not silently send a different cutoff during connection. The
+macro becomes authoritative only when Echo Tone is actually moved.
 
-The center 5% on either side is a flat deadband at 60 Hz / 16 kHz. Outside that area each side follows a logarithmic curve to 400 Hz LPF or 4 kHz HPF at the corresponding endpoint. This preserves the existing DSP without exposing two technical frequency sliders on the primary UI.
+ECHO CUT mutes only the wet return with a 3 ms anti-click ramp. It does not
+change Echo Level, feedback, filtering, loop state, or delay contents.
 
-## Future physical implementation (not included)
+## Desktop input
 
-The intended hardware model is six front potentiometers, four momentary front buttons, one push encoder and a separate rear MASTER. The repository PCB V1 still documents five front potentiometers and one rear master, so a later hardware revision must update the analog mapping and placement before fabrication.
+Mouse and keyboard sources are tracked independently. `1`–`4` play the pads,
+`[` / `]` rotate the encoder, and `E` presses it. Keyboard autorepeat cannot
+retrigger a held pad. Releasing outside a widget, losing focus, disconnecting,
+or closing releases momentary actions safely while preserving assignments,
+Hold configuration, and the delay state.
 
-There is no hardware display implementation in the current firmware: no display controller, driver, library or pin mapping is selected. The display in the desktop UI is only a functional simulation of the planned interaction model.
+Knob movement uses one 25 ms timer per control. The latest value is sent on
+each periodic flush, and release cancels any outstanding timer before sending
+the final value immediately.
 
-The firmware also does not yet read MCP3208, MCP23017 or the physical encoder. Those hardware-input and PCB changes are outside this software UI revision. The current data path is:
+## Hardware scope
 
-`desktop controls -> protocol -> ControlState -> AudioEngine`
+The display and controls in this revision are software emulation. No display
+driver, GPIO assignment, PCB change, or physical-control reader is included.
+The shared C++ controller is deliberately independent of those drivers so a
+future hardware input layer can send the same pad and encoder actions.

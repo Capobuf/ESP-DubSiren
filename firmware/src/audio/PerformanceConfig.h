@@ -12,6 +12,7 @@ constexpr float kDepthMs = 15.0f;
 constexpr float kRateMs = 20.0f;
 constexpr float kFeedbackMs = 18.0f;
 constexpr float kEchoMs = 15.0f;
+constexpr float kEchoCutMs = 3.0f;
 constexpr float kMasterMs = 15.0f;
 constexpr float kPerformanceBendMs = 30.0f;
 constexpr float kFilterMs = 18.0f;

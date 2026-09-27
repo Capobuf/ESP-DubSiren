@@ -37,6 +37,18 @@ enum class PerformanceProfile { Classic, Extended };
 enum class ClassicPitch { Low, Mid, High };
 enum class ClassicModulation { Slow, Medium, Fast, Manual };
 
+struct ActivationEvent {
+    SirenMode mode = SirenMode::Sine1;
+    LfoShape lfoShape = LfoShape::Classic;
+    SyndrumWave syndrumWave = SyndrumWave::Sine;
+    float decayMs = 120.0f;
+    float syndrumSweepOctaves = 2.0f;
+    bool modulationEnabled = true;
+    bool retrigger = false;
+};
+
+constexpr unsigned kActivationEventCapacity = 8;
+
 struct ControlState {
     PerformanceProfile profile = PerformanceProfile::Extended;
     ClassicPitch classicPitch = ClassicPitch::Mid;
@@ -52,6 +64,8 @@ struct ControlState {
     SyndrumWave syndrumWave = SyndrumWave::Sine;
     float syndrumSweepOctaves = 2.0f;
     bool trigger = false;
+    uint32_t activationSequence = 0;
+    ActivationEvent activationEvents[kActivationEventCapacity];
     bool hold = false;
     bool modUp = false;
     bool modDown = false;
@@ -68,6 +82,19 @@ struct ControlState {
     float masterVolume = 0.50f;
     bool voicingV2 = true;
 };
+
+inline void recordActivation(ControlState &state) {
+    ActivationEvent &event = state.activationEvents[
+        state.activationSequence % kActivationEventCapacity];
+    event.mode = state.mode;
+    event.lfoShape = state.lfoShape;
+    event.syndrumWave = state.syndrumWave;
+    event.decayMs = state.decayMs;
+    event.syndrumSweepOctaves = state.syndrumSweepOctaves;
+    event.modulationEnabled = state.modulationEnabled;
+    event.retrigger = state.retrigger;
+    ++state.activationSequence;
+}
 
 class ControlStore {
 public:

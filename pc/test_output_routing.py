@@ -67,6 +67,7 @@ def make_app(output: str) -> DubSirenApp:
     app.protocol_ok = True
     app.streaming = False
     app.active_output = None
+    app._has_synchronized = False
     app.transport = FakeTransport()
     app.player = FakePlayer()
     app.audio_button = FakeWidget()
@@ -145,6 +146,22 @@ class OutputRoutingTests(unittest.TestCase):
         self.assertTrue(app.ui_events.empty())
         self.assertEqual(app.transport.disconnects, 1)
         self.assertFalse(app.protocol_ok)
+
+    def test_repeated_panel_status_does_not_resynchronize_live_controls(self):
+        app = make_app("PC")
+        synchronizations = []
+        app._synchronize_controls = lambda: synchronizations.append(True)
+        status = {
+            "protocol": 1,
+            "virtual": True,
+            "i2sReady": False,
+            "firmware": "0.7.0",
+        }
+
+        app._handle_status(status)
+        app._handle_status(status)
+
+        self.assertEqual(synchronizations, [True])
 
 
 if __name__ == "__main__":

@@ -66,6 +66,17 @@ void updateMaximum(std::atomic<uint32_t> &maximum, uint32_t value) {
 
 void sendStatus() {
     const OutputMode mode = outputMode.load(std::memory_order_relaxed);
+    String pads = "[";
+    for (unsigned pad = 1; pad <= 4; ++pad) {
+        if (pad > 1) pads += ",";
+        pads += String("{\"sound\":\"") + commandParser.padSoundName(pad) +
+            "\",\"variant\":\"" + commandParser.padVariantName(pad) +
+            "\",\"variantIndex\":" + commandParser.padVariant(pad) +
+            ",\"hold\":" + (commandParser.padHold(pad) ? "true" : "false") +
+            ",\"holdSupported\":" +
+            (commandParser.padHoldSupported(pad) ? "true" : "false") + "}";
+    }
+    pads += "]";
     const String json =
         String("{\"name\":\"DubSiren\",\"protocol\":1,\"sampleRate\":") +
         Config::kSampleRate + ",\"blockSamples\":" + Config::kBlockSamples +
@@ -81,7 +92,13 @@ void sendStatus() {
         ",\"maxI2sWriteUs\":" +
         maximumI2sWriteUs.load(std::memory_order_relaxed) +
         ",\"output\":\"" + outputModeName(mode) +
-        "\",\"i2sReady\":" + (i2sReady ? "true" : "false") + "}";
+        "\",\"i2sReady\":" + (i2sReady ? "true" : "false") +
+        ",\"panel\":{\"revision\":" + commandParser.panelRevision() +
+        ",\"menuRevision\":" + commandParser.panelMenuRevision() +
+        ",\"selectedPad\":" + commandParser.selectedPad() +
+        ",\"currentPad\":" + commandParser.currentPad() +
+        ",\"activePad\":" + commandParser.activePad() +
+        ",\"pads\":" + pads + "}}";
     usbSink.writeStatus(json.c_str(), json.length());
 }
 
@@ -100,7 +117,11 @@ void handleCommand(String command) {
             outputMode.store(requested, std::memory_order_release);
         }
     } else {
-        commandParser.parse(command);
+        const unsigned panelRevision = commandParser.panelRevision();
+        if (commandParser.parse(command) &&
+            commandParser.panelRevision() != panelRevision) {
+            sendStatus();
+        }
     }
 }
 

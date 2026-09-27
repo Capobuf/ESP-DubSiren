@@ -18,6 +18,7 @@ SOURCES = [
     "firmware/src/audio/Lfo.cpp",
     "firmware/src/audio/Oscillator.cpp",
     "firmware/src/control/CommandParser.cpp",
+    "firmware/src/control/PerformanceController.cpp",
 ]
 
 

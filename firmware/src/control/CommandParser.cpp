@@ -15,6 +15,13 @@ T clampValue(T value, T minimum, T maximum) {
 bool CommandParser::parse(const String &rawCommand) {
     String command = rawCommand;
     command.trim();
+    if (command.startsWith("PAD ") || command.startsWith("PAD_SELECT ") ||
+        command.startsWith("PAD_ASSIGN ") ||
+        command.startsWith("PAD_VARIANT ") || command == "PAD_HOLD_TOGGLE" ||
+        command.startsWith("PAD_CONFIG ") ||
+        command.startsWith("ENCODER_SWITCH ") || command == "PANEL_RESET") {
+        return parsePanelCommand(command);
+    }
     ControlState state = controls_.snapshot();
 
     if (command.startsWith("SET ")) {
@@ -96,6 +103,9 @@ bool CommandParser::parse(const String &rawCommand) {
             return false;
         }
         if (name == "TRIGGER") {
+            if (value && !state.trigger) {
+                recordActivation(state);
+            }
             state.trigger = value;
         } else if (name == "HOLD") {
             state.hold = value;
@@ -120,6 +130,74 @@ bool CommandParser::parse(const String &rawCommand) {
 
     controls_.set(state);
     return true;
+}
+
+bool CommandParser::parsePanelCommand(const String &command) {
+    if (command == "PANEL_RESET") {
+        performance_.resetMomentaries();
+        return true;
+    }
+    if (command == "PAD_HOLD_TOGGLE") {
+        performance_.toggleSelectedHold();
+        return true;
+    }
+    if (command.startsWith("ENCODER_SWITCH ")) {
+        bool pressed;
+        if (!parseBool(command.substring(15), pressed)) return false;
+        performance_.setEncoderPressed(pressed);
+        return true;
+    }
+    if (command.startsWith("PAD_SELECT ")) {
+        float pad;
+        if (!parseFloat(command.substring(11), pad) || pad != static_cast<int>(pad)) {
+            return false;
+        }
+        return performance_.selectPad(static_cast<unsigned>(pad));
+    }
+    if (command.startsWith("PAD_ASSIGN ")) {
+        const String direction = command.substring(11);
+        if (direction == "PREV") performance_.stepAssignment(-1);
+        else if (direction == "NEXT") performance_.stepAssignment(1);
+        else return false;
+        return true;
+    }
+    if (command.startsWith("PAD_VARIANT ")) {
+        const String direction = command.substring(12);
+        if (direction == "PREV") performance_.stepVariant(-1);
+        else if (direction == "NEXT") performance_.stepVariant(1);
+        else return false;
+        return true;
+    }
+    if (command.startsWith("PAD_CONFIG ")) {
+        const String arguments = command.substring(11);
+        const int first = arguments.indexOf(' ');
+        const int second = first < 0 ? -1 : arguments.indexOf(' ', first + 1);
+        const int third = second < 0 ? -1 : arguments.indexOf(' ', second + 1);
+        if (first < 0 || second < 0 || third < 0) return false;
+        float pad;
+        float variant;
+        bool hold;
+        if (!parseFloat(arguments.substring(0, first), pad) ||
+            pad != static_cast<int>(pad) ||
+            !parseFloat(arguments.substring(second + 1, third), variant) ||
+            variant != static_cast<int>(variant) ||
+            !parseBool(arguments.substring(third + 1), hold)) return false;
+        return performance_.configurePad(
+            static_cast<unsigned>(pad), arguments.substring(first + 1, second),
+            static_cast<unsigned>(variant), hold);
+    }
+    if (command.startsWith("PAD ")) {
+        const String arguments = command.substring(4);
+        const int separator = arguments.indexOf(' ');
+        if (separator < 0) return false;
+        float pad;
+        bool pressed;
+        if (!parseFloat(arguments.substring(0, separator), pad) ||
+            pad != static_cast<int>(pad) ||
+            !parseBool(arguments.substring(separator + 1), pressed)) return false;
+        return performance_.setPad(static_cast<unsigned>(pad), pressed);
+    }
+    return false;
 }
 
 bool CommandParser::parseFloat(const String &text, float &value) {

@@ -36,6 +36,23 @@ class FakeSlider:
         self.value = value
 
 
+class FakeRoot:
+    def __init__(self):
+        self.callbacks = {}
+        self.cancelled = []
+        self.counter = 0
+
+    def after(self, _delay, callback):
+        self.counter += 1
+        token = f"timer-{self.counter}"
+        self.callbacks[token] = callback
+        return token
+
+    def after_cancel(self, token):
+        self.cancelled.append(token)
+        self.callbacks.pop(token, None)
+
+
 def make_app():
     app = object.__new__(DubSirenApp)
     app.profile_var = FakeVariable("EXTENDED")
@@ -63,6 +80,8 @@ def make_app():
         "SYNDRUM_SWEEP": FakeSlider(2.0),
     }
     app.momentary_active = set()
+    app.pending_sends = {}
+    app.root = FakeRoot()
     app.commands = []
     app._send = app.commands.append
     return app
@@ -140,6 +159,25 @@ class PerformanceControlTests(unittest.TestCase):
         app._press("ECHO_SPIN")
         app._global_release()
         self.assertEqual(app.commands, ["ECHO_SPIN 1", "ECHO_SPIN 0"])
+
+    def test_slider_throttle_does_not_postpone_continuous_updates(self):
+        app = make_app()
+        slider = app.sliders["TUNE_HZ"]
+
+        app._slider_changed("TUNE_HZ", 230.0, False)
+        token = app.pending_sends["TUNE_HZ"]
+        slider.value = 250.0
+        app._slider_changed("TUNE_HZ", 250.0, False)
+        self.assertEqual(app.pending_sends["TUNE_HZ"], token)
+        self.assertEqual(app.root.cancelled, [])
+
+        app.root.callbacks[token]()
+        self.assertEqual(app.commands[-1], "SET TUNE_HZ 250")
+        app._slider_changed("TUNE_HZ", 260.0, False)
+        final_token = app.pending_sends["TUNE_HZ"]
+        app._slider_changed("TUNE_HZ", 260.0, True)
+        self.assertIn(final_token, app.root.cancelled)
+        self.assertEqual(app.commands[-1], "SET TUNE_HZ 260")
 
 
 if __name__ == "__main__":

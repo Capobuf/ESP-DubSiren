@@ -129,6 +129,112 @@ void testParser() {
            unchanged.retrigger && unchanged.echoSpin && unchanged.echoLoop);
 }
 
+void testPadController() {
+    ControlStore store;
+    CommandParser parser(store);
+    assert(strcmp(parser.padSoundName(1), "CLASSIC") == 0);
+    assert(strcmp(parser.padSoundName(2), "TWO TONE") == 0);
+    assert(strcmp(parser.padSoundName(3), "LICKSHOT") == 0);
+    assert(strcmp(parser.padSoundName(4), "PING") == 0);
+
+    assert(parser.parse("SET TUNE_HZ 333"));
+    assert(parser.parse("SET DELAY_MS 777"));
+    assert(parser.parse("SET ECHO_LEVEL 0.73"));
+    assert(parser.parse("PAD 1 1"));
+    auto state = store.snapshot();
+    assert(state.mode == SirenMode::Sine1 && state.trigger);
+    assert(state.activationSequence == 1);
+    assert(state.tuneHz == 333.0f && state.delayMs == 777.0f &&
+           state.echoLevel == 0.73f);
+
+    assert(parser.parse("PAD 2 1"));
+    state = store.snapshot();
+    assert(state.mode == SirenMode::Square && state.trigger);
+    assert(state.activationSequence == 2);
+    assert(parser.activePad() == 2 && parser.selectedPad() == 2);
+
+    assert(parser.parse("PAD 2 0"));
+    state = store.snapshot();
+    assert(state.mode == SirenMode::Sine1 && state.trigger);
+    assert(state.activationSequence == 2);
+    assert(parser.activePad() == 1 && parser.selectedPad() == 1);
+    assert(parser.parse("PAD 1 0"));
+    assert(!store.snapshot().trigger && parser.activePad() == 0);
+
+    const unsigned menuBefore = parser.panelMenuRevision();
+    assert(parser.parse("ENCODER_SWITCH 1"));
+    assert(parser.parse("PAD 3 1"));
+    assert(parser.parse("PAD 3 0"));
+    assert(parser.parse("ENCODER_SWITCH 0"));
+    assert(parser.panelMenuRevision() == menuBefore);
+    assert(strcmp(parser.padVariantName(1), "SINE 2") == 0);
+    assert(!store.snapshot().trigger);
+
+    assert(parser.parse("ENCODER_SWITCH 1"));
+    assert(parser.parse("PAD 4 1"));
+    assert(store.snapshot().echoCut);
+    assert(parser.parse("ENCODER_SWITCH 0"));
+    assert(!store.snapshot().echoCut);
+    assert(parser.parse("PAD 4 0"));
+    assert(!store.snapshot().trigger);
+
+    assert(parser.parse("ENCODER_SWITCH 1"));
+    assert(parser.parse("ENCODER_SWITCH 0"));
+    assert(parser.panelMenuRevision() == menuBefore + 1);
+
+    assert(parser.parse("PAD_SELECT 1"));
+    assert(parser.parse("PAD_HOLD_TOGGLE"));
+    assert(parser.padHold(1));
+    assert(parser.parse("PAD_SELECT 3"));
+    assert(parser.parse("PAD_ASSIGN NEXT"));
+    assert(strcmp(parser.padSoundName(3), "PING") == 0);
+    assert(parser.padHold(1));
+    assert(store.snapshot().mode == SirenMode::Sine1);
+    assert(store.snapshot().hold);
+    assert(parser.parse("PAD 3 1"));
+    assert(!parser.padHold(1));
+    assert(parser.parse("PAD 3 0"));
+
+    assert(parser.parse("PAD_CONFIG 3 PING 0 0"));
+    assert(strcmp(parser.padSoundName(3), "PING") == 0);
+    assert(!parser.padHoldSupported(3));
+    assert(!parser.parse("PAD_CONFIG 3 PING 0 1"));
+}
+
+void testQueuedPadActivation() {
+    ControlStore store;
+    CommandParser parser(store);
+    auto engine = std::make_unique<AudioEngine>();
+    engine->begin();
+    int16_t block[480];
+    engine->render(store.snapshot(), block, 480);
+    assert(parser.parse("PAD 4 1"));
+    assert(parser.parse("PAD 4 0"));
+    const ControlState released = store.snapshot();
+    const ActivationEvent &event = released.activationEvents[
+        (released.activationSequence - 1) % kActivationEventCapacity];
+    assert(!released.trigger && event.mode == SirenMode::Syndrum);
+    engine->render(released, block, 480);
+    assert(blockRms(block, 480) > 100.0f);
+
+    assert(parser.parse("PAD 4 1"));
+    assert(parser.parse("PAD 4 0"));
+    assert(parser.parse("PAD 1 1"));
+    assert(parser.parse("PAD 1 0"));
+    const ControlState queued = store.snapshot();
+    assert(queued.activationSequence == released.activationSequence + 2);
+    const ActivationEvent &first = queued.activationEvents[
+        released.activationSequence % kActivationEventCapacity];
+    const ActivationEvent &second = queued.activationEvents[
+        (released.activationSequence + 1) % kActivationEventCapacity];
+    assert(first.mode == SirenMode::Syndrum);
+    assert(second.mode == SirenMode::Sine1);
+    engine->render(queued, block, 480);
+    assert(blockRms(block, 480) > 100.0f);
+    engine->render(queued, block, 480);
+    assert(blockRms(block, 480) > 100.0f);
+}
+
 void testDynamicSweep() {
     ControlState state;
     state.mode = SirenMode::Sonar;
@@ -474,12 +580,14 @@ void testEchoCutPreservesLoop() {
     state.decayMs = 0.0f;
     state.echoLoop = true;
     for (int i = 0; i < 10; ++i) engine->render(state, block, 480);
+    const float beforeCut = blockRms(block, 480);
     state.echoCut = true;
     engine->render(state, block, 480);
-    assert(blockRms(block, 480) == 0.0f);
+    const float duringCut = blockRms(block, 480);
+    assert(duringCut < beforeCut * 0.5f);
     state.echoCut = false;
     engine->render(state, block, 480);
-    assert(blockRms(block, 480) > 100.0f);
+    assert(blockRms(block, 480) > duringCut);
 }
 
 void testEngine() {
@@ -532,6 +640,8 @@ int main() {
     testSmoothing();
     testOneShotEnvelope();
     testParser();
+    testPadController();
+    testQueuedPadActivation();
     testDynamicSweep();
     testSyndrum();
     testGunshot();

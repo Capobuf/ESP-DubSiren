@@ -83,18 +83,7 @@ class VirtualTransport:
 
         if command == "HELLO":
             if self._status_callback is not None:
-                self._status_callback(
-                    {
-                        "name": "DubSiren",
-                        "protocol": self._lib.virtual_esp_protocol_version(),
-                        "sampleRate": self._sample_rate,
-                        "blockSamples": self._block_samples,
-                        "firmware": self._firmware_version,
-                        "output": "PC",
-                        "i2sReady": False,
-                        "virtual": True,
-                    }
-                )
+                self._status_callback(self._status())
             return
 
         if command == "STREAM 1":
@@ -108,9 +97,15 @@ class VirtualTransport:
 
         assert self._lib is not None
         with self._lock:
+            previous_revision = self._lib.virtual_esp_panel_revision()
             accepted = self._lib.virtual_esp_command(command.encode("ascii"))
         if accepted != 1:
             raise RuntimeError(f"Virtual ESP rejected command: {command}")
+        if (
+            self._status_callback is not None
+            and self._lib.virtual_esp_panel_revision() != previous_revision
+        ):
+            self._status_callback(self._status())
 
     def _build_if_needed(self) -> None:
         result = subprocess.run(
@@ -142,7 +137,63 @@ class VirtualTransport:
         library.virtual_esp_sample_rate.restype = ctypes.c_int
         library.virtual_esp_block_samples.argtypes = []
         library.virtual_esp_block_samples.restype = ctypes.c_int
+        library.virtual_esp_panel_revision.argtypes = []
+        library.virtual_esp_panel_revision.restype = ctypes.c_uint
+        library.virtual_esp_panel_menu_revision.argtypes = []
+        library.virtual_esp_panel_menu_revision.restype = ctypes.c_uint
+        library.virtual_esp_selected_pad.argtypes = []
+        library.virtual_esp_selected_pad.restype = ctypes.c_int
+        library.virtual_esp_current_pad.argtypes = []
+        library.virtual_esp_current_pad.restype = ctypes.c_int
+        library.virtual_esp_active_pad.argtypes = []
+        library.virtual_esp_active_pad.restype = ctypes.c_int
+        library.virtual_esp_pad_sound.argtypes = [ctypes.c_uint]
+        library.virtual_esp_pad_sound.restype = ctypes.c_char_p
+        library.virtual_esp_pad_variant_name.argtypes = [ctypes.c_uint]
+        library.virtual_esp_pad_variant_name.restype = ctypes.c_char_p
+        library.virtual_esp_pad_variant.argtypes = [ctypes.c_uint]
+        library.virtual_esp_pad_variant.restype = ctypes.c_uint
+        library.virtual_esp_pad_hold.argtypes = [ctypes.c_uint]
+        library.virtual_esp_pad_hold.restype = ctypes.c_int
+        library.virtual_esp_pad_hold_supported.argtypes = [ctypes.c_uint]
+        library.virtual_esp_pad_hold_supported.restype = ctypes.c_int
         self._lib = library
+
+    def _status(self) -> dict:
+        assert self._lib is not None
+        pads = []
+        for pad in range(1, 5):
+            sound = self._lib.virtual_esp_pad_sound(pad)
+            variant = self._lib.virtual_esp_pad_variant_name(pad)
+            pads.append(
+                {
+                    "sound": sound.decode("ascii") if sound else "UNKNOWN",
+                    "variant": variant.decode("ascii") if variant else "UNKNOWN",
+                    "variantIndex": self._lib.virtual_esp_pad_variant(pad),
+                    "hold": bool(self._lib.virtual_esp_pad_hold(pad)),
+                    "holdSupported": bool(
+                        self._lib.virtual_esp_pad_hold_supported(pad)
+                    ),
+                }
+            )
+        return {
+            "name": "DubSiren",
+            "protocol": self._lib.virtual_esp_protocol_version(),
+            "sampleRate": self._sample_rate,
+            "blockSamples": self._block_samples,
+            "firmware": self._firmware_version,
+            "output": "PC",
+            "i2sReady": False,
+            "virtual": True,
+            "panel": {
+                "revision": self._lib.virtual_esp_panel_revision(),
+                "menuRevision": self._lib.virtual_esp_panel_menu_revision(),
+                "selectedPad": self._lib.virtual_esp_selected_pad(),
+                "currentPad": self._lib.virtual_esp_current_pad(),
+                "activePad": self._lib.virtual_esp_active_pad(),
+                "pads": pads,
+            },
+        }
 
     def _render_loop(self) -> None:
         assert self._lib is not None

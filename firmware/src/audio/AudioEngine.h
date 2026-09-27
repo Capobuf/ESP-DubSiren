@@ -31,6 +31,7 @@ private:
     SmoothedParameter rateHz_;
     SmoothedParameter feedback_;
     SmoothedParameter echoLevel_;
+    SmoothedParameter echoCutWet_;
     SmoothedParameter masterVolume_;
     SmoothedParameter performanceBend_;
     float oscillatorFrequencyHz_;
@@ -43,6 +44,13 @@ private:
     bool modeInitialized_;
     bool previousTrigger_;
     bool previousHold_;
+    static constexpr unsigned kPendingActivationCapacity = 32;
+    ActivationEvent pendingActivations_[kPendingActivationCapacity];
+    uint32_t capturedActivationSequence_;
+    unsigned pendingActivationRead_;
+    unsigned pendingActivationWrite_;
+    unsigned pendingActivationCount_;
+    unsigned eventGateRemaining_;
 
     static bool isTonalMode(SirenMode mode);
     float nextGunshot(float envelopeLevel);

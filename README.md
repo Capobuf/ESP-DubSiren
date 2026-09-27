@@ -9,9 +9,9 @@ saturazione asimmetrica e un LFO CLASSIC a carica/scarica esponenziale. Il
 comando di debug `SET VOICING LEGACY|V2` permette il confronto a parità di
 controlli; V2 è il default.
 
-La revisione firmware 0.6.0 mantiene i mode 0.5.0 e aggiunge **Dynamic Sweep**
-ai sei engine melodici, il one-shot **SYNDRUM** e il burst procedurale
-**GUNSHOT**. Syndrum usa carrier sine/triangle/square e un pitch transient
+La revisione firmware 0.7.0 mantiene il DSP 0.6.0 e aggiunge il controller
+condiviso dei quattro pad performativi. **Dynamic Sweep**, **SYNDRUM** e
+**GUNSHOT** restano disponibili. Syndrum usa carrier sine/triangle/square e un pitch transient
 regolabile da -3 a +3 ottave; Gunshot usa rumore deterministico filtrato, non un
 sample. Entrambi condividono delay, Echo Loop/Cut/Spin, master e routing con gli
 altri mode. Un airhorn continuo resta disponibile con **MODE LICKSHOT +
@@ -88,10 +88,11 @@ del firmware; la libreria host viene ricompilata automaticamente quando quei
 sorgenti cambiano.
 
 La superficie predefinita riproduce il pannello previsto: sei potenziometri
-frontali (Tune, Rate, Echo, Delay, Feedback e Filter), quattro pulsanti
-momentanei, encoder con pressione, display simulato e Master posteriore
-separato. Il display è solo software; questa revisione non aggiunge hardware o
-driver display al firmware. Dettagli: [pannello UI](docs/panel-ui.md).
+frontali (Tune, Rate, Echo Level, Echo Time, Echo Feedback ed Echo Tone), quattro
+pad momentanei, encoder con pressione, display simulato e Master posteriore
+separato. I pad iniziali sono Classic, Two Tone, Lickshot e Ping. Il display è
+solo software; questa revisione non aggiunge hardware o driver display al
+firmware. Dettagli: [pannello UI](docs/panel-ui.md).
 
 Per lavorare senza hardware:
 
@@ -107,9 +108,10 @@ Con l'hardware reale:
 
 1. premere **Refresh** e scegliere la COM Espressif;
 2. scegliere **PC**, **PCM5102A** o **Both** nel selettore Output;
-3. premere **Connect** e attendere `Connected · firmware 0.6.0`;
+3. premere **Connect** e attendere `Connected · firmware 0.7.0`;
 4. premere **Start Audio**;
-5. usare **TRIGGER** oppure attivare **HOLD**.
+5. suonare BTN1–BTN4; l'encoder regola Depth e il suo push abilita le
+   combinazioni secondarie.
 
 **Stop Audio** arresta il flusso; **Disconnect** chiude ordinatamente audio,
 thread e seriale. Per un controllo automatico dell'hardware collegato:

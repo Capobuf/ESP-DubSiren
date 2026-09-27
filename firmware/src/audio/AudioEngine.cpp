@@ -22,12 +22,16 @@ int16_t toInt16(float value) {
 
 AudioEngine::AudioEngine()
     : tuneHz_(220.0f), depthOctaves_(1.0f), rateHz_(0.70f),
-      feedback_(0.62f), echoLevel_(0.45f), masterVolume_(0.50f),
+      feedback_(0.62f), echoLevel_(0.45f), echoCutWet_(1.0f),
+      masterVolume_(0.50f),
       performanceBend_(0.0f),
       oscillatorFrequencyHz_(220.0f), lastDry_(0.0f), transitionStartDry_(0.0f),
       noiseState_(0x6d2b79f5u), previousMode_(SirenMode::Sine1),
       currentMode_(SirenMode::Sine1), modeTransitionRemaining_(0),
-      modeInitialized_(false), previousTrigger_(false), previousHold_(false) {}
+      modeInitialized_(false), previousTrigger_(false), previousHold_(false),
+      capturedActivationSequence_(0), pendingActivationRead_(0),
+      pendingActivationWrite_(0), pendingActivationCount_(0),
+      eventGateRemaining_(0) {}
 
 void AudioEngine::begin() {
     delay_.begin(360.0f, 60.0f, 7000.0f, Config::kSampleRate);
@@ -36,6 +40,7 @@ void AudioEngine::begin() {
     rateHz_.configure(PerformanceConfig::kRateMs, Config::kSampleRate);
     feedback_.configure(PerformanceConfig::kFeedbackMs, Config::kSampleRate);
     echoLevel_.configure(PerformanceConfig::kEchoMs, Config::kSampleRate);
+    echoCutWet_.configure(PerformanceConfig::kEchoCutMs, Config::kSampleRate);
     masterVolume_.configure(PerformanceConfig::kMasterMs, Config::kSampleRate);
     performanceBend_.configure(PerformanceConfig::kPerformanceBendMs,
                                Config::kSampleRate);
@@ -80,40 +85,78 @@ void AudioEngine::render(const ControlState &controls, int16_t *output,
                                    ? PerformanceConfig::kEchoSpinFeedback
                                    : controls.feedback));
     echoLevel_.setTarget(controls.echoLevel);
+    echoCutWet_.setTarget(controls.echoCut ? 0.0f : 1.0f);
     masterVolume_.setTarget(controls.masterVolume);
-    const LfoShape shape = classic
+    uint32_t unseenActivations =
+        controls.activationSequence - capturedActivationSequence_;
+    if (unseenActivations > kActivationEventCapacity) {
+        capturedActivationSequence_ =
+            controls.activationSequence - kActivationEventCapacity;
+        unseenActivations = kActivationEventCapacity;
+    }
+    for (uint32_t offset = 1; offset <= unseenActivations; ++offset) {
+        if (pendingActivationCount_ == kPendingActivationCapacity) break;
+        const uint32_t sequence = capturedActivationSequence_ + offset;
+        pendingActivations_[pendingActivationWrite_] = controls.activationEvents[
+            (sequence - 1) % kActivationEventCapacity];
+        pendingActivationWrite_ =
+            (pendingActivationWrite_ + 1) % kPendingActivationCapacity;
+        ++pendingActivationCount_;
+    }
+    capturedActivationSequence_ = controls.activationSequence;
+    ActivationEvent activation;
+    const bool queuedActivation = pendingActivationCount_ > 0;
+    if (queuedActivation) {
+        activation = pendingActivations_[pendingActivationRead_];
+        pendingActivationRead_ =
+            (pendingActivationRead_ + 1) % kPendingActivationCapacity;
+        --pendingActivationCount_;
+    }
+    const SirenMode requestedMode = queuedActivation
+        ? activation.mode : controls.mode;
+    const LfoShape shape = queuedActivation
+        ? activation.lfoShape
+        : classic
         ? (controls.classicModulation == ClassicModulation::Manual
                ? LfoShape::Manual : LfoShape::Classic)
         : controls.lfoShape;
-    const float decayMs = classic ? PerformanceConfig::kClassicDecayMs
-                                  : controls.decayMs;
+    const float decayMs = queuedActivation
+        ? activation.decayMs
+        : (classic ? PerformanceConfig::kClassicDecayMs : controls.decayMs);
     const bool manual = shape == LfoShape::Manual;
     const float bendTarget = manual || controls.modUp == controls.modDown
                                  ? 0.0f
                                  : (controls.modUp ? 1.0f : -1.0f);
     performanceBend_.setTarget(bendTarget);
-    const bool modulationEnabled = classic || controls.modulationEnabled;
+    const bool modulationEnabled = queuedActivation
+        ? activation.modulationEnabled
+        : (classic || controls.modulationEnabled);
     const bool triggerEdge = !previousTrigger_ && controls.trigger;
+    const bool triggerEvent = triggerEdge ||
+        queuedActivation;
     const bool holdEdge = !previousHold_ && controls.hold;
-    const bool activationEdge = triggerEdge || holdEdge;
+    const bool activationEdge = triggerEvent || holdEdge;
     if (activationEdge) sweepEnvelope_.trigger();
-    if (triggerEdge && controls.mode == SirenMode::Syndrum) {
+    if (triggerEvent) eventGateRemaining_ = Config::kBlockSamples;
+    if (triggerEvent && requestedMode == SirenMode::Syndrum) {
         syndrumEnvelope_.trigger();
     }
-    if (triggerEdge && controls.mode == SirenMode::Gunshot) {
+    if (triggerEvent && requestedMode == SirenMode::Gunshot) {
         gunshotEnvelope_.trigger();
     }
-    if (controls.retrigger && activationEdge) {
+    const bool retrigger = queuedActivation
+        ? activation.retrigger : controls.retrigger;
+    if (retrigger && activationEdge) {
         lfo_.reset(shape);
     }
     previousTrigger_ = controls.trigger;
     previousHold_ = controls.hold;
     if (!modeInitialized_) {
-        currentMode_ = previousMode_ = controls.mode;
+        currentMode_ = previousMode_ = requestedMode;
         modeInitialized_ = true;
-    } else if (controls.mode != currentMode_) {
+    } else if (requestedMode != currentMode_) {
         previousMode_ = currentMode_;
-        currentMode_ = controls.mode;
+        currentMode_ = requestedMode;
         transitionStartDry_ = lastDry_;
         modeTransitionRemaining_ = static_cast<unsigned>(
             PerformanceConfig::kModeTransitionMs * Config::kSampleRate * 0.001f);
@@ -125,6 +168,7 @@ void AudioEngine::render(const ControlState &controls, int16_t *output,
         const float rate = rateHz_.next();
         const float feedback = feedback_.next();
         const float echoLevel = echoLevel_.next();
+        const float echoCutWet = echoCutWet_.next();
         const float master = masterVolume_.next();
         const float performanceBend = performanceBend_.next();
 
@@ -183,8 +227,10 @@ void AudioEngine::render(const ControlState &controls, int16_t *output,
             oscillatorFrequencyHz_ +=
                 (frequencyTarget - oscillatorFrequencyHz_) * frequencySmoothing;
         }
+        const bool eventGate = eventGateRemaining_ > 0;
+        if (eventGateRemaining_ > 0) --eventGateRemaining_;
         const float envelopeLevel = tonal
-            ? envelope_.next(controls.trigger || controls.hold, decayMs,
+            ? envelope_.next(controls.trigger || controls.hold || eventGate, decayMs,
                              Config::kSampleRate)
             : 0.0f;
         float dry;
@@ -205,8 +251,12 @@ void AudioEngine::render(const ControlState &controls, int16_t *output,
                     Config::kSampleRate, controls.voicingV2) * envelopeLevel;
             } else if (currentMode_ == SirenMode::Syndrum) {
                 const float frequency = clampFrequency(
-                    tune * exp2f(controls.syndrumSweepOctaves * syndrumLevel));
-                dry = oscillator_.nextSyndrum(controls.syndrumWave, frequency,
+                    tune * exp2f((queuedActivation
+                        ? activation.syndrumSweepOctaves
+                        : controls.syndrumSweepOctaves) * syndrumLevel));
+                dry = oscillator_.nextSyndrum(
+                    queuedActivation ? activation.syndrumWave
+                                     : controls.syndrumWave, frequency,
                                               Config::kSampleRate) *
                       syndrumLevel;
             } else {
@@ -225,7 +275,7 @@ void AudioEngine::render(const ControlState &controls, int16_t *output,
 
         const float wet = delay_.process(dry, feedback, controls.echoLoop,
                                          Config::kSampleRate);
-        const float mixed = dry + (controls.echoCut ? 0.0f : wet * echoLevel);
+        const float mixed = dry + wet * echoLevel * echoCutWet;
         output[i] = toInt16(softClip(mixed * master));
     }
 }

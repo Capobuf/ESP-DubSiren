@@ -54,6 +54,10 @@ class VirtualTransportTests(unittest.TestCase):
         self.assertEqual(len(self.statuses), 1)
         self.assertTrue(self.statuses[0]["virtual"])
         self.assertEqual(self.statuses[0]["protocol"], PROTOCOL_VERSION)
+        self.assertEqual(
+            [pad["sound"] for pad in self.statuses[0]["panel"]["pads"]],
+            ["CLASSIC", "TWO TONE", "LICKSHOT", "PING"],
+        )
 
         commands = (
             "SET PROFILE EXTENDED",
@@ -104,6 +108,32 @@ class VirtualTransportTests(unittest.TestCase):
         self.transport.connect(VIRTUAL_DEVICE)
         self.assertTrue(self.transport.connected)
         self.assertEqual(len(self.statuses), 2)
+
+    def test_shared_panel_priority_combinations_and_one_shot(self):
+        self.transport.send("STREAM 1")
+        self.transport.send("PAD 1 1")
+        self.assertEqual(self.statuses[-1]["panel"]["activePad"], 1)
+        self.transport.send("PAD 2 1")
+        self.assertEqual(self.statuses[-1]["panel"]["activePad"], 2)
+        self.transport.send("PAD 2 0")
+        self.assertEqual(self.statuses[-1]["panel"]["activePad"], 1)
+        self.transport.send("PAD 1 0")
+        self.assertEqual(self.statuses[-1]["panel"]["activePad"], 0)
+
+        menu_revision = self.statuses[-1]["panel"]["menuRevision"]
+        self.transport.send("ENCODER_SWITCH 1")
+        self.transport.send("PAD 3 1")
+        self.transport.send("PAD 3 0")
+        self.transport.send("ENCODER_SWITCH 0")
+        panel = self.statuses[-1]["panel"]
+        self.assertEqual(panel["menuRevision"], menu_revision)
+        self.assertEqual(panel["pads"][0]["variant"], "SINE 2")
+        self.assertEqual(panel["activePad"], 0)
+
+        self._drain()
+        self.transport.send("PAD 4 1")
+        self.transport.send("PAD 4 0")
+        self._assert_non_silent_audio()
 
 
 if __name__ == "__main__":

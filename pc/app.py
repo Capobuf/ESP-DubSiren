@@ -91,6 +91,7 @@ class DubSirenApp:
         self.i2s_ready: bool | None = None
         self.streaming = False
         self.active_output: str | None = None
+        self._has_synchronized = False
         self.pending_sends: dict[str, str] = {}
         self.sliders: dict[str, SliderControl] = {}
         self.momentary_active: set[str] = set()
@@ -411,12 +412,12 @@ class DubSirenApp:
         )
 
     def _slider_changed(self, name: str, value: float, final: bool) -> None:
-        pending = self.pending_sends.pop(name, None)
-        if pending is not None:
-            self.root.after_cancel(pending)
         if final:
+            pending = self.pending_sends.pop(name, None)
+            if pending is not None:
+                self.root.after_cancel(pending)
             self._send_parameter(name, value)
-        else:
+        elif name not in self.pending_sends:
             token = self.root.after(
                 25, lambda n=name: self._flush_slider(n)
             )
@@ -522,6 +523,7 @@ class DubSirenApp:
             messagebox.showerror("Connection", str(exc))
             return
         self.protocol_ok = False
+        self._has_synchronized = False
         self.connection_var.set("Waiting for STATUS...")
         self.connect_button.configure(text="Disconnect")
         self.port_combo.configure(state="disabled")
@@ -533,6 +535,7 @@ class DubSirenApp:
         self.transport.disconnect()
         self._drain_ui_events()
         self.protocol_ok = False
+        self._has_synchronized = False
         self.i2s_ready = None
         self.active_output = None
         self.connection_var.set("Disconnected")
@@ -648,7 +651,9 @@ class DubSirenApp:
                 f"Connected · firmware {status.get('firmware', '?')}"
             )
         self.audio_button.configure(state="normal")
-        self._synchronize_controls()
+        if not self._has_synchronized:
+            self._has_synchronized = True
+            self._synchronize_controls()
 
     def _synchronize_controls(self) -> None:
         selected = self._selected_output()

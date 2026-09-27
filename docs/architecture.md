@@ -3,15 +3,15 @@
 ## Data flow
 
 ```text
-tkinter controls
+tkinter panel actions
       |
 newline commands over USB
       |
-CommandParser -> synchronized ControlStore
+CommandParser -> PerformanceController -> synchronized ControlStore
                          |
                   block snapshot
                          |
-ControlState -> rising-edge detection -> tonal oscillator + gated envelope
+ControlState -> gate + activation sequence -> tonal oscillator + gated envelope
                          |           \-> Syndrum carrier + one-shot envelope
                          |           \-> filtered xorshift noise + one-shot
                          \-> shared Dynamic Sweep (tonal modes only)
@@ -63,7 +63,8 @@ memory. Normal operation writes dry input plus saturated feedback. In loop
 mode the write path instead copies the raw interpolated delayed sample back to
 the ring, while the wet output still passes through the HPF/LPF. This avoids
 reapplying filters and saturation on every loop pass. ECHO CUT only mutes the
-wet mix and therefore leaves loop contents intact.
+wet mix through a dedicated 3 ms smoother and therefore leaves loop contents
+intact. It does not alter feedback, filtering, or the stored Echo Level.
 
 `SmoothedParameter` handles sample-rate tune, depth, rate, feedback, echo level,
 master, DIVE/RISE bend, delay and filter cutoff changes. The LFO retains phase
@@ -77,7 +78,7 @@ a shape-aware deterministic state; oscillator phase, filters and delay tails
 continue uninterrupted. Disabling modulation zeros the LFO pitch contribution
 without stopping its internal phase. CLASSIC always keeps its modulation active.
 
-The same rising-edge detection starts a cached-coefficient `OneShotEnvelope`
+The same activation-event detection starts a cached-coefficient `OneShotEnvelope`
 for Dynamic Sweep. Its decaying value offsets tonal pitch by as much as -2
 octaves and slows LFO rate by as much as 3 octaves, then converges continuously
 to the selected Tune and Rate. `SWEEP=0` bypasses both offsets. Triggering may
@@ -95,7 +96,7 @@ measured render
 telemetry is exposed in STATUS as `renderUs` and `maxRenderUs`. `cycleUs` and
 `maxCycleUs` measure rendering plus the selected output writes.
 
-SYNDRUM and GUNSHOT are transient modes. A TRIGGER rising edge starts their
+SYNDRUM and GUNSHOT are transient modes. A trigger activation event starts their
 independent amplitude envelope; HOLD, the normal LFO, DIVE/RISE and Dynamic
 Sweep do not affect them. Syndrum reuses the oscillator phase for a true sine,
 PolyBLEP-integrated triangle or PolyBLEP square carrier and applies its own
@@ -103,6 +104,27 @@ signed pitch sweep. Gunshot uses a fixed-seed xorshift32 stream blended with an
 existing one-pole low-pass. Neither allocates memory or resets the delay.
 Transitions involving a transient use the same 6 ms transition budget to avoid
 an abrupt boundary.
+
+## Performance controller
+
+`PerformanceController` is compiled into both firmware and VirtualESP. It owns
+the four pad assignments, variant lists, per-pad Hold state, pressed-state
+priority, encoder combinations, selected pad, and the initial Classic / Two
+Tone / Lickshot / Ping bank. Python receives that state in STATUS and does not
+duplicate the sound configurations.
+
+A pad activation updates the mode-specific configuration and an eight-entry
+activation ring in one `ControlStore` write. The audio engine transfers unseen
+events to its local queue and consumes one per block. The sequence is
+independent of the gate, so pressing another pad while one remains held still
+retriggers the appropriate envelope, and rapid press/release pairs survive a
+block snapshot. The active gate uses independent pad states and returns to the
+most recently pressed remaining pad without generating a second event.
+
+The controller changes only voice behavior fields. Tune, Rate, Depth, the four
+echo controls, Master, and the delay/filter state are outside pad recall. The
+audio engine remains monophonic and no additional engine or delay buffer is
+created.
 
 The preset pitch, rate, RC curves, smoothing, transient voicing and saturation
 constants are project tuning points. Timbre calibration against a physical
@@ -118,6 +140,10 @@ synthesis rather than sample playback.
 - a bounded 12-block queue drops the oldest PCM when full;
 - `AudioPlayer` owns the `sounddevice.RawOutputStream` thread and writes silence
   if a block is temporarily unavailable.
+- mouse and keyboard sources are latched independently; focus loss sends
+  `PANEL_RESET` to release momentary actions;
+- dial traffic uses one periodic 25 ms timer per control and sends the final
+  value synchronously on release.
 
 The PC has no oscillator, LFO, envelope, delay or filter implementation.
 

@@ -53,6 +53,32 @@ ECHO_SPIN 0|1
 ECHO_LOOP 0|1
 ```
 
+Playable-panel commands (additive in firmware 0.7.0):
+
+```text
+PAD <1..4> 0|1
+ENCODER_SWITCH 0|1
+PAD_SELECT <1..4>
+PAD_ASSIGN PREV|NEXT
+PAD_VARIANT PREV|NEXT
+PAD_HOLD_TOGGLE
+PAD_CONFIG <1..4> CLASSIC|TWO_TONE|LICKSHOT|PING <variant-index> 0|1
+PANEL_RESET
+```
+
+`PAD` and `ENCODER_SWITCH` are raw front-panel actions interpreted by the shared
+C++ `PerformanceController`. A pad press while the encoder is down is consumed
+as a combination. `PANEL_RESET` releases only momentary panel state; it does not
+reset assignments, Hold configuration, live values, filters, or delay memory.
+`PAD_CONFIG` restores confirmed PC configuration and rejects unknown sounds,
+invalid variants, or Hold on PING.
+
+The controller stores a monotonically increasing activation sequence and a
+small circular queue of the configurations that caused recent attacks. The
+audio task therefore sees distinct rapid attacks even when another pad kept the
+gate high, or when press/release pairs arrived between two block snapshots.
+Returning to a previously held pad does not enqueue an attack.
+
 Development A/B command (V2 is the boot default):
 
 ```text
@@ -113,7 +139,7 @@ An AUDIO payload is always 960 bytes: 480 signed int16 mono PCM samples at
 48,000 Hz. A STATUS payload is UTF-8 JSON. `HELLO` currently returns:
 
 ```json
-{"name":"DubSiren","protocol":1,"sampleRate":48000,"blockSamples":480,"firmware":"0.6.0","renderUs":0,"maxRenderUs":0,"cycleUs":0,"maxCycleUs":0,"maxUsbWriteUs":0,"maxI2sWriteUs":0,"output":"BOTH","i2sReady":true}
+{"name":"DubSiren","protocol":1,"sampleRate":48000,"blockSamples":480,"firmware":"0.7.0","renderUs":0,"maxRenderUs":0,"cycleUs":0,"maxCycleUs":0,"maxUsbWriteUs":0,"maxI2sWriteUs":0,"output":"BOTH","i2sReady":true,"panel":{"revision":1,"menuRevision":0,"selectedPad":1,"currentPad":1,"activePad":0,"pads":[{"sound":"CLASSIC","variant":"SINE 1","variantIndex":0,"hold":false,"holdSupported":true}]}}
 ```
 
 Timing zeros above are placeholders, not measured performance. `renderUs` is the
@@ -121,8 +147,11 @@ most recent 480-sample render time and `maxRenderUs` is the
 maximum observed since boot. `cycleUs` and `maxCycleUs` include selected output
 writes. `maxUsbWriteUs` and `maxI2sWriteUs` isolate the maximum time spent in
 each output write. `output` reports the active routing selection and `i2sReady` reports
-whether I2S initialization succeeded. These are diagnostic/status additions;
-packet framing and protocol version remain unchanged.
+whether I2S initialization succeeded. `panel` reports the controller-owned pad
+state; the example abbreviates the four-entry `pads` array after its first
+entry. Firmware sends an updated STATUS packet when panel state changes.
+These are additive status/command changes: existing commands, packet framing,
+and protocol version 1 remain compatible.
 
 There is no CRC because USB is the reliable transport. The Python parser scans
 again for `DS` after invalid data or lost framing and rejects AUDIO payloads of

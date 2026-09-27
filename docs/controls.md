@@ -6,10 +6,10 @@ position to a physical value and sends that value, in the units shown, over
 USB. It never sends the normalized position.
 
 The default `physical_ui.py` surface presents one instrument and keeps the
-firmware on the EXTENDED profile internally. It exposes Tune, Rate, Echo,
-Delay, Feedback and a single echo Filter macro as the six front knobs; Depth
-and the other secondary parameters are in the encoder menu. The separate rear
-MASTER maps directly to `SET MASTER`.
+firmware on the EXTENDED profile internally. It exposes Tune, Rate, Echo Level,
+Echo Time, Echo Feedback and the single Echo Tone macro as the six front knobs.
+The encoder controls Depth directly on Home; its menu configures one selected
+pad and Echo Loop. The separate rear MASTER maps directly to `SET MASTER`.
 
 The older `app.py` interface remains available as a technical/debug tool. Its
 Profile selector can still exercise the firmware's CLASSIC preset behavior:
@@ -47,10 +47,13 @@ for later listening-based calibration.
 | Low Pass | 200–19000 Hz | 400–16000 Hz / 7000 Hz | logarithmic, echo path only |
 | Master | 0–1 | 0–1 / 0.50 | linear final gain before soft limiter |
 
-`TRIGGER`, the two modulation buttons, `ECHO CUT` and `SPIN` are momentary. A
-global mouse release handler releases them even if the pointer leaves the widget. `HOLD` is
-a toggle and keeps the envelope gate open. `LOOP`, `MOD ON` and `RETRIGGER` are
-checkbuttons.
+The performance surface maps BTN1–BTN4 to independent pad events. The initial
+assignments are CLASSIC, TWO TONE, LICKSHOT, and the Syndrum-based PING. Last
+pressed wins; releasing it returns to a still-held previous pad without a new
+attack. HOLD is per pad and is unavailable for PING. Encoder+BTN1 toggles Hold,
+Encoder+BTN2/BTN3 select the previous/next supported variant, and Encoder+BTN4
+holds ECHO CUT. DIVE/RISE, MOD UP/DOWN, direct TRIGGER, and SPIN remain protocol
+and debug-UI functions, but are not primary panel button assignments.
 
 Dynamic Sweep starts on every rising edge of TRIGGER or HOLD in SINE1, SINE2,
 TEST_TONE, SQUARE, LICKSHOT and SONAR. It begins below/slower than the selected
@@ -63,10 +66,10 @@ its signed Sweep starts above Tune for positive values (falling pitch), below
 Tune for negative values (rising pitch), or at Tune for zero. GUNSHOT is a
 fixed-seed procedural noise burst with simple low-pass shaping and uses DECAY,
 internally constrained to 20–1500 ms. Neither mode uses the normal LFO,
-DIVE/RISE or global Dynamic Sweep. HOLD cannot sustain them: the GUI clears and
-disables HOLD, disables DIVE/RISE, and exposes the small waveform/pitch frame
-only for SYNDRUM. Both transient voices continue through the normal echo and
-master path.
+DIVE/RISE or global Dynamic Sweep. HOLD cannot sustain them. The performance
+controller clears hidden Hold state when entering PING; the debug UI disables
+Hold and DIVE/RISE for transient modes. Both transient voices continue through
+the normal echo and master path.
 
 The CLASSIC LFO alternates between +1 and -1 through unequal RC-like charge and
 fall curves. In MANUAL the buttons are labelled MOD UP and MOD DOWN: UP targets
@@ -89,8 +92,8 @@ anti-click pitch slew. TEST_TONE uses the LFO as a half-cycle gate with 2 ms
 attack and 4 ms release. With MOD ON off, SQUARE stays at its central pitch and
 TEST_TONE stays continuously open.
 
-ECHO CUT mutes only the wet output. It does not clear or stop the delay line, so
-the tail returns on release. SPIN temporarily overrides feedback to 1.05 without
+ECHO CUT mutes only the wet output through a dedicated 3 ms anti-click ramp. It
+does not clear or stop the delay line, so the tail returns on release. SPIN temporarily overrides feedback to 1.05 without
 changing the stored Feedback control. LOOP has precedence: it recirculates the
 raw delayed sample in the existing ring buffer, ignores dry input and feedback
 for the write, and continues underneath ECHO CUT. No second delay buffer is
@@ -98,5 +101,6 @@ allocated. Tune (12 ms), depth (15 ms), LFO rate (20 ms), bend (30 ms),
 feedback (18 ms), echo level and master (15 ms), delay time (25 ms), and echo
 filter cutoffs (18 ms) are smoothed in firmware. Delay movement is additionally
 limited to 2000 ms/s while fractional reads preserve pitch bending. LFO shape
-and Siren Mode transitions last 10 ms and 6 ms respectively. Slider commands are throttled to approximately
-25 ms during dragging and the final release value is sent immediately.
+and Siren Mode transitions last 10 ms and 6 ms respectively. Slider and dial
+commands keep at most one 25 ms timer per control, periodically send the latest
+value during a continuous drag, and send the final value immediately on release.

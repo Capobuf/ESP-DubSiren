@@ -1,14 +1,16 @@
+import tempfile
 import unittest
+from pathlib import Path
 
 from control_ranges import CONTROL_SPECS
 from physical_ui import (
-    LFO_SHAPES,
+    DEFAULT_PANEL_STATE,
     PANEL_KNOBS,
-    TRANSIENT_MODES,
-    VOICE_VALUES,
     PhysicalDubSirenApp,
     echo_filter_frequencies,
     format_echo_filter,
+    load_panel_config,
+    save_panel_config,
 )
 
 
@@ -30,11 +32,21 @@ class FakeWidget:
     def configure(self, **kwargs):
         self.config.update(kwargs)
 
-    def instate(self, _statespec):
-        return self.config.get("state") == "disabled"
-
     def set_pressed(self, pressed):
         self.config["pressed"] = pressed
+
+
+class FakeDial:
+    def __init__(self):
+        self.finishes = 0
+        self.active = True
+        self.value_label = FakeWidget()
+
+    def finish_drag(self):
+        self.finishes += 1
+
+    def set_active(self, active):
+        self.active = active
 
 
 class FakeRoot:
@@ -60,174 +72,138 @@ class FakeTransport:
 
 def make_app() -> PhysicalDubSirenApp:
     app = object.__new__(PhysicalDubSirenApp)
-    app.mode_var = FakeVariable("SINE1")
-    app.lfo_shape_var = FakeVariable("CLASSIC")
-    app.syndrum_wave_var = FakeVariable("SINE")
-    app.modulation_var = FakeVariable(True)
-    app.retrigger_var = FakeVariable(False)
-    app.echo_loop_var = FakeVariable(False)
-    app.hold_var = FakeVariable(False)
     app.output_var = FakeVariable("PC")
+    app.echo_loop_var = FakeVariable(False)
     app.parameter_values = {
         name: spec.default for name, spec in CONTROL_SPECS.items()
     }
+    app.parameter_values["HPF_HZ"] = 60.0
+    app.parameter_values["LPF_HZ"] = 7000.0
     app.echo_filter_macro = 0.0
-    app.mod_down_button = FakeWidget()
-    app.mod_up_button = FakeWidget()
-    app.trigger_button = FakeWidget()
-    app.echo_cut_button = FakeWidget()
+    app.echo_filter_active = False
+    app.display_mode = "home"
+    app.panel_state = {
+        **DEFAULT_PANEL_STATE,
+        "pads": [
+            {"sound": "CLASSIC", "variant": "SINE 1", "variantIndex": 0,
+             "hold": False, "holdSupported": True},
+            {"sound": "TWO TONE", "variant": "RC", "variantIndex": 0,
+             "hold": False, "holdSupported": True},
+            {"sound": "LICKSHOT", "variant": "SAW DOWN", "variantIndex": 0,
+             "hold": False, "holdSupported": True},
+            {"sound": "PING", "variant": "SINE", "variantIndex": 0,
+             "hold": False, "holdSupported": False},
+        ],
+    }
+    app.pad_buttons = [FakeWidget() for _ in range(4)]
+    app.dials = {"LFO_RATE_HZ": FakeDial(), "TUNE_HZ": FakeDial()}
     app.transport = FakeTransport()
     app.active_output = None
-    app.momentary_active = set()
     app.pending_sends = {}
     app.root = FakeRoot()
     app.commands = []
     app._send = app.commands.append
     app._refresh_display = lambda: None
+    app._input_sources = {}
+    app._encoder_sources = set()
+    app._local_modifier_used = False
+    app._save_config_on_status = False
+    app._saved_config_applied = True
+    app._saved_pad_configs = []
     return app
 
 
 class PhysicalUiTests(unittest.TestCase):
-    def test_panel_mapping_is_six_performance_knobs(self):
+    def test_panel_mapping_names_echo_controls_explicitly(self):
         self.assertEqual(
             PANEL_KNOBS,
             (
                 ("TUNE", "TUNE_HZ"),
                 ("RATE", "LFO_RATE_HZ"),
-                ("ECHO", "ECHO_LEVEL"),
-                ("DELAY", "DELAY_MS"),
-                ("FEEDBACK", "FEEDBACK"),
-                ("FILTER", "ECHO_FILTER"),
+                ("ECHO LEVEL", "ECHO_LEVEL"),
+                ("ECHO TIME", "DELAY_MS"),
+                ("ECHO FEEDBACK", "FEEDBACK"),
+                ("ECHO TONE", "ECHO_FILTER"),
             ),
         )
 
-    def test_encoder_menu_hides_secondary_dsp_controls(self):
+    def test_menu_configures_only_selected_pad_and_secondary_echo_loop(self):
         app = make_app()
         keys = [key for key, _label, _value in app._menu_items()]
         self.assertEqual(
             keys,
-            [
-                "VOICE",
-                "LFO_SHAPE",
-                "LFO_DEPTH_OCT",
-                "DECAY_MS",
-                "SWEEP",
-                "SWEEP_MS",
-                "MODULATION",
-                "RETRIGGER",
-                "ECHO_LOOP",
-                "HOLD",
-                "BACK",
-            ],
+            ["PAD", "ASSIGNMENT", "VARIANT", "HOLD", "ECHO_LOOP", "BACK"],
         )
-
-        app.mode_var.set("SYNDRUM")
+        app.panel_state["selectedPad"] = 4
         keys = [key for key, _label, _value in app._menu_items()]
         self.assertEqual(
-            keys,
-            [
-                "VOICE",
-                "SYNDRUM_WAVE",
-                "SYNDRUM_SWEEP",
-                "DECAY_MS",
-                "ECHO_LOOP",
-                "BACK",
-            ],
+            keys, ["PAD", "ASSIGNMENT", "VARIANT", "ECHO_LOOP", "BACK"]
         )
 
-        app.mode_var.set("GUNSHOT")
-        keys = [key for key, _label, _value in app._menu_items()]
-        self.assertEqual(keys, ["VOICE", "DECAY_MS", "ECHO_LOOP", "BACK"])
-
-    def test_transient_voice_clears_hold_and_disables_mod_buttons(self):
+    def test_home_encoder_changes_depth_not_voice(self):
         app = make_app()
-        app.hold_var.set(True)
+        app.display_mode = "home"
+        app.overlay = None
+        app._show_overlay = lambda *args: setattr(app, "overlay", args)
 
-        app._set_mode("GUNSHOT")
+        app._encoder_rotate(1)
 
-        self.assertIn("GUNSHOT", TRANSIENT_MODES)
-        self.assertFalse(app.hold_var.get())
-        self.assertEqual(
-            app.commands[:2],
-            ["HOLD 0", "SET MODE GUNSHOT"],
-        )
-        self.assertEqual(
-            app.mod_down_button.config["state"],
-            "disabled",
-        )
-        self.assertEqual(
-            app.mod_up_button.config["state"],
-            "disabled",
-        )
+        self.assertEqual(app.commands[-1].split()[:2], ["SET", "LFO_DEPTH_OCT"])
+        self.assertEqual(app.overlay[0], "DEPTH")
+        self.assertFalse(any(command.startswith("SET MODE") for command in app.commands))
 
-    def test_manual_lfo_changes_performance_button_labels(self):
+    def test_pad_sources_overlap_and_keyboard_repeat_is_ignored(self):
         app = make_app()
-        app.lfo_shape_var.set("MANUAL")
 
-        app._update_button_labels()
+        app._pad_down(1, "key-1")
+        app._pad_down(1, "key-1")
+        app._pad_down(1, "mouse")
+        app._pad_up(1, "mouse")
+        self.assertEqual(app.commands, ["PAD 1 1"])
+        self.assertTrue(app.pad_buttons[0].config["pressed"])
 
-        self.assertEqual(
-            app.mod_down_button.config["text"],
-            "MOD DOWN",
-        )
-        self.assertEqual(
-            app.mod_up_button.config["text"],
-            "MOD UP",
-        )
+        app._pad_up(1, "key-1")
+        self.assertEqual(app.commands, ["PAD 1 1", "PAD 1 0"])
+        self.assertFalse(app.pad_buttons[0].config["pressed"])
 
-        app.lfo_shape_var.set(LFO_SHAPES[0])
-        app._update_button_labels()
-        self.assertEqual(
-            app.mod_down_button.config["text"],
-            "DIVE",
-        )
-        self.assertEqual(
-            app.mod_up_button.config["text"],
-            "RISE",
-        )
+    def test_mouse_release_does_not_cancel_keyboard_pad(self):
+        app = make_app()
+        app._pad_down(2, "key-2")
+        app._pad_down(2, "mouse")
+
+        app._global_release(object())
+
+        self.assertEqual(app.commands, ["PAD 2 1"])
+        self.assertTrue(app.pad_buttons[1].config["pressed"])
+        self.assertEqual(app.dials["TUNE_HZ"].finishes, 1)
+
+    def test_full_release_uses_panel_reset_without_erasing_configuration(self):
+        app = make_app()
+        app._pad_down(3, "key-3")
+        app._encoder_sources.add("key-e")
+
+        app._global_release()
+
+        self.assertEqual(app.commands[-1], "PANEL_RESET")
+        self.assertEqual(app._input_sources, {})
+        self.assertEqual(app._encoder_sources, set())
 
     def test_echo_filter_macro_reuses_existing_hpf_lpf(self):
         app = make_app()
+        for macro, expected in (
+            (0.0, (60.0, 16000.0)),
+            (-1.0, (60.0, 400.0)),
+            (1.0, (4000.0, 16000.0)),
+        ):
+            app.echo_filter_macro = macro
+            app._apply_echo_filter()
+            self.assertAlmostEqual(app.parameter_values["HPF_HZ"], expected[0])
+            self.assertAlmostEqual(app.parameter_values["LPF_HZ"], expected[1])
 
-        app.echo_filter_macro = 0.0
-        app._apply_echo_filter()
-        self.assertEqual(
-            app.parameter_values["HPF_HZ"],
-            60.0,
-        )
-        self.assertEqual(
-            app.parameter_values["LPF_HZ"],
-            16000.0,
-        )
-
-        app.echo_filter_macro = -1.0
-        app._apply_echo_filter()
-        self.assertAlmostEqual(
-            app.parameter_values["HPF_HZ"],
-            60.0,
-        )
-        self.assertAlmostEqual(
-            app.parameter_values["LPF_HZ"],
-            400.0,
-        )
-
-        app.echo_filter_macro = 1.0
-        app._apply_echo_filter()
-        self.assertAlmostEqual(
-            app.parameter_values["HPF_HZ"],
-            4000.0,
-        )
-        self.assertAlmostEqual(
-            app.parameter_values["LPF_HZ"],
-            16000.0,
-        )
-
-    def test_echo_filter_has_a_flat_deadband_and_smooth_safe_sides(self):
+    def test_echo_filter_has_flat_deadband_and_logarithmic_sides(self):
         self.assertEqual(format_echo_filter(-0.05), "FLAT")
         self.assertEqual(format_echo_filter(0.05), "FLAT")
-        self.assertEqual(echo_filter_frequencies(-0.05), (60.0, 16000.0))
         self.assertEqual(echo_filter_frequencies(0.05), (60.0, 16000.0))
-
         low_hpf, low_lpf = echo_filter_frequencies(-0.5)
         high_hpf, high_lpf = echo_filter_frequencies(0.5)
         self.assertEqual(low_hpf, 60.0)
@@ -237,63 +213,60 @@ class PhysicalUiTests(unittest.TestCase):
         self.assertLess(high_hpf, 4000.0)
         self.assertEqual(high_lpf, 16000.0)
 
-        low_end = echo_filter_frequencies(-1.0)
-        high_end = echo_filter_frequencies(1.0)
-        self.assertAlmostEqual(low_end[0], 60.0)
-        self.assertAlmostEqual(low_end[1], 400.0)
-        self.assertAlmostEqual(high_end[0], 4000.0)
-        self.assertAlmostEqual(high_end[1], 16000.0)
-        self.assertEqual(format_echo_filter(-1.0), "LP 100%")
-        self.assertEqual(format_echo_filter(1.0), "HP 100%")
-
-    def test_filter_throttle_is_cancelled_and_final_value_is_always_sent(self):
+    def test_knob_throttle_keeps_one_timer_and_sends_latest_periodically(self):
         app = make_app()
         app._show_overlay = lambda *_args: None
 
         app._panel_parameter_changed("ECHO_FILTER", -0.4, False)
-        first_token = app.pending_sends["ECHO_FILTER"]
+        token = app.pending_sends["ECHO_FILTER"]
         app._panel_parameter_changed("ECHO_FILTER", 0.6, False)
-        second_token = app.pending_sends["ECHO_FILTER"]
+        self.assertEqual(app.pending_sends["ECHO_FILTER"], token)
+        self.assertEqual(app.root.cancelled, [])
 
-        self.assertIn(first_token, app.root.cancelled)
-        self.assertNotEqual(first_token, second_token)
-        self.assertEqual(app.commands, [])
-
-        app._panel_parameter_changed("ECHO_FILTER", 1.0, True)
-        self.assertIn(second_token, app.root.cancelled)
-        self.assertNotIn("ECHO_FILTER", app.pending_sends)
+        app.root.callbacks[token]()
+        self.assertEqual(len(app.commands), 2)
+        expected_hpf, expected_lpf = echo_filter_frequencies(0.6)
         self.assertEqual(
-            app.commands[-2:],
-            ["SET HPF_HZ 4000", "SET LPF_HZ 16000"],
+            app.commands,
+            [f"SET HPF_HZ {expected_hpf:.6g}", f"SET LPF_HZ {expected_lpf:.6g}"],
         )
+        app._panel_parameter_changed("ECHO_FILTER", 1.0, False)
+        final_token = app.pending_sends["ECHO_FILTER"]
+        app._panel_parameter_changed("ECHO_FILTER", 1.0, True)
+        self.assertIn(final_token, app.root.cancelled)
+        self.assertEqual(app.commands[-2:], ["SET HPF_HZ 4000", "SET LPF_HZ 16000"])
 
-    def test_mode_change_releases_active_momentary_controls(self):
+    def test_sync_preserves_unrepresented_filter_until_tone_is_moved(self):
         app = make_app()
-        app.momentary_active.update(("TRIGGER", "MOD_DOWN"))
-
-        app._set_mode("GUNSHOT")
-
-        self.assertEqual(app.momentary_active, set())
-        self.assertIn("TRIGGER 0", app.commands)
-        self.assertIn("MOD_DOWN 0", app.commands)
-        self.assertEqual(app.commands[-1], "SET MODE GUNSHOT")
-
-    def test_synchronization_keeps_extended_as_internal_engine_profile(self):
-        app = make_app()
-        app.mode_var.set(VOICE_VALUES[4])
-        app.lfo_shape_var.set("SAW_DOWN")
-        app.echo_loop_var.set(True)
-
         app._synchronize_controls()
 
-        self.assertIn("SET PROFILE EXTENDED", app.commands)
-        self.assertIn("SET MODE LICKSHOT", app.commands)
-        self.assertIn("SET LFO_SHAPE SAW_DOWN", app.commands)
-        self.assertIn("ECHO_LOOP 1", app.commands)
-        self.assertIn("ECHO_SPIN 0", app.commands)
-        self.assertIn("TRIGGER 0", app.commands)
-        self.assertIn("MOD_UP 0", app.commands)
-        self.assertIn("MOD_DOWN 0", app.commands)
+        self.assertNotIn("SET HPF_HZ 60", app.commands)
+        self.assertNotIn("SET LPF_HZ 7000", app.commands)
+        self.assertFalse(any(command.startswith("SET MODE") for command in app.commands))
+        self.assertIn("PANEL_RESET", app.commands)
+
+        app.commands.clear()
+        app.echo_filter_active = True
+        app._synchronize_controls()
+        self.assertIn("SET HPF_HZ 60", app.commands)
+        self.assertIn("SET LPF_HZ 16000", app.commands)
+
+    def test_panel_configuration_round_trip(self):
+        pads = [
+            {"sound": "CLASSIC", "variantIndex": 0, "hold": False},
+            {"sound": "TWO TONE", "variantIndex": 0, "hold": False},
+            {"sound": "LICKSHOT", "variantIndex": 0, "hold": False},
+            {"sound": "PING", "variantIndex": 0, "hold": False},
+        ]
+        pads[1]["variantIndex"] = 2
+        pads[2]["hold"] = True
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "panel.json"
+            save_panel_config(path, pads)
+            loaded = load_panel_config(path)
+        self.assertEqual(loaded[1]["variantIndex"], 2)
+        self.assertNotIn("hold", loaded[2])
+        self.assertNotIn("selectedPad", loaded[0])
 
 
 if __name__ == "__main__":

@@ -70,4 +70,44 @@ VIRTUAL_ESP_API int virtual_esp_block_samples() {
     return static_cast<int>(Config::kBlockSamples);
 }
 
+VIRTUAL_ESP_API unsigned virtual_esp_panel_revision() {
+    return ready() ? parser->panelRevision() : 0;
+}
+
+VIRTUAL_ESP_API unsigned virtual_esp_panel_menu_revision() {
+    return ready() ? parser->panelMenuRevision() : 0;
+}
+
+VIRTUAL_ESP_API int virtual_esp_selected_pad() {
+    return ready() ? static_cast<int>(parser->selectedPad()) : 0;
+}
+
+VIRTUAL_ESP_API int virtual_esp_current_pad() {
+    return ready() ? static_cast<int>(parser->currentPad()) : 0;
+}
+
+VIRTUAL_ESP_API int virtual_esp_active_pad() {
+    return ready() ? parser->activePad() : 0;
+}
+
+VIRTUAL_ESP_API const char *virtual_esp_pad_sound(unsigned pad) {
+    return ready() ? parser->padSoundName(pad) : "UNKNOWN";
+}
+
+VIRTUAL_ESP_API const char *virtual_esp_pad_variant_name(unsigned pad) {
+    return ready() ? parser->padVariantName(pad) : "UNKNOWN";
+}
+
+VIRTUAL_ESP_API unsigned virtual_esp_pad_variant(unsigned pad) {
+    return ready() ? parser->padVariant(pad) : 0;
+}
+
+VIRTUAL_ESP_API int virtual_esp_pad_hold(unsigned pad) {
+    return ready() && parser->padHold(pad) ? 1 : 0;
+}
+
+VIRTUAL_ESP_API int virtual_esp_pad_hold_supported(unsigned pad) {
+    return ready() && parser->padHoldSupported(pad) ? 1 : 0;
+}
+
 }  // extern "C"

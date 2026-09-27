@@ -1,45 +1,13 @@
+import json
 import math
+import os
 import tkinter as tk
+from pathlib import Path
 from tkinter import ttk
 
 from app import DubSirenApp, OUTPUT_VALUES
 from control_ranges import CONTROL_SPECS, ControlSpec
 
-VOICE_VALUES = (
-    "SINE1",
-    "SINE2",
-    "TEST_TONE",
-    "SQUARE",
-    "LICKSHOT",
-    "SONAR",
-    "SYNDRUM",
-    "GUNSHOT",
-)
-VOICE_LABELS = {
-    "SINE1": "SINE 1",
-    "SINE2": "SINE 2",
-    "TEST_TONE": "TEST TONE",
-    "SQUARE": "SQUARE",
-    "LICKSHOT": "LICKSHOT",
-    "SONAR": "SONAR",
-    "SYNDRUM": "SYNDRUM",
-    "GUNSHOT": "GUNSHOT",
-}
-TRANSIENT_MODES = ("SYNDRUM", "GUNSHOT")
-LFO_SHAPES = (
-    "CLASSIC",
-    "TRIANGLE",
-    "SQUARE",
-    "SAW_DOWN",
-    "SAW_UP",
-    "ASYM_DOWN",
-    "ASYM_UP",
-    "PULSE_25",
-    "PULSE_75",
-    "MANUAL",
-)
-LFO_LABELS = {value: value.replace("_", " ") for value in LFO_SHAPES}
-SYNDRUM_WAVES = ("SINE", "TRIANGLE", "SQUARE")
 ECHO_FILTER_DEADBAND = 0.05
 
 
@@ -71,11 +39,63 @@ ECHO_FILTER_SPEC = ControlSpec(-1.0, 1.0, 0.0, format_echo_filter)
 PANEL_KNOBS = (
     ("TUNE", "TUNE_HZ"),
     ("RATE", "LFO_RATE_HZ"),
-    ("ECHO", "ECHO_LEVEL"),
-    ("DELAY", "DELAY_MS"),
-    ("FEEDBACK", "FEEDBACK"),
-    ("FILTER", "ECHO_FILTER"),
+    ("ECHO LEVEL", "ECHO_LEVEL"),
+    ("ECHO TIME", "DELAY_MS"),
+    ("ECHO FEEDBACK", "FEEDBACK"),
+    ("ECHO TONE", "ECHO_FILTER"),
 )
+
+DEFAULT_PANEL_STATE = {
+    "revision": 0,
+    "menuRevision": 0,
+    "selectedPad": 1,
+    "currentPad": 1,
+    "activePad": 0,
+    "pads": [
+        {"sound": f"PAD {number}", "variant": "CONNECT", "variantIndex": 0,
+         "hold": False, "holdSupported": False}
+        for number in range(1, 5)
+    ],
+}
+
+
+def panel_config_path() -> Path:
+    base = Path(os.environ.get("APPDATA", Path.home())) / "ESP-DubSiren"
+    return base / "panel.json"
+
+
+def load_panel_config(path: Path) -> list[dict]:
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError, TypeError):
+        return []
+    pads = data.get("pads") if isinstance(data, dict) else None
+    if not isinstance(pads, list) or len(pads) != 4:
+        return []
+    result = []
+    for pad in pads:
+        if not isinstance(pad, dict):
+            return []
+        sound = pad.get("sound")
+        variant = pad.get("variantIndex")
+        if not isinstance(sound, str) or not isinstance(variant, int):
+            return []
+        result.append({"sound": sound, "variantIndex": variant})
+    return result
+
+
+def save_panel_config(path: Path, pads: list[dict]) -> None:
+    payload = {
+        "pads": [
+            {
+                "sound": pad["sound"],
+                "variantIndex": pad["variantIndex"],
+            }
+            for pad in pads
+        ]
+    }
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
 
 
 class DialControl(ttk.Frame):
@@ -96,6 +116,7 @@ class DialControl(ttk.Frame):
         self._diameter = diameter
         self._drag_y: int | None = None
         self._drag_position = spec.to_normalized(spec.default)
+        self._active = True
 
         ttk.Label(self, text=label, anchor="center").pack(fill="x")
         self.canvas = tk.Canvas(
@@ -126,11 +147,13 @@ class DialControl(ttk.Frame):
             self.callback(self.command_name, self.value, final)
 
     def _pressed(self, event) -> None:
+        if not self._active:
+            return
         self._drag_y = event.y_root
         self._drag_position = self.spec.to_normalized(self.value)
 
     def _dragged(self, event) -> None:
-        if self._drag_y is None:
+        if self._drag_y is None or not self._active:
             return
         # Vertical dragging is predictable for a virtual rotary control and
         # does not require the pointer to trace a circular path.
@@ -139,16 +162,29 @@ class DialControl(ttk.Frame):
         self.set_value(self.spec.from_normalized(position), notify=True, final=False)
 
     def _released(self, _event) -> None:
-        self._drag_y = None
-        self.callback(self.command_name, self.value, True)
+        self.finish_drag()
 
     def _wheel(self, event) -> None:
         self._step(0.02 if event.delta > 0 else -0.02, True)
 
     def _step(self, delta: float, final: bool) -> None:
+        if not self._active:
+            return
         position = self.spec.to_normalized(self.value)
         position = max(0.0, min(1.0, position + delta))
         self.set_value(self.spec.from_normalized(position), notify=True, final=final)
+
+    def finish_drag(self) -> None:
+        if self._drag_y is None:
+            return
+        self._drag_y = None
+        self.callback(self.command_name, self.value, True)
+
+    def set_active(self, active: bool) -> None:
+        self._active = active
+        self.canvas.configure(cursor="sb_v_double_arrow" if active else "arrow")
+        self.label_state = "normal" if active else "disabled"
+        self._draw()
 
     def _draw(self) -> None:
         self.canvas.delete("all")
@@ -180,7 +216,8 @@ class DialControl(ttk.Frame):
         )
         x2 = cx + math.cos(angle) * radius * 0.72
         y2 = cy - math.sin(angle) * radius * 0.72
-        self.canvas.create_line(cx, cy, x2, y2, fill="#e7e9ec", width=4)
+        pointer = "#e7e9ec" if self._active else "#687078"
+        self.canvas.create_line(cx, cy, x2, y2, fill=pointer, width=4)
         self.canvas.create_oval(
             cx - 4,
             cy - 4,
@@ -301,28 +338,32 @@ class PanelDisplay(ttk.Frame):
 
     def render_home(
         self,
-        voice: str,
-        shape: str,
+        selected_pad: int,
+        current_pad: int,
+        sound: str,
+        variant: str,
+        depth: str,
         hold: bool,
-        modulation: bool,
         echo_loop: bool,
         connected: bool,
     ) -> None:
         self.canvas.delete("all")
         self._text(18, 18, "ESP DUB SIREN", 12, "#6d9079", "nw")
-        self._text(170, 63, VOICE_LABELS[voice], 28, "#d9f5df", "center")
-        self._text(170, 102, LFO_LABELS[shape], 13, "#9cc9a6", "center")
+        self._text(315, 18, f"PAD {selected_pad}", 11, "#6d9079", "ne")
+        self._text(170, 62, sound, 26, "#d9f5df", "center")
+        self._text(170, 98, variant, 12, "#9cc9a6", "center")
+        self._text(170, 120, f"DEPTH {depth}", 10, "#799382", "center")
         flags = []
         if hold:
             flags.append("HOLD")
-        if not modulation:
-            flags.append("MOD OFF")
         if echo_loop:
             flags.append("LOOP")
         if connected:
             flags.append("LINK")
-        self._text(170, 143, "  ·  ".join(flags) or "READY", 11, "#6d9079", "center")
-        self._text(170, 166, "ENCODER: rotate voice · press menu", 9, "#53695a", "center")
+        if current_pad != selected_pad:
+            flags.append(f"LIVE P{current_pad}")
+        self._text(170, 146, "  ·  ".join(flags) or "READY", 10, "#6d9079", "center")
+        self._text(170, 168, "ENC: depth · press menu", 9, "#53695a", "center")
 
     def render_overlay(self, title: str, value: str) -> None:
         self.canvas.delete("all")
@@ -387,10 +428,13 @@ class PanelDisplay(ttk.Frame):
 
 
 class EncoderControl(ttk.Frame):
-    def __init__(self, parent: tk.Misc, rotate_callback, press_callback) -> None:
+    def __init__(
+        self, parent: tk.Misc, rotate_callback, press_callback, release_callback
+    ) -> None:
         super().__init__(parent)
         self.rotate_callback = rotate_callback
         self.press_callback = press_callback
+        self.release_callback = release_callback
 
         ttk.Label(self, text="ENCODER", anchor="center").pack(fill="x")
         self.canvas = tk.Canvas(
@@ -413,7 +457,8 @@ class EncoderControl(ttk.Frame):
             fill="#c9d0d7",
             font=("Segoe UI", 8, "bold"),
         )
-        self.canvas.bind("<Button-1>", lambda _event: press_callback())
+        self.canvas.bind("<ButtonPress-1>", lambda _event: press_callback("mouse"))
+        self.canvas.bind("<ButtonRelease-1>", lambda _event: release_callback("mouse"))
         self.canvas.bind("<MouseWheel>", self._wheel)
         self.canvas.bind("<Button-4>", lambda _event: rotate_callback(-1))
         self.canvas.bind("<Button-5>", lambda _event: rotate_callback(1))
@@ -429,7 +474,7 @@ class EncoderControl(ttk.Frame):
         ttk.Button(
             emulator,
             text="PRESS",
-            command=press_callback,
+            command=self._click,
         ).pack(side="left", expand=True, fill="x", padx=3)
         ttk.Button(
             emulator,
@@ -441,6 +486,10 @@ class EncoderControl(ttk.Frame):
     def _wheel(self, event) -> None:
         self.rotate_callback(-1 if event.delta > 0 else 1)
 
+    def _click(self) -> None:
+        self.press_callback("button")
+        self.release_callback("button")
+
 
 class PhysicalDubSirenApp(DubSirenApp):
     def __init__(self, root: tk.Tk) -> None:
@@ -448,8 +497,19 @@ class PhysicalDubSirenApp(DubSirenApp):
             name: spec.default for name, spec in CONTROL_SPECS.items()
         }
         self.parameter_values["HPF_HZ"] = 60.0
-        self.parameter_values["LPF_HZ"] = 16000.0
+        self.parameter_values["LPF_HZ"] = 7000.0
         self.echo_filter_macro = 0.0
+        self.echo_filter_active = False
+        self.panel_state = json.loads(json.dumps(DEFAULT_PANEL_STATE))
+        self._last_menu_revision = 0
+        self._panel_status_seen = False
+        self._input_sources: dict[str, set[str]] = {}
+        self._encoder_sources: set[str] = set()
+        self._local_modifier_used = False
+        self._save_config_on_status = False
+        self._saved_config_applied = False
+        self._panel_config_path = panel_config_path()
+        self._saved_pad_configs = load_panel_config(self._panel_config_path)
         self.display_mode = "home"
         self.menu_index = 0
         self.menu_editing = False
@@ -458,6 +518,8 @@ class PhysicalDubSirenApp(DubSirenApp):
         super().__init__(root)
         self.root.title("ESP Dub Siren")
         self.root.minsize(980, 700)
+        self._bind_keyboard()
+        self.root.bind("<FocusOut>", self._focus_out, add="+")
         self._refresh_display()
 
     def _build_ui(self) -> None:
@@ -556,7 +618,8 @@ class PhysicalDubSirenApp(DubSirenApp):
         self.encoder = EncoderControl(
             panel,
             self._encoder_rotate,
-            self._encoder_press,
+            self._encoder_down,
+            self._encoder_up,
         )
         self.encoder.grid(
             row=0,
@@ -578,17 +641,12 @@ class PhysicalDubSirenApp(DubSirenApp):
         for column in range(4):
             buttons.columnconfigure(column, weight=1, uniform="buttons")
 
-        self.trigger_button = PanelButton(buttons, text="TRIGGER")
-        self.mod_down_button = PanelButton(buttons, text="DIVE")
-        self.mod_up_button = PanelButton(buttons, text="RISE")
-        self.echo_cut_button = PanelButton(buttons, text="ECHO CUT")
+        self.pad_buttons = [
+            PanelButton(buttons, text=f"BTN{number} · PAD {number}")
+            for number in range(1, 5)
+        ]
         for index, button in enumerate(
-            (
-                self.trigger_button,
-                self.mod_down_button,
-                self.mod_up_button,
-                self.echo_cut_button,
-            )
+            self.pad_buttons
         ):
             button.grid(
                 row=0,
@@ -597,10 +655,11 @@ class PhysicalDubSirenApp(DubSirenApp):
                 padx=6,
             )
 
-        self._bind_momentary(self.trigger_button, "TRIGGER")
-        self._bind_momentary(self.mod_down_button, "MOD_DOWN")
-        self._bind_momentary(self.mod_up_button, "MOD_UP")
-        self._bind_momentary(self.echo_cut_button, "ECHO_CUT")
+            button.bind(
+                "<ButtonPress-1>",
+                lambda _event, pad=index + 1: self._pad_down(pad, "mouse"),
+                add="+",
+            )
 
         rear = ttk.LabelFrame(outer, text="REAR / MASTER", padding=8)
         rear.pack(fill="x", pady=(10, 0))
@@ -622,7 +681,13 @@ class PhysicalDubSirenApp(DubSirenApp):
             ),
             justify="left",
         ).pack(side="left", fill="x", expand=True, padx=12)
-        self._update_button_labels()
+        ttk.Label(
+            rear,
+            text="KEYS  1–4 pads   [ / ] encoder   E press",
+            justify="right",
+        ).pack(side="right", padx=12)
+        self.dials["ECHO_FILTER"].value_label.configure(text="CUSTOM 60 Hz / 7 kHz")
+        self._update_pad_labels()
 
     def _panel_parameter_changed(
         self,
@@ -632,7 +697,8 @@ class PhysicalDubSirenApp(DubSirenApp):
     ) -> None:
         if name == "ECHO_FILTER":
             self.echo_filter_macro = value
-            self._show_overlay("FILTER", format_echo_filter(value))
+            self.echo_filter_active = True
+            self._show_overlay("ECHO TONE", format_echo_filter(value))
         else:
             self.parameter_values[name] = value
             self._show_overlay(
@@ -640,16 +706,15 @@ class PhysicalDubSirenApp(DubSirenApp):
                 CONTROL_SPECS[name].formatter(value),
             )
 
-        pending = self.pending_sends.pop(name, None)
-        if pending is not None:
-            self.root.after_cancel(pending)
-
         if final:
+            pending = self.pending_sends.pop(name, None)
+            if pending is not None:
+                self.root.after_cancel(pending)
             if name == "ECHO_FILTER":
                 self._apply_echo_filter()
             else:
                 self._send_parameter(name, value)
-        else:
+        elif name not in self.pending_sends:
             callback = (
                 self._flush_echo_filter
                 if name == "ECHO_FILTER"
@@ -670,10 +735,10 @@ class PhysicalDubSirenApp(DubSirenApp):
             "TUNE_HZ": "TUNE",
             "LFO_RATE_HZ": "RATE",
             "LFO_DEPTH_OCT": "DEPTH",
-            "DELAY_MS": "DELAY",
-            "FEEDBACK": "FEEDBACK",
-            "ECHO_LEVEL": "ECHO",
-            "ECHO_FILTER": "FILTER",
+            "DELAY_MS": "ECHO TIME",
+            "FEEDBACK": "ECHO FEEDBACK",
+            "ECHO_LEVEL": "ECHO LEVEL",
+            "ECHO_FILTER": "ECHO TONE",
             "MASTER": "MASTER",
             "DECAY_MS": "DECAY",
             "SWEEP": "SWEEP",
@@ -683,12 +748,12 @@ class PhysicalDubSirenApp(DubSirenApp):
 
     def _encoder_rotate(self, direction: int) -> None:
         if self.display_mode == "home":
-            current = VOICE_VALUES.index(self.mode_var.get())
-            self._set_mode(
-                VOICE_VALUES[
-                    (current + direction) % len(VOICE_VALUES)
-                ]
-            )
+            self._step_parameter("LFO_DEPTH_OCT", direction)
+            value = self.parameter_values["LFO_DEPTH_OCT"]
+            current = int(self.panel_state.get("currentPad", self.panel_state["selectedPad"]))
+            ping = self.panel_state["pads"][current - 1]["sound"] == "PING"
+            title = "DEPTH · STORED (PING N/A)" if ping else "DEPTH"
+            self._show_overlay(title, CONTROL_SPECS["LFO_DEPTH_OCT"].formatter(value))
             return
 
         items = self._menu_items()
@@ -703,135 +768,58 @@ class PhysicalDubSirenApp(DubSirenApp):
             ) % len(items)
         self._refresh_display()
 
-    def _encoder_press(self) -> None:
-        if self.display_mode == "home":
-            self.display_mode = "menu"
-            self.menu_index = 0
-            self.menu_editing = False
-            self._refresh_display()
+    def _encoder_down(self, source: str) -> None:
+        if self.display_mode != "home":
+            self._menu_press()
             return
+        was_up = not self._encoder_sources
+        self._encoder_sources.add(source)
+        if was_up:
+            self._local_modifier_used = False
+            self._send("ENCODER_SWITCH 1")
 
+    def _encoder_up(self, source: str) -> None:
+        if self.display_mode != "home":
+            return
+        if source not in self._encoder_sources:
+            return
+        self._encoder_sources.discard(source)
+        if self._encoder_sources:
+            return
+        if self.transport.connected:
+            self._send("ENCODER_SWITCH 0")
+        elif not self._local_modifier_used:
+            self._open_menu()
+
+    def _open_menu(self) -> None:
+        self.display_mode = "menu"
+        self.menu_index = 0
+        self.menu_editing = False
+        self._refresh_display()
+
+    def _menu_press(self) -> None:
         items = self._menu_items()
         key = items[self.menu_index][0]
         if key == "BACK":
             self.display_mode = "home"
             self.menu_editing = False
-        elif key in (
-            "MODULATION",
-            "RETRIGGER",
-            "ECHO_LOOP",
-            "HOLD",
-        ):
+        elif key in ("ECHO_LOOP", "HOLD"):
             self._edit_menu_item(key, 1)
         else:
             self.menu_editing = not self.menu_editing
         self._refresh_display()
 
     def _menu_items(self) -> list[tuple[str, str, str]]:
+        selected = int(self.panel_state["selectedPad"])
+        pad = self.panel_state["pads"][selected - 1]
         items = [
-            (
-                "VOICE",
-                "VOICE",
-                VOICE_LABELS[self.mode_var.get()],
-            ),
+            ("PAD", "CONFIGURE PAD", str(selected)),
+            ("ASSIGNMENT", "ASSIGNMENT", pad["sound"]),
+            ("VARIANT", "VARIANT", pad["variant"]),
         ]
-
-        if self.mode_var.get() == "SYNDRUM":
-            items.extend(
-                [
-                    (
-                        "SYNDRUM_WAVE",
-                        "DRUM WAVE",
-                        self.syndrum_wave_var.get(),
-                    ),
-                    (
-                        "SYNDRUM_SWEEP",
-                        "DRUM SWEEP",
-                        CONTROL_SPECS["SYNDRUM_SWEEP"].formatter(
-                            self.parameter_values["SYNDRUM_SWEEP"]
-                        ),
-                    ),
-                ]
-            )
-
-        if self.mode_var.get() in TRANSIENT_MODES:
-            items.extend(
-                [
-                    (
-                        "DECAY_MS",
-                        "DECAY",
-                        CONTROL_SPECS["DECAY_MS"].formatter(
-                            self.parameter_values["DECAY_MS"]
-                        ),
-                    ),
-                    (
-                        "ECHO_LOOP",
-                        "ECHO LOOP",
-                        "ON" if self.echo_loop_var.get() else "OFF",
-                    ),
-                    ("BACK", "BACK", ""),
-                ]
-            )
-            return items
-
-        items.extend(
-            [
-            (
-                "LFO_SHAPE",
-                "LFO SHAPE",
-                LFO_LABELS[self.lfo_shape_var.get()],
-            ),
-            (
-                "LFO_DEPTH_OCT",
-                "DEPTH",
-                CONTROL_SPECS["LFO_DEPTH_OCT"].formatter(
-                    self.parameter_values["LFO_DEPTH_OCT"]
-                ),
-            ),
-            (
-                "DECAY_MS",
-                "DECAY",
-                CONTROL_SPECS["DECAY_MS"].formatter(
-                    self.parameter_values["DECAY_MS"]
-                ),
-            ),
-            (
-                "SWEEP",
-                "SWEEP",
-                CONTROL_SPECS["SWEEP"].formatter(
-                    self.parameter_values["SWEEP"]
-                ),
-            ),
-            (
-                "SWEEP_MS",
-                "SWEEP TIME",
-                CONTROL_SPECS["SWEEP_MS"].formatter(
-                    self.parameter_values["SWEEP_MS"]
-                ),
-            ),
-            (
-                "MODULATION",
-                "MODULATION",
-                "ON" if self.modulation_var.get() else "OFF",
-            ),
-            (
-                "RETRIGGER",
-                "RETRIGGER",
-                "ON" if self.retrigger_var.get() else "OFF",
-            ),
-            (
-                "ECHO_LOOP",
-                "ECHO LOOP",
-                "ON" if self.echo_loop_var.get() else "OFF",
-            ),
-            (
-                "HOLD",
-                "HOLD",
-                "ON" if self.hold_var.get() else "OFF",
-            ),
-            ]
-        )
-
+        if pad["holdSupported"]:
+            items.append(("HOLD", "HOLD", "ON" if pad["hold"] else "OFF"))
+        items.append(("ECHO_LOOP", "ECHO LOOP", "ON" if self.echo_loop_var.get() else "OFF"))
         items.append(("BACK", "BACK", ""))
         return items
 
@@ -840,71 +828,22 @@ class PhysicalDubSirenApp(DubSirenApp):
         key: str,
         direction: int,
     ) -> None:
-        if key == "VOICE":
-            current = VOICE_VALUES.index(self.mode_var.get())
-            self._set_mode(
-                VOICE_VALUES[
-                    (current + direction) % len(VOICE_VALUES)
-                ]
-            )
-        elif key == "LFO_SHAPE":
-            self._global_release()
-            current = LFO_SHAPES.index(self.lfo_shape_var.get())
-            self.lfo_shape_var.set(
-                LFO_SHAPES[
-                    (current + direction) % len(LFO_SHAPES)
-                ]
-            )
-            self._send(
-                f"SET LFO_SHAPE {self.lfo_shape_var.get()}"
-            )
-            self._update_button_labels()
-        elif key == "SYNDRUM_WAVE":
-            current = SYNDRUM_WAVES.index(
-                self.syndrum_wave_var.get()
-            )
-            self.syndrum_wave_var.set(
-                SYNDRUM_WAVES[
-                    (current + direction) % len(SYNDRUM_WAVES)
-                ]
-            )
-            self._send(
-                f"SET SYNDRUM_WAVE {self.syndrum_wave_var.get()}"
-            )
-        elif key in (
-            "LFO_DEPTH_OCT",
-            "DECAY_MS",
-            "SWEEP",
-            "SWEEP_MS",
-            "SYNDRUM_SWEEP",
-        ):
-            self._step_parameter(key, direction)
-        elif key == "MODULATION":
-            self.modulation_var.set(
-                not self.modulation_var.get()
-            )
-            self._send_bool(
-                "MODULATION",
-                self.modulation_var.get(),
-            )
-        elif key == "RETRIGGER":
-            self.retrigger_var.set(not self.retrigger_var.get())
-            self._send_bool(
-                "RETRIGGER",
-                self.retrigger_var.get(),
-            )
+        if key == "PAD":
+            selected = int(self.panel_state["selectedPad"])
+            selected = ((selected - 1 + direction) % 4) + 1
+            self.panel_state["selectedPad"] = selected
+            self._send(f"PAD_SELECT {selected}")
+        elif key == "ASSIGNMENT":
+            self._save_config_on_status = True
+            self._send(f"PAD_ASSIGN {'NEXT' if direction > 0 else 'PREV'}")
+        elif key == "VARIANT":
+            self._save_config_on_status = True
+            self._send(f"PAD_VARIANT {'NEXT' if direction > 0 else 'PREV'}")
         elif key == "ECHO_LOOP":
             self.echo_loop_var.set(not self.echo_loop_var.get())
-            self._send_bool(
-                "ECHO_LOOP",
-                self.echo_loop_var.get(),
-            )
-        elif (
-            key == "HOLD"
-            and self.mode_var.get() not in TRANSIENT_MODES
-        ):
-            self.hold_var.set(not self.hold_var.get())
-            self._send_bool("HOLD", self.hold_var.get())
+            self._send_bool("ECHO_LOOP", self.echo_loop_var.get())
+        elif key == "HOLD":
+            self._send("PAD_HOLD_TOGGLE")
 
         self._refresh_display()
 
@@ -946,40 +885,91 @@ class PhysicalDubSirenApp(DubSirenApp):
             else "HIGH PASS"
         )
 
-    def _set_mode(self, mode: str) -> None:
-        self._global_release()
-        self.mode_var.set(mode)
-        if (
-            mode in TRANSIENT_MODES
-            and self.hold_var.get()
-        ):
-            self.hold_var.set(False)
-            self._send_bool("HOLD", False)
-        self._send(f"SET MODE {mode}")
-        self._update_button_labels()
-        self._refresh_display()
+    def _pad_down(self, pad: int, source: str) -> None:
+        action = f"PAD_{pad}"
+        sources = self._input_sources.setdefault(action, set())
+        if source in sources:
+            return
+        first = not sources
+        sources.add(source)
+        if self._encoder_sources:
+            self._local_modifier_used = True
+            if pad in (2, 3):
+                self._save_config_on_status = True
+        if first:
+            self._send(f"PAD {pad} 1")
+        self.pad_buttons[pad - 1].set_pressed(True)
 
-    def _update_button_labels(self) -> None:
-        manual = self.lfo_shape_var.get() == "MANUAL"
-        transient = self.mode_var.get() in TRANSIENT_MODES
-        self.mod_down_button.configure(
-            text="MOD DOWN" if manual else "DIVE",
-            state="disabled" if transient else "normal",
-        )
-        self.mod_up_button.configure(
-            text="MOD UP" if manual else "RISE",
-            state="disabled" if transient else "normal",
-        )
+    def _pad_up(self, pad: int, source: str) -> None:
+        action = f"PAD_{pad}"
+        sources = self._input_sources.setdefault(action, set())
+        if source not in sources:
+            return
+        sources.remove(source)
+        if not sources:
+            self._send(f"PAD {pad} 0")
+        self.pad_buttons[pad - 1].set_pressed(bool(sources))
 
-    def _global_release(self, _event=None) -> None:
-        super()._global_release(_event)
-        for button in (
-            self.trigger_button,
-            self.mod_down_button,
-            self.mod_up_button,
-            self.echo_cut_button,
+    def _bind_keyboard(self) -> None:
+        for pad, key in enumerate(("1", "2", "3", "4"), start=1):
+            self.root.bind_all(
+                f"<KeyPress-{key}>",
+                lambda _event, number=pad, source=key: self._pad_down(number, f"key-{source}"),
+                add="+",
+            )
+            self.root.bind_all(
+                f"<KeyRelease-{key}>",
+                lambda _event, number=pad, source=key: self._pad_up(number, f"key-{source}"),
+                add="+",
+            )
+        self.root.bind_all("<KeyPress-bracketleft>", lambda _event: self._encoder_rotate(-1), add="+")
+        self.root.bind_all("<KeyPress-bracketright>", lambda _event: self._encoder_rotate(1), add="+")
+        self.root.bind_all("<KeyPress-e>", lambda _event: self._encoder_down("key-e"), add="+")
+        self.root.bind_all("<KeyRelease-e>", lambda _event: self._encoder_up("key-e"), add="+")
+
+    def _focus_out(self, _event=None) -> None:
+        self.root.after_idle(self._release_if_unfocused)
+
+    def _release_if_unfocused(self) -> None:
+        if self.root.focus_get() is None:
+            self._global_release()
+
+    def _global_release(self, event=None) -> None:
+        for dial in self.dials.values():
+            dial.finish_drag()
+        if event is None:
+            self._input_sources.clear()
+            self._encoder_sources.clear()
+            for button in self.pad_buttons:
+                button.set_pressed(False)
+            self._send("PANEL_RESET")
+            return
+        for pad in range(1, 5):
+            self._pad_up(pad, "mouse")
+        self._encoder_up("mouse")
+
+    def _update_pad_labels(self) -> None:
+        if not hasattr(self, "pad_buttons"):
+            return
+        for number, (button, pad) in enumerate(
+            zip(self.pad_buttons, self.panel_state["pads"]), start=1
         ):
-            button.set_pressed(False)
+            button.configure(text=f"BTN{number} · {pad['sound']}")
+        self._update_control_activity()
+
+    def _update_control_activity(self) -> None:
+        if "LFO_RATE_HZ" not in self.dials:
+            return
+        current = int(self.panel_state.get("currentPad", self.panel_state["selectedPad"]))
+        ping = self.panel_state["pads"][current - 1]["sound"] == "PING"
+        self.dials["LFO_RATE_HZ"].set_active(not ping)
+        if ping:
+            self.dials["LFO_RATE_HZ"].value_label.configure(text="INACTIVE FOR PING")
+        else:
+            value = self.parameter_values["LFO_RATE_HZ"]
+            self.dials["LFO_RATE_HZ"].value_label.configure(
+                text=CONTROL_SPECS["LFO_RATE_HZ"].formatter(value)
+            )
 
     def _show_overlay(
         self,
@@ -1003,11 +993,22 @@ class PhysicalDubSirenApp(DubSirenApp):
             return
 
         if self.display_mode == "home":
+            selected = int(self.panel_state["selectedPad"])
+            current = int(self.panel_state.get("currentPad", selected))
+            pad = self.panel_state["pads"][selected - 1]
+            current_pad = self.panel_state["pads"][current - 1]
+            depth = CONTROL_SPECS["LFO_DEPTH_OCT"].formatter(
+                self.parameter_values["LFO_DEPTH_OCT"]
+            )
+            if current_pad["sound"] == "PING":
+                depth = "STORED · PING N/A"
             self.display.render_home(
-                self.mode_var.get(),
-                self.lfo_shape_var.get(),
-                self.hold_var.get(),
-                self.modulation_var.get(),
+                selected,
+                current,
+                pad["sound"],
+                pad["variant"],
+                depth,
+                current_pad["hold"],
                 self.echo_loop_var.get(),
                 self.transport.connected,
             )
@@ -1038,40 +1039,58 @@ class PhysicalDubSirenApp(DubSirenApp):
         self._send(f"SET OUTPUT {selected}")
         self.active_output = selected
 
-        # EXTENDED is now an internal engine profile. The user-facing layer is
-        # the physical panel, so the old profile switch is intentionally hidden.
         self._send("SET PROFILE EXTENDED")
-        self._send(f"SET MODE {self.mode_var.get()}")
-        self._send(
-            f"SET LFO_SHAPE {self.lfo_shape_var.get()}"
+        live_parameters = (
+            "TUNE_HZ", "LFO_RATE_HZ", "LFO_DEPTH_OCT", "DELAY_MS",
+            "FEEDBACK", "ECHO_LEVEL", "MASTER",
         )
-        self._send(
-            f"SET SYNDRUM_WAVE {self.syndrum_wave_var.get()}"
-        )
-        for name, value in self.parameter_values.items():
+        for name in live_parameters:
+            value = self.parameter_values[name]
             self._send_parameter(name, value)
+        if self.echo_filter_active:
+            self._apply_echo_filter()
+        self._send_bool("ECHO_LOOP", self.echo_loop_var.get())
+        self._send("PANEL_RESET")
+        if not self._saved_config_applied:
+            self._saved_config_applied = True
+            for number, pad in enumerate(self._saved_pad_configs, start=1):
+                sound = pad["sound"].replace(" ", "_")
+                self._send(
+                    f"PAD_CONFIG {number} {sound} {pad['variantIndex']} 0"
+                )
+        self._refresh_display()
 
-        self._send_bool(
-            "MODULATION",
-            self.modulation_var.get(),
-        )
-        self._send_bool(
-            "RETRIGGER",
-            self.retrigger_var.get(),
-        )
-        self._send_bool(
-            "ECHO_LOOP",
-            self.echo_loop_var.get(),
-        )
-        self._send_bool("ECHO_SPIN", False)
-        self._send_bool("TRIGGER", False)
-        self._send_bool("HOLD", self.hold_var.get())
-        self._send_bool("MOD_UP", False)
-        self._send_bool("MOD_DOWN", False)
-        self._send_bool("ECHO_CUT", False)
+    def _handle_status(self, status: object) -> None:
+        if isinstance(status, dict):
+            panel = status.get("panel")
+            if (
+                isinstance(panel, dict)
+                and isinstance(panel.get("pads"), list)
+                and len(panel["pads"]) == 4
+            ):
+                menu_revision = int(panel.get("menuRevision", 0))
+                open_menu = (
+                    self._panel_status_seen
+                    and menu_revision != self._last_menu_revision
+                )
+                self._panel_status_seen = True
+                self._last_menu_revision = menu_revision
+                self.panel_state = panel
+                self._update_pad_labels()
+                if open_menu and self.display_mode == "home":
+                    self._open_menu()
+                if self._save_config_on_status:
+                    self._save_config_on_status = False
+                    try:
+                        save_panel_config(self._panel_config_path, panel["pads"])
+                    except OSError:
+                        pass
+        super()._handle_status(status)
         self._refresh_display()
 
     def connect(self) -> None:
+        self._saved_config_applied = False
+        self._panel_status_seen = False
         super().connect()
         self._refresh_display()
 
