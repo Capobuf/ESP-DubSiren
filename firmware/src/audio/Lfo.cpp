@@ -26,6 +26,21 @@ Lfo::Lfo()
       lastOutput_(-1.0f), shapeOffset_(0.0f), shapeTransitionRemaining_(0),
       coefficientCountdown_(0) {}
 
+void Lfo::reset(LfoShape shape) {
+    phase_ = 0.0f;
+    manualValue_ = 0.0f;
+    classicValue_ = -1.0f;
+    currentShape_ = shape;
+    lastOutput_ = shape == LfoShape::Classic
+                      ? classicValue_
+                      : (shape == LfoShape::Manual
+                             ? manualValue_
+                             : automaticValue(shape, phase_));
+    shapeOffset_ = 0.0f;
+    shapeTransitionRemaining_ = 0;
+    coefficientCountdown_ = 0;
+}
+
 float Lfo::next(LfoShape shape, float rateHz, bool modUp, bool modDown,
                 float sampleRate) {
     if (coefficientCountdown_ == 0) {

@@ -32,6 +32,10 @@ constexpr SirenVoicing kTestVoicing = {
 constexpr SirenVoicing kSquareVoicing = {
     1, 7.50f, 0.470f, 0.006f, 1.06f, 0.018f, 0.56f,
 };
+constexpr SirenVoicing kLickshotVoicing = {
+    1, 5.00f, 0.495f, 0.004f, 1.12f, 0.020f, 0.62f,
+};
+constexpr float kSonarOutputGain = 0.82f;
 
 float clampCutoff(float cutoff, float sampleRate) {
     const float maximum = sampleRate * 0.40f;
@@ -68,7 +72,12 @@ float Oscillator::renderVoice(SirenMode mode, float frequencyHz,
                               bool lfoGate, float sampleRate, bool voicingV2) {
     const float increment = frequencyHz / sampleRate;
     float output;
-    if (voicingV2 && mode == SirenMode::Sine1) {
+    if (mode == SirenMode::Lickshot) {
+        output = nextLickshot(frequencyHz, modulation, envelopeLevel, increment,
+                              sampleRate);
+    } else if (mode == SirenMode::Sonar) {
+        output = nextSonar();
+    } else if (voicingV2 && mode == SirenMode::Sine1) {
         output = nextSine1(frequencyHz, modulation, envelopeLevel, increment,
                            sampleRate);
     } else if (voicingV2 && mode == SirenMode::Sine2) {
@@ -107,6 +116,10 @@ float Oscillator::nextLegacy(SirenMode mode, float phaseIncrement) const {
         }
         case SirenMode::Square:
             return bandLimitedPulse(phase_, phaseIncrement, 0.5f);
+        case SirenMode::Lickshot:
+        case SirenMode::Sonar:
+        case SirenMode::Count:
+            return 0.0f;
     }
     return 0.0f;
 }
@@ -239,4 +252,34 @@ float Oscillator::nextSquare(float frequencyHz, float modulation,
     value = analogSaturate(value, kSquareVoicing.drive,
                            kSquareVoicing.asymmetry);
     return state.dcBlocker.process(value) * kSquareVoicing.outputGain;
+}
+
+float Oscillator::nextLickshot(float frequencyHz, float modulation,
+                               float envelopeLevel, float phaseIncrement,
+                               float sampleRate) {
+    VoiceState &state = voices_[static_cast<int>(SirenMode::Lickshot)];
+    const float duty = kLickshotVoicing.duty +
+                       modulation * kLickshotVoicing.dutyModAmount;
+    float value = bandLimitedPulse(phase_, phaseIncrement, duty);
+    const float envelopeFactor = 0.96f + 0.04f * envelopeLevel;
+    const float targetCutoff = clampCutoff(
+        frequencyHz * kLickshotVoicing.harmonicFactor * envelopeFactor,
+        sampleRate);
+    const float cutoffSmoothing = 1.0f / (0.004f * sampleRate);
+    state.smoothedCutoff +=
+        (targetCutoff - state.smoothedCutoff) * cutoffSmoothing;
+    if (state.cutoffUpdateCountdown == 0) {
+        state.filters[0].setCutoff(state.smoothedCutoff, sampleRate);
+        state.cutoffUpdateCountdown = 15;
+    } else {
+        --state.cutoffUpdateCountdown;
+    }
+    value = state.filters[0].process(value);
+    value = analogSaturate(value, kLickshotVoicing.drive,
+                           kLickshotVoicing.asymmetry);
+    return state.dcBlocker.process(value) * kLickshotVoicing.outputGain;
+}
+
+float Oscillator::nextSonar() const {
+    return sinf(phase_ * TWO_PI) * kSonarOutputGain;
 }

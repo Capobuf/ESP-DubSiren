@@ -9,6 +9,13 @@ saturazione asimmetrica e un LFO CLASSIC a carica/scarica esponenziale. Il
 comando di debug `SET VOICING LEGACY|V2` permette il confronto a parità di
 controlli; V2 è il default.
 
+La revisione firmware 0.5.0 aggiunge due mode da performance: **LICKSHOT**, un
+carrier pulse aperto modulato dall'LFO, e **SONAR**, una sinusoide pura. In
+EXTENDED sono disponibili anche retrigger deterministico dell'LFO, DIVE/RISE,
+ECHO SPIN ed ECHO LOOP. Un airhorn continuo si ottiene con **MODE LICKSHOT +
+MODULATION OFF** (`SET MODE LICKSHOT`, `MODULATION 0`); questi voicing e le relative costanti sono punti di taratura
+interni al progetto.
+
 ## Requisiti Windows
 
 - ESP32-S3 DevKitC-1 collegata con un cavo USB dati
@@ -75,7 +82,7 @@ La GUI si apre anche senza ESP collegata. Poi:
 
 1. premere **Refresh** e scegliere la COM Espressif;
 2. scegliere **PC**, **PCM5102A** o **Both** nel selettore Output;
-3. premere **Connect** e attendere `Connected · firmware 0.4.0`;
+3. premere **Connect** e attendere `Connected · firmware 0.5.0`;
 4. premere **Start Audio**;
 5. usare **TRIGGER** oppure attivare **HOLD**.
 
@@ -89,8 +96,8 @@ thread e seriale. Per un controllo automatico dell'hardware collegato:
 Dettagli: [architettura](docs/architecture.md), [protocollo](docs/protocol.md) e
 [controlli](docs/controls.md).
 
-Per creare dieci brevi WAV di confronto direttamente dal PCM firmware (con la
-scheda collegata), eseguire dalla cartella `pc`:
+Per creare diciassette brevi WAV di confronto direttamente dal PCM firmware
+(con la scheda collegata), eseguire dalla cartella `pc`:
 
 ```powershell
 .venv\Scripts\python.exe performance_capture.py COM6

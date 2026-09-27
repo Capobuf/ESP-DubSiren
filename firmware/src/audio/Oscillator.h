@@ -38,7 +38,11 @@ private:
                        float phaseIncrement, float sampleRate);
     float nextSquare(float frequencyHz, float modulation, float envelopeLevel,
                      float phaseIncrement, float sampleRate);
+    float nextLickshot(float frequencyHz, float modulation,
+                       float envelopeLevel, float phaseIncrement,
+                       float sampleRate);
+    float nextSonar() const;
 
     float phase_;
-    VoiceState voices_[4];
+    VoiceState voices_[static_cast<int>(SirenMode::Count)];
 };

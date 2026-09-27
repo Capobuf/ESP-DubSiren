@@ -15,7 +15,7 @@ public:
                float sampleRate);
     void setParameters(float delayMs, float highPassHz, float lowPassHz,
                        float sampleRate);
-    float process(float dry, float feedback, float sampleRate);
+    float process(float dry, float feedback, bool echoLoop, float sampleRate);
 
 private:
     int16_t buffer_[kBufferSamples];

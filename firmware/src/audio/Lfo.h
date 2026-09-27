@@ -7,6 +7,7 @@ public:
     Lfo();
     float next(LfoShape shape, float rateHz, bool modUp, bool modDown,
                float sampleRate);
+    void reset(LfoShape shape);
     bool gate() const { return phase_ < 0.5f; }
 
 private:

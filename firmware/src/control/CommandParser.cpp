@@ -94,6 +94,14 @@ bool CommandParser::parse(const String &rawCommand) {
             state.modDown = value;
         } else if (name == "ECHO_CUT") {
             state.echoCut = value;
+        } else if (name == "MODULATION") {
+            state.modulationEnabled = value;
+        } else if (name == "RETRIGGER") {
+            state.retrigger = value;
+        } else if (name == "ECHO_SPIN") {
+            state.echoSpin = value;
+        } else if (name == "ECHO_LOOP") {
+            state.echoLoop = value;
         } else {
             return false;
         }
@@ -128,6 +136,8 @@ bool CommandParser::parseMode(const String &text, SirenMode &mode) {
     else if (text == "SINE2") mode = SirenMode::Sine2;
     else if (text == "TEST_TONE") mode = SirenMode::TestTone;
     else if (text == "SQUARE") mode = SirenMode::Square;
+    else if (text == "LICKSHOT") mode = SirenMode::Lickshot;
+    else if (text == "SONAR") mode = SirenMode::Sonar;
     else return false;
     return true;
 }

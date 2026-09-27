@@ -23,9 +23,10 @@ int16_t toInt16(float value) {
 AudioEngine::AudioEngine()
     : tuneHz_(220.0f), depthOctaves_(1.0f), rateHz_(0.70f),
       feedback_(0.62f), echoLevel_(0.45f), masterVolume_(0.50f),
+      performanceBend_(0.0f),
       oscillatorFrequencyHz_(220.0f), previousMode_(SirenMode::Sine1),
       currentMode_(SirenMode::Sine1), modeTransitionRemaining_(0),
-      modeInitialized_(false) {}
+      modeInitialized_(false), previousTrigger_(false), previousHold_(false) {}
 
 void AudioEngine::begin() {
     delay_.begin(360.0f, 60.0f, 7000.0f, Config::kSampleRate);
@@ -35,6 +36,8 @@ void AudioEngine::begin() {
     feedback_.configure(PerformanceConfig::kFeedbackMs, Config::kSampleRate);
     echoLevel_.configure(PerformanceConfig::kEchoMs, Config::kSampleRate);
     masterVolume_.configure(PerformanceConfig::kMasterMs, Config::kSampleRate);
+    performanceBend_.configure(PerformanceConfig::kPerformanceBendMs,
+                               Config::kSampleRate);
 }
 
 void AudioEngine::render(const ControlState &controls, int16_t *output,
@@ -51,7 +54,11 @@ void AudioEngine::render(const ControlState &controls, int16_t *output,
     rateHz_.setTarget(classic && modulationIndex < 3
                           ? PerformanceConfig::kClassicRateHz[modulationIndex]
                           : controls.lfoRateHz);
-    feedback_.setTarget(controls.feedback);
+    feedback_.setTarget(controls.echoLoop
+                            ? controls.feedback
+                            : (controls.echoSpin
+                                   ? PerformanceConfig::kEchoSpinFeedback
+                                   : controls.feedback));
     echoLevel_.setTarget(controls.echoLevel);
     masterVolume_.setTarget(controls.masterVolume);
     const LfoShape shape = classic
@@ -60,6 +67,19 @@ void AudioEngine::render(const ControlState &controls, int16_t *output,
         : controls.lfoShape;
     const float decayMs = classic ? PerformanceConfig::kClassicDecayMs
                                   : controls.decayMs;
+    const bool manual = shape == LfoShape::Manual;
+    const float bendTarget = manual || controls.modUp == controls.modDown
+                                 ? 0.0f
+                                 : (controls.modUp ? 1.0f : -1.0f);
+    performanceBend_.setTarget(bendTarget);
+    const bool modulationEnabled = classic || controls.modulationEnabled;
+    const bool retriggerEdge = (!previousTrigger_ && controls.trigger) ||
+                               (!previousHold_ && controls.hold);
+    if (controls.retrigger && retriggerEdge) {
+        lfo_.reset(shape);
+    }
+    previousTrigger_ = controls.trigger;
+    previousHold_ = controls.hold;
     if (!modeInitialized_) {
         currentMode_ = previousMode_ = controls.mode;
         modeInitialized_ = true;
@@ -77,24 +97,28 @@ void AudioEngine::render(const ControlState &controls, int16_t *output,
         const float feedback = feedback_.next();
         const float echoLevel = echoLevel_.next();
         const float master = masterVolume_.next();
+        const float performanceBend = performanceBend_.next();
 
-        const float modulation =
+        const float lfoValue =
             lfo_.next(shape, rate, controls.modUp,
                       controls.modDown, Config::kSampleRate);
+        const float modulation = modulationEnabled ? lfoValue : 0.0f;
         float frequencyTarget;
         float oscillatorModulation = modulation;
         float frequencySmoothing = 0.0137929f;  // 1.5 ms RC at 48 kHz.
         if (controls.voicingV2 && controls.mode == SirenMode::Square) {
-            oscillatorModulation = lfo_.gate() ? 1.0f : -1.0f;
+            oscillatorModulation = modulationEnabled
+                                      ? (lfo_.gate() ? 1.0f : -1.0f)
+                                      : 0.0f;
             frequencyTarget = clampFrequency(
-                tune * exp2f(depth * oscillatorModulation));
+                tune * exp2f(depth * oscillatorModulation + performanceBend));
             frequencySmoothing = 0.00829871f;  // 2.5 ms anti-click slew.
         } else if (controls.voicingV2 &&
                    controls.mode == SirenMode::TestTone) {
-            frequencyTarget = clampFrequency(tune);
+            frequencyTarget = clampFrequency(tune * exp2f(performanceBend));
         } else {
             frequencyTarget = clampFrequency(
-                tune * exp2f(depth * modulation));
+                tune * exp2f(depth * modulation + performanceBend));
         }
         oscillatorFrequencyHz_ +=
             (frequencyTarget - oscillatorFrequencyHz_) * frequencySmoothing;
@@ -107,16 +131,18 @@ void AudioEngine::render(const ControlState &controls, int16_t *output,
                 (PerformanceConfig::kModeTransitionMs * Config::kSampleRate * 0.001f);
             dry = oscillator_.nextTransition(previousMode_, currentMode_, mix,
                 oscillatorFrequencyHz_, oscillatorModulation, envelopeLevel,
-                lfo_.gate(), Config::kSampleRate, controls.voicingV2);
+                modulationEnabled ? lfo_.gate() : true,
+                Config::kSampleRate, controls.voicingV2);
             --modeTransitionRemaining_;
         } else {
             dry = oscillator_.next(currentMode_, oscillatorFrequencyHz_,
-                oscillatorModulation, envelopeLevel, lfo_.gate(),
+                oscillatorModulation, envelopeLevel,
+                modulationEnabled ? lfo_.gate() : true,
                 Config::kSampleRate, controls.voicingV2);
         }
         dry *= envelopeLevel;
 
-        const float wet = delay_.process(dry, feedback,
+        const float wet = delay_.process(dry, feedback, controls.echoLoop,
                                          Config::kSampleRate);
         const float mixed = dry + (controls.echoCut ? 0.0f : wet * echoLevel);
         output[i] = toInt16(softClip(mixed * master));

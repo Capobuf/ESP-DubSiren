@@ -45,7 +45,8 @@ void Delay::setParameters(float delayMs, float highPassHz, float lowPassHz,
     lowPassHz_.setTarget(lowPassHz);
 }
 
-float Delay::process(float dry, float feedback, float sampleRate) {
+float Delay::process(float dry, float feedback, bool echoLoop,
+                     float sampleRate) {
     const float oldDelay = delayMs_.current();
     const float proposedDelay = delayMs_.next();
     const float maxStep = PerformanceConfig::kDelayMaxSlewMsPerSecond / sampleRate;
@@ -82,13 +83,17 @@ float Delay::process(float dry, float feedback, float sampleRate) {
     const float sample1 = buffer_[i1] / 32768.0f;
     const float delayed = sample0 + (sample1 - sample0) * fraction;
     const float filtered = lowPass_.process(highPass_.process(delayed));
-    const float saturatedFeedback =
-        analogSaturate(filtered * feedback,
-                       PerformanceConfig::kFeedbackSaturationDrive,
-                       PerformanceConfig::kFeedbackSaturationAsymmetry) *
-        PerformanceConfig::kFeedbackSaturationGain;
-    const float feedbackInput = softClip(dry + saturatedFeedback);
-    buffer_[writeIndex_] = floatToInt16(feedbackInput);
+    if (echoLoop) {
+        buffer_[writeIndex_] = floatToInt16(delayed);
+    } else {
+        const float saturatedFeedback =
+            analogSaturate(filtered * feedback,
+                           PerformanceConfig::kFeedbackSaturationDrive,
+                           PerformanceConfig::kFeedbackSaturationAsymmetry) *
+            PerformanceConfig::kFeedbackSaturationGain;
+        const float feedbackInput = softClip(dry + saturatedFeedback);
+        buffer_[writeIndex_] = floatToInt16(feedbackInput);
+    }
     writeIndex_ = (writeIndex_ + 1) % kBufferSamples;
     return filtered;
 }

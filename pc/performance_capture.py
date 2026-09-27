@@ -1,4 +1,4 @@
-"""Capture ten comparable firmware scenarios as temporary WAV files.
+"""Capture comparable firmware performance scenarios as WAV files.
 
 Requires a connected ESP32-S3 running this firmware. Pass --output-dir to keep
 the captures; otherwise a new directory is made under the OS temp directory.
@@ -27,7 +27,20 @@ SCENARIOS = (
     ("feedback_060", ("SET MODE SINE1", "SET FEEDBACK 0.6",
                       "SET ECHO_LEVEL 0.45")),
     ("feedback_095", ("SET FEEDBACK 0.95",)),
+    ("lickshot_saw_down", ("SET PROFILE EXTENDED", "SET MODE LICKSHOT",
+                           "SET LFO_SHAPE SAW_DOWN", "SET LFO_RATE_HZ 3.5",
+                           "SET LFO_DEPTH_OCT 1.5", "MODULATION 1",
+                           "RETRIGGER 1")),
+    ("lickshot_triangle", ("SET MODE LICKSHOT", "SET LFO_SHAPE TRIANGLE",
+                           "SET LFO_RATE_HZ 2.2", "SET LFO_DEPTH_OCT 1.2",
+                           "MODULATION 1")),
+    ("lickshot_airhorn", ("SET MODE LICKSHOT", "SET TUNE_HZ 220",
+                          "MODULATION 0")),
+    ("sonar", ("SET MODE SONAR", "SET TUNE_HZ 220",
+               "SET LFO_DEPTH_OCT 0", "MODULATION 1")),
 )
+
+CAPTURE_COUNT = len(SCENARIOS) + 6
 
 
 def save_wav(path: Path, pcm: bytes) -> None:
@@ -43,6 +56,16 @@ def capture_sequence(device: Capture, command: str, values: tuple[str, ...]) -> 
     for value in values:
         device.send(f"SET {command} {value}")
         pcm.extend(device.grab(10))
+    return bytes(pcm)
+
+
+def capture_segments(
+    device: Capture, segments: tuple[tuple[tuple[str, ...], int], ...]
+) -> bytes:
+    pcm = bytearray()
+    for commands, blocks in segments:
+        device.send(*commands)
+        pcm.extend(device.grab(blocks))
     return bytes(pcm)
 
 
@@ -82,6 +105,34 @@ def main() -> None:
             device.send(f"SET HPF_HZ {hpf}", f"SET LPF_HZ {lpf}")
             pcm.extend(device.grab(10))
         save_wav(directory / "filter_sweep.wav", bytes(pcm))
+        device.send("SET MODE SONAR", "SET TUNE_HZ 220",
+                    "SET LFO_DEPTH_OCT 0", "MODULATION 1", "HOLD 1")
+        save_wav(directory / "rise_dive.wav", capture_segments(device, (
+            (("MOD_UP 0", "MOD_DOWN 0"), 25),
+            (("MOD_UP 1",), 50),
+            (("MOD_UP 0",), 25),
+            (("MOD_DOWN 1",), 50),
+            (("MOD_DOWN 0",), 25),
+            (("MOD_UP 1", "MOD_DOWN 1"), 35),
+            (("MOD_UP 0", "MOD_DOWN 0"), 25),
+        )))
+        device.send("SET MODE SINE1", "SET DELAY_MS 120", "SET FEEDBACK 0.65",
+                    "SET ECHO_LEVEL 1", "HOLD 1")
+        save_wav(directory / "echo_spin.wav", capture_segments(device, (
+            (("ECHO_SPIN 0",), 40),
+            (("ECHO_SPIN 1",), 100),
+            (("ECHO_SPIN 0",), 60),
+        )))
+        device.send("SET FEEDBACK 0.72", "ECHO_LOOP 0", "HOLD 1")
+        save_wav(directory / "echo_loop.wav", capture_segments(device, (
+            ((), 50),
+            (("SET DECAY_MS 0", "HOLD 0", "ECHO_LOOP 1"), 140),
+            (("ECHO_CUT 1",), 25),
+            (("ECHO_CUT 0",), 50),
+            (("ECHO_LOOP 0",), 25),
+        )))
+        device.send("ECHO_SPIN 0", "ECHO_LOOP 0", "ECHO_CUT 0",
+                    "MOD_UP 0", "MOD_DOWN 0")
         device.status_event.clear()
         device.send("HELLO")
         if not device.status_event.wait(1.0):
@@ -93,7 +144,7 @@ def main() -> None:
         })
         if status["maxRenderUs"] >= 10_000 or status["maxCycleUs"] >= 10_000:
             raise RuntimeError("Audio cycle exceeded 10 ms during capture")
-        print(f"10 WAV captures saved in {directory}")
+        print(f"{CAPTURE_COUNT} WAV captures saved in {directory}")
     finally:
         device.close()
 

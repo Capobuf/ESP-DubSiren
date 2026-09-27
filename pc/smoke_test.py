@@ -105,6 +105,10 @@ class SmokeTest:
             "SET DECAY_MS 0",
             "TRIGGER 0",
             "HOLD 0",
+            "MODULATION 1",
+            "RETRIGGER 0",
+            "ECHO_SPIN 0",
+            "ECHO_LOOP 0",
             "STREAM 1",
         )
         self.settle()
@@ -145,12 +149,85 @@ class SmokeTest:
 
         self.send("SET DECAY_MS 0", "HOLD 1", "SET LFO_DEPTH_OCT 0")
         mode_hashes = {}
-        for mode in ("SINE1", "SINE2", "TEST_TONE", "SQUARE"):
+        for mode in ("SINE1", "SINE2", "TEST_TONE", "SQUARE",
+                     "LICKSHOT", "SONAR"):
             self.send(f"SET MODE {mode}")
             self.settle(0.08)
             mode_hashes[mode] = hashlib.sha256(self.grab(12)).hexdigest()[:12]
-        assert len(set(mode_hashes.values())) == 4
+        assert len(set(mode_hashes.values())) == 6
         print("MODES", mode_hashes)
+
+        self.send(
+            "SET MODE LICKSHOT",
+            "SET LFO_SHAPE SAW_DOWN",
+            "SET LFO_RATE_HZ 3",
+            "SET LFO_DEPTH_OCT 1.2",
+            "SET TUNE_HZ 220",
+            "MODULATION 1",
+            "HOLD 1",
+        )
+        self.settle(0.20)
+        lickshot_pcm = self.grab(100)
+        lickshot_frequencies = [
+            metrics(lickshot_pcm[index:index + 9_600])[2]
+            for index in range(0, len(lickshot_pcm), 9_600)
+        ]
+        lickshot_rms, lickshot_peak, _ = metrics(lickshot_pcm)
+        assert lickshot_rms > 2_000 and lickshot_peak <= 32767
+        assert max(lickshot_frequencies) > min(lickshot_frequencies) * 1.5
+        self.send("MODULATION 0")
+        self.settle(0.25)
+        airhorn_pcm = self.grab(60)
+        _, airhorn_peak, airhorn_hz = metrics(airhorn_pcm)
+        assert 215 <= airhorn_hz <= 225 and airhorn_peak <= 32767
+        print("LICKSHOT_AIRHORN", {
+            "modulated_hz": lickshot_frequencies,
+            "airhorn_hz": airhorn_hz,
+        })
+
+        self.send("SET MODE SONAR", "SET LFO_DEPTH_OCT 0", "MODULATION 1")
+        self.settle(0.20)
+        sonar_rms, sonar_peak, sonar_hz = metrics(self.grab(60))
+        assert sonar_rms > 5_000 and sonar_peak <= 32767
+        assert 217 <= sonar_hz <= 223
+        print("SONAR", {"hz": sonar_hz, "rms": sonar_rms})
+
+        self.send("MOD_UP 1", "MOD_DOWN 0")
+        self.settle(0.25)
+        rise_hz = metrics(self.grab(40))[2]
+        self.send("MOD_UP 0", "MOD_DOWN 1")
+        self.settle(0.25)
+        dive_hz = metrics(self.grab(40))[2]
+        self.send("MOD_UP 1")
+        self.settle(0.25)
+        rise_dive_hz = metrics(self.grab(40))[2]
+        assert 430 <= rise_hz <= 450
+        assert 105 <= dive_hz <= 115
+        assert 215 <= rise_dive_hz <= 225
+        self.send("MOD_UP 0", "MOD_DOWN 0")
+        print("RISE_DIVE", {"rise_hz": rise_hz, "dive_hz": dive_hz,
+                            "both_hz": rise_dive_hz})
+
+        self.send("SET MODE LICKSHOT", "SET LFO_SHAPE SAW_DOWN",
+                  "SET LFO_RATE_HZ 2", "SET LFO_DEPTH_OCT 1",
+                  "RETRIGGER 1", "HOLD 0", "TRIGGER 0")
+        directions = []
+        starts = []
+        for _ in range(2):
+            self.settle(0.08)
+            self.send("TRIGGER 1")
+            hit = self.grab(30)
+            chunks = [
+                metrics(hit[index:index + 4_800])[2]
+                for index in range(0, len(hit), 4_800)
+            ]
+            directions.append(chunks[2] - chunks[1])
+            starts.append(chunks[1])
+            self.send("TRIGGER 0")
+        assert directions[0] < 0 and directions[1] < 0
+        assert abs(starts[0] - starts[1]) < 35
+        self.send("RETRIGGER 0", "HOLD 1")
+        print("RETRIGGER", {"start_hz": starts, "direction": directions})
 
         self.send(
             "SET MODE SINE1",
@@ -286,7 +363,53 @@ class SmokeTest:
         ).digest()
         print("DELAY_LIVE_CHANGE", "ok")
 
-        self.send("STREAM 0", "HOLD 0", "TRIGGER 0")
+        self.send(
+            "SET MODE SONAR",
+            "SET TUNE_HZ 220",
+            "SET LFO_DEPTH_OCT 0",
+            "SET DELAY_MS 50",
+            "SET FEEDBACK 0.75",
+            "SET ECHO_LEVEL 1",
+            "SET HPF_HZ 50",
+            "SET LPF_HZ 19000",
+            "SET DECAY_MS 0",
+            "ECHO_LOOP 0",
+            "ECHO_CUT 0",
+            "HOLD 1",
+        )
+        self.settle(0.25)
+        self.send("HOLD 0", "ECHO_LOOP 1")
+        self.settle(0.08)
+        loop_pcm = self.grab(100)
+        loop_rms, loop_peak, _ = metrics(loop_pcm)
+        assert loop_rms > 100 and loop_peak <= 32767
+        self.send("ECHO_CUT 1")
+        self.settle(0.05)
+        assert metrics(self.grab(8))[0] == 0
+        self.send("ECHO_CUT 0")
+        self.settle(0.05)
+        restored_loop_rms = metrics(self.grab(12))[0]
+        assert restored_loop_rms > 50
+        self.send("ECHO_LOOP 0")
+        print("ECHO_LOOP", {"rms": loop_rms, "restored": restored_loop_rms,
+                            "peak": loop_peak})
+
+        self.send("SET FEEDBACK 0.4", "HOLD 1", "ECHO_SPIN 1")
+        self.settle(0.35)
+        spin_pcm = self.grab(80)
+        _, spin_peak, _ = metrics(spin_pcm)
+        assert spin_peak <= 32767
+        self.send("ECHO_SPIN 0", "HOLD 0")
+        self.drain()
+        spin_release_early = metrics(self.grab(10))[0]
+        spin_release_late = metrics(self.grab(60)[-9_600:])[0]
+        assert spin_release_late < spin_release_early * 0.7
+        print("ECHO_SPIN", {"peak": spin_peak,
+                            "release_rms": [spin_release_early,
+                                            spin_release_late]})
+
+        self.send("STREAM 0", "HOLD 0", "TRIGGER 0", "ECHO_SPIN 0",
+                  "ECHO_LOOP 0", "MOD_UP 0", "MOD_DOWN 0")
         time.sleep(0.15)
         self.drain()
         time.sleep(0.08)

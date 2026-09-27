@@ -27,9 +27,12 @@ private:
     SmoothedParameter feedback_;
     SmoothedParameter echoLevel_;
     SmoothedParameter masterVolume_;
+    SmoothedParameter performanceBend_;
     float oscillatorFrequencyHz_;
     SirenMode previousMode_;
     SirenMode currentMode_;
     unsigned modeTransitionRemaining_;
     bool modeInitialized_;
+    bool previousTrigger_;
+    bool previousHold_;
 };

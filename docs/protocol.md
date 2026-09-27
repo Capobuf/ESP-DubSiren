@@ -23,7 +23,7 @@ for commands, HELLO, STATUS, controls, and triggers.
 Control commands:
 
 ```text
-SET MODE SINE1|SINE2|TEST_TONE|SQUARE
+SET MODE SINE1|SINE2|TEST_TONE|SQUARE|LICKSHOT|SONAR
 SET PROFILE CLASSIC|EXTENDED
 SET CLASSIC_PITCH LOW|MID|HIGH
 SET CLASSIC_MOD SLOW|MEDIUM|FAST|MANUAL
@@ -42,7 +42,11 @@ TRIGGER 0|1
 HOLD 0|1
 MOD_UP 0|1
 MOD_DOWN 0|1
+MODULATION 0|1
+RETRIGGER 0|1
 ECHO_CUT 0|1
+ECHO_SPIN 0|1
+ECHO_LOOP 0|1
 ```
 
 Development A/B command (V2 is the boot default):
@@ -58,12 +62,27 @@ of the protocol. Finite numeric values are clamped to the absolute ranges.
 Malformed and unknown commands are ignored. Parsing occurs outside the audio
 task.
 
+The new booleans default to `MODULATION 1`, `RETRIGGER 0`, `ECHO_SPIN 0` and
+`ECHO_LOOP 0`. MODULATION disables only the audible LFO contribution; the LFO
+phase keeps advancing. In CLASSIC it is intentionally ignored so the original
+profile sound stays active. `SET MODE LICKSHOT` plus `MODULATION 0` is the
+airhorn configuration. RETRIGGER resets LFO state on a rising TRIGGER or HOLD
+edge without resetting oscillator phase, filters or delay. During automatic
+LFO shapes, MOD_UP and MOD_DOWN are RISE (+1 octave) and DIVE (-1 octave);
+MANUAL retains the original direct LFO behavior.
+
+ECHO_SPIN temporarily targets feedback 1.05 without changing the stored
+FEEDBACK value. ECHO_LOOP takes precedence and recirculates existing ring-buffer
+audio without acquiring dry input or applying feedback to the write. ECHO_CUT
+continues to mute only wet output.
+
 The boot profile is EXTENDED for compatibility. CLASSIC uses firmware presets:
 LOW/MID/HIGH = 110/220/440 Hz, SLOW/MEDIUM/FAST = 0.35/0.70/2.80 Hz,
 depth = 1 octave, decay = 120 ms and the RC-like LFO. MANUAL selects the same
 RC manual response as the extended MANUAL shape. Existing continuous settings
 remain stored while CLASSIC is active and take effect again in EXTENDED.
 Profile, mode and shape changes preserve the oscillator phase and echo tail.
+LICKSHOT and SONAR use their own voicings in both LEGACY and V2 selections.
 
 ## ESP to PC
 
@@ -81,7 +100,7 @@ An AUDIO payload is always 960 bytes: 480 signed int16 mono PCM samples at
 48,000 Hz. A STATUS payload is UTF-8 JSON. `HELLO` currently returns:
 
 ```json
-{"name":"DubSiren","protocol":1,"sampleRate":48000,"blockSamples":480,"firmware":"0.4.0","renderUs":0,"maxRenderUs":0,"cycleUs":0,"maxCycleUs":0,"maxUsbWriteUs":0,"maxI2sWriteUs":0,"output":"BOTH","i2sReady":true}
+{"name":"DubSiren","protocol":1,"sampleRate":48000,"blockSamples":480,"firmware":"0.5.0","renderUs":0,"maxRenderUs":0,"cycleUs":0,"maxCycleUs":0,"maxUsbWriteUs":0,"maxI2sWriteUs":0,"output":"BOTH","i2sReady":true}
 ```
 
 Timing zeros above are placeholders, not measured performance. `renderUs` is the

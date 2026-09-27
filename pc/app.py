@@ -14,6 +14,8 @@ OUTPUT_VALUES = {
     "PCM5102A": "GPIO",
     "Both": "BOTH",
 }
+CLASSIC_MODES = ("SINE1", "SINE2", "TEST_TONE", "SQUARE")
+EXTENDED_MODES = CLASSIC_MODES + ("LICKSHOT", "SONAR")
 
 
 class SliderControl(ttk.Frame):
@@ -95,7 +97,10 @@ class DubSirenApp:
         self.classic_pitch_var = tk.StringVar(value="MID")
         self.classic_mod_var = tk.StringVar(value="MEDIUM")
         self.lfo_shape_var = tk.StringVar(value="CLASSIC")
+        self.modulation_var = tk.BooleanVar(value=True)
+        self.retrigger_var = tk.BooleanVar(value=False)
         self.hold_var = tk.BooleanVar(value=False)
+        self.echo_loop_var = tk.BooleanVar(value=False)
         self.output_var = tk.StringVar(value="Both")
 
         self._build_ui()
@@ -162,11 +167,11 @@ class DubSirenApp:
         columns.columnconfigure(0, weight=1)
         columns.columnconfigure(1, weight=1)
 
-        self._combo_row(
+        self.mode_combo = self._combo_row(
             siren,
             "Mode",
             self.mode_var,
-            ("SINE1", "SINE2", "TEST_TONE", "SQUARE"),
+            EXTENDED_MODES,
             self._mode_changed,
         )
         self.classic_controls = ttk.Frame(siren)
@@ -198,6 +203,22 @@ class DubSirenApp:
         self._add_slider(self.extended_controls, "Rate", "LFO_RATE_HZ")
         self._add_slider(self.extended_controls, "Depth", "LFO_DEPTH_OCT")
         self._add_slider(self.extended_controls, "Decay", "DECAY_MS")
+        modulation_row = ttk.Frame(self.extended_controls)
+        modulation_row.pack(fill="x", pady=3)
+        ttk.Checkbutton(
+            modulation_row,
+            text="MOD ON",
+            variable=self.modulation_var,
+            command=lambda: self._send_bool(
+                "MODULATION", self.modulation_var.get()
+            ),
+        ).pack(side="left", fill="x", expand=True)
+        ttk.Checkbutton(
+            modulation_row,
+            text="RETRIGGER",
+            variable=self.retrigger_var,
+            command=lambda: self._send_bool("RETRIGGER", self.retrigger_var.get()),
+        ).pack(side="left", fill="x", expand=True)
         self.extended_controls.pack(fill="x")
 
         mod_row = ttk.Frame(siren)
@@ -226,9 +247,20 @@ class DubSirenApp:
         self._add_slider(echo, "Echo Level", "ECHO_LEVEL")
         self._add_slider(echo, "High Pass", "HPF_HZ")
         self._add_slider(echo, "Low Pass", "LPF_HZ")
-        echo_cut = ttk.Button(echo, text="ECHO CUT")
-        echo_cut.pack(fill="x", pady=12)
+        echo_performance = ttk.Frame(echo)
+        echo_performance.pack(fill="x", pady=(12, 5))
+        echo_cut = ttk.Button(echo_performance, text="ECHO CUT")
+        echo_cut.pack(side="left", fill="x", expand=True, padx=(0, 3))
         self._bind_momentary(echo_cut, "ECHO_CUT")
+        echo_spin = ttk.Button(echo_performance, text="SPIN")
+        echo_spin.pack(side="left", fill="x", expand=True, padx=(3, 0))
+        self._bind_momentary(echo_spin, "ECHO_SPIN")
+        ttk.Checkbutton(
+            echo,
+            text="LOOP",
+            variable=self.echo_loop_var,
+            command=lambda: self._send_bool("ECHO_LOOP", self.echo_loop_var.get()),
+        ).pack(fill="x")
 
         master = ttk.LabelFrame(outer, text="MASTER", padding=8)
         master.pack(fill="x", pady=(10, 0))
@@ -236,7 +268,7 @@ class DubSirenApp:
         self._update_profile_ui()
         self._update_manual_buttons()
 
-    def _combo_row(self, parent, label, variable, values, callback) -> None:
+    def _combo_row(self, parent, label, variable, values, callback):
         row = ttk.Frame(parent)
         row.pack(fill="x", pady=3)
         ttk.Label(row, text=label, width=12).pack(side="left")
@@ -245,6 +277,7 @@ class DubSirenApp:
         )
         combo.pack(side="left", fill="x", expand=True)
         combo.bind("<<ComboboxSelected>>", callback)
+        return combo
 
     def _add_slider(
         self,
@@ -306,9 +339,14 @@ class DubSirenApp:
 
     def _update_profile_ui(self) -> None:
         if self.profile_var.get() == "CLASSIC":
+            self.mode_combo.configure(values=CLASSIC_MODES)
+            if self.mode_var.get() not in CLASSIC_MODES:
+                self.mode_var.set("SINE1")
+                self._send("SET MODE SINE1")
             self.extended_controls.pack_forget()
             self.classic_controls.pack(fill="x", before=self.mod_down_button.master)
         else:
+            self.mode_combo.configure(values=EXTENDED_MODES)
             self.classic_controls.pack_forget()
             self.extended_controls.pack(fill="x", before=self.mod_down_button.master)
 
@@ -316,9 +354,12 @@ class DubSirenApp:
         manual = (self.classic_mod_var.get() == "MANUAL"
                   if self.profile_var.get() == "CLASSIC"
                   else self.lfo_shape_var.get() == "MANUAL")
-        state = "normal" if manual else "disabled"
-        self.mod_down_button.configure(state=state)
-        self.mod_up_button.configure(state=state)
+        self.mod_down_button.configure(
+            state="normal", text="MOD DOWN" if manual else "DIVE"
+        )
+        self.mod_up_button.configure(
+            state="normal", text="MOD UP" if manual else "RISE"
+        )
 
     def _slider_changed(self, name: str, value: float, final: bool) -> None:
         pending = self.pending_sends.pop(name, None)
@@ -526,6 +567,10 @@ class DubSirenApp:
         for name, slider in self.sliders.items():
             self._send_parameter(name, slider.value)
         self._send(f"SET PROFILE {self.profile_var.get()}")
+        self._send_bool("MODULATION", self.modulation_var.get())
+        self._send_bool("RETRIGGER", self.retrigger_var.get())
+        self._send_bool("ECHO_LOOP", self.echo_loop_var.get())
+        self._send_bool("ECHO_SPIN", False)
         self._send_bool("TRIGGER", False)
         self._send_bool("HOLD", self.hold_var.get())
         self._send_bool("MOD_UP", False)

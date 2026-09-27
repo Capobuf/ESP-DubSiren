@@ -98,10 +98,10 @@ class ControlSpec:
 CONTROL_SPECS = {
     "TUNE_HZ": ControlSpec(80.0, 1600.0, 220.0, format_frequency, "logarithmic"),
     "LFO_RATE_HZ": ControlSpec(
-        0.15, 8.0, 0.70, lambda value: f"{value:.2f} Hz", "logarithmic"
+        0.15, 20.0, 0.70, lambda value: f"{value:.2f} Hz", "logarithmic"
     ),
     "LFO_DEPTH_OCT": ControlSpec(
-        0.0, 1.25, 1.0, lambda value: f"{value:.2f} oct"
+        0.0, 2.0, 1.0, lambda value: f"{value:.2f} oct"
     ),
     "DECAY_MS": ControlSpec(
         0.0, 1500.0, 120.0, lambda value: f"{value:.0f} ms", "power", 2.0

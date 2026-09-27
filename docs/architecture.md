@@ -11,13 +11,11 @@ CommandParser -> synchronized ControlStore
                          |
                   block snapshot
                          |
-ControlState -> AudioEngine -> pulse PolyBLEP -> RC voicing -> DC blocker
-                                      |                         |
-                                      +-> Envelope -------------+
-                                      |
-                                      +-> Delay -> HPF -> LPF -> feedback saturation
-                                                   |
-                              dry + wet -> master -> soft clip -> int16
+ControlState -> LFO / modulation -> oscillator -> amplitude envelope
+                                                |
+                                      pulse / sine voicing
+                                                |
+                    delay -> dry + wet -> master -> soft clip -> int16
                                                                       |
                                                         mono int16 PCM block
                                                             /         \
@@ -59,18 +57,33 @@ without resetting filter state. The feedback path uses
 asymmetric saturation before the delay write, while the existing cubic
 `softClip` remains the final safety limiter.
 
+ECHO LOOP reuses that same ring buffer and allocates no additional audio
+memory. Normal operation writes dry input plus saturated feedback. In loop
+mode the write path instead copies the raw interpolated delayed sample back to
+the ring, while the wet output still passes through the HPF/LPF. This avoids
+reapplying filters and saturation on every loop pass. ECHO CUT only mutes the
+wet mix and therefore leaves loop contents intact.
+
 `SmoothedParameter` handles sample-rate tune, depth, rate, feedback, echo level,
-master, delay and filter cutoff changes. The LFO retains phase across shape
+master, DIVE/RISE bend, delay and filter cutoff changes. The LFO retains phase
+across shape
 changes and fades the modulation offset over 10 ms. Mode changes render both
 voicings at the same oscillator phase for a 6 ms crossfade. Neither transition
 resets the delay or its feedback state. CLASSIC preset selection happens inside
 the firmware; EXTENDED retains the full control state for switching back.
+With RETRIGGER enabled, rising edges of TRIGGER and HOLD reset only the LFO to
+a shape-aware deterministic state; oscillator phase, filters and delay tails
+continue uninterrupted. Disabling modulation zeros the LFO pitch contribution
+without stopping its internal phase. CLASSIC always keeps its modulation active.
 
 The V2 oscillator starts from a variable-duty band-limited pulse. SINE1 uses
 three tracking one-poles; SINE2 uses two with a higher tracking ratio and more
 asymmetry. TEST_TONE adds a click-free rhythmic gate. SQUARE selects high/low
 frequency targets with a 2.5 ms anti-click slew while preserving oscillator
-phase. Filter coefficients are refreshed every 16 samples; measured render
+phase. LICKSHOT uses a separate open, lightly filtered pulse voicing and SONAR
+uses a true sine wave; both share the same oscillator phase, envelope, delay
+and mode crossfade. Filter coefficients are refreshed every 16 samples;
+measured render
 telemetry is exposed in STATUS as `renderUs` and `maxRenderUs`. `cycleUs` and
 `maxCycleUs` measure rendering plus the selected output writes.
 

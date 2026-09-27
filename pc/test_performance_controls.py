@@ -1,0 +1,114 @@
+import unittest
+
+from app import CLASSIC_MODES, EXTENDED_MODES, DubSirenApp
+
+
+class FakeVariable:
+    def __init__(self, value):
+        self.value = value
+
+    def get(self):
+        return self.value
+
+    def set(self, value):
+        self.value = value
+
+
+class FakeWidget:
+    def __init__(self):
+        self.config = {}
+        self.master = object()
+        self.pack_calls = []
+        self.forgotten = False
+
+    def configure(self, **kwargs):
+        self.config.update(kwargs)
+
+    def pack(self, **kwargs):
+        self.pack_calls.append(kwargs)
+
+    def pack_forget(self):
+        self.forgotten = True
+
+
+class FakeSlider:
+    def __init__(self, value):
+        self.value = value
+
+
+def make_app():
+    app = object.__new__(DubSirenApp)
+    app.profile_var = FakeVariable("EXTENDED")
+    app.mode_var = FakeVariable("LICKSHOT")
+    app.classic_pitch_var = FakeVariable("MID")
+    app.classic_mod_var = FakeVariable("MEDIUM")
+    app.lfo_shape_var = FakeVariable("TRIANGLE")
+    app.modulation_var = FakeVariable(True)
+    app.retrigger_var = FakeVariable(False)
+    app.echo_loop_var = FakeVariable(False)
+    app.hold_var = FakeVariable(False)
+    app.output_var = FakeVariable("PC")
+    app.mode_combo = FakeWidget()
+    app.extended_controls = FakeWidget()
+    app.classic_controls = FakeWidget()
+    app.mod_down_button = FakeWidget()
+    app.mod_up_button = FakeWidget()
+    app.sliders = {"TUNE_HZ": FakeSlider(220.0)}
+    app.momentary_active = set()
+    app.commands = []
+    app._send = app.commands.append
+    return app
+
+
+class PerformanceControlTests(unittest.TestCase):
+    def test_extended_and_classic_mode_lists(self):
+        self.assertEqual(
+            EXTENDED_MODES,
+            ("SINE1", "SINE2", "TEST_TONE", "SQUARE", "LICKSHOT", "SONAR"),
+        )
+        app = make_app()
+        app._update_profile_ui()
+        self.assertEqual(app.mode_combo.config["values"], EXTENDED_MODES)
+
+        app.profile_var.set("CLASSIC")
+        app._update_profile_ui()
+        self.assertEqual(app.mode_combo.config["values"], CLASSIC_MODES)
+        self.assertEqual(app.mode_var.get(), "SINE1")
+        self.assertIn("SET MODE SINE1", app.commands)
+
+        app.commands.clear()
+        for mode in ("LICKSHOT", "SONAR"):
+            app.mode_var.set(mode)
+            app._mode_changed()
+        self.assertEqual(app.commands,
+                         ["SET MODE LICKSHOT", "SET MODE SONAR"])
+
+    def test_buttons_switch_between_rise_dive_and_manual_labels(self):
+        app = make_app()
+        app._update_manual_buttons()
+        self.assertEqual(app.mod_down_button.config,
+                         {"state": "normal", "text": "DIVE"})
+        self.assertEqual(app.mod_up_button.config,
+                         {"state": "normal", "text": "RISE"})
+
+        app.lfo_shape_var.set("MANUAL")
+        app._update_manual_buttons()
+        self.assertEqual(app.mod_down_button.config["text"], "MOD DOWN")
+        self.assertEqual(app.mod_up_button.config["text"], "MOD UP")
+
+    def test_synchronization_and_echo_spin_release(self):
+        app = make_app()
+        app._synchronize_controls()
+        self.assertIn("MODULATION 1", app.commands)
+        self.assertIn("RETRIGGER 0", app.commands)
+        self.assertIn("ECHO_LOOP 0", app.commands)
+        self.assertIn("ECHO_SPIN 0", app.commands)
+
+        app.commands.clear()
+        app._press("ECHO_SPIN")
+        app._global_release()
+        self.assertEqual(app.commands, ["ECHO_SPIN 1", "ECHO_SPIN 0"])
+
+
+if __name__ == "__main__":
+    unittest.main()

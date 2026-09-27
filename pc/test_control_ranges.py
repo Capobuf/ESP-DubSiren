@@ -11,8 +11,8 @@ class ControlRangeTests(unittest.TestCase):
     def test_required_endpoints_and_decay_midpoint(self) -> None:
         expected_ranges = {
             "TUNE_HZ": (80.0, 1600.0),
-            "LFO_RATE_HZ": (0.15, 8.0),
-            "LFO_DEPTH_OCT": (0.0, 1.25),
+            "LFO_RATE_HZ": (0.15, 20.0),
+            "LFO_DEPTH_OCT": (0.0, 2.0),
             "DECAY_MS": (0.0, 1500.0),
             "FEEDBACK": (0.0, 1.05),
             "HPF_HZ": (50.0, 4000.0),

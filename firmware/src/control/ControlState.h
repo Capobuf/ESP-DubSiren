@@ -7,6 +7,9 @@ enum class SirenMode {
     Sine2,
     TestTone,
     Square,
+    Lickshot,
+    Sonar,
+    Count,
 };
 
 enum class LfoShape {
@@ -40,12 +43,16 @@ struct ControlState {
     bool hold = false;
     bool modUp = false;
     bool modDown = false;
+    bool modulationEnabled = true;
+    bool retrigger = false;
     float delayMs = 360.0f;
     float feedback = 0.62f;
     float echoLevel = 0.45f;
     float highPassHz = 60.0f;
     float lowPassHz = 7000.0f;
     bool echoCut = false;
+    bool echoSpin = false;
+    bool echoLoop = false;
     float masterVolume = 0.50f;
     bool voicingV2 = true;
 };

@@ -13,6 +13,7 @@ constexpr float kRateMs = 20.0f;
 constexpr float kFeedbackMs = 18.0f;
 constexpr float kEchoMs = 15.0f;
 constexpr float kMasterMs = 15.0f;
+constexpr float kPerformanceBendMs = 30.0f;
 constexpr float kFilterMs = 18.0f;
 constexpr float kDelayMs = 25.0f;
 constexpr float kDelayMaxSlewMsPerSecond = 2000.0f;
@@ -25,4 +26,5 @@ constexpr float kEchoFilterQ = 1.0f;
 constexpr float kFeedbackSaturationDrive = 1.35f;
 constexpr float kFeedbackSaturationAsymmetry = 0.018f;
 constexpr float kFeedbackSaturationGain = 0.72f;
+constexpr float kEchoSpinFeedback = 1.05f;
 }  // namespace PerformanceConfig
