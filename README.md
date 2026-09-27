@@ -87,6 +87,12 @@ Il Virtual ESP compila e usa direttamente gli stessi sorgenti C++ DSP/control
 del firmware; la libreria host viene ricompilata automaticamente quando quei
 sorgenti cambiano.
 
+La superficie predefinita riproduce il pannello previsto: sei potenziometri
+frontali (Tune, Rate, Echo, Delay, Feedback e Filter), quattro pulsanti
+momentanei, encoder con pressione, display simulato e Master posteriore
+separato. Il display è solo software; questa revisione non aggiunge hardware o
+driver display al firmware. Dettagli: [pannello UI](docs/panel-ui.md).
+
 Per lavorare senza hardware:
 
 1. scegliere **Virtual ESP** nel selettore Device;

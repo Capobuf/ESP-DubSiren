@@ -6,7 +6,7 @@ The desktop application must behave as a software representation of the physical
 
 The DSP and serial protocol remain the source of audio behavior. This UI layer changes how the existing parameters are presented and controlled; it does not create a second audio engine on the PC.
 
-## Proposed control surface
+## Current software control surface
 
 ### Front panel
 
@@ -54,7 +54,7 @@ This gives visual confirmation without requiring permanent labels or duplicate s
 
 ### Encoder menu
 
-The first menu revision contains:
+The menu contains the following entries for tonal voices:
 
 - Voice
 - LFO Shape
@@ -66,10 +66,11 @@ The first menu revision contains:
 - Retrigger
 - Echo Loop
 - Hold
-- Syndrum Wave and Drum Sweep only while `SYNDRUM` is selected
 - Back
 
 The encoder rotates through entries. Press selects an editable entry; rotation changes its value; press exits edit. Boolean values toggle on press.
+
+Transient voices only show controls that affect their DSP path. `SYNDRUM` shows Voice, Drum Wave, Drum Sweep, Decay, Echo Loop and Back. `GUNSHOT` shows Voice, Decay, Echo Loop and Back. LFO, modulation, retrigger, global sweep and hold entries are hidden in these modes.
 
 ## Echo filter macro
 
@@ -79,16 +80,14 @@ The existing independent HPF and LPF parameters are intentionally hidden. The ph
 - rotate toward low-pass: lower LPF while keeping HPF near its minimum;
 - rotate toward high-pass: raise HPF while keeping LPF wide.
 
-This preserves the existing DSP without exposing two technical frequency sliders on the primary UI.
+The center 5% on either side is a flat deadband at 60 Hz / 16 kHz. Outside that area each side follows a logarithmic curve to 400 Hz LPF or 4 kHz HPF at the corresponding endpoint. This preserves the existing DSP without exposing two technical frequency sliders on the primary UI.
 
-## Current hardware mismatch
+## Future physical implementation (not included)
 
-The repository PCB V1 currently documents five front potentiometers and one rear master. A six-front-control panel plus rear master requires the analog mapping to be revised before fabrication. The MCP3208 has enough channels for six front controls plus master, but the schematic/pinout must become the source of truth before physical-control firmware is implemented.
+The intended hardware model is six front potentiometers, four momentary front buttons, one push encoder and a separate rear MASTER. The repository PCB V1 still documents five front potentiometers and one rear master, so a later hardware revision must update the analog mapping and placement before fabrication.
 
-The display connector also remains controller-agnostic. Do not add a concrete OLED/TFT driver until the actual display module and interface are selected. The desktop display model should be used to settle navigation and information hierarchy first.
+There is no hardware display implementation in the current firmware: no display controller, driver, library or pin mapping is selected. The display in the desktop UI is only a functional simulation of the planned interaction model.
 
-## Firmware work still required
+The firmware also does not yet read MCP3208, MCP23017 or the physical encoder. Those hardware-input and PCB changes are outside this software UI revision. The current data path is:
 
-The current firmware has no physical-panel input or display loop. The next hardware-facing revision needs a small control task that reads MCP3208, MCP23017 and the quadrature encoder, updates `ControlStore`, and renders the display from the same UI state model used by the desktop prototype.
-
-Keep that task independent from `AudioEngine`. Potentiometer sampling needs modest smoothing/deadband; button/encoder events need debouncing. Display rendering should be dirty/event driven rather than tied to the 48 kHz audio path.
+`desktop controls -> protocol -> ControlState -> AudioEngine`
