@@ -1,0 +1,110 @@
+import array
+import queue
+import time
+import unittest
+
+from protocol import PROTOCOL_VERSION
+from virtual_transport import VIRTUAL_DEVICE, VirtualTransport
+
+
+class VirtualTransportTests(unittest.TestCase):
+    def setUp(self):
+        self.audio_queue = queue.Queue(maxsize=128)
+        self.statuses = []
+        self.transport = VirtualTransport(
+            self.audio_queue,
+            self.statuses.append,
+        )
+        self.transport.connect(VIRTUAL_DEVICE)
+
+    def tearDown(self):
+        if self.transport.connected:
+            self.transport.disconnect()
+
+    def _drain(self):
+        while True:
+            try:
+                self.audio_queue.get_nowait()
+            except queue.Empty:
+                return
+
+    def _assert_non_silent_audio(self, timeout=1.0):
+        deadline = time.monotonic() + timeout
+        while time.monotonic() < deadline:
+            try:
+                pcm = self.audio_queue.get(timeout=0.1)
+            except queue.Empty:
+                continue
+            samples = array.array("h")
+            samples.frombytes(pcm)
+            if any(samples):
+                return
+        self.fail("Virtual ESP did not produce non-silent PCM")
+
+    def _trigger_voice(self, voice):
+        self.transport.send("TRIGGER 0")
+        time.sleep(0.03)
+        self._drain()
+        self.transport.send(f"SET MODE {voice}")
+        self.transport.send("TRIGGER 1")
+        self._assert_non_silent_audio()
+        self.transport.send("TRIGGER 0")
+
+    def test_shared_dsp_controls_audio_transients_and_reconnect(self):
+        self.assertEqual(len(self.statuses), 1)
+        self.assertTrue(self.statuses[0]["virtual"])
+        self.assertEqual(self.statuses[0]["protocol"], PROTOCOL_VERSION)
+
+        commands = (
+            "SET PROFILE EXTENDED",
+            "SET TUNE_HZ 330",
+            "SET LFO_RATE_HZ 2.5",
+            "SET ECHO_LEVEL 0.7",
+            "SET DELAY_MS 80",
+            "SET FEEDBACK 0.65",
+            "SET HPF_HZ 60",
+            "SET LPF_HZ 16000",
+            "SET MASTER 0.8",
+            "SET LFO_SHAPE SAW_DOWN",
+            "SET LFO_DEPTH_OCT 1.25",
+            "SET DECAY_MS 300",
+            "SET SWEEP 0.5",
+            "SET SWEEP_MS 400",
+            "SET SYNDRUM_WAVE TRIANGLE",
+            "SET SYNDRUM_SWEEP -1.5",
+            "MODULATION 1",
+            "RETRIGGER 1",
+            "ECHO_LOOP 0",
+            "HOLD 0",
+            "MOD_DOWN 0",
+            "MOD_UP 0",
+            "ECHO_CUT 0",
+        )
+        for command in commands:
+            self.transport.send(command)
+
+        self.transport.send("STREAM 1")
+        self._trigger_voice("SYNDRUM")
+        self._trigger_voice("GUNSHOT")
+
+        self._drain()
+        self.transport.send("SET MODE LICKSHOT")
+        self.transport.send("HOLD 1")
+        self._assert_non_silent_audio()
+        self.transport.send("SET HPF_HZ 4000")
+        self.transport.send("SET LPF_HZ 16000")
+        self._assert_non_silent_audio()
+        self.transport.send("ECHO_CUT 1")
+        self.transport.send("ECHO_CUT 0")
+        self.transport.send("HOLD 0")
+        self.transport.send("STREAM 0")
+
+        self.transport.disconnect()
+        self.assertFalse(self.transport.connected)
+        self.transport.connect(VIRTUAL_DEVICE)
+        self.assertTrue(self.transport.connected)
+        self.assertEqual(len(self.statuses), 2)
+
+
+if __name__ == "__main__":
+    unittest.main()
