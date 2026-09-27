@@ -14,10 +14,10 @@ The DSP and serial protocol remain the source of audio behavior. This UI layer c
 |---|---|---|
 | POT1 | TUNE | `SET TUNE_HZ` |
 | POT2 | RATE | `SET LFO_RATE_HZ` |
-| POT3 | DEPTH | `SET LFO_DEPTH_OCT` |
+| POT3 | ECHO | `SET ECHO_LEVEL` |
 | POT4 | DELAY | `SET DELAY_MS` |
 | POT5 | FEEDBACK | `SET FEEDBACK` |
-| POT6 | ECHO | `SET ECHO_LEVEL` |
+| POT6 | FILTER | macro over `SET HPF_HZ` / `SET LPF_HZ` |
 | BTN1 | TRIGGER | `TRIGGER 0/1` |
 | BTN2 | DIVE / MOD DOWN | `MOD_DOWN 0/1` |
 | BTN3 | RISE / MOD UP | `MOD_UP 0/1` |
@@ -58,10 +58,10 @@ The first menu revision contains:
 
 - Voice
 - LFO Shape
+- Depth
 - Decay
 - Sweep
 - Sweep Time
-- Echo Filter
 - Modulation
 - Retrigger
 - Echo Loop
@@ -73,7 +73,7 @@ The encoder rotates through entries. Press selects an editable entry; rotation c
 
 ## Echo filter macro
 
-The existing independent HPF and LPF parameters are intentionally hidden from the performance surface. The menu exposes one `ECHO FILTER` macro instead:
+The existing independent HPF and LPF parameters are intentionally hidden. The physical FILTER potentiometer exposes one performance macro instead:
 
 - center: wide/flat echo path;
 - rotate toward low-pass: lower LPF while keeping HPF near its minimum;
