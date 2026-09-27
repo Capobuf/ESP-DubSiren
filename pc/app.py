@@ -8,6 +8,7 @@ from audio_player import AudioPlayer
 from control_ranges import CONTROL_SPECS, ControlSpec
 from protocol import PROTOCOL_VERSION
 from transport import SerialTransport
+from virtual_transport import VIRTUAL_DEVICE, VirtualTransport
 
 OUTPUT_VALUES = {
     "PC": "PC",
@@ -75,9 +76,12 @@ class DubSirenApp:
         self.root.minsize(760, 610)
         self.audio_queue: queue.Queue[bytes] = queue.Queue(maxsize=12)
         self.ui_events: queue.Queue[tuple[str, object]] = queue.Queue()
+        self._status_callback = (
+            lambda status: self.ui_events.put(("status", status))
+        )
         self.transport = SerialTransport(
             self.audio_queue,
-            lambda status: self.ui_events.put(("status", status)),
+            self._status_callback,
         )
         self.player = AudioPlayer(self.audio_queue)
         self.protocol_ok = False
@@ -110,9 +114,9 @@ class DubSirenApp:
 
         connection = ttk.LabelFrame(outer, text="CONNECTION", padding=8)
         connection.pack(fill="x", pady=(0, 10))
-        ttk.Label(connection, text="COM").pack(side="left")
+        ttk.Label(connection, text="Device").pack(side="left")
         self.port_combo = ttk.Combobox(
-            connection, textvariable=self.port_var, state="readonly", width=18
+            connection, textvariable=self.port_var, state="readonly", width=22
         )
         self.port_combo.pack(side="left", padx=6)
         ttk.Button(connection, text="Refresh", command=self.refresh_ports).pack(
@@ -390,13 +394,14 @@ class DubSirenApp:
         try:
             self.transport.send(command)
         except Exception as exc:
-            self.connection_var.set(f"Serial error: {exc}")
+            self.connection_var.set(f"Transport error: {exc}")
 
     def refresh_ports(self) -> None:
-        ports = [port.device for port in list_ports.comports()]
+        ports = [VIRTUAL_DEVICE]
+        ports.extend(port.device for port in list_ports.comports())
         self.port_combo["values"] = ports
         if self.port_var.get() not in ports:
-            self.port_var.set(ports[0] if ports else "")
+            self.port_var.set(VIRTUAL_DEVICE)
 
     def toggle_connection(self) -> None:
         if self.transport.connected:
@@ -407,11 +412,27 @@ class DubSirenApp:
     def connect(self) -> None:
         port = self.port_var.get()
         if not port:
-            messagebox.showerror("Connection", "No serial port is available.")
+            messagebox.showerror("Connection", "No device is available.")
             return
+
+        if port == VIRTUAL_DEVICE:
+            self.transport = VirtualTransport(
+                self.audio_queue,
+                self._status_callback,
+            )
+            self.output_var.set("PC")
+            self.output_combo.configure(state="disabled")
+        else:
+            self.transport = SerialTransport(
+                self.audio_queue,
+                self._status_callback,
+            )
+            self.output_combo.configure(state="readonly")
+
         try:
             self.transport.connect(port)
         except Exception as exc:
+            self.output_combo.configure(state="readonly")
             messagebox.showerror("Connection", str(exc))
             return
         self.protocol_ok = False
@@ -430,6 +451,7 @@ class DubSirenApp:
         self.connect_button.configure(text="Connect")
         self.audio_button.configure(text="Start Audio", state="disabled")
         self.port_combo.configure(state="readonly")
+        self.output_combo.configure(state="readonly")
         self.refresh_ports()
 
     def toggle_audio(self) -> None:
@@ -501,17 +523,27 @@ class DubSirenApp:
             self.root.after(0, self.disconnect)
             return
         self.protocol_ok = True
+        is_virtual = status.get("virtual") is True
         self.i2s_ready = status.get("i2sReady") is True
-        if self._uses_i2s(self._selected_output()) and not self.i2s_ready:
+        if is_virtual:
+            self.output_var.set("PC")
+            self.output_combo.configure(state="disabled")
+        elif self._uses_i2s(self._selected_output()) and not self.i2s_ready:
             self.output_var.set("PC")
             messagebox.showerror(
                 "PCM5102A output",
                 "The ESP32 reported that I2S initialization failed. "
                 "Output was set to PC.",
             )
-        self.connection_var.set(
-            f"Connected · firmware {status.get('firmware', '?')}"
-        )
+
+        if is_virtual:
+            self.connection_var.set(
+                f"Connected · Virtual ESP · firmware {status.get('firmware', '?')}"
+            )
+        else:
+            self.connection_var.set(
+                f"Connected · firmware {status.get('firmware', '?')}"
+            )
         self.audio_button.configure(state="normal")
         self._synchronize_controls()
 
