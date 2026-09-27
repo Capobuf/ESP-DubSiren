@@ -41,13 +41,22 @@ LFO_SHAPES = (
 LFO_LABELS = {value: value.replace("_", " ") for value in LFO_SHAPES}
 SYNDRUM_WAVES = ("SINE", "TRIANGLE", "SQUARE")
 
+def format_echo_filter(value: float) -> str:
+    if abs(value) < 0.05:
+        return "FLAT"
+    amount = min(100, round(abs(value) * 100))
+    return f"{'LP' if value < 0 else 'HP'} {amount}%"
+
+
+ECHO_FILTER_SPEC = ControlSpec(-1.0, 1.0, 0.0, format_echo_filter)
+
 PANEL_KNOBS = (
     ("TUNE", "TUNE_HZ"),
     ("RATE", "LFO_RATE_HZ"),
-    ("DEPTH", "LFO_DEPTH_OCT"),
+    ("ECHO", "ECHO_LEVEL"),
     ("DELAY", "DELAY_MS"),
     ("FEEDBACK", "FEEDBACK"),
-    ("ECHO", "ECHO_LEVEL"),
+    ("FILTER", "ECHO_FILTER"),
 )
 
 
@@ -325,6 +334,8 @@ class PhysicalDubSirenApp(DubSirenApp):
         self.parameter_values = {
             name: spec.default for name, spec in CONTROL_SPECS.items()
         }
+        self.parameter_values["HPF_HZ"] = 60.0
+        self.parameter_values["LPF_HZ"] = 16000.0
         self.echo_filter_macro = 0.0
         self.display_mode = "home"
         self.menu_index = 0
@@ -395,7 +406,11 @@ class PhysicalDubSirenApp(DubSirenApp):
                 panel,
                 label,
                 command_name,
-                CONTROL_SPECS[command_name],
+                (
+                    ECHO_FILTER_SPEC
+                    if command_name == "ECHO_FILTER"
+                    else CONTROL_SPECS[command_name]
+                ),
                 self._panel_parameter_changed,
             )
             dial.grid(
@@ -503,21 +518,32 @@ class PhysicalDubSirenApp(DubSirenApp):
         value: float,
         final: bool,
     ) -> None:
-        self.parameter_values[name] = value
-        self._show_overlay(
-            self._parameter_label(name),
-            CONTROL_SPECS[name].formatter(value),
-        )
+        if name == "ECHO_FILTER":
+            self.echo_filter_macro = value
+            self._show_overlay("FILTER", format_echo_filter(value))
+        else:
+            self.parameter_values[name] = value
+            self._show_overlay(
+                self._parameter_label(name),
+                CONTROL_SPECS[name].formatter(value),
+            )
+
         pending = self.pending_sends.pop(name, None)
         if pending is not None:
             self.root.after_cancel(pending)
+
         if final:
-            self._send_parameter(name, value)
+            if name == "ECHO_FILTER":
+                self._apply_echo_filter()
+            else:
+                self._send_parameter(name, value)
         else:
-            self.pending_sends[name] = self.root.after(
-                25,
-                lambda parameter=name: self._flush_panel_parameter(parameter),
+            callback = (
+                self._apply_echo_filter
+                if name == "ECHO_FILTER"
+                else lambda parameter=name: self._flush_panel_parameter(parameter)
             )
+            self.pending_sends[name] = self.root.after(25, callback)
 
     def _flush_panel_parameter(self, name: str) -> None:
         self.pending_sends.pop(name, None)
@@ -531,6 +557,7 @@ class PhysicalDubSirenApp(DubSirenApp):
             "DELAY_MS": "DELAY",
             "FEEDBACK": "FEEDBACK",
             "ECHO_LEVEL": "ECHO",
+            "ECHO_FILTER": "FILTER",
             "MASTER": "MASTER",
             "DECAY_MS": "DECAY",
             "SWEEP": "SWEEP",
@@ -597,6 +624,13 @@ class PhysicalDubSirenApp(DubSirenApp):
                 LFO_LABELS[self.lfo_shape_var.get()],
             ),
             (
+                "LFO_DEPTH_OCT",
+                "DEPTH",
+                CONTROL_SPECS["LFO_DEPTH_OCT"].formatter(
+                    self.parameter_values["LFO_DEPTH_OCT"]
+                ),
+            ),
+            (
                 "DECAY_MS",
                 "DECAY",
                 CONTROL_SPECS["DECAY_MS"].formatter(
@@ -616,11 +650,6 @@ class PhysicalDubSirenApp(DubSirenApp):
                 CONTROL_SPECS["SWEEP_MS"].formatter(
                     self.parameter_values["SWEEP_MS"]
                 ),
-            ),
-            (
-                "ECHO_FILTER",
-                "ECHO FILTER",
-                self._format_echo_filter(),
             ),
             (
                 "MODULATION",
@@ -703,21 +732,13 @@ class PhysicalDubSirenApp(DubSirenApp):
                 f"SET SYNDRUM_WAVE {self.syndrum_wave_var.get()}"
             )
         elif key in (
+            "LFO_DEPTH_OCT",
             "DECAY_MS",
             "SWEEP",
             "SWEEP_MS",
             "SYNDRUM_SWEEP",
         ):
             self._step_parameter(key, direction)
-        elif key == "ECHO_FILTER":
-            self.echo_filter_macro = max(
-                -1.0,
-                min(
-                    1.0,
-                    self.echo_filter_macro + 0.05 * direction,
-                ),
-            )
-            self._apply_echo_filter()
         elif key == "MODULATION":
             self.modulation_var.set(
                 not self.modulation_var.get()
