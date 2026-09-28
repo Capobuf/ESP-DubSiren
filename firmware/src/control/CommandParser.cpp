@@ -19,7 +19,8 @@ bool CommandParser::parse(const String &rawCommand) {
         command.startsWith("PAD_ASSIGN ") ||
         command.startsWith("PAD_VARIANT ") || command == "PAD_HOLD_TOGGLE" ||
         command.startsWith("PAD_CONFIG ") ||
-        command.startsWith("ENCODER_SWITCH ") || command == "PANEL_RESET") {
+        command.startsWith("ENCODER_SWITCH ") ||
+        command.startsWith("ENCODER_ROTATE ") || command == "PANEL_RESET") {
         return parsePanelCommand(command);
     }
     ControlState state = controls_.snapshot();
@@ -145,6 +146,13 @@ bool CommandParser::parsePanelCommand(const String &command) {
         bool pressed;
         if (!parseBool(command.substring(15), pressed)) return false;
         performance_.setEncoderPressed(pressed);
+        return true;
+    }
+    if (command.startsWith("ENCODER_ROTATE ")) {
+        const String direction = command.substring(15);
+        if (direction == "PREV") performance_.rotateEncoder(-1);
+        else if (direction == "NEXT") performance_.rotateEncoder(1);
+        else return false;
         return true;
     }
     if (command.startsWith("PAD_SELECT ")) {

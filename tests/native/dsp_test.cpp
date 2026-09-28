@@ -235,6 +235,48 @@ void testQueuedPadActivation() {
     assert(blockRms(block, 480) > 100.0f);
 }
 
+void testPanelDisplayState() {
+    ControlStore store;
+    CommandParser parser(store);
+    assert(parser.displayWidth() == 320 && parser.displayHeight() == 170);
+    assert(strcmp(parser.displayModeName(), "HOME") == 0);
+    assert(parser.parse("ENCODER_ROTATE NEXT"));
+    assert(fabsf(store.snapshot().lfoDepthOctaves - 1.05f) < 0.0001f);
+
+    assert(parser.parse("ENCODER_SWITCH 1"));
+    assert(parser.parse("ENCODER_SWITCH 0"));
+    assert(strcmp(parser.displayModeName(), "MENU") == 0);
+    assert(parser.menuIndex() == 0 && !parser.menuEditing());
+    assert(parser.menuItemCount() == 6);
+    assert(strcmp(parser.menuItemKey(0), "PAD") == 0);
+
+    assert(parser.parse("ENCODER_ROTATE NEXT"));
+    assert(parser.menuIndex() == 1);
+    assert(parser.parse("ENCODER_SWITCH 1"));
+    assert(parser.parse("ENCODER_SWITCH 0"));
+    assert(parser.menuEditing());
+    assert(parser.parse("ENCODER_ROTATE NEXT"));
+    assert(strcmp(parser.padSoundName(1), "TWO TONE") == 0);
+    assert(parser.parse("ENCODER_SWITCH 1"));
+    assert(parser.parse("ENCODER_SWITCH 0"));
+    assert(!parser.menuEditing());
+
+    assert(parser.parse("ENCODER_ROTATE NEXT"));
+    assert(strcmp(parser.menuItemKey(parser.menuIndex()), "VARIANT") == 0);
+    assert(parser.parse("ENCODER_SWITCH 1"));
+    assert(parser.parse("ENCODER_SWITCH 0"));
+    assert(parser.parse("ENCODER_ROTATE NEXT"));
+    assert(strcmp(parser.padVariantName(1), "TRIANGLE") == 0);
+    assert(parser.parse("ENCODER_SWITCH 1"));
+    assert(parser.parse("ENCODER_SWITCH 0"));
+
+    for (int i = 0; i < 3; ++i) assert(parser.parse("ENCODER_ROTATE NEXT"));
+    assert(strcmp(parser.menuItemKey(parser.menuIndex()), "BACK") == 0);
+    assert(parser.parse("ENCODER_SWITCH 1"));
+    assert(parser.parse("ENCODER_SWITCH 0"));
+    assert(strcmp(parser.displayModeName(), "HOME") == 0);
+}
+
 void testDynamicSweep() {
     ControlState state;
     state.mode = SirenMode::Sonar;
@@ -642,6 +684,7 @@ int main() {
     testParser();
     testPadController();
     testQueuedPadActivation();
+    testPanelDisplayState();
     testDynamicSweep();
     testSyndrum();
     testGunshot();

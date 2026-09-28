@@ -8,6 +8,8 @@ tkinter panel actions
 newline commands over USB
       |
 CommandParser -> PerformanceController -> synchronized ControlStore
+                         |                          \
+                  logical display state             \-> PanelDisplay -> ST7789/SPI
                          |
                   block snapshot
                          |
@@ -41,6 +43,16 @@ when USB AUDIO packets are disabled. Hardware CDC's TX ring is set to 8192 bytes
 before USB startup, so a 970-byte audio packet can be queued without waiting
 for the default 256-byte ring to drain. Packet writes complete any partial
 `Serial.write` before another packet starts.
+
+`PanelDisplay` is outside `audioTask`. The main loop takes controller and
+`ControlStore` snapshots and renders the boot/idle scene at 10 fps. Menu frames
+remain event-driven. It uses direct Adafruit GFX primitives and no RGB565
+framebuffer or bitmap assets. The audio task is pinned at the higher priority
+and contains no SPI or display calls, so display traffic cannot change DSP
+state or block rendering inside the audio loop. A single-byte peak envelope is
+derived from the already-rendered PCM block and passed to the display; it does
+not feed back into the DSP. STATUS exposes `displayRenderUs` and
+`maxDisplayRenderUs` separately from the audio timing counters.
 
 `I2sPcm5102Sink` duplicates each of the 480 mono int16 samples into a stereo
 left/right frame and writes the resulting 960 values to I2S DMA. ESP32-S3 is
@@ -109,9 +121,18 @@ an abrupt boundary.
 
 `PerformanceController` is compiled into both firmware and VirtualESP. It owns
 the four pad assignments, variant lists, per-pad Hold state, pressed-state
-priority, encoder combinations, selected pad, and the initial Classic / Two
-Tone / Lickshot / Ping bank. Python receives that state in STATUS and does not
-duplicate the sound configurations.
+priority, encoder combinations, selected pad, Home/Menu mode, menu position,
+edit mode, conditional menu rows, and the initial Classic / Two Tone / Lickshot
+/ Ping bank. Python receives that state in STATUS and does not duplicate the
+menu transitions or sound configurations.
+
+VirtualESP exports the same compact logical display state through its C ABI:
+320×170 dimensions, Home/Menu mode, menu index/edit flag, ordered menu item
+keys, Depth and Echo Loop. `VirtualTransport` adds these values to
+`panel.display`. The desktop `dub_scene.py` renderer uses the same coordinates,
+palette, boot stages and scene-to-parameter mapping as the Adafruit GFX
+renderer. VirtualESP also derives a display-only peak envelope from its PCM
+blocks. No SPI emulation or display framebuffer exists on the host.
 
 A pad activation updates the mode-specific configuration and an eight-entry
 activation ring in one `ControlStore` write. The audio engine transfers unseen

@@ -7,6 +7,10 @@ int wrappedStep(int value, int direction, int count) {
     return result < 0 ? result + count : result;
 }
 
+float clampFloat(float value, float minimum, float maximum) {
+    return value < minimum ? minimum : (value > maximum ? maximum : value);
+}
+
 }  // namespace
 
 PerformanceController::PerformanceController(ControlStore &controls)
@@ -192,17 +196,43 @@ bool PerformanceController::setPad(unsigned padNumber, bool pressed) {
 }
 
 void PerformanceController::setEncoderPressed(bool pressed) {
+    if (displayMode_ == DisplayMode::Menu) {
+        if (pressed) pressMenuItem();
+        return;
+    }
     if (encoderPressed_ == pressed) return;
     encoderPressed_ = pressed;
     if (pressed) {
         modifierUsed_ = false;
     } else if (!modifierUsed_) {
-        ++menuRevision_;
+        openMenu();
     }
     ControlState state = controls_.snapshot();
     updateGate(state);
     controls_.set(state);
     changed();
+}
+
+void PerformanceController::rotateEncoder(int direction) {
+    if (direction == 0) return;
+    if (displayMode_ == DisplayMode::Home) {
+        ControlState state = controls_.snapshot();
+        state.lfoDepthOctaves = clampFloat(
+            state.lfoDepthOctaves + (direction < 0 ? -0.05f : 0.05f),
+            0.0f, 2.0f);
+        controls_.set(state);
+        changed();
+        return;
+    }
+
+    normalizeMenuIndex();
+    if (menuEditing_) {
+        editMenuItem(menuItem(menuIndex_), direction);
+    } else {
+        menuIndex_ = static_cast<uint8_t>(wrappedStep(
+            menuIndex_, direction, static_cast<int>(menuItemCount())));
+        changed();
+    }
 }
 
 void PerformanceController::resetMomentaries() {
@@ -223,6 +253,7 @@ void PerformanceController::resetMomentaries() {
 bool PerformanceController::selectPad(unsigned padNumber) {
     if (padNumber < 1 || padNumber > 4) return false;
     selectedPad_ = padNumber - 1;
+    normalizeMenuIndex();
     changed();
     return true;
 }
@@ -241,6 +272,7 @@ void PerformanceController::stepAssignment(int direction) {
     }
     updateGate(state);
     controls_.set(state);
+    normalizeMenuIndex();
     changed();
 }
 
@@ -310,4 +342,94 @@ bool PerformanceController::padHold(unsigned padNumber) const {
 bool PerformanceController::padHoldSupported(unsigned padNumber) const {
     return padNumber >= 1 && padNumber <= 4 &&
            supportsHold(pads_[padNumber - 1].sound);
+}
+
+const char *PerformanceController::displayModeName() const {
+    return displayMode_ == DisplayMode::Home ? "HOME" : "MENU";
+}
+
+unsigned PerformanceController::menuItemCount() const {
+    return padHoldSupported(selectedPad()) ? 6 : 5;
+}
+
+PerformanceController::MenuItem PerformanceController::menuItem(
+        unsigned index) const {
+    static constexpr MenuItem withHold[] = {
+        MenuItem::Pad, MenuItem::Assignment, MenuItem::Variant,
+        MenuItem::Hold, MenuItem::EchoLoop, MenuItem::Back,
+    };
+    static constexpr MenuItem withoutHold[] = {
+        MenuItem::Pad, MenuItem::Assignment, MenuItem::Variant,
+        MenuItem::EchoLoop, MenuItem::Back,
+    };
+    const unsigned count = menuItemCount();
+    index = count == 0 ? 0 : index % count;
+    return padHoldSupported(selectedPad()) ? withHold[index]
+                                           : withoutHold[index];
+}
+
+const char *PerformanceController::menuItemKey(unsigned index) const {
+    switch (menuItem(index)) {
+        case MenuItem::Pad: return "PAD";
+        case MenuItem::Assignment: return "ASSIGNMENT";
+        case MenuItem::Variant: return "VARIANT";
+        case MenuItem::Hold: return "HOLD";
+        case MenuItem::EchoLoop: return "ECHO_LOOP";
+        case MenuItem::Back: return "BACK";
+    }
+    return "BACK";
+}
+
+void PerformanceController::openMenu() {
+    displayMode_ = DisplayMode::Menu;
+    menuIndex_ = 0;
+    menuEditing_ = false;
+    ++menuRevision_;
+}
+
+void PerformanceController::pressMenuItem() {
+    normalizeMenuIndex();
+    const MenuItem item = menuItem(menuIndex_);
+    if (item == MenuItem::Back) {
+        displayMode_ = DisplayMode::Home;
+        menuEditing_ = false;
+    } else if (item == MenuItem::Hold || item == MenuItem::EchoLoop) {
+        editMenuItem(item, 1);
+        return;
+    } else {
+        menuEditing_ = !menuEditing_;
+    }
+    changed();
+}
+
+void PerformanceController::editMenuItem(MenuItem item, int direction) {
+    switch (item) {
+        case MenuItem::Pad:
+            selectPad(static_cast<unsigned>(wrappedStep(
+                static_cast<int>(selectedPad_), direction, 4)) + 1);
+            break;
+        case MenuItem::Assignment:
+            stepAssignment(direction);
+            break;
+        case MenuItem::Variant:
+            stepVariant(direction);
+            break;
+        case MenuItem::Hold:
+            toggleSelectedHold();
+            break;
+        case MenuItem::EchoLoop: {
+            ControlState state = controls_.snapshot();
+            state.echoLoop = !state.echoLoop;
+            controls_.set(state);
+            changed();
+            break;
+        }
+        case MenuItem::Back:
+            break;
+    }
+}
+
+void PerformanceController::normalizeMenuIndex() {
+    const unsigned count = menuItemCount();
+    if (menuIndex_ >= count) menuIndex_ = static_cast<uint8_t>(count - 1);
 }

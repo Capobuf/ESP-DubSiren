@@ -18,7 +18,7 @@ The PC still contains no oscillator, envelope, filter, or delay implementation.
 | POT5 | ECHO FEEDBACK | `SET FEEDBACK` |
 | POT6 | ECHO TONE | macro over `SET HPF_HZ` / `SET LPF_HZ` |
 | BTN1–BTN4 | assigned sound pads | `PAD <1..4> 0|1` |
-| Encoder rotation on Home | DEPTH | `SET LFO_DEPTH_OCT` |
+| Encoder rotation on Home | DEPTH | `ENCODER_ROTATE PREV|NEXT` |
 | Encoder press | modifier, or open menu on release | `ENCODER_SWITCH 0|1` |
 | Rear MASTER | final gain | `SET MASTER` |
 
@@ -71,17 +71,51 @@ not.
 
 ## Display and menu
 
-Home shows the explicitly selected pad, its assignment and variant, Depth, Hold,
-Echo Loop, and link state. The selected pad normally follows the last played
-pad. The menu can select another pad without playing it, then edit only that
-pad's assignment, supported variant, and Hold. Echo Loop remains available as
-a secondary function. If a latched sound differs from the selected pad, Home
-adds a `LIVE Pn` indicator. Back returns to Home.
+The only logical viewport is 320×170 in landscape orientation. The desktop
+widget may occupy more monitor pixels in the future, but its internal layout
+and validation coordinates remain 320×170 with uniform scaling only.
 
-Knob and encoder changes show a 900 ms value overlay without moving keyboard
-focus. RATE is visibly inactive for PING because Syndrum does not use the normal
-LFO; its stored value is not reassigned or destroyed. Other unsupported sound
-options are omitted rather than sent to an ignored DSP path.
+Home is a pixel-art dub stage rather than a text dashboard. A large handmade
+speaker stack occupies the left side, the active rack occupies the center, and
+the soundboy remains secondary on the right. The rack's own green display shows
+the selected pad assignment and variant. The selected pad normally follows the
+last played pad. The menu can select another pad without playing it, then edit
+only that pad's assignment, supported variant, and Hold. Echo Loop remains
+available as a secondary function. Back returns to the same assembled scene.
+
+`PerformanceController` owns Home/Menu mode, the current menu row, edit mode,
+the menu's conditional Hold row, and all encoder behavior. Python sends raw
+`ENCODER_SWITCH` and `ENCODER_ROTATE` events and renders the state returned by
+the ESP; it does not run a second menu state machine. The menu renders a
+three-row scrolling window so labels remain readable within 170 vertical
+pixels.
+
+Knob and encoder changes illuminate the corresponding physical module for
+1.1 seconds and show the value on that module; there is no fullscreen value
+popup. RATE remains inactive on the physical panel for PING because Syndrum
+does not use the normal LFO; its stored value is not reassigned or destroyed.
+Other unsupported sound options are omitted rather than sent to an ignored DSP
+path.
+
+### Scene mapping
+
+| Real control/state | Diegetic element |
+|---|---|
+| Selected sound + variant | green rack nameplate |
+| Tune / Rate | two oscillator-module displays |
+| Encoder Depth | modulation module display and physical knob |
+| Echo Time / Feedback / Level / Tone | four controls on the echo unit |
+| Hold | red Hold lamp on the modulation module |
+| Echo Loop | red Loop legend on the power amp |
+| Master | power-amp/VU module |
+| Rendered PCM peak | VU bars and speaker-cone excursion |
+| Link | tiny amber service LED on the rack |
+
+The soundboy enters carrying the first cabinet, completes the stack, places the
+rack, connects the cable and powers the system over a 3.3 second boot sequence.
+The last boot composition is already the Home composition. Idle runs at 10 fps
+with only head/body bob, hand movement, power LEDs, VU and cone excursion. The
+desktop preview has a `Replay boot` control for visual verification.
 
 Confirmed pad assignment and variant changes are saved to
 `%APPDATA%\ESP-DubSiren\panel.json`. Only configuration is persisted: pressed
@@ -115,9 +149,33 @@ Knob movement uses one 25 ms timer per control. The latest value is sent on
 each periodic flush, and release cancels any outstanding timer before sending
 the final value immediately.
 
-## Hardware scope
+## Hardware display
 
-The display and controls in this revision are software emulation. No display
-driver, GPIO assignment, PCB change, or physical-control reader is included.
-The shared C++ controller is deliberately independent of those drivers so a
-future hardware input layer can send the same pad and encoder actions.
+Firmware 0.8.0 includes an Adafruit GFX/ST7789 renderer for Product 5394. It
+uses the existing hardware SPI nets on GPIO11 MOSI and GPIO12 SCK, with GPIO9
+CS, GPIO8 DC, GPIO7 reset, and GPIO14 backlight held high. Initialization is
+`init(170, 320)` followed by rotation 1; runtime width and height must be
+320×170. No touch, microSD, LVGL, framebuffer, or brightness menu is included.
+
+Rendering runs from `loop()`, never from `audioTask`. Boot and Home are capped
+at 10 fps; Menu redraws only on state changes. A full RGB565 framebuffer would
+cost 108,800 bytes and is deliberately not allocated. The scene has no bitmap
+assets, so asset RAM/flash cost is 0 bytes; it is drawn from Adafruit GFX
+primitives. The `PanelDisplay` global is 428 bytes in the linked image and its
+release code/constant sections are about 10,099 bytes. The full firmware build
+uses 119,204 bytes of static RAM (36.4%) and 341,085 bytes of flash (10.2%).
+The ST7789 library selects a 32 MHz SPI clock; a full 320×170 RGB565 clear has a
+27.2 ms theoretical wire time before primitive overhead. Runtime STATUS exposes
+`displayRenderUs` and `maxDisplayRenderUs` so the actual board can be checked
+against the 100 ms frame budget. The audio task remains higher priority and
+owns no display calls.
+
+Reference captures generated from the same desktop renderer are in
+`docs/screenshots/display-idle.png`, `display-tune.png`, `display-echo.png`,
+`display-menu.png`, and `display-boot.png`.
+
+The current PCB is not display-ready: J3 exposes power, I²C, CS, DC, reset and
+backlight, but not `SPI_MOSI` or `SPI_SCK`. J3 must be revised or another
+explicit physical connection must be defined. No KiCad source was changed in
+this software/UI revision, and operation on real display hardware remains
+unverified.

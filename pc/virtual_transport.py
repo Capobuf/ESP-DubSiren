@@ -39,10 +39,15 @@ class VirtualTransport:
         self._sample_rate = 48_000
         self._block_samples = 480
         self._firmware_version = "?"
+        self._audio_peak = 0.0
 
     @property
     def connected(self) -> bool:
         return self._connected
+
+    @property
+    def audio_peak(self) -> float:
+        return self._audio_peak
 
     def connect(self, port: str) -> None:
         if self.connected:
@@ -141,6 +146,24 @@ class VirtualTransport:
         library.virtual_esp_panel_revision.restype = ctypes.c_uint
         library.virtual_esp_panel_menu_revision.argtypes = []
         library.virtual_esp_panel_menu_revision.restype = ctypes.c_uint
+        library.virtual_esp_display_width.argtypes = []
+        library.virtual_esp_display_width.restype = ctypes.c_uint
+        library.virtual_esp_display_height.argtypes = []
+        library.virtual_esp_display_height.restype = ctypes.c_uint
+        library.virtual_esp_display_mode.argtypes = []
+        library.virtual_esp_display_mode.restype = ctypes.c_char_p
+        library.virtual_esp_menu_index.argtypes = []
+        library.virtual_esp_menu_index.restype = ctypes.c_uint
+        library.virtual_esp_menu_editing.argtypes = []
+        library.virtual_esp_menu_editing.restype = ctypes.c_int
+        library.virtual_esp_menu_item_count.argtypes = []
+        library.virtual_esp_menu_item_count.restype = ctypes.c_uint
+        library.virtual_esp_menu_item_key.argtypes = [ctypes.c_uint]
+        library.virtual_esp_menu_item_key.restype = ctypes.c_char_p
+        library.virtual_esp_depth.argtypes = []
+        library.virtual_esp_depth.restype = ctypes.c_float
+        library.virtual_esp_echo_loop.argtypes = []
+        library.virtual_esp_echo_loop.restype = ctypes.c_int
         library.virtual_esp_selected_pad.argtypes = []
         library.virtual_esp_selected_pad.restype = ctypes.c_int
         library.virtual_esp_current_pad.argtypes = []
@@ -176,6 +199,11 @@ class VirtualTransport:
                     ),
                 }
             )
+        menu_items = []
+        for index in range(self._lib.virtual_esp_menu_item_count()):
+            key = self._lib.virtual_esp_menu_item_key(index)
+            menu_items.append(key.decode("ascii") if key else "BACK")
+        mode = self._lib.virtual_esp_display_mode()
         return {
             "name": "DubSiren",
             "protocol": self._lib.virtual_esp_protocol_version(),
@@ -192,6 +220,16 @@ class VirtualTransport:
                 "currentPad": self._lib.virtual_esp_current_pad(),
                 "activePad": self._lib.virtual_esp_active_pad(),
                 "pads": pads,
+                "display": {
+                    "width": self._lib.virtual_esp_display_width(),
+                    "height": self._lib.virtual_esp_display_height(),
+                    "mode": mode.decode("ascii") if mode else "HOME",
+                    "menuIndex": self._lib.virtual_esp_menu_index(),
+                    "editing": bool(self._lib.virtual_esp_menu_editing()),
+                    "menuItems": menu_items,
+                    "depth": self._lib.virtual_esp_depth(),
+                    "echoLoop": bool(self._lib.virtual_esp_echo_loop()),
+                },
             },
         }
 
@@ -211,6 +249,13 @@ class VirtualTransport:
             if rendered != 1:
                 self._connected = False
                 return
+
+            block_peak = max(abs(int(sample)) for sample in buffer) / 32768.0
+            self._audio_peak = (
+                block_peak
+                if block_peak > self._audio_peak
+                else self._audio_peak * 0.86
+            )
 
             if streaming:
                 pcm = ctypes.string_at(

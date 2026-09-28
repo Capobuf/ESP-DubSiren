@@ -1,11 +1,15 @@
 import tempfile
+import time
 import unittest
 from pathlib import Path
 
 from control_ranges import CONTROL_SPECS
 from physical_ui import (
     DEFAULT_PANEL_STATE,
+    DISPLAY_HEIGHT,
+    DISPLAY_WIDTH,
     PANEL_KNOBS,
+    PanelDisplay,
     PhysicalDubSirenApp,
     echo_filter_frequencies,
     format_echo_filter,
@@ -70,6 +74,29 @@ class FakeTransport:
     connected = True
 
 
+class FakeCanvas:
+    def __init__(self):
+        self.calls = []
+
+    def delete(self, *args):
+        self.calls.append(("delete", args, {}))
+
+    def create_text(self, *args, **kwargs):
+        self.calls.append(("text", args, kwargs))
+
+    def create_rectangle(self, *args, **kwargs):
+        self.calls.append(("rectangle", args, kwargs))
+
+    def create_line(self, *args, **kwargs):
+        self.calls.append(("line", args, kwargs))
+
+    def create_oval(self, *args, **kwargs):
+        self.calls.append(("oval", args, kwargs))
+
+    def create_polygon(self, *args, **kwargs):
+        self.calls.append(("polygon", args, kwargs))
+
+
 def make_app() -> PhysicalDubSirenApp:
     app = object.__new__(PhysicalDubSirenApp)
     app.output_var = FakeVariable("PC")
@@ -81,9 +108,12 @@ def make_app() -> PhysicalDubSirenApp:
     app.parameter_values["LPF_HZ"] = 7000.0
     app.echo_filter_macro = 0.0
     app.echo_filter_active = False
-    app.display_mode = "home"
     app.panel_state = {
         **DEFAULT_PANEL_STATE,
+        "display": {
+            **DEFAULT_PANEL_STATE["display"],
+            "menuItems": list(DEFAULT_PANEL_STATE["display"]["menuItems"]),
+        },
         "pads": [
             {"sound": "CLASSIC", "variant": "SINE 1", "variantIndex": 0,
              "hold": False, "holdSupported": True},
@@ -106,8 +136,6 @@ def make_app() -> PhysicalDubSirenApp:
     app._refresh_display = lambda: None
     app._input_sources = {}
     app._encoder_sources = set()
-    app._local_modifier_used = False
-    app._save_config_on_status = False
     app._saved_config_applied = True
     app._saved_pad_configs = []
     return app
@@ -135,6 +163,9 @@ class PhysicalUiTests(unittest.TestCase):
             ["PAD", "ASSIGNMENT", "VARIANT", "HOLD", "ECHO_LOOP", "BACK"],
         )
         app.panel_state["selectedPad"] = 4
+        app.panel_state["display"]["menuItems"] = [
+            "PAD", "ASSIGNMENT", "VARIANT", "ECHO_LOOP", "BACK"
+        ]
         keys = [key for key, _label, _value in app._menu_items()]
         self.assertEqual(
             keys, ["PAD", "ASSIGNMENT", "VARIANT", "ECHO_LOOP", "BACK"]
@@ -142,15 +173,68 @@ class PhysicalUiTests(unittest.TestCase):
 
     def test_home_encoder_changes_depth_not_voice(self):
         app = make_app()
-        app.display_mode = "home"
-        app.overlay = None
-        app._show_overlay = lambda *args: setattr(app, "overlay", args)
 
         app._encoder_rotate(1)
 
-        self.assertEqual(app.commands[-1].split()[:2], ["SET", "LFO_DEPTH_OCT"])
-        self.assertEqual(app.overlay[0], "DEPTH")
+        self.assertEqual(app.commands[-1], "ENCODER_ROTATE NEXT")
         self.assertFalse(any(command.startswith("SET MODE") for command in app.commands))
+
+    def test_display_layout_is_native_320_by_170_and_stays_in_bounds(self):
+        self.assertEqual((DISPLAY_WIDTH, DISPLAY_HEIGHT), (320, 170))
+        display = object.__new__(PanelDisplay)
+        display.canvas = FakeCanvas()
+        display._boot_started = time.monotonic() - 10.0
+        display._peak_provider = None
+        display._focus = None
+        display._focus_value = ""
+        display._focus_until = 0.0
+        display._screen = "home"
+        display._menu = ([], 0, False)
+
+        display.render_home(
+            2, 1, "TWO TONE", "TRIANGLE", "1.00 oct",
+            True, True, True,
+        )
+        display.render_overlay("RATE · PING N/A", "20.00 Hz")
+        display.render_menu(
+            [("CONFIGURE PAD", "2"), ("ASSIGNMENT", "TWO TONE"),
+             ("VARIANT", "TRIANGLE"), ("HOLD", "ON"),
+             ("ECHO LOOP", "ON"), ("BACK", "")],
+            4,
+            True,
+        )
+
+        text = " ".join(
+            call[2].get("text", "") for call in display.canvas.calls
+            if call[0] == "text"
+        )
+        for expected in (
+            "TUNE", "RATE", "DEPTH", "HOLD", "LOOP", "RACK LABEL / EDIT"
+        ):
+            self.assertIn(expected, text)
+        for kind, args, _kwargs in display.canvas.calls:
+            if kind == "text":
+                self.assertGreaterEqual(args[0], 0)
+                self.assertLessEqual(args[0], DISPLAY_WIDTH)
+                self.assertGreaterEqual(args[1], 0)
+                self.assertLess(args[1], DISPLAY_HEIGHT)
+            elif kind == "rectangle":
+                self.assertGreaterEqual(min(args[0], args[2]), 0)
+                self.assertLessEqual(max(args[0], args[2]), DISPLAY_WIDTH)
+                self.assertGreaterEqual(min(args[1], args[3]), 0)
+                self.assertLessEqual(max(args[1], args[3]), DISPLAY_HEIGHT)
+
+    def test_rate_is_visibly_inactive_for_ping(self):
+        app = make_app()
+        app.panel_state["currentPad"] = 4
+
+        app._update_control_activity()
+
+        self.assertFalse(app.dials["LFO_RATE_HZ"].active)
+        self.assertEqual(
+            app.dials["LFO_RATE_HZ"].value_label.config["text"],
+            "INACTIVE FOR PING",
+        )
 
     def test_pad_sources_overlap_and_keyboard_repeat_is_ignored(self):
         app = make_app()

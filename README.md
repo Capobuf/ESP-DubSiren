@@ -9,8 +9,9 @@ saturazione asimmetrica e un LFO CLASSIC a carica/scarica esponenziale. Il
 comando di debug `SET VOICING LEGACY|V2` permette il confronto a parità di
 controlli; V2 è il default.
 
-La revisione firmware 0.7.0 mantiene il DSP 0.6.0 e aggiunge il controller
-condiviso dei quattro pad performativi. **Dynamic Sweep**, **SYNDRUM** e
+La revisione firmware 0.8.0 mantiene il DSP 0.6.0, il controller condiviso dei
+quattro pad performativi e aggiunge lo stato UI condiviso più il driver del
+display Adafruit 5394 / ST7789. **Dynamic Sweep**, **SYNDRUM** e
 **GUNSHOT** restano disponibili. Syndrum usa carrier sine/triangle/square e un pitch transient
 regolabile da -3 a +3 ottave; Gunshot usa rumore deterministico filtrato, non un
 sample. Entrambi condividono delay, Echo Loop/Cut/Spin, master e routing con gli
@@ -24,6 +25,8 @@ generale dei percussion synth analogici.
 
 - ESP32-S3 DevKitC-1 collegata con un cavo USB dati
 - modulo DAC PCM5102A per l'uscita audio GPIO
+- display Adafruit 5394 / ST7789 opzionale per lo sviluppo firmware; il
+  collegamento PCB V1 non è ancora completo, come descritto sotto
 - VS Code con estensione PlatformIO IDE, oppure PlatformIO Core 6.x
 - Python 3.11 o successivo (verificato con Python 3.13.14)
 - uscita audio Windows
@@ -89,10 +92,13 @@ sorgenti cambiano.
 
 La superficie predefinita riproduce il pannello previsto: sei potenziometri
 frontali (Tune, Rate, Echo Level, Echo Time, Echo Feedback ed Echo Tone), quattro
-pad momentanei, encoder con pressione, display simulato e Master posteriore
-separato. I pad iniziali sono Classic, Two Tone, Lickshot e Ping. Il display è
-solo software; questa revisione non aggiunge hardware o driver display al
-firmware. Dettagli: [pannello UI](docs/panel-ui.md).
+pad momentanei, encoder con pressione, preview display e Master posteriore
+separato. I pad iniziali sono Classic, Two Tone, Lickshot e Ping. Preview PC,
+Virtual ESP e firmware usano lo stesso stato Home/Menu del controller C++; il
+layout logico è sempre 320×170. Il display è una scena pixel-art diegetica:
+stack, rack, VU, manopole e LED sono anche la UI dei parametri reali. Il boot
+monta la scena e **Replay boot** nel Virtual ESP permette di rivederlo. Dettagli
+e mapping: [pannello UI](docs/panel-ui.md).
 
 Per lavorare senza hardware:
 
@@ -108,7 +114,7 @@ Con l'hardware reale:
 
 1. premere **Refresh** e scegliere la COM Espressif;
 2. scegliere **PC**, **PCM5102A** o **Both** nel selettore Output;
-3. premere **Connect** e attendere `Connected · firmware 0.7.0`;
+3. premere **Connect** e attendere `Connected · firmware 0.8.0`;
 4. premere **Start Audio**;
 5. suonare BTN1–BTN4; l'encoder regola Depth e il suo push abilita le
    combinazioni secondarie.
@@ -149,9 +155,33 @@ Il test nativo usa Zig C++ (`pip install ziglang`) oppure il compilatore indicat
 da `CXX`; esegue parser e DSP senza scheda. Con hardware collegato, leggere
 `renderUs`, `maxRenderUs`, `cycleUs` e `maxCycleUs` da STATUS durante gli scenari
 di sweep e verificare che restino sotto 10.000 µs per blocco.
+`displayRenderUs` e `maxDisplayRenderUs` misurano separatamente il frame ST7789
+e devono restare sotto il budget display di 100.000 µs.
 
 ## Hardware PCB V1
 
 La revisione hardware diretta con ESP32-S3-WROOM-1, USB-C, ADC, I/O expander e
 DAC Adafruit 6421 è documentata in [pcb/README.md](pcb/README.md). Il layout
 corrente è pre-produzione e non deve essere inviato in fabbricazione.
+
+Il firmware configura il 5394 con `init(170, 320)` e rotazione landscape,
+ottenendo un'area runtime di 320×170. Usa lo SPI hardware esistente:
+
+```text
+GPIO7  -> TFT RST
+GPIO8  -> TFT DC
+GPIO9  -> TFT CS
+GPIO11 -> TFT MOSI
+GPIO12 -> TFT SCK
+GPIO14 -> backlight (livello fisso HIGH)
+```
+
+GPIO13/MISO non serve al TFT write-only e la microSD del breakout non è
+implementata. Le librerie sono **Adafruit GFX Library** e **Adafruit ST7735 and
+ST7789 Library**. In base alla [guida ufficiale Adafruit 5394](https://learn.adafruit.com/adafruit-1-9-color-ips-tft-display/arduino-wiring-test),
+gli offset del pannello sono gestiti dalla libreria.
+
+**BLOCKER PCB:** J3 deve essere rivisto per portare almeno `SPI_MOSI` e
+`SPI_SCK` al display, oppure deve essere definita esplicitamente un'altra
+connessione fisica. Il firmware compila, ma il funzionamento sul display reale
+non è stato verificato e il cablaggio J3 corrente non è sufficiente.

@@ -7,6 +7,7 @@ from tkinter import ttk
 
 from app import DubSirenApp, OUTPUT_VALUES
 from control_ranges import CONTROL_SPECS, ControlSpec
+from dub_scene import DISPLAY_HEIGHT, DISPLAY_WIDTH, PanelDisplay
 
 ECHO_FILTER_DEADBAND = 0.05
 
@@ -51,6 +52,18 @@ DEFAULT_PANEL_STATE = {
     "selectedPad": 1,
     "currentPad": 1,
     "activePad": 0,
+    "display": {
+        "width": DISPLAY_WIDTH,
+        "height": DISPLAY_HEIGHT,
+        "mode": "HOME",
+        "menuIndex": 0,
+        "editing": False,
+        "menuItems": [
+            "PAD", "ASSIGNMENT", "VARIANT", "HOLD", "ECHO_LOOP", "BACK"
+        ],
+        "depth": 1.0,
+        "echoLoop": False,
+    },
     "pads": [
         {"sound": f"PAD {number}", "variant": "CONNECT", "variantIndex": 0,
          "hold": False, "holdSupported": False}
@@ -323,110 +336,6 @@ class PanelButton(ttk.Frame):
         )
 
 
-class PanelDisplay(ttk.Frame):
-    def __init__(self, parent: tk.Misc) -> None:
-        super().__init__(parent)
-        self.canvas = tk.Canvas(
-            self,
-            width=340,
-            height=182,
-            bg="#07110c",
-            highlightbackground="#4c5550",
-            highlightthickness=2,
-        )
-        self.canvas.pack(fill="both", expand=True)
-
-    def render_home(
-        self,
-        selected_pad: int,
-        current_pad: int,
-        sound: str,
-        variant: str,
-        depth: str,
-        hold: bool,
-        echo_loop: bool,
-        connected: bool,
-    ) -> None:
-        self.canvas.delete("all")
-        self._text(18, 18, "ESP DUB SIREN", 12, "#6d9079", "nw")
-        self._text(315, 18, f"PAD {selected_pad}", 11, "#6d9079", "ne")
-        self._text(170, 62, sound, 26, "#d9f5df", "center")
-        self._text(170, 98, variant, 12, "#9cc9a6", "center")
-        self._text(170, 120, f"DEPTH {depth}", 10, "#799382", "center")
-        flags = []
-        if hold:
-            flags.append("HOLD")
-        if echo_loop:
-            flags.append("LOOP")
-        if connected:
-            flags.append("LINK")
-        if current_pad != selected_pad:
-            flags.append(f"LIVE P{current_pad}")
-        self._text(170, 146, "  ·  ".join(flags) or "READY", 10, "#6d9079", "center")
-        self._text(170, 168, "ENC: depth · press menu", 9, "#53695a", "center")
-
-    def render_overlay(self, title: str, value: str) -> None:
-        self.canvas.delete("all")
-        self._text(170, 48, title, 14, "#80a98a", "center")
-        self._text(170, 98, value, 30, "#e1f7e5", "center")
-        self._text(170, 151, "live control", 10, "#53695a", "center")
-
-    def render_menu(self, items: list[tuple[str, str]], index: int, editing: bool) -> None:
-        self.canvas.delete("all")
-        title = "MENU / EDIT" if editing else "MENU"
-        self._text(16, 14, title, 12, "#7ca987", "nw")
-        start = max(0, min(index - 1, max(0, len(items) - 3)))
-        y = 52
-        for absolute, (label, value) in enumerate(items[start:start + 3], start=start):
-            active = absolute == index
-            if active:
-                self.canvas.create_rectangle(
-                    10, y - 10, 330, y + 30, fill="#14311f", outline=""
-                )
-            prefix = "> " if active else "  "
-            self._text(
-                18,
-                y,
-                prefix + label,
-                13,
-                "#d6f0db" if active else "#799382",
-                "nw",
-            )
-            self._text(
-                318,
-                y,
-                value,
-                12,
-                "#a9cdb0" if active else "#68796d",
-                "ne",
-            )
-            y += 48
-        footer = (
-            "rotate change · press confirm"
-            if editing
-            else "rotate select · press open"
-        )
-        self._text(170, 170, footer, 9, "#53695a", "center")
-
-    def _text(
-        self,
-        x: int,
-        y: int,
-        value: str,
-        size: int,
-        color: str,
-        anchor: str,
-    ) -> None:
-        self.canvas.create_text(
-            x,
-            y,
-            text=value,
-            fill=color,
-            font=("Consolas", size, "bold" if size >= 12 else "normal"),
-            anchor=anchor,
-        )
-
-
 class EncoderControl(ttk.Frame):
     def __init__(
         self, parent: tk.Misc, rotate_callback, press_callback, release_callback
@@ -505,14 +414,9 @@ class PhysicalDubSirenApp(DubSirenApp):
         self._panel_status_seen = False
         self._input_sources: dict[str, set[str]] = {}
         self._encoder_sources: set[str] = set()
-        self._local_modifier_used = False
-        self._save_config_on_status = False
         self._saved_config_applied = False
         self._panel_config_path = panel_config_path()
         self._saved_pad_configs = load_panel_config(self._panel_config_path)
-        self.display_mode = "home"
-        self.menu_index = 0
-        self.menu_editing = False
         self.overlay_token: str | None = None
         self.dials: dict[str, DialControl] = {}
         super().__init__(root)
@@ -612,8 +516,16 @@ class PhysicalDubSirenApp(DubSirenApp):
             text="DISPLAY",
             anchor="center",
         ).pack(fill="x", pady=(0, 4))
-        self.display = PanelDisplay(display_frame)
+        self.display = PanelDisplay(
+            display_frame,
+            peak_provider=lambda: getattr(self.transport, "audio_peak", 0.0),
+        )
         self.display.pack(fill="both", expand=True)
+        ttk.Button(
+            display_frame,
+            text="Replay boot",
+            command=self.display.replay_boot,
+        ).pack(pady=(4, 0))
 
         self.encoder = EncoderControl(
             panel,
@@ -747,40 +659,15 @@ class PhysicalDubSirenApp(DubSirenApp):
         }.get(name, name)
 
     def _encoder_rotate(self, direction: int) -> None:
-        if self.display_mode == "home":
-            self._step_parameter("LFO_DEPTH_OCT", direction)
-            value = self.parameter_values["LFO_DEPTH_OCT"]
-            current = int(self.panel_state.get("currentPad", self.panel_state["selectedPad"]))
-            ping = self.panel_state["pads"][current - 1]["sound"] == "PING"
-            title = "DEPTH · STORED (PING N/A)" if ping else "DEPTH"
-            self._show_overlay(title, CONTROL_SPECS["LFO_DEPTH_OCT"].formatter(value))
-            return
-
-        items = self._menu_items()
-        if self.menu_editing:
-            self._edit_menu_item(
-                items[self.menu_index][0],
-                direction,
-            )
-        else:
-            self.menu_index = (
-                self.menu_index + direction
-            ) % len(items)
-        self._refresh_display()
+        self._send(f"ENCODER_ROTATE {'NEXT' if direction > 0 else 'PREV'}")
 
     def _encoder_down(self, source: str) -> None:
-        if self.display_mode != "home":
-            self._menu_press()
-            return
         was_up = not self._encoder_sources
         self._encoder_sources.add(source)
         if was_up:
-            self._local_modifier_used = False
             self._send("ENCODER_SWITCH 1")
 
     def _encoder_up(self, source: str) -> None:
-        if self.display_mode != "home":
-            return
         if source not in self._encoder_sources:
             return
         self._encoder_sources.discard(source)
@@ -788,85 +675,32 @@ class PhysicalDubSirenApp(DubSirenApp):
             return
         if self.transport.connected:
             self._send("ENCODER_SWITCH 0")
-        elif not self._local_modifier_used:
-            self._open_menu()
-
-    def _open_menu(self) -> None:
-        self.display_mode = "menu"
-        self.menu_index = 0
-        self.menu_editing = False
-        self._refresh_display()
-
-    def _menu_press(self) -> None:
-        items = self._menu_items()
-        key = items[self.menu_index][0]
-        if key == "BACK":
-            self.display_mode = "home"
-            self.menu_editing = False
-        elif key in ("ECHO_LOOP", "HOLD"):
-            self._edit_menu_item(key, 1)
-        else:
-            self.menu_editing = not self.menu_editing
-        self._refresh_display()
 
     def _menu_items(self) -> list[tuple[str, str, str]]:
         selected = int(self.panel_state["selectedPad"])
         pad = self.panel_state["pads"][selected - 1]
-        items = [
-            ("PAD", "CONFIGURE PAD", str(selected)),
-            ("ASSIGNMENT", "ASSIGNMENT", pad["sound"]),
-            ("VARIANT", "VARIANT", pad["variant"]),
+        display = self.panel_state.get("display", {})
+        values = {
+            "PAD": str(selected),
+            "ASSIGNMENT": pad["sound"],
+            "VARIANT": pad["variant"],
+            "HOLD": "ON" if pad["hold"] else "OFF",
+            "ECHO_LOOP": "ON" if display.get("echoLoop") else "OFF",
+            "BACK": "",
+        }
+        labels = {
+            "PAD": "CONFIGURE PAD",
+            "ASSIGNMENT": "ASSIGNMENT",
+            "VARIANT": "VARIANT",
+            "HOLD": "HOLD",
+            "ECHO_LOOP": "ECHO LOOP",
+            "BACK": "BACK",
+        }
+        return [
+            (key, labels[key], values[key])
+            for key in display.get("menuItems", ())
+            if key in labels
         ]
-        if pad["holdSupported"]:
-            items.append(("HOLD", "HOLD", "ON" if pad["hold"] else "OFF"))
-        items.append(("ECHO_LOOP", "ECHO LOOP", "ON" if self.echo_loop_var.get() else "OFF"))
-        items.append(("BACK", "BACK", ""))
-        return items
-
-    def _edit_menu_item(
-        self,
-        key: str,
-        direction: int,
-    ) -> None:
-        if key == "PAD":
-            selected = int(self.panel_state["selectedPad"])
-            selected = ((selected - 1 + direction) % 4) + 1
-            self.panel_state["selectedPad"] = selected
-            self._send(f"PAD_SELECT {selected}")
-        elif key == "ASSIGNMENT":
-            self._save_config_on_status = True
-            self._send(f"PAD_ASSIGN {'NEXT' if direction > 0 else 'PREV'}")
-        elif key == "VARIANT":
-            self._save_config_on_status = True
-            self._send(f"PAD_VARIANT {'NEXT' if direction > 0 else 'PREV'}")
-        elif key == "ECHO_LOOP":
-            self.echo_loop_var.set(not self.echo_loop_var.get())
-            self._send_bool("ECHO_LOOP", self.echo_loop_var.get())
-        elif key == "HOLD":
-            self._send("PAD_HOLD_TOGGLE")
-
-        self._refresh_display()
-
-    def _step_parameter(
-        self,
-        name: str,
-        direction: int,
-    ) -> None:
-        spec = CONTROL_SPECS[name]
-        position = spec.to_normalized(
-            self.parameter_values[name]
-        )
-        position = max(
-            0.0,
-            min(1.0, position + 0.025 * direction),
-        )
-        self.parameter_values[name] = spec.from_normalized(
-            position
-        )
-        self._send_parameter(
-            name,
-            self.parameter_values[name],
-        )
 
     def _apply_echo_filter(self) -> None:
         hpf, lpf = echo_filter_frequencies(self.echo_filter_macro)
@@ -892,10 +726,6 @@ class PhysicalDubSirenApp(DubSirenApp):
             return
         first = not sources
         sources.add(source)
-        if self._encoder_sources:
-            self._local_modifier_used = True
-            if pad in (2, 3):
-                self._save_config_on_status = True
         if first:
             self._send(f"PAD {pad} 1")
         self.pad_buttons[pad - 1].set_pressed(True)
@@ -991,8 +821,11 @@ class PhysicalDubSirenApp(DubSirenApp):
     def _refresh_display(self) -> None:
         if not hasattr(self, "display"):
             return
+        if self.overlay_token is not None:
+            return
 
-        if self.display_mode == "home":
+        display = self.panel_state.get("display", DEFAULT_PANEL_STATE["display"])
+        if display.get("mode") == "HOME":
             selected = int(self.panel_state["selectedPad"])
             current = int(self.panel_state.get("currentPad", selected))
             pad = self.panel_state["pads"][selected - 1]
@@ -1009,22 +842,25 @@ class PhysicalDubSirenApp(DubSirenApp):
                 pad["variant"],
                 depth,
                 current_pad["hold"],
-                self.echo_loop_var.get(),
+                bool(display.get("echoLoop")),
                 self.transport.connected,
+                self.parameter_values,
+                int(self.panel_state.get("activePad", 0)),
+                format_echo_filter(self.echo_filter_macro)
+                if self.echo_filter_active else "CUSTOM",
             )
         else:
             items = self._menu_items()
-            self.menu_index = min(
-                self.menu_index,
-                len(items) - 1,
-            )
+            if not items:
+                return
+            menu_index = min(int(display.get("menuIndex", 0)), len(items) - 1)
             self.display.render_menu(
                 [
                     (label, value)
                     for _key, label, value in items
                 ],
-                self.menu_index,
-                self.menu_editing,
+                menu_index,
+                bool(display.get("editing")),
             )
 
     def _send_parameter(
@@ -1068,19 +904,42 @@ class PhysicalDubSirenApp(DubSirenApp):
                 and isinstance(panel.get("pads"), list)
                 and len(panel["pads"]) == 4
             ):
+                old_pad_config = [
+                    (pad.get("sound"), pad.get("variantIndex"))
+                    for pad in self.panel_state.get("pads", ())
+                ]
+                old_display = self.panel_state.get("display", {})
                 menu_revision = int(panel.get("menuRevision", 0))
-                open_menu = (
-                    self._panel_status_seen
-                    and menu_revision != self._last_menu_revision
-                )
                 self._panel_status_seen = True
                 self._last_menu_revision = menu_revision
                 self.panel_state = panel
+                display = panel.get("display", {})
+                if "depth" in display:
+                    old_depth = self.parameter_values["LFO_DEPTH_OCT"]
+                    depth = float(display["depth"])
+                    self.parameter_values["LFO_DEPTH_OCT"] = depth
+                    if (
+                        display.get("mode") == "HOME"
+                        and abs(old_depth - depth) > 0.0001
+                    ):
+                        current = int(panel.get("currentPad", panel["selectedPad"]))
+                        ping = panel["pads"][current - 1]["sound"] == "PING"
+                        self._show_overlay(
+                            "DEPTH · STORED (PING N/A)" if ping else "DEPTH",
+                            CONTROL_SPECS["LFO_DEPTH_OCT"].formatter(depth),
+                        )
+                if "echoLoop" in display:
+                    self.echo_loop_var.set(bool(display["echoLoop"]))
                 self._update_pad_labels()
-                if open_menu and self.display_mode == "home":
-                    self._open_menu()
-                if self._save_config_on_status:
-                    self._save_config_on_status = False
+                if old_display.get("mode") != display.get("mode"):
+                    if self.overlay_token is not None:
+                        self.root.after_cancel(self.overlay_token)
+                        self.overlay_token = None
+                new_pad_config = [
+                    (pad.get("sound"), pad.get("variantIndex"))
+                    for pad in panel["pads"]
+                ]
+                if self._saved_config_applied and old_pad_config != new_pad_config:
                     try:
                         save_panel_config(self._panel_config_path, panel["pads"])
                     except OSError:

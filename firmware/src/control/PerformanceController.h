@@ -6,10 +6,24 @@
 
 class PerformanceController {
 public:
+    static constexpr unsigned kDisplayWidth = 320;
+    static constexpr unsigned kDisplayHeight = 170;
+
+    enum class DisplayMode : uint8_t { Home, Menu };
+    enum class MenuItem : uint8_t {
+        Pad,
+        Assignment,
+        Variant,
+        Hold,
+        EchoLoop,
+        Back,
+    };
+
     explicit PerformanceController(ControlStore &controls);
 
     bool setPad(unsigned padNumber, bool pressed);
     void setEncoderPressed(bool pressed);
+    void rotateEncoder(int direction);
     void resetMomentaries();
     bool selectPad(unsigned padNumber);
     void stepAssignment(int direction);
@@ -28,6 +42,13 @@ public:
     unsigned padVariant(unsigned padNumber) const;
     bool padHold(unsigned padNumber) const;
     bool padHoldSupported(unsigned padNumber) const;
+    DisplayMode displayMode() const { return displayMode_; }
+    const char *displayModeName() const;
+    unsigned menuIndex() const { return menuIndex_; }
+    bool menuEditing() const { return menuEditing_; }
+    unsigned menuItemCount() const;
+    MenuItem menuItem(unsigned index) const;
+    const char *menuItemKey(unsigned index) const;
 
 private:
     enum class Sound : uint8_t { Classic, TwoTone, Lickshot, Ping, Count };
@@ -47,6 +68,10 @@ private:
     void updateGate(ControlState &state);
     void clearHiddenHolds();
     int latestPressedPad() const;
+    void openMenu();
+    void pressMenuItem();
+    void editMenuItem(MenuItem item, int direction);
+    void normalizeMenuIndex();
     void changed();
 
     ControlStore &controls_;
@@ -60,6 +85,9 @@ private:
     int activePad_ = -1;
     bool encoderPressed_ = false;
     bool modifierUsed_ = false;
+    DisplayMode displayMode_ = DisplayMode::Home;
+    uint8_t menuIndex_ = 0;
+    bool menuEditing_ = false;
     unsigned revision_ = 1;
     unsigned menuRevision_ = 0;
 };

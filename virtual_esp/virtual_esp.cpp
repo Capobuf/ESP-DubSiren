@@ -78,6 +78,42 @@ VIRTUAL_ESP_API unsigned virtual_esp_panel_menu_revision() {
     return ready() ? parser->panelMenuRevision() : 0;
 }
 
+VIRTUAL_ESP_API unsigned virtual_esp_display_width() {
+    return PerformanceController::kDisplayWidth;
+}
+
+VIRTUAL_ESP_API unsigned virtual_esp_display_height() {
+    return PerformanceController::kDisplayHeight;
+}
+
+VIRTUAL_ESP_API const char *virtual_esp_display_mode() {
+    return ready() ? parser->displayModeName() : "HOME";
+}
+
+VIRTUAL_ESP_API unsigned virtual_esp_menu_index() {
+    return ready() ? parser->menuIndex() : 0;
+}
+
+VIRTUAL_ESP_API int virtual_esp_menu_editing() {
+    return ready() && parser->menuEditing() ? 1 : 0;
+}
+
+VIRTUAL_ESP_API unsigned virtual_esp_menu_item_count() {
+    return ready() ? parser->menuItemCount() : 0;
+}
+
+VIRTUAL_ESP_API const char *virtual_esp_menu_item_key(unsigned index) {
+    return ready() ? parser->menuItemKey(index) : "BACK";
+}
+
+VIRTUAL_ESP_API float virtual_esp_depth() {
+    return ready() ? controls->snapshot().lfoDepthOctaves : 0.0f;
+}
+
+VIRTUAL_ESP_API int virtual_esp_echo_loop() {
+    return ready() && controls->snapshot().echoLoop ? 1 : 0;
+}
+
 VIRTUAL_ESP_API int virtual_esp_selected_pad() {
     return ready() ? static_cast<int>(parser->selectedPad()) : 0;
 }

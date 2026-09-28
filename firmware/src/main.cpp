@@ -4,6 +4,7 @@
 #include "Config.h"
 #include "audio/AudioEngine.h"
 #include "control/CommandParser.h"
+#include "display/PanelDisplay.h"
 #include "output/I2sPcm5102Sink.h"
 #include "output/UsbPcmSink.h"
 
@@ -20,6 +21,7 @@ I2sPcm5102Sink i2sSink;
 AudioEngine engine;
 ControlStore controls;
 CommandParser commandParser(controls);
+PanelDisplay panelDisplay(controls, commandParser);
 std::atomic<bool> streamEnabled{false};
 std::atomic<OutputMode> outputMode{OutputMode::Both};
 std::atomic<uint32_t> lastRenderUs{0};
@@ -28,7 +30,9 @@ std::atomic<uint32_t> lastCycleUs{0};
 std::atomic<uint32_t> maximumCycleUs{0};
 std::atomic<uint32_t> maximumUsbWriteUs{0};
 std::atomic<uint32_t> maximumI2sWriteUs{0};
+std::atomic<uint8_t> displayAudioPeak{0};
 bool i2sReady = false;
+bool hostLinked = false;
 String commandBuffer;
 
 const char *outputModeName(OutputMode mode) {
@@ -66,6 +70,7 @@ void updateMaximum(std::atomic<uint32_t> &maximum, uint32_t value) {
 
 void sendStatus() {
     const OutputMode mode = outputMode.load(std::memory_order_relaxed);
+    const ControlState displayState = controls.snapshot();
     String pads = "[";
     for (unsigned pad = 1; pad <= 4; ++pad) {
         if (pad > 1) pads += ",";
@@ -77,6 +82,12 @@ void sendStatus() {
             (commandParser.padHoldSupported(pad) ? "true" : "false") + "}";
     }
     pads += "]";
+    String menuItems = "[";
+    for (unsigned index = 0; index < commandParser.menuItemCount(); ++index) {
+        if (index > 0) menuItems += ",";
+        menuItems += String("\"") + commandParser.menuItemKey(index) + "\"";
+    }
+    menuItems += "]";
     const String json =
         String("{\"name\":\"DubSiren\",\"protocol\":1,\"sampleRate\":") +
         Config::kSampleRate + ",\"blockSamples\":" + Config::kBlockSamples +
@@ -91,6 +102,8 @@ void sendStatus() {
         maximumUsbWriteUs.load(std::memory_order_relaxed) +
         ",\"maxI2sWriteUs\":" +
         maximumI2sWriteUs.load(std::memory_order_relaxed) +
+        ",\"displayRenderUs\":" + panelDisplay.lastRenderUs() +
+        ",\"maxDisplayRenderUs\":" + panelDisplay.maximumRenderUs() +
         ",\"output\":\"" + outputModeName(mode) +
         "\",\"i2sReady\":" + (i2sReady ? "true" : "false") +
         ",\"panel\":{\"revision\":" + commandParser.panelRevision() +
@@ -98,13 +111,23 @@ void sendStatus() {
         ",\"selectedPad\":" + commandParser.selectedPad() +
         ",\"currentPad\":" + commandParser.currentPad() +
         ",\"activePad\":" + commandParser.activePad() +
-        ",\"pads\":" + pads + "}}";
+        ",\"pads\":" + pads +
+        ",\"display\":{\"width\":" + commandParser.displayWidth() +
+        ",\"height\":" + commandParser.displayHeight() +
+        ",\"mode\":\"" + commandParser.displayModeName() +
+        "\",\"menuIndex\":" + commandParser.menuIndex() +
+        ",\"editing\":" + (commandParser.menuEditing() ? "true" : "false") +
+        ",\"menuItems\":" + menuItems +
+        ",\"depth\":" + String(displayState.lfoDepthOctaves, 4) +
+        ",\"echoLoop\":" + (displayState.echoLoop ? "true" : "false") +
+        "}}}";
     usbSink.writeStatus(json.c_str(), json.length());
 }
 
 void handleCommand(String command) {
     command.trim();
     if (command == "HELLO") {
+        hostLinked = true;
         sendStatus();
     } else if (command == "STREAM 1") {
         streamEnabled.store(true, std::memory_order_release);
@@ -154,6 +177,20 @@ void audioTask(void *) {
         const uint32_t renderUs = micros() - renderStartUs;
         lastRenderUs.store(renderUs, std::memory_order_relaxed);
         updateMaximum(maximumRenderUs, renderUs);
+        uint16_t peak = 0;
+        for (int16_t sample : block) {
+            const int32_t magnitude = sample < 0 ? -static_cast<int32_t>(sample)
+                                                 : sample;
+            if (magnitude > peak) peak = static_cast<uint16_t>(magnitude);
+        }
+        const uint16_t scaledPeak = peak >> 7;
+        const uint8_t targetPeak = static_cast<uint8_t>(
+            scaledPeak > 255 ? 255 : scaledPeak);
+        const uint8_t previousPeak = displayAudioPeak.load(
+            std::memory_order_relaxed);
+        displayAudioPeak.store(targetPeak > previousPeak
+            ? targetPeak : static_cast<uint8_t>(previousPeak * 0.86f),
+            std::memory_order_relaxed);
 
         const bool enabled = streamEnabled.load(std::memory_order_acquire);
         const OutputMode mode = outputMode.load(std::memory_order_acquire);
@@ -198,9 +235,12 @@ void setup() {
     }
     engine.begin();
     xTaskCreatePinnedToCore(audioTask, "audio", 6144, nullptr, 2, nullptr, 1);
+    panelDisplay.begin();
 }
 
 void loop() {
     pollCommands();
+    panelDisplay.update(hostLinked,
+        displayAudioPeak.load(std::memory_order_relaxed));
     delay(1);
 }

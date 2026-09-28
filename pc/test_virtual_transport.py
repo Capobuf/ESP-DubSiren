@@ -135,6 +135,68 @@ class VirtualTransportTests(unittest.TestCase):
         self.transport.send("PAD 4 0")
         self._assert_non_silent_audio()
 
+    def test_display_state_and_shared_encoder_menu(self):
+        display = self.statuses[-1]["panel"]["display"]
+        self.assertEqual((display["width"], display["height"]), (320, 170))
+        self.assertEqual(display["mode"], "HOME")
+
+        self.transport.send("ENCODER_ROTATE NEXT")
+        display = self.statuses[-1]["panel"]["display"]
+        self.assertAlmostEqual(display["depth"], 1.05, places=4)
+
+        self.transport.send("ENCODER_SWITCH 1")
+        self.transport.send("ENCODER_SWITCH 0")
+        display = self.statuses[-1]["panel"]["display"]
+        self.assertEqual(display["mode"], "MENU")
+        self.assertEqual(display["menuIndex"], 0)
+        self.assertFalse(display["editing"])
+
+        self.transport.send("ENCODER_ROTATE NEXT")
+        self.assertEqual(self.statuses[-1]["panel"]["display"]["menuIndex"], 1)
+        self.transport.send("ENCODER_SWITCH 1")
+        self.transport.send("ENCODER_SWITCH 0")
+        self.assertTrue(self.statuses[-1]["panel"]["display"]["editing"])
+        self.transport.send("ENCODER_ROTATE NEXT")
+        self.assertEqual(self.statuses[-1]["panel"]["pads"][0]["sound"], "TWO TONE")
+        self.transport.send("ENCODER_SWITCH 1")
+        self.transport.send("ENCODER_SWITCH 0")
+        self.assertFalse(self.statuses[-1]["panel"]["display"]["editing"])
+
+        self.transport.send("ENCODER_ROTATE NEXT")
+        self.transport.send("ENCODER_SWITCH 1")
+        self.transport.send("ENCODER_SWITCH 0")
+        self.transport.send("ENCODER_ROTATE NEXT")
+        self.assertEqual(self.statuses[-1]["panel"]["pads"][0]["variant"], "TRIANGLE")
+        self.transport.send("ENCODER_SWITCH 1")
+        self.transport.send("ENCODER_SWITCH 0")
+
+        self.transport.send("ENCODER_ROTATE NEXT")
+        self.assertEqual(
+            self.statuses[-1]["panel"]["display"]["menuItems"][
+                self.statuses[-1]["panel"]["display"]["menuIndex"]
+            ],
+            "HOLD",
+        )
+        self.transport.send("ENCODER_SWITCH 1")
+        self.transport.send("ENCODER_SWITCH 0")
+        self.assertTrue(self.statuses[-1]["panel"]["pads"][0]["hold"])
+
+        self.transport.send("ENCODER_ROTATE NEXT")
+        self.transport.send("ENCODER_SWITCH 1")
+        self.transport.send("ENCODER_SWITCH 0")
+        self.assertTrue(self.statuses[-1]["panel"]["display"]["echoLoop"])
+
+        self.transport.send("ENCODER_ROTATE NEXT")
+        self.assertEqual(
+            self.statuses[-1]["panel"]["display"]["menuItems"][
+                self.statuses[-1]["panel"]["display"]["menuIndex"]
+            ],
+            "BACK",
+        )
+        self.transport.send("ENCODER_SWITCH 1")
+        self.transport.send("ENCODER_SWITCH 0")
+        self.assertEqual(self.statuses[-1]["panel"]["display"]["mode"], "HOME")
+
 
 if __name__ == "__main__":
     unittest.main()
