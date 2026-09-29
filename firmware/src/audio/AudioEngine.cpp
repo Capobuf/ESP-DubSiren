@@ -251,13 +251,15 @@ void AudioEngine::render(const ControlState &controls, int16_t *output,
             dry = oscillator_.nextTransition(previousMode_, currentMode_, mix,
                 oscillatorFrequencyHz_, oscillatorModulation, envelopeLevel,
                 modulationEnabled ? lfo_.gate() : true,
-                Config::kSampleRate, classic || controls.voicingV2) * envelopeLevel;
+                Config::kSampleRate, classic || controls.voicingV2,
+                classic) * envelopeLevel;
         } else {
             if (tonal) {
                 dry = oscillator_.next(currentMode_, oscillatorFrequencyHz_,
                     oscillatorModulation, envelopeLevel,
                     modulationEnabled ? lfo_.gate() : true,
-                    Config::kSampleRate, classic || controls.voicingV2) * envelopeLevel;
+                    Config::kSampleRate, classic || controls.voicingV2,
+                    classic) * envelopeLevel;
             } else if (currentMode_ == SirenMode::Syndrum) {
                 const float frequency = clampFrequency(
                     tune * exp2f((queuedActivation

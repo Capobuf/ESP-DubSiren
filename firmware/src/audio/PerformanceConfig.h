@@ -49,6 +49,11 @@ struct SirenVoicing {
 
 // Internal tuning values: they describe this project's voicing, not any
 // third-party circuit. Keep them together so listening tests stay simple.
+constexpr SirenVoicing kSine1Voicing = {
+    1, 6.00f, 0.360f, 0.090f, 1.03f, 0.008f, 0.56f,
+};
+constexpr float kSine1MinimumDuty = 0.270f;
+constexpr float kSine1MaximumDuty = 0.450f;
 constexpr SirenVoicing kSquareVoicing = {
     1, 7.50f, 0.470f, 0.006f, 1.06f, 0.018f, 0.56f,
 };

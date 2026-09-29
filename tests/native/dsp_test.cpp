@@ -42,6 +42,50 @@ float estimateFrequency(const int16_t *samples, size_t count) {
     return crossings > 1 ? (crossings - 1) * kRate / (last - first) : 0.0f;
 }
 
+struct HarmonicSnapshot {
+    float harmonic[5];
+    float rms;
+};
+
+HarmonicSnapshot measureSine1(float modulation, float frequencyHz = 375.0f) {
+    constexpr int kWarmupSamples = 48000;
+    constexpr int kMeasureSamples = 48000;
+    Oscillator oscillator;
+    for (int i = 0; i < kWarmupSamples; ++i) {
+        oscillator.next(SirenMode::Sine1, frequencyHz, modulation, 1.0f,
+                        true, kRate, true, true);
+    }
+
+    double real[5] = {};
+    double imaginary[5] = {};
+    double energy = 0.0;
+    for (int i = 0; i < kMeasureSamples; ++i) {
+        const float value = oscillator.next(
+            SirenMode::Sine1, frequencyHz, modulation, 1.0f,
+            true, kRate, true, true);
+        assert(isfinite(value));
+        energy += static_cast<double>(value) * value;
+        for (int harmonic = 1; harmonic <= 5; ++harmonic) {
+            const double angle = TWO_PI * frequencyHz * harmonic * i / kRate;
+            real[harmonic - 1] += value * cos(angle);
+            imaginary[harmonic - 1] += value * sin(angle);
+        }
+    }
+
+    HarmonicSnapshot result = {};
+    for (int harmonic = 0; harmonic < 5; ++harmonic) {
+        result.harmonic[harmonic] = static_cast<float>(
+            2.0 * hypot(real[harmonic], imaginary[harmonic]) /
+            kMeasureSamples);
+    }
+    result.rms = static_cast<float>(sqrt(energy / kMeasureSamples));
+    return result;
+}
+
+float harmonicRatio(const HarmonicSnapshot &spectrum, int harmonic) {
+    return spectrum.harmonic[harmonic - 1] / spectrum.harmonic[0];
+}
+
 float renderFrequency(ControlState state) {
     auto engine = std::make_unique<AudioEngine>();
     engine->begin();
@@ -572,16 +616,118 @@ void testModeTransitionStartsContinuously() {
     Oscillator transitioning;
     for (int i = 0; i < 1000; ++i) {
         oldOnly.next(SirenMode::Sine1, 220.0f, 0.0f, 1.0f,
-                     true, kRate, true);
+                     true, kRate, true, true);
         transitioning.next(SirenMode::Sine1, 220.0f, 0.0f, 1.0f,
-                           true, kRate, true);
+                           true, kRate, true, true);
     }
     const float expected = oldOnly.next(SirenMode::Sine1, 220.0f, 0.0f,
-                                        1.0f, true, kRate, true);
+                                        1.0f, true, kRate, true, true);
     const float actual = transitioning.nextTransition(
         SirenMode::Sine1, SirenMode::Square, 0.0f, 220.0f, 0.0f,
-        1.0f, true, kRate, true);
+        1.0f, true, kRate, true, true);
     assert(isfinite(actual) && fabsf(actual - expected) < 0.000001f);
+}
+
+void testSine1DynamicVoicing() {
+    const HarmonicSnapshot low = measureSine1(-1.0f);
+    const HarmonicSnapshot center = measureSine1(0.0f);
+    const HarmonicSnapshot high = measureSine1(1.0f);
+    const float lowH2 = harmonicRatio(low, 2);
+    const float centerH2 = harmonicRatio(center, 2);
+    const float highH2 = harmonicRatio(high, 2);
+
+    assert(lowH2 > centerH2 && centerH2 > highH2);
+    assert(lowH2 > 0.45f);
+    assert(highH2 < 0.30f);
+    assert(lowH2 - highH2 > 0.30f);
+
+    const float thirdNotchModulation =
+        (1.0f / 3.0f - PerformanceConfig::kSine1Voicing.duty) /
+        PerformanceConfig::kSine1Voicing.dutyModAmount;
+    const HarmonicSnapshot thirdNotch = measureSine1(thirdNotchModulation);
+    const HarmonicSnapshot thirdBelow = measureSine1(
+        (0.290f - PerformanceConfig::kSine1Voicing.duty) /
+        PerformanceConfig::kSine1Voicing.dutyModAmount);
+    const HarmonicSnapshot thirdAbove = measureSine1(
+        (0.380f - PerformanceConfig::kSine1Voicing.duty) /
+        PerformanceConfig::kSine1Voicing.dutyModAmount);
+    assert(harmonicRatio(thirdNotch, 3) * 1.5f <
+           harmonicRatio(thirdBelow, 3));
+    assert(harmonicRatio(thirdNotch, 3) * 1.5f <
+           harmonicRatio(thirdAbove, 3));
+
+    // The configured 0.27 lower limit is the closest production state to the
+    // ideal quarter-duty H4 notch; compare it with nearby reachable duties.
+    const HarmonicSnapshot fourthNotch = measureSine1(-1.0f);
+    const HarmonicSnapshot fourthAbove1 = measureSine1(
+        (0.310f - PerformanceConfig::kSine1Voicing.duty) /
+        PerformanceConfig::kSine1Voicing.dutyModAmount);
+    const HarmonicSnapshot fourthAbove2 = measureSine1(
+        (0.340f - PerformanceConfig::kSine1Voicing.duty) /
+        PerformanceConfig::kSine1Voicing.dutyModAmount);
+    assert(harmonicRatio(fourthNotch, 4) * 1.4f <
+           harmonicRatio(fourthAbove1, 4));
+    assert(harmonicRatio(fourthNotch, 4) * 1.4f <
+           harmonicRatio(fourthAbove2, 4));
+}
+
+void testSine1ExtendedPathUnchanged() {
+    Oscillator oscillator;
+    float phase = 0.0f;
+    const float increment = 220.0f / kRate;
+    for (int i = 0; i < 48000; ++i) {
+        const float modulation = i & 1 ? -1.0f : 1.0f;
+        const float expected = sinf(phase * TWO_PI) *
+                               PerformanceConfig::kSine1Gain;
+        const float actual = oscillator.next(
+            SirenMode::Sine1, 220.0f, modulation, 1.0f,
+            true, kRate, true, false);
+        assert(fabsf(actual - expected) < 0.000001f);
+        phase += increment;
+        if (phase >= 1.0f) phase -= floorf(phase);
+    }
+}
+
+void testSine1SafetyDcAndGain() {
+    for (float frequency : {PerformanceConfig::kClassicPitchHz[2], 587.33f}) {
+        for (float modulation : {-1.0f, 1.0f}) {
+            Oscillator oscillator;
+            for (int i = 0; i < 96000; ++i) {
+                const float value = oscillator.next(
+                    SirenMode::Sine1, frequency, modulation, 1.0f,
+                    true, kRate, true, true);
+                assert(isfinite(value) && fabsf(value) < 2.0f);
+            }
+        }
+    }
+
+    Oscillator oscillator;
+    for (int i = 0; i < 24000; ++i) {
+        oscillator.next(SirenMode::Sine1, 375.0f, -1.0f, 1.0f,
+                        true, kRate, true, true);
+    }
+    double mean = 0.0;
+    for (int i = 0; i < 96000; ++i) {
+        mean += oscillator.next(SirenMode::Sine1, 375.0f, -1.0f, 1.0f,
+                                true, kRate, true, true);
+    }
+    assert(fabs(mean / 96000.0) < 0.001f);
+
+    const HarmonicSnapshot sine1 = measureSine1(0.0f);
+    Oscillator sine2Oscillator;
+    double sine2Energy = 0.0;
+    for (int i = 0; i < 48000; ++i) {
+        sine2Oscillator.next(SirenMode::Sine2, 375.0f, 0.0f, 1.0f,
+                             true, kRate, true);
+    }
+    for (int i = 0; i < 48000; ++i) {
+        const float value = sine2Oscillator.next(
+            SirenMode::Sine2, 375.0f, 0.0f, 1.0f, true, kRate, true);
+        sine2Energy += static_cast<double>(value) * value;
+    }
+    const float sine2Rms = static_cast<float>(sqrt(sine2Energy / 48000.0));
+    assert(sine1.rms > sine2Rms * 0.70f);
+    assert(sine1.rms < sine2Rms * 1.35f);
 }
 
 void testDelay() {
@@ -925,7 +1071,8 @@ void testClassicAutomaticVoices() {
         Oscillator osc;
         double real = 0, imaginary = 0, energy = 0;
         for (int i = 0; i < 48000; ++i) {
-            const float value = osc.next(static_cast<SirenMode>(voice), 220, 0, 1, true, kRate, true);
+            const float value = osc.next(static_cast<SirenMode>(voice), 220, 0,
+                                         1, true, kRate, true, true);
             real += value * cos(TWO_PI * 440.0 * i / kRate);
             imaginary += value * sin(TWO_PI * 440.0 * i / kRate);
             energy += value * value;
@@ -933,12 +1080,15 @@ void testClassicAutomaticVoices() {
         assert(energy > 5000 && energy < 15000);
         secondHarmonic[voice] = hypot(real, imaginary) / 24000;
     }
-    assert(secondHarmonic[0] < .001);
+    assert(secondHarmonic[0] > .1);
     assert(secondHarmonic[1] > .1 && secondHarmonic[1] < .13);
 }
 
 int main() {
     testClassicAutomaticVoices();
+    testSine1DynamicVoicing();
+    testSine1ExtendedPathUnchanged();
+    testSine1SafetyDcAndGain();
     testClassicControls();
     testSelectors();
     testClassicDryRelease();

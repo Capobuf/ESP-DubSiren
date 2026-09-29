@@ -22,9 +22,10 @@ Oscillator::Oscillator() : phase_(0.0f), syndrumTriangle_(0.0f) {}
 
 float Oscillator::next(SirenMode mode, float frequencyHz, float modulation,
                        float envelopeLevel, bool lfoGate, float sampleRate,
-                       bool voicingV2) {
+                       bool voicingV2, bool classicProfile) {
     const float output = renderVoice(mode, frequencyHz, modulation,
-                                     envelopeLevel, lfoGate, sampleRate, voicingV2);
+                                     envelopeLevel, lfoGate, sampleRate,
+                                     voicingV2, classicProfile);
     advance(frequencyHz / sampleRate);
     return output;
 }
@@ -32,11 +33,14 @@ float Oscillator::next(SirenMode mode, float frequencyHz, float modulation,
 float Oscillator::nextTransition(SirenMode from, SirenMode to, float mix,
                                  float frequencyHz, float modulation,
                                  float envelopeLevel, bool lfoGate,
-                                 float sampleRate, bool voicingV2) {
+                                 float sampleRate, bool voicingV2,
+                                 bool classicProfile) {
     const float oldVoice = renderVoice(from, frequencyHz, modulation,
-                                      envelopeLevel, lfoGate, sampleRate, voicingV2);
+                                      envelopeLevel, lfoGate, sampleRate,
+                                      voicingV2, classicProfile);
     const float newVoice = renderVoice(to, frequencyHz, modulation,
-                                      envelopeLevel, lfoGate, sampleRate, voicingV2);
+                                      envelopeLevel, lfoGate, sampleRate,
+                                      voicingV2, classicProfile);
     advance(frequencyHz / sampleRate);
     return oldVoice + (newVoice - oldVoice) * mix;
 }
@@ -65,7 +69,8 @@ float Oscillator::nextSyndrum(SyndrumWave wave, float frequencyHz,
 
 float Oscillator::renderVoice(SirenMode mode, float frequencyHz,
                               float modulation, float envelopeLevel,
-                              bool lfoGate, float sampleRate, bool voicingV2) {
+                              bool lfoGate, float sampleRate, bool voicingV2,
+                              bool classicProfile) {
     const float increment = frequencyHz / sampleRate;
     float output;
     if (mode == SirenMode::Lickshot) {
@@ -73,9 +78,11 @@ float Oscillator::renderVoice(SirenMode mode, float frequencyHz,
                               sampleRate);
     } else if (mode == SirenMode::Sonar) {
         output = nextSonar();
-    } else if (voicingV2 && mode == SirenMode::Sine1) {
+    } else if (classicProfile && mode == SirenMode::Sine1) {
         output = nextSine1(frequencyHz, modulation, envelopeLevel, increment,
                            sampleRate);
+    } else if (voicingV2 && mode == SirenMode::Sine1) {
+        output = sinf(phase_ * TWO_PI) * PerformanceConfig::kSine1Gain;
     } else if (voicingV2 && mode == SirenMode::Sine2) {
         output = nextSine2(frequencyHz, modulation, envelopeLevel, increment,
                            sampleRate);
@@ -122,8 +129,31 @@ float Oscillator::nextLegacy(SirenMode mode, float phaseIncrement) const {
     return 0.0f;
 }
 
-float Oscillator::nextSine1(float, float, float, float, float) {
-    return sinf(phase_ * TWO_PI) * PerformanceConfig::kSine1Gain;
+float Oscillator::nextSine1(float frequencyHz, float modulation,
+                            float, float phaseIncrement,
+                            float sampleRate) {
+    VoiceState &state = voices_[static_cast<int>(SirenMode::Sine1)];
+    float duty = kSine1Voicing.duty +
+                 modulation * kSine1Voicing.dutyModAmount;
+    duty = duty < kSine1MinimumDuty
+               ? kSine1MinimumDuty
+               : (duty > kSine1MaximumDuty ? kSine1MaximumDuty : duty);
+    float value = bandLimitedPulse(phase_, phaseIncrement, duty);
+    const float targetCutoff = clampCutoff(
+        frequencyHz * kSine1Voicing.harmonicFactor, sampleRate);
+    const float cutoffSmoothing = 1.0f / (0.004f * sampleRate);
+    state.smoothedCutoff +=
+        (targetCutoff - state.smoothedCutoff) * cutoffSmoothing;
+    if (state.cutoffUpdateCountdown == 0) {
+        state.filters[0].setCutoff(state.smoothedCutoff, sampleRate);
+        state.cutoffUpdateCountdown = 15;
+    } else {
+        --state.cutoffUpdateCountdown;
+    }
+    value = state.filters[0].process(value);
+    value = analogSaturate(value, kSine1Voicing.drive,
+                           kSine1Voicing.asymmetry);
+    return state.dcBlocker.process(value) * kSine1Voicing.outputGain;
 }
 
 float Oscillator::nextSine2(float frequencyHz, float, float, float, float sampleRate) {

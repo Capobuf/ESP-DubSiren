@@ -9,17 +9,17 @@ public:
     Oscillator();
     float next(SirenMode mode, float frequencyHz, float modulation,
                float envelopeLevel, bool lfoGate, float sampleRate,
-               bool voicingV2);
+               bool voicingV2, bool classicProfile = false);
     float nextTransition(SirenMode from, SirenMode to, float mix,
                          float frequencyHz, float modulation,
                          float envelopeLevel, bool lfoGate, float sampleRate,
-                         bool voicingV2);
+                         bool voicingV2, bool classicProfile = false);
     float nextSyndrum(SyndrumWave wave, float frequencyHz, float sampleRate);
 
 private:
     float renderVoice(SirenMode mode, float frequencyHz, float modulation,
                       float envelopeLevel, bool lfoGate, float sampleRate,
-                      bool voicingV2);
+                      bool voicingV2, bool classicProfile);
     void advance(float increment);
     struct VoiceState {
         OnePoleLowPass filters[1];
