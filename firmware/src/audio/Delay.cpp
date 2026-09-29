@@ -23,7 +23,9 @@ Delay::Delay()
 }
 
 void Delay::begin(float initialDelayMs, float highPassHz, float lowPassHz,
-                  float sampleRate) {
+                  float sampleRate, bool flat) {
+    flatMix_.configure(PerformanceConfig::kFilterMs, sampleRate);
+    flatMix_.reset(flat ? 1.0f : 0.0f);
     delayMs_.configure(PerformanceConfig::kDelayMs, sampleRate);
     highPassHz_.configure(PerformanceConfig::kFilterMs, sampleRate);
     lowPassHz_.configure(PerformanceConfig::kFilterMs, sampleRate);
@@ -34,12 +36,13 @@ void Delay::begin(float initialDelayMs, float highPassHz, float lowPassHz,
     lowPass_.setLowPass(lowPassHz, sampleRate, PerformanceConfig::kEchoFilterQ);
     appliedHighPassHz_ = highPassHz;
     appliedLowPassHz_ = lowPassHz;
-    setParameters(initialDelayMs, highPassHz, lowPassHz, sampleRate);
+    setParameters(initialDelayMs, highPassHz, lowPassHz, sampleRate, flat);
 }
 
 void Delay::setParameters(float delayMs, float highPassHz, float lowPassHz,
-                          float sampleRate) {
+                          float sampleRate, bool flat) {
     (void)sampleRate;
+    flatMix_.setTarget(flat ? 1.0f : 0.0f);
     delayMs_.setTarget(delayMs);
     highPassHz_.setTarget(highPassHz);
     lowPassHz_.setTarget(lowPassHz);
@@ -82,7 +85,9 @@ float Delay::process(float dry, float feedback, bool echoLoop,
     const float sample0 = buffer_[i0] / 32768.0f;
     const float sample1 = buffer_[i1] / 32768.0f;
     const float delayed = sample0 + (sample1 - sample0) * fraction;
-    const float filtered = lowPass_.process(highPass_.process(delayed));
+    const float shaped = lowPass_.process(highPass_.process(delayed));
+    const float flat = flatMix_.next();
+    const float filtered = shaped + (delayed - shaped) * flat;
     if (echoLoop) {
         buffer_[writeIndex_] = floatToInt16(delayed);
     } else {

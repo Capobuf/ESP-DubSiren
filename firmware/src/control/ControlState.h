@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Arduino.h>
+#include "audio/PerformanceConfig.h"
 
 enum class SirenMode {
     Sine1,
@@ -41,7 +42,7 @@ struct ActivationEvent {
     SirenMode mode = SirenMode::Sine1;
     LfoShape lfoShape = LfoShape::Classic;
     SyndrumWave syndrumWave = SyndrumWave::Sine;
-    float decayMs = 120.0f;
+    float decayMs = PerformanceConfig::kExtendedDecayMs;
     float syndrumSweepOctaves = 2.0f;
     bool modulationEnabled = true;
     bool retrigger = false;
@@ -50,15 +51,17 @@ struct ActivationEvent {
 constexpr unsigned kActivationEventCapacity = 8;
 
 struct ControlState {
-    PerformanceProfile profile = PerformanceProfile::Extended;
+    PerformanceProfile profile = PerformanceProfile::Classic;
     ClassicPitch classicPitch = ClassicPitch::Mid;
     ClassicModulation classicModulation = ClassicModulation::Medium;
+    float pitchPosition = 0.5f;
+    float ratePosition = 0.375f;
     SirenMode mode = SirenMode::Sine1;
     float tuneHz = 220.0f;
     LfoShape lfoShape = LfoShape::Classic;
     float lfoRateHz = 0.70f;
     float lfoDepthOctaves = 1.0f;
-    float decayMs = 120.0f;
+    float decayMs = PerformanceConfig::kExtendedDecayMs;
     float sweepAmount = 0.0f;
     float sweepMs = 650.0f;
     SyndrumWave syndrumWave = SyndrumWave::Sine;
@@ -76,12 +79,30 @@ struct ControlState {
     float echoLevel = 0.45f;
     float highPassHz = 60.0f;
     float lowPassHz = 7000.0f;
+    float echoFilterPosition = 0.0f;
+    bool echoFilterFlat = true;
     bool echoCut = false;
     bool echoSpin = false;
     bool echoLoop = false;
     float masterVolume = 0.50f;
     bool voicingV2 = true;
 };
+
+inline const char *pitchName(ClassicPitch pitch) {
+    static const char *names[] = {"LOW", "MID", "HIGH"};
+    return names[static_cast<unsigned>(pitch)];
+}
+
+inline const char *rateName(ClassicModulation rate) {
+    static const char *names[] = {"SLOW", "MID", "FAST", "MANUAL"};
+    return names[static_cast<unsigned>(rate)];
+}
+
+inline const char *modeName(SirenMode mode) {
+    static const char *names[] = {"SINE 1", "SINE 2", "TEST TONE", "SQUARE",
+        "LICKSHOT", "SONAR", "SYNDRUM", "GUNSHOT"};
+    return names[static_cast<unsigned>(mode)];
+}
 
 inline void recordActivation(ControlState &state) {
     ActivationEvent &event = state.activationEvents[

@@ -2,10 +2,67 @@
 
 // Project tuning points, not measured values from another instrument.
 namespace PerformanceConfig {
+// DS01E functional baseline: project calibration, not Benidub measurements.
 constexpr float kClassicPitchHz[] = {110.0f, 220.0f, 440.0f};
 constexpr float kClassicRateHz[] = {0.35f, 0.70f, 2.80f};
 constexpr float kClassicDepthOctaves = 1.0f;
-constexpr float kClassicDecayMs = 120.0f;
+constexpr float kLfoChargeRatio = 0.18f;
+constexpr float kLfoFallRatio = 0.24f;
+constexpr float kSelectorHysteresis = 0.015f;
+inline int selectorZone(float position, int current, int zones) {
+    while (current < zones - 1 &&
+           position > float(current + 1) / zones + kSelectorHysteresis) ++current;
+    while (current > 0 &&
+           position < float(current) / zones - kSelectorHysteresis) --current;
+    return current;
+}
+constexpr float kSine1Gain = 0.72f;
+constexpr float kSine2Gain = 0.64f;
+constexpr float kSine2Second = 0.18f;
+constexpr float kSine2Third = 0.12f;
+constexpr float kTestGain = 0.72f;
+constexpr float kManualAttackMs = 8.0f;
+constexpr float kManualReleaseMs = 12.0f;
+constexpr float kEchoTimeMinMs = 50.0f;
+constexpr float kEchoTimeMaxMs = 1000.0f;
+constexpr float kEchoFilterDeadband = 0.05f;
+constexpr float kEchoHighPassMinHz = 60.0f;
+constexpr float kEchoHighPassMaxHz = 4000.0f;
+constexpr float kEchoLowPassMinHz = 400.0f;
+constexpr float kEchoLowPassMaxHz = 16000.0f;
+
+inline float echoFilterAmount(float position) {
+    const float distance = position < 0.0f ? -position : position;
+    return distance <= kEchoFilterDeadband ? 0.0f
+        : (distance - kEchoFilterDeadband) / (1.0f - kEchoFilterDeadband);
+}
+
+struct SirenVoicing {
+    int filterStages;
+    float harmonicFactor;
+    float duty;
+    float dutyModAmount;
+    float drive;
+    float asymmetry;
+    float outputGain;
+};
+
+// Internal tuning values: they describe this project's voicing, not any
+// third-party circuit. Keep them together so listening tests stay simple.
+constexpr SirenVoicing kSquareVoicing = {
+    1, 7.50f, 0.470f, 0.006f, 1.06f, 0.018f, 0.56f,
+};
+// Extended voicing / envelope defaults.
+constexpr SirenVoicing kLickshotVoicing = {
+    1, 5.00f, 0.495f, 0.004f, 1.12f, 0.020f, 0.62f,
+};
+constexpr float kSonarOutputGain = 0.82f;
+
+constexpr float kExtendedDecayMs = 120.0f;
+
+// DSP safety / anti-click times (finite linear gate, not RC time constants).
+constexpr float kGateAttackMs = 2.0f;
+constexpr float kGateReleaseMs = 3.0f;
 
 constexpr float kTuneMs = 12.0f;
 constexpr float kDepthMs = 15.0f;

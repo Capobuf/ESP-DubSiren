@@ -4,6 +4,7 @@ class Envelope {
 public:
     Envelope();
     float next(bool gate, float decayMs, float sampleRate);
+    float nextGate(bool gate, float sampleRate);
 
 private:
     float level_;

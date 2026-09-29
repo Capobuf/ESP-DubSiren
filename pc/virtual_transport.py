@@ -180,6 +180,18 @@ class VirtualTransport:
         library.virtual_esp_pad_hold.restype = ctypes.c_int
         library.virtual_esp_pad_hold_supported.argtypes = [ctypes.c_uint]
         library.virtual_esp_pad_hold_supported.restype = ctypes.c_int
+        for name in ("profile", "voice", "pitch", "rate"):
+            function = getattr(library, "virtual_esp_" + name)
+            function.argtypes = []
+            function.restype = ctypes.c_char_p
+        for name in ("tune", "rate_hz"):
+            function = getattr(library, "virtual_esp_" + name)
+            function.argtypes = []
+            function.restype = ctypes.c_float
+        for name in ("hold", "echo_cut"):
+            function = getattr(library, "virtual_esp_" + name)
+            function.argtypes = []
+            function.restype = ctypes.c_int
         self._lib = library
 
     def _status(self) -> dict:
@@ -227,6 +239,14 @@ class VirtualTransport:
                     "menuIndex": self._lib.virtual_esp_menu_index(),
                     "editing": bool(self._lib.virtual_esp_menu_editing()),
                     "menuItems": menu_items,
+                    "profile": self._lib.virtual_esp_profile().decode("ascii"),
+                    "voice": self._lib.virtual_esp_voice().decode("ascii"),
+                    "pitch": self._lib.virtual_esp_pitch().decode("ascii"),
+                    "rate": self._lib.virtual_esp_rate().decode("ascii"),
+                    "hold": bool(self._lib.virtual_esp_hold()),
+                    "echoCut": bool(self._lib.virtual_esp_echo_cut()),
+                    "tuneHz": self._lib.virtual_esp_tune(),
+                    "rateHz": self._lib.virtual_esp_rate_hz(),
                     "depth": self._lib.virtual_esp_depth(),
                     "echoLoop": bool(self._lib.virtual_esp_echo_loop()),
                 },

@@ -96,6 +96,9 @@ class ControlSpec:
 # These are performance ranges for the desktop UI. The firmware retains its
 # wider absolute protocol/DSP ranges and receives the mapped physical values.
 CONTROL_SPECS = {
+    # Positions are sent to the shared controller; confirmed labels come from STATUS.
+    "PITCH_POSITION": ControlSpec(0.0, 1.0, 0.5, lambda value: "PITCH"),
+    "RATE_POSITION": ControlSpec(0.0, 1.0, 0.375, lambda value: "RATE"),
     "TUNE_HZ": ControlSpec(80.0, 1600.0, 220.0, format_frequency, "logarithmic"),
     "LFO_RATE_HZ": ControlSpec(
         0.15, 20.0, 0.70, lambda value: f"{value:.2f} Hz", "logarithmic"
@@ -116,7 +119,7 @@ CONTROL_SPECS = {
         -3.0, 3.0, 2.0, lambda value: f"{value:+.2f} oct"
     ),
     "DELAY_MS": ControlSpec(
-        50.0, 1000.0, 360.0, lambda value: f"{value:.0f} ms"
+        50.0, 1000.0, 360.0, lambda value: f"{value:.0f} ms", "logarithmic"
     ),
     "FEEDBACK": ControlSpec(
         0.0, 1.05, 0.62, lambda value: f"{value * 100:.0f} %", "power", 0.8

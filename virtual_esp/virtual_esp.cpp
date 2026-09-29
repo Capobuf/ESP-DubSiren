@@ -106,6 +106,18 @@ VIRTUAL_ESP_API const char *virtual_esp_menu_item_key(unsigned index) {
     return ready() ? parser->menuItemKey(index) : "BACK";
 }
 
+VIRTUAL_ESP_API const char *virtual_esp_profile() {
+    return controls->snapshot().profile == PerformanceProfile::Classic ? "CLASSIC" : "EXTENDED";
+}
+VIRTUAL_ESP_API const char *virtual_esp_voice() { return modeName(controls->snapshot().mode); }
+VIRTUAL_ESP_API const char *virtual_esp_pitch() { return pitchName(controls->snapshot().classicPitch); }
+VIRTUAL_ESP_API const char *virtual_esp_rate() { return rateName(controls->snapshot().classicModulation); }
+VIRTUAL_ESP_API int virtual_esp_hold() { return controls->snapshot().hold; }
+VIRTUAL_ESP_API int virtual_esp_echo_cut() { return controls->snapshot().echoCut; }
+
+VIRTUAL_ESP_API float virtual_esp_tune() { return controls->snapshot().tuneHz; }
+VIRTUAL_ESP_API float virtual_esp_rate_hz() { return controls->snapshot().lfoRateHz; }
+
 VIRTUAL_ESP_API float virtual_esp_depth() {
     return ready() ? controls->snapshot().lfoDepthOctaves : 0.0f;
 }

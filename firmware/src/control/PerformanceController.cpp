@@ -20,8 +20,27 @@ PerformanceController::PerformanceController(ControlStore &controls)
             {Sound::Lickshot, 0, false},
             {Sound::Ping, 0, false}} {
     ControlState state = controls_.snapshot();
-    applyConfig(state, selectedPad_, false);
+    if (state.profile == PerformanceProfile::Extended) applyConfig(state, selectedPad_, false);
     controls_.set(state);
+}
+
+void PerformanceController::setProfile(PerformanceProfile profile) {
+    ControlState state = controls_.snapshot();
+    if (state.profile == profile) return;
+    resetMomentaries();
+    state = controls_.snapshot();
+    clearHiddenHolds();
+    state.hold = false;
+    state.trigger = false;
+    state.modUp = state.modDown = state.echoCut = false;
+    state.profile = profile;
+    if (profile == PerformanceProfile::Classic) {
+        if (state.mode >= SirenMode::Lickshot) state.mode = SirenMode::Sine1;
+    }
+    controls_.set(state);
+    menuIndex_ = 0;
+    menuEditing_ = false;
+    changed();
 }
 
 unsigned PerformanceController::variantCount(Sound sound) {
@@ -113,7 +132,7 @@ void PerformanceController::applyConfig(ControlState &state, unsigned padIndex,
                                : variant == 1 ? SyndrumWave::Triangle
                                               : SyndrumWave::Square;
             state.syndrumSweepOctaves = 2.0f;
-            state.decayMs = 120.0f;
+            state.decayMs = PerformanceConfig::kExtendedDecayMs;
             state.modulationEnabled = false;
             state.retrigger = false;
             break;
@@ -128,6 +147,13 @@ void PerformanceController::captureActivation(ControlState &state) {
 }
 
 void PerformanceController::updateGate(ControlState &state) {
+    if (state.profile == PerformanceProfile::Classic) {
+        state.trigger = padDown_[0];
+        state.modUp = padDown_[2];
+        state.modDown = false;
+        state.echoCut = padDown_[3];
+        return;
+    }
     state.trigger = activePad_ >= 0;
     const unsigned holdPad = activePad_ >= 0
         ? static_cast<unsigned>(activePad_) : currentPad_;
@@ -161,6 +187,14 @@ bool PerformanceController::setPad(unsigned padNumber, bool pressed) {
     if (padDown_[index] == pressed) return true;
     padDown_[index] = pressed;
     ControlState state = controls_.snapshot();
+    if (state.profile == PerformanceProfile::Classic) {
+        if (index == 1 && pressed) state.hold = !state.hold;
+        activePad_ = padDown_[0] ? 0 : -1;
+        updateGate(state);
+        controls_.set(state);
+        changed();
+        return true;
+    }
 
     if (pressed) {
         if (encoderPressed_) {
@@ -196,6 +230,16 @@ bool PerformanceController::setPad(unsigned padNumber, bool pressed) {
 }
 
 void PerformanceController::setEncoderPressed(bool pressed) {
+    if (controls_.snapshot().profile == PerformanceProfile::Classic) {
+        if (encoderPressed_ == pressed) return;
+        encoderPressed_ = pressed;
+        if (pressed) {
+            if (displayMode_ == DisplayMode::Home) openMenu();
+            else pressMenuItem();
+            changed();
+        }
+        return;
+    }
     if (displayMode_ == DisplayMode::Menu) {
         if (pressed) pressMenuItem();
         return;
@@ -217,6 +261,12 @@ void PerformanceController::rotateEncoder(int direction) {
     if (direction == 0) return;
     if (displayMode_ == DisplayMode::Home) {
         ControlState state = controls_.snapshot();
+        if (state.profile == PerformanceProfile::Classic) {
+            state.mode = static_cast<SirenMode>(wrappedStep(static_cast<int>(state.mode), direction, 4));
+            controls_.set(state);
+            changed();
+            return;
+        }
         state.lfoDepthOctaves = clampFloat(
             state.lfoDepthOctaves + (direction < 0 ? -0.05f : 0.05f),
             0.0f, 2.0f);
@@ -267,7 +317,7 @@ void PerformanceController::stepAssignment(int direction) {
         pad.hold = false;
     }
     ControlState state = controls_.snapshot();
-    if (currentPad_ == selectedPad_) {
+    if (state.profile == PerformanceProfile::Extended && currentPad_ == selectedPad_) {
         applyConfig(state, selectedPad_, false);
     }
     updateGate(state);
@@ -281,7 +331,7 @@ void PerformanceController::stepVariant(int direction) {
     pad.variant = static_cast<uint8_t>(wrappedStep(
         pad.variant, direction, static_cast<int>(variantCount(pad.sound))));
     ControlState state = controls_.snapshot();
-    if (currentPad_ == selectedPad_) {
+    if (state.profile == PerformanceProfile::Extended && currentPad_ == selectedPad_) {
         applyConfig(state, selectedPad_, false);
         updateGate(state);
         controls_.set(state);
@@ -290,6 +340,13 @@ void PerformanceController::stepVariant(int direction) {
 }
 
 void PerformanceController::toggleSelectedHold() {
+    ControlState baseline = controls_.snapshot();
+    if (baseline.profile == PerformanceProfile::Classic) {
+        baseline.hold = !baseline.hold;
+        controls_.set(baseline);
+        changed();
+        return;
+    }
     PadConfig &pad = pads_[selectedPad_];
     if (!supportsHold(pad.sound)) return;
     pad.hold = !pad.hold;
@@ -311,7 +368,7 @@ bool PerformanceController::configurePad(unsigned padNumber, const String &sound
     PadConfig &pad = pads_[padNumber - 1];
     pad = {parsed, static_cast<uint8_t>(variant), hold};
     ControlState state = controls_.snapshot();
-    if (currentPad_ == padNumber - 1) {
+    if (state.profile == PerformanceProfile::Extended && currentPad_ == padNumber - 1) {
         applyConfig(state, padNumber - 1, false);
         updateGate(state);
         controls_.set(state);
@@ -349,18 +406,21 @@ const char *PerformanceController::displayModeName() const {
 }
 
 unsigned PerformanceController::menuItemCount() const {
-    return padHoldSupported(selectedPad()) ? 6 : 5;
+    if (controls_.snapshot().profile == PerformanceProfile::Classic) return 2;
+    return padHoldSupported(selectedPad()) ? 7 : 6;
 }
 
 PerformanceController::MenuItem PerformanceController::menuItem(
         unsigned index) const {
+    if (controls_.snapshot().profile == PerformanceProfile::Classic)
+        return index % 2 == 0 ? MenuItem::Profile : MenuItem::Back;
     static constexpr MenuItem withHold[] = {
         MenuItem::Pad, MenuItem::Assignment, MenuItem::Variant,
-        MenuItem::Hold, MenuItem::EchoLoop, MenuItem::Back,
+        MenuItem::Hold, MenuItem::EchoLoop, MenuItem::Profile, MenuItem::Back,
     };
     static constexpr MenuItem withoutHold[] = {
         MenuItem::Pad, MenuItem::Assignment, MenuItem::Variant,
-        MenuItem::EchoLoop, MenuItem::Back,
+        MenuItem::EchoLoop, MenuItem::Profile, MenuItem::Back,
     };
     const unsigned count = menuItemCount();
     index = count == 0 ? 0 : index % count;
@@ -370,6 +430,7 @@ PerformanceController::MenuItem PerformanceController::menuItem(
 
 const char *PerformanceController::menuItemKey(unsigned index) const {
     switch (menuItem(index)) {
+        case MenuItem::Profile: return "PROFILE";
         case MenuItem::Pad: return "PAD";
         case MenuItem::Assignment: return "ASSIGNMENT";
         case MenuItem::Variant: return "VARIANT";
@@ -390,6 +451,16 @@ void PerformanceController::openMenu() {
 void PerformanceController::pressMenuItem() {
     normalizeMenuIndex();
     const MenuItem item = menuItem(menuIndex_);
+    if (item == MenuItem::Profile) {
+        setProfile(controls_.snapshot().profile == PerformanceProfile::Classic
+            ? PerformanceProfile::Extended : PerformanceProfile::Classic);
+        ControlState state = controls_.snapshot();
+        if (state.profile == PerformanceProfile::Extended) {
+            applyConfig(state, selectedPad_, false);
+            controls_.set(state);
+        }
+        return;
+    }
     if (item == MenuItem::Back) {
         displayMode_ = DisplayMode::Home;
         menuEditing_ = false;
@@ -404,6 +475,7 @@ void PerformanceController::pressMenuItem() {
 
 void PerformanceController::editMenuItem(MenuItem item, int direction) {
     switch (item) {
+        case MenuItem::Profile: break;
         case MenuItem::Pad:
             selectPad(static_cast<unsigned>(wrappedStep(
                 static_cast<int>(selectedPad_), direction, 4)) + 1);

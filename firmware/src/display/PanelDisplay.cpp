@@ -197,6 +197,25 @@ void PanelDisplay::renderBoot(uint32_t elapsedMs) {
 
 void PanelDisplay::renderHome(const ControlState &state, bool linked,
                               uint32_t now, uint8_t audioPeak) {
+    if (state.profile == PerformanceProfile::Classic) {
+        tft_.fillScreen(kBlack);
+        drawText(16, 10, "DS01E / CLASSIC", 1, kMuted);
+        drawText(16, 31, modeName(state.mode), 3, kChartreuse);
+        drawText(16, 73, String("PITCH  ") + pitchName(state.classicPitch), 2, kOffWhite);
+        drawText(16, 99, String("RATE   ") + rateName(state.classicModulation), 2, kOffWhite);
+        String status = state.hold ? "HOLD  " : "";
+        status += state.echoCut ? "ECHO CUT" : state.echoLevel > 0.0f ? "ECHO" : "DRY";
+        drawText(16, 139, status, 2, kAmber);
+        if (focus_ != Focus::None) {
+            const char *labels[] = {"", "PITCH", "RATE", "DEPTH", "ECHO LEVEL",
+                "ECHO TIME", "ECHO FEEDBACK", "FILTER", "MASTER"};
+            tft_.fillRect(10, 61, 300, 72, kBlack);
+            tft_.drawRect(10, 61, 300, 72, kChartreuseDim);
+            drawText(22, 68, labels[static_cast<unsigned>(focus_)], 1, kMuted);
+            drawText(22, 92, overlayValue_, 3, kOffWhite);
+        }
+        return;
+    }
     beginBitmapFrame(DisplayAssets::kHome);
     const uint8_t level = speakerLevel(audioPeak);
     const uint16_t *speakerPixels[] = {
@@ -456,7 +475,17 @@ bool PanelDisplay::captureOverlay(const ControlState &before,
     if (firstFrame_) return true;
     Focus focus = Focus::None;
     String value;
-    if (changed(before.tuneHz, after.tuneHz)) {
+    if ((before.classicPitch != after.classicPitch || changed(before.pitchPosition, after.pitchPosition)) && after.profile == PerformanceProfile::Classic) {
+        focus = Focus::Tune;
+        value = pitchName(after.classicPitch);
+    } else if ((before.classicModulation != after.classicModulation || changed(before.ratePosition, after.ratePosition)) && after.profile == PerformanceProfile::Classic) {
+        focus = Focus::Rate;
+        value = rateName(after.classicModulation);
+    } else if (changed(before.echoFilterPosition, after.echoFilterPosition)) {
+        focus = Focus::EchoTone;
+        const float amount = PerformanceConfig::echoFilterAmount(after.echoFilterPosition);
+        value = amount == 0.0f ? String("FLAT") : String(after.echoFilterPosition < 0 ? "LP " : "HP ") + decimal(amount * 100, 0) + "%";
+    } else if (changed(before.tuneHz, after.tuneHz)) {
         focus = Focus::Tune;
         value = decimal(after.tuneHz, 0) + " Hz";
     } else if (changed(before.lfoRateHz, after.lfoRateHz)) {
@@ -494,6 +523,7 @@ bool PanelDisplay::captureOverlay(const ControlState &before,
 
 String PanelDisplay::menuValue(const char *key,
                                const ControlState &state) const {
+    if (strcmp(key, "PROFILE") == 0) return state.profile == PerformanceProfile::Classic ? "EXTENDED" : "DS01E";
     if (strcmp(key, "PAD") == 0) return String(controller_.selectedPad());
     if (strcmp(key, "ASSIGNMENT") == 0) {
         return controller_.padSoundName(controller_.selectedPad());

@@ -36,10 +36,12 @@ bool CommandParser::parse(const String &rawCommand) {
 
         if (name == "MODE") {
             if (!parseMode(valueText, state.mode)) return false;
+            if (state.mode >= SirenMode::Lickshot && state.profile == PerformanceProfile::Classic) return false;
         } else if (name == "PROFILE") {
-            if (valueText == "CLASSIC") state.profile = PerformanceProfile::Classic;
-            else if (valueText == "EXTENDED") state.profile = PerformanceProfile::Extended;
+            if (valueText == "CLASSIC") performance_.setProfile(PerformanceProfile::Classic);
+            else if (valueText == "EXTENDED") performance_.setProfile(PerformanceProfile::Extended);
             else return false;
+            return true;
         } else if (name == "CLASSIC_PITCH") {
             if (valueText == "LOW") state.classicPitch = ClassicPitch::Low;
             else if (valueText == "MID") state.classicPitch = ClassicPitch::Mid;
@@ -47,7 +49,7 @@ bool CommandParser::parse(const String &rawCommand) {
             else return false;
         } else if (name == "CLASSIC_MOD") {
             if (valueText == "SLOW") state.classicModulation = ClassicModulation::Slow;
-            else if (valueText == "MEDIUM") state.classicModulation = ClassicModulation::Medium;
+            else if (valueText == "MEDIUM" || valueText == "MID") state.classicModulation = ClassicModulation::Medium;
             else if (valueText == "FAST") state.classicModulation = ClassicModulation::Fast;
             else if (valueText == "MANUAL") state.classicModulation = ClassicModulation::Manual;
             else return false;
@@ -61,6 +63,33 @@ bool CommandParser::parse(const String &rawCommand) {
             else return false;
         } else if (!parseFloat(valueText, value)) {
             return false;
+        } else if (name == "PITCH_POSITION" || name == "RATE_POSITION") {
+            if (value < 0.0f || value > 1.0f) return false;
+            if (name == "PITCH_POSITION") {
+                state.pitchPosition = value;
+                state.classicPitch = static_cast<ClassicPitch>(PerformanceConfig::selectorZone(
+                    value, static_cast<int>(state.classicPitch), 3));
+                if (state.profile == PerformanceProfile::Extended)
+                    state.tuneHz = 80.0f * powf(20.0f, value);
+            } else {
+                state.ratePosition = value;
+                state.classicModulation = static_cast<ClassicModulation>(PerformanceConfig::selectorZone(
+                    value, static_cast<int>(state.classicModulation), 4));
+                if (state.profile == PerformanceProfile::Extended)
+                    state.lfoRateHz = 0.15f * powf(20.0f / 0.15f, value);
+            }
+        } else if (name == "ECHO_FILTER") {
+            if (value < -1.0f || value > 1.0f) return false;
+            state.echoFilterPosition = value;
+            using namespace PerformanceConfig;
+            const float amount = echoFilterAmount(value);
+            state.echoFilterFlat = amount == 0.0f;
+            state.highPassHz = value > 0.0f
+                ? kEchoHighPassMinHz * powf(kEchoHighPassMaxHz / kEchoHighPassMinHz, amount)
+                : kEchoHighPassMinHz;
+            state.lowPassHz = value < 0.0f
+                ? kEchoLowPassMaxHz * powf(kEchoLowPassMinHz / kEchoLowPassMaxHz, amount)
+                : kEchoLowPassMaxHz;
         } else if (name == "TUNE_HZ") {
             state.tuneHz = clampValue(value, 30.0f, 9000.0f);
         } else if (name == "LFO_RATE_HZ") {
@@ -79,14 +108,17 @@ bool CommandParser::parse(const String &rawCommand) {
             if (value < -3.0f || value > 3.0f) return false;
             state.syndrumSweepOctaves = value;
         } else if (name == "DELAY_MS") {
-            state.delayMs = clampValue(value, 50.0f, 1000.0f);
+            state.delayMs = clampValue(value, PerformanceConfig::kEchoTimeMinMs,
+                                       PerformanceConfig::kEchoTimeMaxMs);
         } else if (name == "FEEDBACK") {
             state.feedback = clampValue(value, 0.0f, 1.05f);
         } else if (name == "ECHO_LEVEL") {
             state.echoLevel = clampValue(value, 0.0f, 1.0f);
         } else if (name == "HPF_HZ") {
+            state.echoFilterFlat = false;
             state.highPassHz = clampValue(value, 50.0f, 7000.0f);
         } else if (name == "LPF_HZ") {
+            state.echoFilterFlat = false;
             state.lowPassHz = clampValue(value, 200.0f, 19000.0f);
         } else if (name == "MASTER") {
             state.masterVolume = clampValue(value, 0.0f, 1.0f);
@@ -104,7 +136,7 @@ bool CommandParser::parse(const String &rawCommand) {
             return false;
         }
         if (name == "TRIGGER") {
-            if (value && !state.trigger) {
+            if (value && !state.trigger && state.profile == PerformanceProfile::Extended) {
                 recordActivation(state);
             }
             state.trigger = value;
@@ -130,6 +162,7 @@ bool CommandParser::parse(const String &rawCommand) {
     }
 
     controls_.set(state);
+    performance_.notifyControlsChanged();
     return true;
 }
 

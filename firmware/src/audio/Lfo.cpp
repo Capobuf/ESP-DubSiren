@@ -5,11 +5,6 @@
 
 namespace {
 
-// Internal RC proportions are intentionally slightly different. They are
-// grouped here so they can become controls later without changing the model.
-constexpr float kChargeRatio = 0.18f;
-constexpr float kFallRatio = 0.24f;
-constexpr float kManualReferenceCycleSeconds = 0.22f;
 
 float rcCoefficient(float tauSeconds, float sampleRate) {
     const float safeTau = tauSeconds < 0.001f ? 0.001f : tauSeconds;
@@ -28,6 +23,7 @@ Lfo::Lfo()
 
 void Lfo::reset(LfoShape shape) {
     phase_ = 0.0f;
+    manualGate_ = false;
     manualValue_ = 0.0f;
     classicValue_ = -1.0f;
     currentShape_ = shape;
@@ -51,6 +47,7 @@ float Lfo::next(LfoShape shape, float rateHz, bool modUp, bool modDown,
     }
 
     if (shape == LfoShape::Manual) {
+        manualGate_ = modUp && !modDown;
         const float target = modUp == modDown ? 0.0f : (modUp ? 1.0f : -1.0f);
         const float coefficient = target > manualValue_
                                       ? manualChargeCoefficient_
@@ -100,13 +97,13 @@ void Lfo::updateCoefficients(float rateHz, float sampleRate) {
 
     const float halfCycleSeconds = 0.5f / rateHz;
     chargeCoefficient_ =
-        rcCoefficient(halfCycleSeconds * kChargeRatio, sampleRate);
+        rcCoefficient(halfCycleSeconds * PerformanceConfig::kLfoChargeRatio, sampleRate);
     fallCoefficient_ =
-        rcCoefficient(halfCycleSeconds * kFallRatio, sampleRate);
+        rcCoefficient(halfCycleSeconds * PerformanceConfig::kLfoFallRatio, sampleRate);
     manualChargeCoefficient_ = rcCoefficient(
-        kManualReferenceCycleSeconds * kChargeRatio, sampleRate);
+        PerformanceConfig::kManualAttackMs * 0.001f, sampleRate);
     manualFallCoefficient_ =
-        rcCoefficient(kManualReferenceCycleSeconds * kFallRatio, sampleRate);
+        rcCoefficient(PerformanceConfig::kManualReleaseMs * 0.001f, sampleRate);
 }
 
 float Lfo::automaticValue(LfoShape shape, float phase) {

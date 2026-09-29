@@ -103,13 +103,15 @@ class VirtualTransportTests(unittest.TestCase):
         self.transport.send("HOLD 0")
         self.transport.send("STREAM 0")
 
+        count = len(self.statuses)
         self.transport.disconnect()
         self.assertFalse(self.transport.connected)
         self.transport.connect(VIRTUAL_DEVICE)
         self.assertTrue(self.transport.connected)
-        self.assertEqual(len(self.statuses), 2)
+        self.assertEqual(len(self.statuses), count + 1)
 
     def test_shared_panel_priority_combinations_and_one_shot(self):
+        self.transport.send("SET PROFILE EXTENDED")
         self.transport.send("STREAM 1")
         self.transport.send("PAD 1 1")
         self.assertEqual(self.statuses[-1]["panel"]["activePad"], 1)
@@ -136,6 +138,7 @@ class VirtualTransportTests(unittest.TestCase):
         self._assert_non_silent_audio()
 
     def test_display_state_and_shared_encoder_menu(self):
+        self.transport.send("SET PROFILE EXTENDED")
         display = self.statuses[-1]["panel"]["display"]
         self.assertEqual((display["width"], display["height"]), (320, 170))
         self.assertEqual(display["mode"], "HOME")
@@ -187,6 +190,7 @@ class VirtualTransportTests(unittest.TestCase):
         self.assertTrue(self.statuses[-1]["panel"]["display"]["echoLoop"])
 
         self.transport.send("ENCODER_ROTATE NEXT")
+        self.transport.send("ENCODER_ROTATE NEXT")
         self.assertEqual(
             self.statuses[-1]["panel"]["display"]["menuItems"][
                 self.statuses[-1]["panel"]["display"]["menuIndex"]
@@ -196,6 +200,43 @@ class VirtualTransportTests(unittest.TestCase):
         self.transport.send("ENCODER_SWITCH 1")
         self.transport.send("ENCODER_SWITCH 0")
         self.assertEqual(self.statuses[-1]["panel"]["display"]["mode"], "HOME")
+
+    def test_classic_default_selectors_buttons_and_audio_release(self):
+        def display():
+            return self.statuses[-1]["panel"]["display"]
+        self.assertEqual(display()["profile"], "CLASSIC")
+        self.assertEqual(display()["voice"], "SINE 1")
+        self.transport.send("SET PITCH_POSITION 0.9")
+        self.transport.send("SET RATE_POSITION 1")
+        self.assertEqual(display()["pitch"], "HIGH")
+        self.assertEqual(display()["rate"], "MANUAL")
+        for voice in ("SINE 2", "TEST TONE", "SQUARE", "SINE 1"):
+            self.transport.send("ENCODER_ROTATE NEXT")
+            self.assertEqual(display()["voice"], voice)
+            self.assertEqual(display()["depth"], 1.0)
+        self.transport.send("SET ECHO_LEVEL 0")
+        self.transport.send("SET FEEDBACK 0")
+        self.transport.send("STREAM 1")
+        self.transport.send("PAD 1 1")
+        self._assert_non_silent_audio()
+        self.transport.send("PAD 2 1")
+        self.transport.send("PAD 2 0")
+        self.transport.send("PAD 1 0")
+        self.assertTrue(display()["hold"])
+        self._drain()
+        self._assert_non_silent_audio()
+        self.transport.send("PAD 2 1")
+        self.transport.send("PAD 2 0")
+        self.assertFalse(display()["hold"])
+        time.sleep(0.04)
+        self._drain()
+        for _ in range(4):
+            values = array.array("h", self.audio_queue.get(timeout=0.2))
+            self.assertFalse(any(values))
+        self.transport.send("PAD 4 1")
+        self.assertTrue(display()["echoCut"])
+        self.transport.send("PAD 4 0")
+        self.assertFalse(display()["echoCut"])
 
 
 if __name__ == "__main__":

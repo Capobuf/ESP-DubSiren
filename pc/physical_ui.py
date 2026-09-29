@@ -38,12 +38,12 @@ def echo_filter_frequencies(value: float) -> tuple[float, float]:
 ECHO_FILTER_SPEC = ControlSpec(-1.0, 1.0, 0.0, format_echo_filter)
 
 PANEL_KNOBS = (
-    ("TUNE", "TUNE_HZ"),
-    ("RATE", "LFO_RATE_HZ"),
+    ("PITCH", "PITCH_POSITION"),
+    ("RATE", "RATE_POSITION"),
     ("ECHO LEVEL", "ECHO_LEVEL"),
     ("ECHO TIME", "DELAY_MS"),
     ("ECHO FEEDBACK", "FEEDBACK"),
-    ("ECHO TONE", "ECHO_FILTER"),
+    ("ECHO FILTER", "ECHO_FILTER"),
 )
 
 DEFAULT_PANEL_STATE = {
@@ -59,8 +59,10 @@ DEFAULT_PANEL_STATE = {
         "menuIndex": 0,
         "editing": False,
         "menuItems": [
-            "PAD", "ASSIGNMENT", "VARIANT", "HOLD", "ECHO_LOOP", "BACK"
+            "PROFILE", "BACK"
         ],
+        "profile": "CLASSIC", "voice": "SINE 1",
+        "pitch": "MID", "rate": "MID", "hold": False, "echoCut": False,
         "depth": 1.0,
         "echoLoop": False,
     },
@@ -408,7 +410,7 @@ class PhysicalDubSirenApp(DubSirenApp):
         self.parameter_values["HPF_HZ"] = 60.0
         self.parameter_values["LPF_HZ"] = 7000.0
         self.echo_filter_macro = 0.0
-        self.echo_filter_active = False
+        self.echo_filter_active = True
         self.panel_state = json.loads(json.dumps(DEFAULT_PANEL_STATE))
         self._last_menu_revision = 0
         self._panel_status_seen = False
@@ -598,7 +600,7 @@ class PhysicalDubSirenApp(DubSirenApp):
             text="KEYS  1–4 pads   [ / ] encoder   E press",
             justify="right",
         ).pack(side="right", padx=12)
-        self.dials["ECHO_FILTER"].value_label.configure(text="CUSTOM 60 Hz / 7 kHz")
+        self.dials["ECHO_FILTER"].value_label.configure(text="FLAT")
         self._update_pad_labels()
 
     def _panel_parameter_changed(
@@ -610,13 +612,21 @@ class PhysicalDubSirenApp(DubSirenApp):
         if name == "ECHO_FILTER":
             self.echo_filter_macro = value
             self.echo_filter_active = True
-            self._show_overlay("ECHO TONE", format_echo_filter(value))
+            self._show_overlay("FILTER", format_echo_filter(value))
         else:
             self.parameter_values[name] = value
-            self._show_overlay(
-                self._parameter_label(name),
-                CONTROL_SPECS[name].formatter(value),
-            )
+            if name in ("PITCH_POSITION", "RATE_POSITION"):
+                self._update_control_activity()
+                if self.panel_state.get("display", {}).get("profile", "CLASSIC") == "CLASSIC":
+                    key = "pitch" if name == "PITCH_POSITION" else "rate"
+                    self._show_overlay(key.upper(), self.panel_state["display"].get(key, "MID"))
+                else:
+                    target = "TUNE_HZ" if name == "PITCH_POSITION" else "LFO_RATE_HZ"
+                    actual = CONTROL_SPECS[target].from_normalized(value)
+                    self.parameter_values[target] = actual
+                    self._show_overlay("TUNE" if name == "PITCH_POSITION" else "RATE", CONTROL_SPECS[target].formatter(actual))
+            else:
+                self._show_overlay(self._parameter_label(name), CONTROL_SPECS[name].formatter(value))
 
         if final:
             pending = self.pending_sends.pop(name, None)
@@ -644,6 +654,8 @@ class PhysicalDubSirenApp(DubSirenApp):
 
     def _parameter_label(self, name: str) -> str:
         return {
+            "PITCH_POSITION": "PITCH",
+            "RATE_POSITION": "RATE",
             "TUNE_HZ": "TUNE",
             "LFO_RATE_HZ": "RATE",
             "LFO_DEPTH_OCT": "DEPTH",
@@ -681,6 +693,7 @@ class PhysicalDubSirenApp(DubSirenApp):
         pad = self.panel_state["pads"][selected - 1]
         display = self.panel_state.get("display", {})
         values = {
+            "PROFILE": "EXTENDED" if display.get("profile", "CLASSIC") == "CLASSIC" else "DS01E",
             "PAD": str(selected),
             "ASSIGNMENT": pad["sound"],
             "VARIANT": pad["variant"],
@@ -689,6 +702,7 @@ class PhysicalDubSirenApp(DubSirenApp):
             "BACK": "",
         }
         labels = {
+            "PROFILE": "SWITCH TO",
             "PAD": "CONFIGURE PAD",
             "ASSIGNMENT": "ASSIGNMENT",
             "VARIANT": "VARIANT",
@@ -707,8 +721,7 @@ class PhysicalDubSirenApp(DubSirenApp):
 
         self.parameter_values["HPF_HZ"] = hpf
         self.parameter_values["LPF_HZ"] = lpf
-        self._send_parameter("HPF_HZ", hpf)
-        self._send_parameter("LPF_HZ", lpf)
+        self._send_parameter("ECHO_FILTER", self.echo_filter_macro)
 
     def _format_echo_filter(self) -> str:
         if abs(self.echo_filter_macro) < 0.001:
@@ -784,22 +797,28 @@ class PhysicalDubSirenApp(DubSirenApp):
         for number, (button, pad) in enumerate(
             zip(self.pad_buttons, self.panel_state["pads"]), start=1
         ):
-            button.configure(text=f"BTN{number} · {pad['sound']}")
+            baseline = self.panel_state.get("display", {}).get("profile", "CLASSIC") == "CLASSIC"
+            label = ("TRIGGER", "HOLD", "MANUAL MOD", "ECHO CUT")[number - 1] if baseline else pad["sound"]
+            button.configure(text=f"BTN{number} - {label}")
         self._update_control_activity()
 
     def _update_control_activity(self) -> None:
-        if "LFO_RATE_HZ" not in self.dials:
-            return
-        current = int(self.panel_state.get("currentPad", self.panel_state["selectedPad"]))
-        ping = self.panel_state["pads"][current - 1]["sound"] == "PING"
-        self.dials["LFO_RATE_HZ"].set_active(not ping)
-        if ping:
-            self.dials["LFO_RATE_HZ"].value_label.configure(text="INACTIVE FOR PING")
-        else:
-            value = self.parameter_values["LFO_RATE_HZ"]
-            self.dials["LFO_RATE_HZ"].value_label.configure(
-                text=CONTROL_SPECS["LFO_RATE_HZ"].formatter(value)
-            )
+        display = self.panel_state.get("display", {})
+        baseline = display.get("profile", "CLASSIC") == "CLASSIC"
+        current = int(self.panel_state.get("currentPad", 1))
+        ping = not baseline and self.panel_state["pads"][current - 1]["sound"] == "PING"
+        for name, key, target in (("PITCH_POSITION", "pitch", "TUNE_HZ"), ("RATE_POSITION", "rate", "LFO_RATE_HZ")):
+            if name not in self.dials:
+                continue
+            dial = self.dials[name]
+            dial.set_active(not (ping and key == "rate"))
+            if baseline:
+                label = display.get(key, "MID")
+            elif ping and key == "rate":
+                label = "INACTIVE FOR PING"
+            else:
+                label = CONTROL_SPECS[target].formatter(self.parameter_values[target])
+            dial.value_label.configure(text=label)
 
     def _show_overlay(
         self,
@@ -825,7 +844,15 @@ class PhysicalDubSirenApp(DubSirenApp):
             return
 
         display = self.panel_state.get("display", DEFAULT_PANEL_STATE["display"])
-        if display.get("mode") == "HOME":
+        if display.get("mode") == "HOME" and display.get("profile", "CLASSIC") == "CLASSIC":
+            params = dict(self.parameter_values, PROFILE="CLASSIC",
+                          PITCH=display.get("pitch", "MID"), RATE=display.get("rate", "MID"),
+                          ECHO_CUT=display.get("echoCut", False))
+            self.display.render_home(1, 1, display.get("voice", "SINE 1"), "DS01E / CLASSIC", "",
+                                     bool(display.get("hold")), bool(display.get("echoLoop")),
+                                     self.transport.connected, params, int(self.panel_state.get("activePad", 0)),
+                                     format_echo_filter(self.echo_filter_macro))
+        elif display.get("mode") == "HOME":
             selected = int(self.panel_state["selectedPad"])
             current = int(self.panel_state.get("currentPad", selected))
             pad = self.panel_state["pads"][selected - 1]
@@ -875,9 +902,9 @@ class PhysicalDubSirenApp(DubSirenApp):
         self._send(f"SET OUTPUT {selected}")
         self.active_output = selected
 
-        self._send("SET PROFILE EXTENDED")
+        self._send("SET PROFILE CLASSIC")
         live_parameters = (
-            "TUNE_HZ", "LFO_RATE_HZ", "LFO_DEPTH_OCT", "DELAY_MS",
+            "PITCH_POSITION", "RATE_POSITION", "DELAY_MS",
             "FEEDBACK", "ECHO_LEVEL", "MASTER",
         )
         for name in live_parameters:
@@ -914,6 +941,12 @@ class PhysicalDubSirenApp(DubSirenApp):
                 self._last_menu_revision = menu_revision
                 self.panel_state = panel
                 display = panel.get("display", {})
+                for key, parameter in (("tuneHz", "TUNE_HZ"), ("rateHz", "LFO_RATE_HZ")):
+                    if key in display:
+                        self.parameter_values[parameter] = float(display[key])
+                for key, title in (("pitch", "PITCH"), ("rate", "RATE")):
+                    if display.get(key) != old_display.get(key) and display.get("profile") == "CLASSIC":
+                        self._show_overlay(title, display.get(key, "MID"))
                 if "depth" in display:
                     old_depth = self.parameter_values["LFO_DEPTH_OCT"]
                     depth = float(display["depth"])

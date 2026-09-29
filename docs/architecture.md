@@ -80,8 +80,8 @@ memory. Normal operation writes dry input plus saturated feedback. In loop
 mode the write path instead copies the raw interpolated delayed sample back to
 the ring, while the wet output still passes through the HPF/LPF. This avoids
 reapplying filters and saturation on every loop pass. ECHO CUT only mutes the
-wet mix through a dedicated 3 ms smoother and therefore leaves loop contents
-intact. It does not alter feedback, filtering, or the stored Echo Level.
+wet mix immediately at the next audio snapshot and therefore leaves loop
+contents intact; release uses the existing smoother. It does not alter feedback, filtering, or the stored Echo Level.
 
 `SmoothedParameter` handles sample-rate tune, depth, rate, feedback, echo level,
 master, DIVE/RISE bend, delay and filter cutoff changes. The LFO retains phase
@@ -95,23 +95,23 @@ a shape-aware deterministic state; oscillator phase, filters and delay tails
 continue uninterrupted. Disabling modulation zeros the LFO pitch contribution
 without stopping its internal phase. CLASSIC always keeps its modulation active.
 
-The same activation-event detection starts a cached-coefficient `OneShotEnvelope`
+In Extended, the same activation-event detection starts a cached-coefficient `OneShotEnvelope`
 for Dynamic Sweep. Its decaying value offsets tonal pitch by as much as -2
 octaves and slows LFO rate by as much as 3 octaves, then converges continuously
 to the selected Tune and Rate. `SWEEP=0` bypasses both offsets. Triggering may
 therefore restart sweep and, when RETRIGGER is enabled, reset the LFO in the
 same block without resetting oscillator phase or delay.
 
-The V2 oscillator starts from a variable-duty band-limited pulse. SINE1 uses
-three tracking one-poles; SINE2 uses two with a higher tracking ratio and more
-asymmetry. TEST_TONE adds a click-free rhythmic gate. SQUARE selects high/low
-frequency targets with a 2.5 ms anti-click slew while preserving oscillator
-phase. LICKSHOT uses a separate open, lightly filtered pulse voicing and SONAR
-uses a true sine wave; both share the same oscillator phase, envelope, delay
-and mode crossfade. Filter coefficients are refreshed every 16 samples;
-measured render
-telemetry is exposed in STATUS as `renderUs` and `maxRenderUs`. `cycleUs` and
-`maxCycleUs` measure rendering plus the selected output writes.
+Classic SINE1 uses a true sine carrier. SINE2 adds bounded second/third
+harmonics for more bite, without the previous pulse/filter/saturation chain.
+TEST_TONE gates a fixed-pitch sine with the LFO; SQUARE retains PolyBLEP and
+one tracking low-pass, selecting high/low pitch with a 2.5 ms slew. Their
+manual gates come from the button rather than frozen automatic phase.
+Classic amplitude uses a finite linear 2 ms attack / 3 ms release; its gate
+is applied after oscillator filtering so no dry filter tail escapes.
+Extended retains exponential release and one-shot envelopes. LICKSHOT keeps
+its pulse/filter/saturation voice and SONAR its sine carrier. Calibration is
+centralized in PerformanceConfig.h and does not claim measured hardware fidelity.
 
 SYNDRUM and GUNSHOT are transient modes. A trigger activation event starts their
 independent amplitude envelope; HOLD, the normal LFO, DIVE/RISE and Dynamic
@@ -124,22 +124,21 @@ an abrupt boundary.
 
 ## Performance controller
 
-`PerformanceController` is compiled into both firmware and VirtualESP. It owns
-the four pad assignments, variant lists, per-pad Hold state, pressed-state
-priority, encoder combinations, selected pad, Home/Menu mode, menu position,
-edit mode, conditional menu rows, and the initial Classic / Two Tone / Lickshot
-/ Ping bank. Python receives that state in STATUS and does not duplicate the
-menu transitions or sound configurations.
+`PerformanceController` is compiled into both firmware and VirtualESP.
+Classic is the default and owns Trigger/Hold/Manual Mod/Echo Cut, a four-voice
+encoder and an Extended/Back menu. Normalized Pitch/Rate inputs are interpreted
+in shared C++ with hysteresis; the filter macro is likewise atomic in C++.
+Extended retains pad assignment, variant, priority, combinations and Depth.
+Saved Extended assignments never activate themselves during Classic startup.
 
 VirtualESP exports the same compact logical display state through its C ABI:
 320×170 dimensions, Home/Menu mode, menu index/edit flag, ordered menu item
-keys, Depth and Echo Loop. `VirtualTransport` adds these values to
-`panel.display`. The desktop `dub_scene.py` renderer uses the same coordinates,
-palette, boot stages and scene-to-parameter mapping as the Adafruit GFX
-renderer. VirtualESP also derives a display-only peak envelope from its PCM
+keys, profile/voice, confirmed Pitch/Rate, Hold/Echo Cut, Depth and Echo Loop. `VirtualTransport` adds these values to
+`panel.display`. The desktop and Adafruit renderers share a readable Classic home/overlay
+layout, and retain the illustrated boot and Extended rack scenes. VirtualESP also derives a display-only peak envelope from its PCM
 blocks. No SPI emulation or display framebuffer exists on the host.
 
-A pad activation updates the mode-specific configuration and an eight-entry
+An Extended pad activation updates the mode-specific configuration and an eight-entry
 activation ring in one `ControlStore` write. The audio engine transfers unseen
 events to its local queue and consumes one per block. The sequence is
 independent of the gate, so pressing another pad while one remains held still

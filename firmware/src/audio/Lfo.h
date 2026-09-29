@@ -8,12 +8,13 @@ public:
     float next(LfoShape shape, float rateHz, bool modUp, bool modDown,
                float sampleRate);
     void reset(LfoShape shape);
-    bool gate() const { return phase_ < 0.5f; }
+    bool gate() const { return currentShape_ == LfoShape::Manual ? manualGate_ : phase_ < 0.5f; }
 
 private:
     void updateCoefficients(float rateHz, float sampleRate);
     float transition(LfoShape shape, float value, float sampleRate);
     static float automaticValue(LfoShape shape, float phase);
+    bool manualGate_ = false;
     float phase_;
     float manualValue_;
     float classicValue_;

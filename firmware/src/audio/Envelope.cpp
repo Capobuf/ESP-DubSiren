@@ -1,9 +1,18 @@
 #include "Envelope.h"
 
 #include <math.h>
+#include "PerformanceConfig.h"
 
 Envelope::Envelope()
     : level_(0.0f), lastDecayMs_(-1.0f), releaseMultiplier_(0.0f) {}
+
+float Envelope::nextGate(bool gate, float sampleRate) {
+    const float duration = gate ? PerformanceConfig::kGateAttackMs
+                                : PerformanceConfig::kGateReleaseMs;
+    const float step = 1.0f / (duration * 0.001f * sampleRate);
+    level_ = gate ? fminf(1.0f, level_ + step) : fmaxf(0.0f, level_ - step);
+    return level_;
+}
 
 float Envelope::next(bool gate, float decayMs, float sampleRate) {
     if (gate) {

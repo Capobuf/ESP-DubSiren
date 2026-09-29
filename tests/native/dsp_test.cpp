@@ -1,3 +1,7 @@
+// Zig release builds define NDEBUG; regressions must execute under -O2 too.
+#ifdef NDEBUG
+#undef NDEBUG
+#endif
 #include <assert.h>
 #include <math.h>
 #include <memory>
@@ -26,10 +30,16 @@ float blockRms(const int16_t *samples, size_t count) {
 
 float estimateFrequency(const int16_t *samples, size_t count) {
     unsigned crossings = 0;
+    double first = 0.0, last = 0.0;
     for (size_t i = 1; i < count; ++i) {
-        if (samples[i - 1] <= 0 && samples[i] > 0) ++crossings;
+        if (samples[i - 1] <= 0 && samples[i] > 0) {
+            const double crossing = i - 1 + double(-samples[i - 1]) / (samples[i] - samples[i - 1]);
+            if (crossings == 0) first = crossing;
+            last = crossing;
+            ++crossings;
+        }
     }
-    return crossings * kRate / static_cast<float>(count);
+    return crossings > 1 ? (crossings - 1) * kRate / (last - first) : 0.0f;
 }
 
 float renderFrequency(ControlState state) {
@@ -132,6 +142,7 @@ void testParser() {
 void testPadController() {
     ControlStore store;
     CommandParser parser(store);
+    assert(parser.parse("SET PROFILE EXTENDED"));
     assert(strcmp(parser.padSoundName(1), "CLASSIC") == 0);
     assert(strcmp(parser.padSoundName(2), "TWO TONE") == 0);
     assert(strcmp(parser.padSoundName(3), "LICKSHOT") == 0);
@@ -189,7 +200,7 @@ void testPadController() {
     assert(parser.parse("PAD_ASSIGN NEXT"));
     assert(strcmp(parser.padSoundName(3), "PING") == 0);
     assert(parser.padHold(1));
-    assert(store.snapshot().mode == SirenMode::Sine1);
+    assert(store.snapshot().mode == SirenMode::Sine2);
     assert(store.snapshot().hold);
     assert(parser.parse("PAD 3 1"));
     assert(!parser.padHold(1));
@@ -204,6 +215,7 @@ void testPadController() {
 void testQueuedPadActivation() {
     ControlStore store;
     CommandParser parser(store);
+    assert(parser.parse("SET PROFILE EXTENDED"));
     auto engine = std::make_unique<AudioEngine>();
     engine->begin();
     int16_t block[480];
@@ -238,6 +250,7 @@ void testQueuedPadActivation() {
 void testPanelDisplayState() {
     ControlStore store;
     CommandParser parser(store);
+    assert(parser.parse("SET PROFILE EXTENDED"));
     assert(parser.displayWidth() == 320 && parser.displayHeight() == 170);
     assert(strcmp(parser.displayModeName(), "HOME") == 0);
     assert(parser.parse("ENCODER_ROTATE NEXT"));
@@ -247,7 +260,7 @@ void testPanelDisplayState() {
     assert(parser.parse("ENCODER_SWITCH 0"));
     assert(strcmp(parser.displayModeName(), "MENU") == 0);
     assert(parser.menuIndex() == 0 && !parser.menuEditing());
-    assert(parser.menuItemCount() == 6);
+    assert(parser.menuItemCount() == 7);
     assert(strcmp(parser.menuItemKey(0), "PAD") == 0);
 
     assert(parser.parse("ENCODER_ROTATE NEXT"));
@@ -270,7 +283,7 @@ void testPanelDisplayState() {
     assert(parser.parse("ENCODER_SWITCH 1"));
     assert(parser.parse("ENCODER_SWITCH 0"));
 
-    for (int i = 0; i < 3; ++i) assert(parser.parse("ENCODER_ROTATE NEXT"));
+    for (int i = 0; i < 4; ++i) assert(parser.parse("ENCODER_ROTATE NEXT"));
     assert(strcmp(parser.menuItemKey(parser.menuIndex()), "BACK") == 0);
     assert(parser.parse("ENCODER_SWITCH 1"));
     assert(parser.parse("ENCODER_SWITCH 0"));
@@ -279,6 +292,7 @@ void testPanelDisplayState() {
 
 void testDynamicSweep() {
     ControlState state;
+    state.profile = PerformanceProfile::Extended;
     state.mode = SirenMode::Sonar;
     state.tuneHz = 220.0f;
     state.lfoDepthOctaves = 0.0f;
@@ -342,6 +356,7 @@ void testDynamicSweep() {
 
 void testSyndrum() {
     ControlState state;
+    state.profile = PerformanceProfile::Extended;
     state.mode = SirenMode::Syndrum;
     state.tuneHz = 220.0f;
     state.decayMs = 120.0f;
@@ -417,6 +432,7 @@ void testSyndrum() {
 
 void testGunshot() {
     ControlState state;
+    state.profile = PerformanceProfile::Extended;
     state.mode = SirenMode::Gunshot;
     state.decayMs = 100.0f;
     state.echoLevel = 0.0f;
@@ -498,6 +514,7 @@ void testNewVoices() {
 
 void testPerformancePitch() {
     ControlState state;
+    state.profile = PerformanceProfile::Extended;
     state.mode = SirenMode::Sonar;
     state.tuneHz = 220.0f;
     state.lfoShape = LfoShape::SawDown;
@@ -539,6 +556,7 @@ void testPerformancePitch() {
     assert(dive > 108.0f && dive < 112.0f);
     assert(centered > 218.0f && centered < 222.0f);
 
+    state.lfoDepthOctaves = 1.0f;
     state.lfoShape = LfoShape::Manual;
     state.modDown = false;
     const float manualUp = renderFrequency(state);
@@ -608,6 +626,7 @@ void testEchoCutPreservesLoop() {
     auto engine = std::make_unique<AudioEngine>();
     engine->begin();
     ControlState state;
+    state.profile = PerformanceProfile::Extended;
     state.mode = SirenMode::Sonar;
     state.hold = true;
     state.lfoDepthOctaves = 0.0f;
@@ -636,6 +655,7 @@ void testEngine() {
     auto engine = std::make_unique<AudioEngine>();
     engine->begin();
     ControlState state;
+    state.profile = PerformanceProfile::Extended;
     state.hold = true;
     state.feedback = 0.95f;
     int16_t block[480];
@@ -661,6 +681,7 @@ void testProfileKeepsTail() {
     auto engine = std::make_unique<AudioEngine>();
     engine->begin();
     ControlState state;
+    state.profile = PerformanceProfile::Extended;
     state.hold = true;
     state.decayMs = 0.0f;
     state.feedback = 0.8f;
@@ -678,7 +699,252 @@ void testProfileKeepsTail() {
     assert(heardTail);
 }
 
+
+void testClassicControls() {
+    ControlStore store;
+    CommandParser parser(store);
+    assert(store.snapshot().profile == PerformanceProfile::Classic);
+    assert(!parser.parse("SET MODE GUNSHOT"));
+    assert(parser.parse("PAD_CONFIG 1 LICKSHOT 0 0"));
+    assert(store.snapshot().profile == PerformanceProfile::Classic);
+    for (int i = 0; i < 4; ++i) {
+        assert(static_cast<int>(store.snapshot().mode) == i);
+        assert(parser.parse("ENCODER_ROTATE NEXT"));
+        assert(store.snapshot().lfoDepthOctaves == 1.0f);
+        assert(store.snapshot().tuneHz == 220.0f);
+    }
+    assert(store.snapshot().mode == SirenMode::Sine1);
+    assert(parser.parse("ENCODER_ROTATE PREV"));
+    assert(store.snapshot().mode == SirenMode::Square);
+    assert(parser.parse("SET PROFILE EXTENDED"));
+    assert(store.snapshot().mode == SirenMode::Square);
+    assert(parser.parse("SET PROFILE CLASSIC"));
+    assert(parser.parse("PAD 1 1"));
+    assert(store.snapshot().trigger);
+    assert(parser.parse("PAD 2 1"));
+    assert(parser.parse("PAD 2 1")); // Autorepeat must not toggle twice.
+    assert(store.snapshot().hold);
+    assert(parser.parse("PAD 1 0"));
+    assert(!store.snapshot().trigger && store.snapshot().hold);
+    assert(parser.parse("PAD 2 0"));
+    assert(parser.parse("PAD 2 1"));
+    assert(!store.snapshot().hold);
+    assert(parser.parse("PAD 3 1"));
+    assert(store.snapshot().modUp);
+    assert(parser.parse("PAD 4 1"));
+    assert(store.snapshot().echoCut);
+    assert(parser.parse("PANEL_RESET"));
+    assert(!store.snapshot().modUp && !store.snapshot().echoCut);
+    assert(parser.parse("ENCODER_SWITCH 1"));
+    assert(strcmp(parser.displayModeName(), "MENU") == 0);
+    assert(strcmp(parser.menuItemKey(0), "PROFILE") == 0);
+    assert(parser.parse("ENCODER_SWITCH 0"));
+    assert(parser.parse("ENCODER_SWITCH 1"));
+    assert(store.snapshot().profile == PerformanceProfile::Extended);
+}
+
+void testSelectors() {
+    for (int zones : {3, 4}) {
+        for (int boundary = 1; boundary < zones; ++boundary) {
+            int zone = boundary - 1;
+            const float edge = float(boundary) / zones;
+            for (int i = 0; i < 100; ++i) {
+                zone = PerformanceConfig::selectorZone(edge + (i % 2 ? .01f : -.01f), zone, zones);
+                assert(zone == boundary - 1);
+            }
+            zone = PerformanceConfig::selectorZone(edge + .02f, zone, zones);
+            assert(zone == boundary);
+            for (int i = 0; i < 100; ++i) {
+                zone = PerformanceConfig::selectorZone(edge + (i % 2 ? .01f : -.01f), zone, zones);
+                assert(zone == boundary);
+            }
+            assert(PerformanceConfig::selectorZone(edge - .02f, zone, zones) == boundary - 1);
+        }
+    }
+    ControlStore store;
+    CommandParser parser(store);
+    for (int adc = 0; adc <= 4095; ++adc) {
+        const float normalized = adc / 4095.0f;
+        char command[64];
+        snprintf(command, sizeof(command), "SET PITCH_POSITION %.7f", normalized);
+        assert(parser.parse(command));
+        const int pitch = static_cast<int>(store.snapshot().classicPitch);
+        assert(pitch >= 0 && pitch < 3);
+        snprintf(command, sizeof(command), "SET RATE_POSITION %.7f", normalized);
+        assert(parser.parse(command));
+        const int rate = static_cast<int>(store.snapshot().classicModulation);
+        assert(rate >= 0 && rate < 4);
+    }
+    assert(store.snapshot().classicPitch == ClassicPitch::High);
+    assert(store.snapshot().classicModulation == ClassicModulation::Manual);
+    assert(!parser.parse("SET PITCH_POSITION nan"));
+    assert(!parser.parse("SET RATE_POSITION 1.1"));
+    assert(parser.parse("SET ECHO_FILTER 0.049"));
+    assert(store.snapshot().echoFilterFlat);
+    assert(parser.parse("SET ECHO_FILTER -1"));
+    assert(!store.snapshot().echoFilterFlat && fabsf(store.snapshot().lowPassHz - 400) < .01f);
+    assert(parser.parse("SET ECHO_FILTER 1"));
+    assert(fabsf(store.snapshot().highPassHz - 4000) < .01f);
+}
+
+void testClassicDryRelease() {
+    for (SirenMode mode : {SirenMode::Sine1, SirenMode::Sine2, SirenMode::TestTone, SirenMode::Square}) {
+        auto engine = std::make_unique<AudioEngine>();
+        engine->begin();
+        ControlState state;
+        state.mode = mode;
+        state.echoLevel = 0;
+        state.decayMs = 3000; // Extended decay must have no effect.
+        state.classicModulation = ClassicModulation::Manual;
+        state.modUp = true;
+        state.trigger = true;
+        int16_t block[480];
+        engine->render(state, block, 480);
+        assert(blockRms(block, 96) > 50);
+        for (int i = 0; i < 100; ++i) engine->render(state, block, 480);
+        state.trigger = false;
+        engine->render(state, block, 480);
+        assert(blockRms(block + 146, 480 - 146) == 0);
+        for (int i = 0; i < 120; ++i) {
+            engine->render(state, block, 480);
+            assert(blockRms(block, 480) == 0);
+        }
+        state.hold = true;
+        engine->render(state, block, 480);
+        assert(blockRms(block, 480) > 100);
+        state.hold = false;
+        engine->render(state, block, 480);
+        assert(blockRms(block + 146, 334) == 0);
+    }
+}
+
+void testWetIsolation() {
+    auto audible = std::make_unique<AudioEngine>();
+    auto dry = std::make_unique<AudioEngine>();
+    audible->begin(); dry->begin();
+    ControlState a, b;
+    a.trigger = b.trigger = true;
+    a.echoLevel = 1; b.echoLevel = 0;
+    a.delayMs = 50; b.delayMs = 700;
+    a.feedback = 1.05f; b.feedback = 0;
+    int16_t left[480], right[480];
+    for (int i = 0; i < 100; ++i) {
+        audible->render(a, left, 480); dry->render(b, right, 480);
+    }
+    a.echoLevel = 0;
+    audible->render(a, left, 480); dry->render(b, right, 480);
+    assert(memcmp(left, right, sizeof(left)) == 0);
+    a.echoLevel = 1; a.echoCut = true;
+    audible->render(a, left, 480); dry->render(b, right, 480);
+    assert(memcmp(left, right, sizeof(left)) == 0);
+    a.echoCut = false;
+    audible->render(a, left, 480); dry->render(b, right, 480);
+    assert(memcmp(left, right, sizeof(left)) != 0); // Buffer evolved underneath cut.
+}
+
+void testSingleRepeatAndFeedback() {
+    double previousTail = -1;
+    for (float feedback : {0.0f, 0.2f, 0.5f, 0.8f}) {
+        auto delay = std::make_unique<Delay>();
+        delay->begin(100, 60, 16000, kRate);
+        delay->setParameters(100, 60, 16000, kRate, true);
+        for (int i = 0; i < 48000; ++i) delay->process(0, feedback, false, kRate);
+        double first = 0, tail = 0;
+        for (int i = 0; i < 48000; ++i) {
+            const float value = delay->process(i == 0 ? .25f : 0.0f, feedback, false, kRate);
+            if (i >= 4800 && i < 9600) first += value * value;
+            if (i >= 9600) tail += value * value;
+        }
+        assert(first > .01);
+        if (feedback == 0) assert(tail < 1e-9);
+        assert(tail > previousTail);
+        previousTail = tail;
+    }
+}
+
+void testManualAndClassicVoices() {
+    Lfo slow, fast;
+    slow.reset(LfoShape::Manual); fast.reset(LfoShape::Manual);
+    for (int i = 0; i < 48000; ++i) {
+        const bool pressed = i > 1000 && i < 12000;
+        const float a = slow.next(LfoShape::Manual, .35f, pressed, false, kRate);
+        const float b = fast.next(LfoShape::Manual, 20.0f, pressed, false, kRate);
+        assert(a == b && slow.gate() == pressed && fast.gate() == pressed);
+        if (i > 24000) assert(fabsf(a) < 1e-6f);
+    }
+    ControlState state;
+    state.classicModulation = ClassicModulation::Manual;
+    state.mode = SirenMode::Square;
+    const float low = renderFrequency(state);
+    state.modUp = true;
+    const float high = renderFrequency(state);
+    assert(low > 108 && low < 112 && high > 438 && high < 442);
+    state.mode = SirenMode::TestTone;
+    assert(fabsf(renderFrequency(state) - 220) < 2);
+    state.modUp = false;
+    assert(renderFrequency(state) == 0);
+    // Classic ignores advanced sweep, legacy switch and automatic bend.
+    auto a = std::make_unique<AudioEngine>(); auto b = std::make_unique<AudioEngine>();
+    a->begin(); b->begin();
+    ControlState plain, advanced;
+    plain.trigger = advanced.trigger = true;
+    plain.echoLevel = advanced.echoLevel = 0;
+    advanced.sweepAmount = 1; advanced.modUp = true;
+    advanced.voicingV2 = false; advanced.modulationEnabled = false;
+    int16_t left[480], right[480];
+    for (int i = 0; i < 200; ++i) {
+        a->render(plain, left, 480); b->render(advanced, right, 480);
+        assert(memcmp(left, right, sizeof(left)) == 0);
+    }
+}
+
+
+void testClassicAutomaticVoices() {
+    for (SirenMode mode : {SirenMode::TestTone, SirenMode::Square}) {
+        auto engine = std::make_unique<AudioEngine>(); engine->begin();
+        ControlState state;
+        state.mode = mode; state.hold = true; state.echoLevel = 0;
+        state.classicModulation = ClassicModulation::Fast;
+        int16_t block[4800];
+        bool heardLow = false, heardHigh = false;
+        for (int i = 0; i < 40; ++i) {
+            engine->render(state, block, 4800);
+            if (mode == SirenMode::TestTone) {
+                heardLow |= blockRms(block, 4800) < 1;
+                heardHigh |= blockRms(block, 4800) > 1000;
+            } else {
+                const float frequency = estimateFrequency(block, 4800);
+                heardLow |= frequency > 108 && frequency < 112;
+                heardHigh |= frequency > 438 && frequency < 442;
+            }
+        }
+        assert(heardLow && heardHigh);
+    }
+    double secondHarmonic[2] = {};
+    for (int voice = 0; voice < 2; ++voice) {
+        Oscillator osc;
+        double real = 0, imaginary = 0, energy = 0;
+        for (int i = 0; i < 48000; ++i) {
+            const float value = osc.next(static_cast<SirenMode>(voice), 220, 0, 1, true, kRate, true);
+            real += value * cos(TWO_PI * 440.0 * i / kRate);
+            imaginary += value * sin(TWO_PI * 440.0 * i / kRate);
+            energy += value * value;
+        }
+        assert(energy > 5000 && energy < 15000);
+        secondHarmonic[voice] = hypot(real, imaginary) / 24000;
+    }
+    assert(secondHarmonic[0] < .001);
+    assert(secondHarmonic[1] > .1 && secondHarmonic[1] < .13);
+}
+
 int main() {
+    testClassicAutomaticVoices();
+    testClassicControls();
+    testSelectors();
+    testClassicDryRelease();
+    testWetIsolation();
+    testSingleRepeatAndFeedback();
+    testManualAndClassicVoices();
     testSmoothing();
     testOneShotEnvelope();
     testParser();

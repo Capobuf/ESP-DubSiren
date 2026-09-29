@@ -81,6 +81,11 @@ class ControlRangeTests(unittest.TestCase):
                 self.assertEqual(spec.default, default)
                 self.assertEqual(spec.formatter(spec.default), label)
 
+    def test_echo_time_logarithmic_range(self):
+        self.assert_mapping("DELAY_MS", 0, 50)
+        self.assert_mapping("DELAY_MS", 1, 1000)
+        self.assert_mapping("DELAY_MS", 0.5, (50 * 1000) ** 0.5)
+
     def test_frequency_formatting(self) -> None:
         self.assertEqual(format_frequency(880.0), "880 Hz")
         self.assertEqual(format_frequency(1200.0), "1.2 kHz")

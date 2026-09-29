@@ -5,37 +5,11 @@
 
 #include "AnalogDsp.h"
 #include "DspUtils.h"
+#include "PerformanceConfig.h"
 
 namespace {
 
-struct SirenVoicing {
-    int filterStages;
-    float harmonicFactor;
-    float duty;
-    float dutyModAmount;
-    float drive;
-    float asymmetry;
-    float outputGain;
-};
-
-// Internal tuning values: they describe this project's voicing, not any
-// third-party circuit. Keep them together so listening tests stay simple.
-constexpr SirenVoicing kSine1Voicing = {
-    3, 1.65f, 0.480f, 0.006f, 1.08f, 0.015f, 0.82f,
-};
-constexpr SirenVoicing kSine2Voicing = {
-    2, 2.55f, 0.455f, 0.012f, 1.28f, 0.045f, 0.70f,
-};
-constexpr SirenVoicing kTestVoicing = {
-    2, 2.00f, 0.500f, 0.000f, 1.02f, 0.000f, 0.78f,
-};
-constexpr SirenVoicing kSquareVoicing = {
-    1, 7.50f, 0.470f, 0.006f, 1.06f, 0.018f, 0.56f,
-};
-constexpr SirenVoicing kLickshotVoicing = {
-    1, 5.00f, 0.495f, 0.004f, 1.12f, 0.020f, 0.62f,
-};
-constexpr float kSonarOutputGain = 0.82f;
+using namespace PerformanceConfig;
 
 float clampCutoff(float cutoff, float sampleRate) {
     const float maximum = sampleRate * 0.40f;
@@ -148,108 +122,24 @@ float Oscillator::nextLegacy(SirenMode mode, float phaseIncrement) const {
     return 0.0f;
 }
 
-float Oscillator::nextSine1(float frequencyHz, float modulation,
-                            float envelopeLevel, float phaseIncrement,
-                            float sampleRate) {
-    VoiceState &state = voices_[static_cast<int>(SirenMode::Sine1)];
-    const float duty =
-        kSine1Voicing.duty + modulation * kSine1Voicing.dutyModAmount;
-    float value = bandLimitedPulse(phase_, phaseIncrement, duty);
-
-    constexpr float kTone = 0.5f;
-    const float toneFactor = 0.88f + 0.24f * kTone;
-    const float envelopeFactor = 0.94f + 0.06f * envelopeLevel;
-    const float targetCutoff = clampCutoff(
-        frequencyHz * kSine1Voicing.harmonicFactor * toneFactor *
-            envelopeFactor,
-        sampleRate);
-    const float cutoffSmoothing = 1.0f / (0.006f * sampleRate);
-    state.smoothedCutoff +=
-        (targetCutoff - state.smoothedCutoff) * cutoffSmoothing;
-
-    if (state.cutoffUpdateCountdown == 0) {
-        for (int stage = 0; stage < kSine1Voicing.filterStages; ++stage) {
-            state.filters[stage].setCutoff(state.smoothedCutoff, sampleRate);
-        }
-        state.cutoffUpdateCountdown = 15;
-    } else {
-        --state.cutoffUpdateCountdown;
-    }
-    for (int stage = 0; stage < kSine1Voicing.filterStages; ++stage) {
-        value = state.filters[stage].process(value);
-    }
-    value = analogSaturate(value, kSine1Voicing.drive,
-                           kSine1Voicing.asymmetry);
-    return state.dcBlocker.process(value) * kSine1Voicing.outputGain;
+float Oscillator::nextSine1(float, float, float, float, float) {
+    return sinf(phase_ * TWO_PI) * PerformanceConfig::kSine1Gain;
 }
 
-float Oscillator::nextSine2(float frequencyHz, float modulation,
-                            float envelopeLevel, float phaseIncrement,
-                            float sampleRate) {
-    VoiceState &state = voices_[static_cast<int>(SirenMode::Sine2)];
-    const float duty =
-        kSine2Voicing.duty + modulation * kSine2Voicing.dutyModAmount;
-    float value = bandLimitedPulse(phase_, phaseIncrement, duty);
-
-    constexpr float kTone = 0.5f;
-    const float toneFactor = 0.86f + 0.28f * kTone;
-    const float envelopeFactor = 0.93f + 0.07f * envelopeLevel;
-    const float targetCutoff = clampCutoff(
-        frequencyHz * kSine2Voicing.harmonicFactor * toneFactor *
-            envelopeFactor,
-        sampleRate);
-    const float cutoffSmoothing = 1.0f / (0.005f * sampleRate);
-    state.smoothedCutoff +=
-        (targetCutoff - state.smoothedCutoff) * cutoffSmoothing;
-
-    if (state.cutoffUpdateCountdown == 0) {
-        for (int stage = 0; stage < kSine2Voicing.filterStages; ++stage) {
-            state.filters[stage].setCutoff(state.smoothedCutoff, sampleRate);
-        }
-        state.cutoffUpdateCountdown = 15;
-    } else {
-        --state.cutoffUpdateCountdown;
-    }
-    for (int stage = 0; stage < kSine2Voicing.filterStages; ++stage) {
-        value = state.filters[stage].process(value);
-    }
-    value = analogSaturate(value, kSine2Voicing.drive,
-                           kSine2Voicing.asymmetry);
-    return state.dcBlocker.process(value) * kSine2Voicing.outputGain;
+float Oscillator::nextSine2(float frequencyHz, float, float, float, float sampleRate) {
+    // Explicit low-order harmonics keep the richer voice predictable and bounded.
+    const float phase = phase_ * TWO_PI;
+    float value = sinf(phase);
+    if (frequencyHz * 2.0f < sampleRate * 0.45f)
+        value += PerformanceConfig::kSine2Second * sinf(phase * 2.0f);
+    if (frequencyHz * 3.0f < sampleRate * 0.45f)
+        value += PerformanceConfig::kSine2Third * sinf(phase * 3.0f);
+    return value * PerformanceConfig::kSine2Gain;
 }
 
-float Oscillator::nextTestTone(float frequencyHz, float envelopeLevel,
-                               bool lfoGate, float phaseIncrement,
-                               float sampleRate) {
-    VoiceState &state = voices_[static_cast<int>(SirenMode::TestTone)];
-    float value = bandLimitedPulse(phase_, phaseIncrement, kTestVoicing.duty);
-    const float envelopeFactor = 0.96f + 0.04f * envelopeLevel;
-    const float targetCutoff = clampCutoff(
-        frequencyHz * kTestVoicing.harmonicFactor * envelopeFactor, sampleRate);
-    const float cutoffSmoothing = 1.0f / (0.005f * sampleRate);
-    state.smoothedCutoff +=
-        (targetCutoff - state.smoothedCutoff) * cutoffSmoothing;
-    if (state.cutoffUpdateCountdown == 0) {
-        for (int stage = 0; stage < kTestVoicing.filterStages; ++stage) {
-            state.filters[stage].setCutoff(state.smoothedCutoff, sampleRate);
-        }
-        state.cutoffUpdateCountdown = 15;
-    } else {
-        --state.cutoffUpdateCountdown;
-    }
-    for (int stage = 0; stage < kTestVoicing.filterStages; ++stage) {
-        value = state.filters[stage].process(value);
-    }
-    value = analogSaturate(value, kTestVoicing.drive,
-                           kTestVoicing.asymmetry);
-    value = state.dcBlocker.process(value) * kTestVoicing.outputGain;
-
-    const float gateTarget = lfoGate ? 1.0f : 0.0f;
-    const float gateCoefficient = gateTarget > state.gateLevel
-                                      ? 0.0103626f   // 2 ms attack.
-                                      : 0.00519481f; // 4 ms release.
-    state.gateLevel += (gateTarget - state.gateLevel) * gateCoefficient;
-    return value * state.gateLevel;
+float Oscillator::nextTestTone(float, float, bool lfoGate, float, float sampleRate) {
+    return sinf(phase_ * TWO_PI) * PerformanceConfig::kTestGain *
+           testGate_.nextGate(lfoGate, sampleRate);
 }
 
 float Oscillator::nextSquare(float frequencyHz, float modulation,

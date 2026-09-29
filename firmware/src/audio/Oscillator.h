@@ -1,6 +1,7 @@
 #pragma once
 
 #include "AnalogDsp.h"
+#include "Envelope.h"
 #include "control/ControlState.h"
 
 class Oscillator {
@@ -21,10 +22,9 @@ private:
                       bool voicingV2);
     void advance(float increment);
     struct VoiceState {
-        OnePoleLowPass filters[3];
+        OnePoleLowPass filters[1];
         DcBlocker dcBlocker;
         float smoothedCutoff = 1000.0f;
-        float gateLevel = 0.0f;
         uint8_t cutoffUpdateCountdown = 0;
     };
 
@@ -44,6 +44,7 @@ private:
                        float sampleRate);
     float nextSonar() const;
 
+    Envelope testGate_;
     float phase_;
     float syndrumTriangle_;
     VoiceState voices_[static_cast<int>(SirenMode::Count)];

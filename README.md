@@ -4,22 +4,17 @@ Dub siren controllata da una GUI Windows. Il DSP gira interamente sull'ESP32-S3
 e il PCM mono già elaborato può essere inviato al PC, a un DAC PCM5102A via
 I2S, oppure a entrambe le destinazioni senza resampling.
 
-Il motore V2 usa oscillatori pulse PolyBLEP, shaping RC mode-specifico,
-saturazione asimmetrica e un LFO CLASSIC a carica/scarica esponenziale. Il
-comando di debug `SET VOICING LEGACY|V2` permette il confronto a parità di
-controlli; V2 è il default.
+La baseline predefinita **DS01E / Classic** offre SINE 1, SINE 2, TEST TONE e
+SQUARE, Pitch a tre posizioni e Rate a tre velocità più Manual. Il dry usa solo
+un gate anti-click di 2 ms in attacco e 3 ms in rilascio. Echo Level zero esclude
+completamente il wet. La revisione segue il comportamento funzionale descritto
+nei manuali ufficiali Benidub, senza dichiarare un clone circuitale o una
+corrispondenza sonora misurata.
 
-La revisione firmware 0.8.0 mantiene il DSP 0.6.0, il controller condiviso dei
-quattro pad performativi e aggiunge lo stato UI condiviso più il driver del
-display Adafruit 5394 / ST7789. **Dynamic Sweep**, **SYNDRUM** e
-**GUNSHOT** restano disponibili. Syndrum usa carrier sine/triangle/square e un pitch transient
-regolabile da -3 a +3 ottave; Gunshot usa rumore deterministico filtrato, non un
-sample. Entrambi condividono delay, Echo Loop/Cut/Spin, master e routing con gli
-altri mode. Un airhorn continuo resta disponibile con **MODE LICKSHOT +
-MODULATION OFF** (`SET MODE LICKSHOT`, `MODULATION 0`). Tutti i voicing e le
-relative costanti sono punti di taratura interni al progetto: non sono cloni
-misurati di dispositivi commerciali. Syndrum è ispirato al comportamento
-generale dei percussion synth analogici.
+**Extended** conserva Lickshot, Sonar, Syndrum, Gunshot, Dynamic Sweep, forme
+LFO aggiuntive e controlli avanzati. Il DSP/control C++ è condiviso da firmware
+e Virtual ESP. Tarature, fonti e limiti sono in [controls](docs/controls.md);
+le verifiche della revisione sono in [baseline validation](docs/baseline-validation.md).
 
 ## Requisiti Windows
 
@@ -90,15 +85,13 @@ Il Virtual ESP compila e usa direttamente gli stessi sorgenti C++ DSP/control
 del firmware; la libreria host viene ricompilata automaticamente quando quei
 sorgenti cambiano.
 
-La superficie predefinita riproduce il pannello previsto: sei potenziometri
-frontali (Tune, Rate, Echo Level, Echo Time, Echo Feedback ed Echo Tone), quattro
-pad momentanei, encoder con pressione, preview display e Master posteriore
-separato. I pad iniziali sono Classic, Two Tone, Lickshot e Ping. Preview PC,
-Virtual ESP e firmware usano lo stesso stato Home/Menu del controller C++; il
-layout logico è sempre 320×170. Il display è una scena pixel-art diegetica:
-stack, rack, VU, manopole e LED sono anche la UI dei parametri reali. Il boot
-monta la scena e **Replay boot** nel Virtual ESP permette di rivederlo. Dettagli
-e mapping: [pannello UI](docs/panel-ui.md).
+La superficie predefinita presenta PITCH, RATE, ECHO LEVEL, ECHO TIME,
+ECHO FEEDBACK ed ECHO FILTER; BTN1 TRIGGER, BTN2 HOLD, BTN3 MANUAL MOD e
+BTN4 ECHO CUT. L'encoder cicla i quattro voicing; premendolo si apre il menu
+con accesso a Extended. Il Master resta separato sul retro. La Home 320x170
+mostra voicing, Pitch/Rate e stato Hold/Echo, con overlay temporanei dei pot.
+Il boot illustrato e la scena rack restano disponibili in Extended.
+Dettagli: [pannello UI](docs/panel-ui.md).
 
 Per lavorare senza hardware:
 
@@ -116,8 +109,8 @@ Con l'hardware reale:
 2. scegliere **PC**, **PCM5102A** o **Both** nel selettore Output;
 3. premere **Connect** e attendere `Connected · firmware 0.8.0`;
 4. premere **Start Audio**;
-5. suonare BTN1–BTN4; l'encoder regola Depth e il suo push abilita le
-   combinazioni secondarie.
+5. usare BTN1 Trigger, BTN2 Hold, BTN3 Manual Mod e BTN4 Echo Cut;
+   ruotare l'encoder per scegliere il voicing, premerlo per il menu.
 
 **Stop Audio** arresta il flusso; **Disconnect** chiude ordinatamente audio,
 thread e seriale. Per un controllo automatico dell'hardware collegato:

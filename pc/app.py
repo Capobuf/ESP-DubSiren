@@ -99,7 +99,7 @@ class DubSirenApp:
         self.port_var = tk.StringVar()
         self.connection_var = tk.StringVar(value="Disconnected")
         self.mode_var = tk.StringVar(value="SINE1")
-        self.profile_var = tk.StringVar(value="EXTENDED")
+        self.profile_var = tk.StringVar(value="CLASSIC")
         self.classic_pitch_var = tk.StringVar(value="MID")
         self.classic_mod_var = tk.StringVar(value="MEDIUM")
         self.lfo_shape_var = tk.StringVar(value="CLASSIC")
@@ -353,6 +353,8 @@ class DubSirenApp:
 
     def _profile_changed(self, _event=None) -> None:
         self._global_release()
+        self.hold_var.set(False)
+        self._send_bool("HOLD", False)
         self._update_profile_ui()
         if self.profile_var.get() == "CLASSIC":
             self._classic_pitch_changed()
@@ -659,6 +661,7 @@ class DubSirenApp:
         selected = self._selected_output()
         self._send(f"SET OUTPUT {selected}")
         self.active_output = selected
+        self._send(f"SET PROFILE {self.profile_var.get()}")
         self._send(f"SET MODE {self.mode_var.get()}")
         self._send(f"SET CLASSIC_PITCH {self.classic_pitch_var.get()}")
         self._send(f"SET CLASSIC_MOD {self.classic_mod_var.get()}")

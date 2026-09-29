@@ -12,14 +12,15 @@ public:
 
     Delay();
     void begin(float initialDelayMs, float highPassHz, float lowPassHz,
-               float sampleRate);
+               float sampleRate, bool flat = false);
     void setParameters(float delayMs, float highPassHz, float lowPassHz,
-                       float sampleRate);
+                       float sampleRate, bool flat = false);
     float process(float dry, float feedback, bool echoLoop, float sampleRate);
 
 private:
     int16_t buffer_[kBufferSamples];
     size_t writeIndex_;
+    SmoothedParameter flatMix_{0.0f};
     SmoothedParameter delayMs_;
     SmoothedParameter highPassHz_;
     SmoothedParameter lowPassHz_;

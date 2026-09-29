@@ -11,3 +11,6 @@ __pycache__/
 
 # Native VirtualESP build output
 virtual_esp/bin/
+
+# Reproducible baseline audio and GUI captures
+artifacts/baseline/

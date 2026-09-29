@@ -119,6 +119,8 @@ class SceneRenderer:
         now: float,
         glitch: bool = False,
     ) -> Image.Image:
+        if state.get("parameters", {}).get("PROFILE") == "CLASSIC":
+            return self.classic_scene(state, peak, focus, focus_value)
         image = self._asset("home_bg.png").copy()
         peak = max(0.0, min(1.0, peak))
         self._speaker_level = self._next_speaker_level(peak)
@@ -141,6 +143,28 @@ class SceneRenderer:
         if glitch:
             image.alpha_composite(self._asset("glitch.png"))
         return image.convert("RGB")
+
+    def classic_scene(self, state, peak, focus, focus_value):
+        image = Image.new("RGB", (DISPLAY_WIDTH, DISPLAY_HEIGHT), BLACK)
+        draw = ImageDraw.Draw(image)
+        params = state.get("parameters", {})
+        draw.text((16, 10), "DS01E / CLASSIC", font=_font(11), fill=MUTED)
+        draw.text((16, 31), str(state.get("sound", "SINE 1")), font=_font(24, True), fill=CHARTREUSE)
+        draw.text((16, 73), "PITCH  " + str(params.get("PITCH", "MID")), font=_font(17, True), fill=OFF_WHITE)
+        draw.text((16, 99), "RATE   " + str(params.get("RATE", "MID")), font=_font(17, True), fill=OFF_WHITE)
+        status = []
+        if state.get("hold"): status.append("HOLD")
+        if params.get("ECHO_CUT"): status.append("ECHO CUT")
+        elif float(params.get("ECHO_LEVEL", 0)) > 0: status.append("ECHO")
+        draw.text((16, 139), "   ".join(status) or "DRY", font=_font(13, True), fill=AMBER)
+        if focus:
+            labels = {"tune": "PITCH", "rate": "RATE", "echo_time": "ECHO TIME",
+                      "echo_level": "ECHO LEVEL", "echo_feedback": "ECHO FEEDBACK",
+                      "echo_tone": "FILTER", "master": "MASTER"}
+            draw.rectangle((10, 61, 309, 132), fill=BLACK, outline=CHARTREUSE_DIM)
+            draw.text((22, 68), labels.get(focus, focus.upper()), font=_font(13), fill=MUTED)
+            draw.text((22, 92), focus_value, font=_font(23, True), fill=OFF_WHITE)
+        return image
 
     def menu_scene(
         self,
@@ -335,7 +359,7 @@ class PanelDisplay(ttk.Frame):
 
     def render_overlay(self, title: str, value: str) -> None:
         mapping = {
-            "TUNE": "tune", "RATE": "rate", "DEPTH": "depth",
+            "TUNE": "tune", "PITCH": "tune", "FILTER": "echo_tone", "RATE": "rate", "DEPTH": "depth",
             "ECHO LEVEL": "echo_level", "ECHO TIME": "echo_time",
             "ECHO FEEDBACK": "echo_feedback", "ECHO TONE": "echo_tone",
             "MASTER": "master",

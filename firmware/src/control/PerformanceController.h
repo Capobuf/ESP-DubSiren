@@ -11,6 +11,7 @@ public:
 
     enum class DisplayMode : uint8_t { Home, Menu };
     enum class MenuItem : uint8_t {
+        Profile,
         Pad,
         Assignment,
         Variant,
@@ -21,6 +22,8 @@ public:
 
     explicit PerformanceController(ControlStore &controls);
 
+    void setProfile(PerformanceProfile profile);
+    void notifyControlsChanged() { changed(); }
     bool setPad(unsigned padNumber, bool pressed);
     void setEncoderPressed(bool pressed);
     void rotateEncoder(int direction);

@@ -26,7 +26,10 @@ Control commands:
 SET MODE SINE1|SINE2|TEST_TONE|SQUARE|LICKSHOT|SONAR|SYNDRUM|GUNSHOT
 SET PROFILE CLASSIC|EXTENDED
 SET CLASSIC_PITCH LOW|MID|HIGH
-SET CLASSIC_MOD SLOW|MEDIUM|FAST|MANUAL
+SET CLASSIC_MOD SLOW|MID|MEDIUM|FAST|MANUAL
+SET PITCH_POSITION <0..1>
+SET RATE_POSITION <0..1>
+SET ECHO_FILTER <-1..1>
 SET TUNE_HZ <30..9000>
 SET LFO_SHAPE CLASSIC|TRIANGLE|SQUARE|SAW_UP|SAW_DOWN|ASYM_UP|ASYM_DOWN|PULSE_25|PULSE_75|MANUAL
 SET LFO_RATE_HZ <0.05..20>
@@ -68,36 +71,39 @@ PANEL_RESET
 ```
 
 `PAD`, `ENCODER_SWITCH`, and `ENCODER_ROTATE` are raw front-panel actions
-interpreted by the shared C++ `PerformanceController`. On Home, rotation changes
-Depth; a plain click opens the menu. In the menu, rotation navigates or edits
-the selected value and a press enters/exits edit, toggles Hold/Echo Loop, or
-activates Back. A pad press while the encoder is down on Home is consumed as a
-combination. `PANEL_RESET` releases only momentary panel state; it does not
-reset assignments, Hold configuration, live values, filters, or delay memory.
-`PAD_CONFIG` restores confirmed PC configuration and rejects unknown sounds,
-invalid variants, or Hold on PING.
+interpreted by the shared C++ `PerformanceController`. Classic is the default:
+PAD 1 is Trigger, PAD 2 toggles Hold on press, PAD 3 is Manual Mod, PAD 4 is
+Echo Cut. Home rotation cycles SINE1/SINE2/TEST_TONE/SQUARE; push opens Menu.
+The Classic menu offers Extended or Back. Extended retains the old pad bank,
+priority/combination gestures and Depth rotation, with a return to Classic.
+`PANEL_RESET` releases momentaries and preserves intentional Hold and delay.
+`PAD_CONFIG` stores Extended pad assignments without activating Extended.
+Profile switching releases momentaries and Hold, preserving echo contents.
 
-The controller stores a monotonically increasing activation sequence and a
+In Extended, the controller stores a monotonically increasing activation sequence and a
 small circular queue of the configurations that caused recent attacks. The
 audio task therefore sees distinct rapid attacks even when another pad kept the
 gate high, or when press/release pairs arrived between two block snapshots.
 Returning to a previously held pad does not enqueue an attack.
 
-Development A/B command (V2 is the boot default):
+Development A/B command (Extended only; Classic always uses the baseline):
 
 ```text
 SET VOICING LEGACY|V2
 ```
 
-These limits are the absolute DSP/protocol ranges. The desktop GUI exposes a
-narrower performance range for selected controls, but still sends physical
-values such as `SET TUNE_HZ 220.0`; normalized slider positions are never part
-of the protocol. Existing finite numeric controls are clamped to their absolute
+These limits are absolute DSP/protocol ranges. PITCH_POSITION and RATE_POSITION
+are additive normalized inputs, quantized with 0.015 hysteresis in Classic.
+In Extended they map to continuous 80-1600 Hz and 0.15-20 Hz. Direct enum
+commands remain supported; MEDIUM is retained as an alias for MID.
+ECHO_FILTER is an atomic bipolar macro with a central FLAT bypass; explicit
+HPF_HZ/LPF_HZ commands disable that bypass. Other controls retain physical units.
+`SET MODE` rejects Extended-only modes while in Classic; select Extended first. Existing finite numeric controls are clamped to their absolute
 ranges. The additive 0.6.0 controls SWEEP, SWEEP_MS and SYNDRUM_SWEEP reject
 out-of-range values without changing `ControlState`. Malformed and unknown
 commands are ignored. Parsing occurs outside the audio task.
 
-SWEEP defaults to 0 and SWEEP_MS to 650 ms. On tonal modes, a TRIGGER or HOLD
+SWEEP defaults to 0 and SWEEP_MS to 650 ms. On Extended tonal modes, a TRIGGER or HOLD
 rising edge begins below the selected pitch and LFO rate and converges to them.
 SYNDRUM and GUNSHOT instead respond only to a TRIGGER rising edge and use
 DECAY_MS as their autonomous amplitude envelope; keeping TRIGGER high or using
@@ -114,18 +120,20 @@ edge without resetting oscillator phase, filters or delay. During automatic
 LFO shapes, MOD_UP and MOD_DOWN are RISE (+1 octave) and DIVE (-1 octave);
 MANUAL retains the original direct LFO behavior.
 
-ECHO_SPIN temporarily targets feedback 1.05 without changing the stored
+In Extended, ECHO_SPIN temporarily targets feedback 1.05 without changing the stored
 FEEDBACK value. ECHO_LOOP takes precedence and recirculates existing ring-buffer
 audio without acquiring dry input or applying feedback to the write. ECHO_CUT
 continues to mute only wet output.
 
-The boot profile is EXTENDED for compatibility. CLASSIC uses firmware presets:
-LOW/MID/HIGH = 110/220/440 Hz, SLOW/MEDIUM/FAST = 0.35/0.70/2.80 Hz,
-depth = 1 octave, decay = 120 ms and the RC-like LFO. MANUAL selects the same
-RC manual response as the extended MANUAL shape. Existing continuous settings
-remain stored while CLASSIC is active and take effect again in EXTENDED.
-Profile, mode and shape changes preserve the oscillator phase and echo tail.
-LICKSHOT and SONAR use their own voicings in both LEGACY and V2 selections.
+The boot profile is CLASSIC. Pitch 110/220/440 Hz and automatic rates
+0.35/0.70/2.80 Hz are project calibration values, not Benidub measurements.
+Classic uses fixed depth, a finite 2 ms attack / 3 ms release anti-click gate,
+and ignores Extended decay, sweep, legacy voicing, automatic bend and retrigger.
+Manual stops the automatic LFO and connects its gate to the manual button.
+ECHO_LEVEL zero and ECHO_CUT exclude wet immediately at the next audio snapshot.
+The buffer continues evolving; unmuting is smoothed. Spin and Loop are ignored
+while Classic is active; their stored Extended settings are retained. Detailed behavior and
+source references: [controls](controls.md).
 
 ## ESP to PC
 
@@ -143,7 +151,7 @@ An AUDIO payload is always 960 bytes: 480 signed int16 mono PCM samples at
 48,000 Hz. A STATUS payload is UTF-8 JSON. `HELLO` currently returns:
 
 ```json
-{"name":"DubSiren","protocol":1,"sampleRate":48000,"blockSamples":480,"firmware":"0.8.0","renderUs":0,"maxRenderUs":0,"cycleUs":0,"maxCycleUs":0,"maxUsbWriteUs":0,"maxI2sWriteUs":0,"displayRenderUs":0,"maxDisplayRenderUs":0,"output":"BOTH","i2sReady":true,"panel":{"revision":1,"menuRevision":0,"selectedPad":1,"currentPad":1,"activePad":0,"pads":[{"sound":"CLASSIC","variant":"SINE 1","variantIndex":0,"hold":false,"holdSupported":true}],"display":{"width":320,"height":170,"mode":"HOME","menuIndex":0,"editing":false,"menuItems":["PAD","ASSIGNMENT","VARIANT","HOLD","ECHO_LOOP","BACK"],"depth":1.0,"echoLoop":false}}}
+{"name":"DubSiren","protocol":1,"sampleRate":48000,"blockSamples":480,"firmware":"0.8.0","renderUs":0,"maxRenderUs":0,"cycleUs":0,"maxCycleUs":0,"maxUsbWriteUs":0,"maxI2sWriteUs":0,"displayRenderUs":0,"maxDisplayRenderUs":0,"output":"BOTH","i2sReady":true,"panel":{"revision":1,"menuRevision":0,"selectedPad":1,"currentPad":1,"activePad":0,"pads":[{"sound":"CLASSIC","variant":"SINE 1","variantIndex":0,"hold":false,"holdSupported":true}],"display":{"width":320,"height":170,"mode":"HOME","menuIndex":0,"editing":false,"menuItems":["PROFILE","BACK"],"profile":"CLASSIC","voice":"SINE 1","pitch":"MID","rate":"MID","hold":false,"echoCut":false,"tuneHz":220.0,"rateHz":0.7,"depth":1.0,"echoLoop":false}}}
 ```
 
 Timing zeros above are placeholders, not measured performance. `renderUs` is the
@@ -157,7 +165,8 @@ whether I2S initialization succeeded. `panel` reports the controller-owned pad
 state; the example abbreviates the four-entry `pads` array after its first
 entry. `panel.display` is logical state, not pixels: it reports the fixed
 dimensions, Home/Menu mode, menu cursor/edit state, ordered row keys, current
-Depth, and Echo Loop. Firmware sends an updated STATUS packet when controller
+Depth, Echo Loop, profile, voice, confirmed pitch/rate labels, Hold, Echo Cut
+and Extended tuneHz/rateHz. Firmware sends an updated STATUS packet when controller
 or menu state changes. These are additive status/command changes: existing
 commands, packet framing, and protocol version 1 remain compatible.
 

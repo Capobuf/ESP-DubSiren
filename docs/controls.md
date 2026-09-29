@@ -1,106 +1,121 @@
-# Controls
+# Controls: DS01E / Classic baseline
 
-The firmware's absolute DSP/protocol range is intentionally wider than the
-performance range exposed by the desktop UI. The GUI maps each knob or encoder
-position to a physical value and sends that value, in the units shown, over
-USB. It never sends the normalized position.
+Classic is the boot profile in the firmware, Virtual ESP and both desktop UIs.
+The primary generator has four voicings: SINE 1, SINE 2, TEST TONE, SQUARE.
+Extended remains available from the encoder menu and the debug UI (`pc/app.py`).
 
-The default `physical_ui.py` surface presents one instrument and keeps the
-firmware on the EXTENDED profile internally. It exposes Tune, Rate, Echo Level,
-Echo Time, Echo Feedback and the single Echo Tone macro as the six front knobs.
-The encoder controls Depth directly on Home; its menu configures one selected
-pad and Echo Loop. The separate rear MASTER maps directly to `SET MASTER`.
+## Functional reference and calibration
 
-The older `app.py` interface remains available as a technical/debug tool. Its
-Profile selector can still exercise the firmware's CLASSIC preset behavior:
-three fixed pitches, four modulation positions, one-octave depth, 120 ms decay
-and the RC-like LFO. CLASSIC supports the four original modes and always keeps
-modulation active. These protocol behaviors remain for compatibility but are
-not a primary concept in the default UI.
+Official sources consulted on 2026-09-29:
 
-| CLASSIC selector | Project preset |
-|---|---:|
-| Pitch LOW / MID / HIGH | 110 / 220 / 440 Hz |
-| Modulation SLOW / MEDIUM / FAST | 0.35 / 0.70 / 2.80 Hz |
-| Modulation MANUAL | RC response to MOD DOWN / MOD UP |
+- [Benidub DS01E](https://benidub.com/products/ds01e-dub-siren/) and
+  [DS01E manual](https://benidub.com/wp-content/uploads/2023/07/Benidub-DS01E-Dubsiren-User-manual.pdf):
+  three pitch positions, three automatic rates plus manual, momentary/continuous
+  triggering, 50-1000 ms echo, feedback from one repeat to oscillation, combined
+  HP/LP filter, and a button that temporarily mutes the echo output.
+- [Benidub DS01](https://benidub.com/products/ds01-dub-siren/) and
+  [DS01 manual](https://benidub.com/wp-content/uploads/2022/03/Benidub-DS01-User-manual.pdf):
+  Sine 1 is the rounder voice, Sine 2 has more bite, Test Tone is gated by the
+  LFO, Square alternates high/low pitch; manual stops the automatic LFO.
 
-These are internal starting values derived from the project's range, not
-measurements of another siren. They and the RC charge/fall ratios are centralized
-for later listening-based calibration.
+The consulted official material does **not** specify numeric pitch/rate presets,
+wave spectra, modulation depth, gate timing or filter calibration. No hardware
+A/B measurement was performed. These are functional references, not evidence
+of circuit or sonic identity. The single-button manual gesture and bipolar
+filter calibration below are project implementation choices.
 
-| Control | Absolute DSP/protocol range | Performance UI range / default | UI mapping |
-|---|---|---|---|
-| Mode | eight named modes | SINE1 | six tonal modes plus one-shot SYNDRUM and GUNSHOT |
-| Tune | 30–9000 Hz | 80–1600 Hz / 220 Hz | logarithmic |
-| LFO Shape | CLASSIC | CLASSIC | RC-like CLASSIC, eight geometric shapes, plus MANUAL |
-| LFO Rate | 0.05–20 Hz | 0.15–20 Hz / 0.70 Hz | logarithmic |
-| LFO Depth | 0–2 oct | 0–2 oct / 1 oct | linear; exponential musical pitch modulation remains in the DSP |
-| Decay | 0–3000 ms | 0–1500 ms / 120 ms | quadratic, with more travel for short decays |
-| Sweep | 0–1 | 0–1 / 0 | tonal Dynamic Sweep amount; percentage in UI |
-| Sweep Time | 50–3000 ms | 50–3000 ms / 650 ms | quadratic, with more travel for short times |
-| Syndrum Wave | SINE, TRIANGLE, SQUARE | SINE | visible only in SYNDRUM |
-| Syndrum Sweep | -3–3 oct | -3–3 oct / +2 oct | signed offset converging to Tune; visible only in SYNDRUM |
-| Delay Time | 50–1000 ms | 50–1000 ms / 360 ms | linear; smoothed fractional read position |
-| Feedback | 0–1.05 | 0–1.05 / 0.62 | power curve, exponent 0.8; values above one retain protected self-oscillation |
-| Echo Level | 0–1 | 0–1 / 0.45 | linear wet level |
-| High Pass | 50–7000 Hz | 50–4000 Hz / 60 Hz | logarithmic, echo path only |
-| Low Pass | 200–19000 Hz | 400–16000 Hz / 7000 Hz | logarithmic, echo path only |
-| Master | 0–1 | 0–1 / 0.50 | linear final gain before soft limiter |
+| Selector | Project calibration (not documented or measured Benidub values) |
+|---|---|
+| PITCH LOW / MID / HIGH | 110 / 220 / 440 Hz |
+| RATE SLOW / MID / FAST | 0.35 / 0.70 / 2.80 Hz |
+| RATE MANUAL | automatic phase stopped; BTN3 controls manual modulation |
+| Depth | 1 octave either side of base pitch |
 
-The performance surface maps BTN1–BTN4 to independent pad events. The initial
-assignments are CLASSIC, TWO TONE, LICKSHOT, and the Syndrum-based PING. Last
-pressed wins; releasing it returns to a still-held previous pad without a new
-attack. HOLD is per pad and is unavailable for PING. Encoder+BTN1 toggles Hold,
-Encoder+BTN2/BTN3 select the previous/next supported variant, and Encoder+BTN4
-holds ECHO CUT. DIVE/RISE, MOD UP/DOWN, direct TRIGGER, and SPIN remain protocol
-and debug-UI functions, but are not primary panel button assignments.
+Musical calibration, Extended defaults and DSP safety constants live in
+`firmware/src/audio/PerformanceConfig.h`.
 
-Dynamic Sweep starts on every rising edge of TRIGGER or HOLD in SINE1, SINE2,
-TEST_TONE, SQUARE, LICKSHOT and SONAR. It begins below/slower than the selected
-Tune and Rate, then converges exponentially. At the default Sweep value 0 the
-0.5.0 tonal behavior is retained. RETRIGGER and Dynamic Sweep can restart on
-the same edge.
+## Primary panel
 
-SYNDRUM is a one-shot percussion voice. DECAY controls amplitude duration and
-its signed Sweep starts above Tune for positive values (falling pitch), below
-Tune for negative values (rising pitch), or at Tune for zero. GUNSHOT is a
-fixed-seed procedural noise burst with simple low-pass shaping and uses DECAY,
-internally constrained to 20–1500 ms. Neither mode uses the normal LFO,
-DIVE/RISE or global Dynamic Sweep. HOLD cannot sustain them. The performance
-controller clears hidden Hold state when entering PING; the debug UI disables
-Hold and DIVE/RISE for transient modes. Both transient voices continue through
-the normal echo and master path.
+| Control | Function |
+|---|---|
+| POT1 | PITCH: three approximately equal zones, LOW / MID / HIGH |
+| POT2 | RATE: four approximately equal zones, SLOW / MID / FAST / MANUAL |
+| POT3 | ECHO LEVEL: wet gain, 0-100% |
+| POT4 | ECHO TIME: 50-1000 ms, logarithmic travel (midpoint about 224 ms) |
+| POT5 | ECHO FEEDBACK: 0-1.05, protected feedback |
+| POT6 | ECHO FILTER: LP <- FLAT -> HP |
+| BTN1 | momentary TRIGGER |
+| BTN2 | HOLD toggle on press; release and keyboard repeat do not toggle |
+| BTN3 | momentary MANUAL MOD; no additional bend in automatic Classic |
+| BTN4 | momentary ECHO CUT |
+| Encoder | previous/next Classic voicing, one step per detent, wraps |
+| Encoder push | MENU; Extended and Back |
+| Rear MASTER | final output gain |
 
-The CLASSIC LFO alternates between +1 and -1 through unequal RC-like charge and
-fall curves. In MANUAL the buttons are labelled MOD UP and MOD DOWN: UP targets
-+1, DOWN targets -1, and neither or both target zero through the existing
-charge/fall model. With an automatic LFO they are labelled RISE and DIVE and
-add a smoothed +1 or -1 octave offset after normal modulation; pressing both
-cancels the offset.
+Pitch/Rate quantization and hysteresis run in the shared C++ controller, not
+Python. Boundaries are 1/3 and 2/3, or 1/4, 1/2 and 3/4. Switching upward
+requires crossing the boundary by 0.015 normalized travel, and downward by
+0.015 in the opposite direction (about 61 ADC counts on a 12-bit input).
+An ADC frontend can send `adc / 4095.0`; this repository still receives panel
+controls through commands and does not add GPIO acquisition in this revision.
 
-LICKSHOT remains active while TRIGGER or HOLD opens the amplitude envelope and
-uses the selected LFO shape for continuous musical pitch modulation. SAW_DOWN
-provides the descending laser gesture. Turning MOD ON off removes pitch
-modulation while the LFO continues advancing. **MODE LICKSHOT + MODULATION OFF**
-is the project's airhorn configuration. SONAR is a true sine carrier with the same
-tune, modulation, bend, envelope, delay and mode-crossfade path. RETRIGGER makes
-each rising edge of TRIGGER or HOLD reset the LFO without resetting the carrier,
-filters or echo tail.
+The filter has a central +/-0.05 deadband in its -1..1 control range. FLAT bypasses
+the wet HP/LP processing after a short transition. On the left, LP moves
+logarithmically from 16 kHz to 400 Hz (HP 60 Hz); on the right, HP moves from
+60 Hz to 4 kHz (LP 16 kHz). These are project values. Direct HPF/LPF commands
+remain available in Extended/debug and leave the FLAT bypass.
 
-SQUARE uses the LFO phase as a high/low selector and applies only a 2.5 ms
-anti-click pitch slew. TEST_TONE uses the LFO as a half-cycle gate with 2 ms
-attack and 4 ms release. With MOD ON off, SQUARE stays at its central pitch and
-TEST_TONE stays continuously open.
+## Generator timing and voices
 
-ECHO CUT mutes only the wet output through a dedicated 3 ms anti-click ramp. It
-does not clear or stop the delay line, so the tail returns on release. SPIN temporarily overrides feedback to 1.05 without
-changing the stored Feedback control. LOOP has precedence: it recirculates the
-raw delayed sample in the existing ring buffer, ignores dry input and feedback
-for the write, and continues underneath ECHO CUT. No second delay buffer is
-allocated. Tune (12 ms), depth (15 ms), LFO rate (20 ms), bend (30 ms),
-feedback (18 ms), echo level and master (15 ms), delay time (25 ms), and echo
-filter cutoffs (18 ms) are smoothed in firmware. Delay movement is additionally
-limited to 2000 ms/s while fractional reads preserve pitch bending. LFO shape
-and Siren Mode transitions last 10 ms and 6 ms respectively. Slider and dial
-commands keep at most one 25 ms timer per control, periodically send the latest
-value during a continuous drag, and send the final value immediately on release.
+Classic uses a finite linear anti-click gate: 2 ms attack and at most 3 ms
+release, reaching exact zero (rounding tolerance: one sample). TRIGGER OR HOLD
+opens it. DECAY, Dynamic Sweep, legacy voicing selection, automatic RISE/DIVE
+retrigger, Spin and Loop cannot alter this baseline. Classic does not replay queued
+sub-block taps after release; taps wholly between audio snapshots may be
+missed. Commands are applied at a 480-sample block boundary (up to 10 ms),
+plus output buffering: the 3 ms bound describes DSP fade time, not total
+host-to-speaker latency.
+
+- SINE 1: sine carrier, gain 0.72; removes the old pulse/three-RC/saturation chain.
+- SINE 2: sine plus second/third harmonics (0.18/0.12), gain 0.64. Harmonics
+  above 0.45 sample rate are omitted. No extra distortion stage.
+- TEST TONE: fixed base-pitch sine beep; half-cycle automatic gate with the
+  same 2/3 ms anti-click ramp. Manual gates the beep directly from BTN3.
+- SQUARE: existing PolyBLEP/one-pole voicing retained; automatic high/low pitch
+  uses the LFO gate and a 2.5 ms pitch slew. Manual switches those two targets
+  directly from BTN3, never from a frozen automatic phase.
+
+Sine voices retain the project's RC-like automatic pitch modulation. Manual
+uses an 8 ms attack / 12 ms release RC response for their pitch, without
+advancing the automatic LFO. Button up returns to the base pitch.
+All gains, harmonic proportions and RC timings require listening calibration.
+
+## Independent echo path
+
+The generator branches to dry output and the existing fractional delay.
+The final mix is `dry + wet * level * cut`, followed by Master and the existing
+safety limiter. Echo never controls the dry gate.
+
+- ECHO LEVEL = 0 excludes wet immediately, including a previously filled buffer.
+- FEEDBACK = 0 writes no feedback and permits one repetition.
+- Higher feedback increases repeat persistence; saturation/limiting protects
+  the existing >1 feedback range. It is not a linear decay-time control.
+- ECHO CUT immediately mutes wet at the next block snapshot; release is smoothed.
+  The ring buffer, filters and feedback continue evolving. No buffer is cleared.
+  Abruptly cutting a loud wet waveform may click: exact mute takes precedence.
+- Delay time uses the existing fractional read, smoothing and 2000 ms/s slew.
+
+## Extended
+
+Extended preserves Lickshot, Sonar, Syndrum, Gunshot, Dynamic Sweep, extra LFO
+shapes, continuous Tune/Rate, Depth, Decay, RISE/DIVE, Retrigger, Spin and Loop.
+Lickshot and Gunshot are not DS01E voices. `pc/app.py` exposes all advanced
+parameters. The physical UI retains its old four-pad bank inside Extended:
+Classic (Sine 1/Sine 2/Sonar), Two Tone, Lickshot, Ping (Syndrum). Last pad wins;
+encoder rotation changes Depth, encoder+BTN1 toggles pad Hold, +BTN2/3 changes
+variant, +BTN4 cuts echo. Extended menu includes a return to DS01E.
+
+Profile changes release gates and momentary controls, clear pad Holds and keep
+delay contents; advanced numeric settings remain stored. Saved pad assignments
+cannot silently switch the default profile. Syndrum/Gunshot remain one-shots;
+DECAY retains its exponential meaning in Extended (120 ms default time constant).

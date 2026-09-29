@@ -118,6 +118,14 @@ void sendStatus() {
         "\",\"menuIndex\":" + commandParser.menuIndex() +
         ",\"editing\":" + (commandParser.menuEditing() ? "true" : "false") +
         ",\"menuItems\":" + menuItems +
+        ",\"profile\":\"" + (displayState.profile == PerformanceProfile::Classic ? "CLASSIC" : "EXTENDED") +
+        "\",\"voice\":\"" + modeName(displayState.mode) +
+        "\",\"pitch\":\"" + pitchName(displayState.classicPitch) +
+        "\",\"rate\":\"" + rateName(displayState.classicModulation) + "\"" +
+        ",\"hold\":" + (displayState.hold ? "true" : "false") +
+        ",\"echoCut\":" + (displayState.echoCut ? "true" : "false") +
+        ",\"tuneHz\":" + String(displayState.tuneHz, 4) +
+        ",\"rateHz\":" + String(displayState.lfoRateHz, 4) +
         ",\"depth\":" + String(displayState.lfoDepthOctaves, 4) +
         ",\"echoLoop\":" + (displayState.echoLoop ? "true" : "false") +
         "}}}";

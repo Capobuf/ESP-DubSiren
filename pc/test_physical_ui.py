@@ -126,7 +126,7 @@ def make_app() -> PhysicalDubSirenApp:
         ],
     }
     app.pad_buttons = [FakeWidget() for _ in range(4)]
-    app.dials = {"LFO_RATE_HZ": FakeDial(), "TUNE_HZ": FakeDial()}
+    app.dials = {"RATE_POSITION": FakeDial(), "PITCH_POSITION": FakeDial()}
     app.transport = FakeTransport()
     app.active_output = None
     app.pending_sends = {}
@@ -146,12 +146,12 @@ class PhysicalUiTests(unittest.TestCase):
         self.assertEqual(
             PANEL_KNOBS,
             (
-                ("TUNE", "TUNE_HZ"),
-                ("RATE", "LFO_RATE_HZ"),
+                ("PITCH", "PITCH_POSITION"),
+                ("RATE", "RATE_POSITION"),
                 ("ECHO LEVEL", "ECHO_LEVEL"),
                 ("ECHO TIME", "DELAY_MS"),
                 ("ECHO FEEDBACK", "FEEDBACK"),
-                ("ECHO TONE", "ECHO_FILTER"),
+                ("ECHO FILTER", "ECHO_FILTER"),
             ),
         )
 
@@ -160,7 +160,7 @@ class PhysicalUiTests(unittest.TestCase):
         keys = [key for key, _label, _value in app._menu_items()]
         self.assertEqual(
             keys,
-            ["PAD", "ASSIGNMENT", "VARIANT", "HOLD", "ECHO_LOOP", "BACK"],
+            ["PROFILE", "BACK"],
         )
         app.panel_state["selectedPad"] = 4
         app.panel_state["display"]["menuItems"] = [
@@ -171,7 +171,7 @@ class PhysicalUiTests(unittest.TestCase):
             keys, ["PAD", "ASSIGNMENT", "VARIANT", "ECHO_LOOP", "BACK"]
         )
 
-    def test_home_encoder_changes_depth_not_voice(self):
+    def test_encoder_sends_raw_detent_to_shared_controller(self):
         app = make_app()
 
         app._encoder_rotate(1)
@@ -214,17 +214,15 @@ class PhysicalUiTests(unittest.TestCase):
         self.assertNotEqual(home.tobytes(), focused.tobytes())
         self.assertNotEqual(focused.tobytes(), menu.tobytes())
 
-    def test_rate_is_visibly_inactive_for_ping(self):
+    def test_confirmed_selector_labels_and_baseline_buttons(self):
         app = make_app()
-        app.panel_state["currentPad"] = 4
-
-        app._update_control_activity()
-
-        self.assertFalse(app.dials["LFO_RATE_HZ"].active)
-        self.assertEqual(
-            app.dials["LFO_RATE_HZ"].value_label.config["text"],
-            "INACTIVE FOR PING",
-        )
+        app.panel_state["display"]["pitch"] = "HIGH"
+        app.panel_state["display"]["rate"] = "MANUAL"
+        app._update_pad_labels()
+        self.assertEqual(app.dials["RATE_POSITION"].value_label.config["text"], "MANUAL")
+        self.assertEqual(app.dials["PITCH_POSITION"].value_label.config["text"], "HIGH")
+        for button, label in zip(app.pad_buttons, ("TRIGGER", "HOLD", "MANUAL MOD", "ECHO CUT")):
+            self.assertIn(label, button.config["text"])
 
     def test_pad_sources_overlap_and_keyboard_repeat_is_ignored(self):
         app = make_app()
@@ -249,7 +247,7 @@ class PhysicalUiTests(unittest.TestCase):
 
         self.assertEqual(app.commands, ["PAD 2 1"])
         self.assertTrue(app.pad_buttons[1].config["pressed"])
-        self.assertEqual(app.dials["TUNE_HZ"].finishes, 1)
+        self.assertEqual(app.dials["PITCH_POSITION"].finishes, 1)
 
     def test_full_release_uses_panel_reset_without_erasing_configuration(self):
         app = make_app()
@@ -298,17 +296,17 @@ class PhysicalUiTests(unittest.TestCase):
         self.assertEqual(app.root.cancelled, [])
 
         app.root.callbacks[token]()
-        self.assertEqual(len(app.commands), 2)
+        self.assertEqual(len(app.commands), 1)
         expected_hpf, expected_lpf = echo_filter_frequencies(0.6)
         self.assertEqual(
             app.commands,
-            [f"SET HPF_HZ {expected_hpf:.6g}", f"SET LPF_HZ {expected_lpf:.6g}"],
+            ["SET ECHO_FILTER 0.6"],
         )
         app._panel_parameter_changed("ECHO_FILTER", 1.0, False)
         final_token = app.pending_sends["ECHO_FILTER"]
         app._panel_parameter_changed("ECHO_FILTER", 1.0, True)
         self.assertIn(final_token, app.root.cancelled)
-        self.assertEqual(app.commands[-2:], ["SET HPF_HZ 4000", "SET LPF_HZ 16000"])
+        self.assertEqual(app.commands[-1], "SET ECHO_FILTER 1")
 
     def test_sync_preserves_unrepresented_filter_until_tone_is_moved(self):
         app = make_app()
@@ -322,8 +320,8 @@ class PhysicalUiTests(unittest.TestCase):
         app.commands.clear()
         app.echo_filter_active = True
         app._synchronize_controls()
-        self.assertIn("SET HPF_HZ 60", app.commands)
-        self.assertIn("SET LPF_HZ 16000", app.commands)
+        self.assertIn("SET ECHO_FILTER 0", app.commands)
+        self.assertIn("SET PROFILE CLASSIC", app.commands)
 
     def test_panel_configuration_round_trip(self):
         pads = [
