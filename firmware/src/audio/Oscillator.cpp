@@ -83,9 +83,11 @@ float Oscillator::renderVoice(SirenMode mode, float frequencyHz,
                            sampleRate);
     } else if (voicingV2 && mode == SirenMode::Sine1) {
         output = sinf(phase_ * TWO_PI) * PerformanceConfig::kSine1Gain;
-    } else if (voicingV2 && mode == SirenMode::Sine2) {
+    } else if (classicProfile && mode == SirenMode::Sine2) {
         output = nextSine2(frequencyHz, modulation, envelopeLevel, increment,
                            sampleRate);
+    } else if (voicingV2 && mode == SirenMode::Sine2) {
+        output = nextExtendedSine2(frequencyHz, sampleRate);
     } else if (voicingV2 && mode == SirenMode::TestTone) {
         output = nextTestTone(frequencyHz, envelopeLevel, lfoGate, increment,
                               sampleRate);
@@ -156,15 +158,42 @@ float Oscillator::nextSine1(float frequencyHz, float modulation,
     return state.dcBlocker.process(value) * kSine1Voicing.outputGain;
 }
 
-float Oscillator::nextSine2(float frequencyHz, float, float, float, float sampleRate) {
-    // Explicit low-order harmonics keep the richer voice predictable and bounded.
+float Oscillator::nextSine2(float frequencyHz, float modulation,
+                            float, float phaseIncrement,
+                            float sampleRate) {
+    VoiceState &state = voices_[static_cast<int>(SirenMode::Sine2)];
+    float duty = kSine2Voicing.duty +
+                 modulation * kSine2Voicing.dutyModAmount;
+    duty = duty < kSine2MinimumDuty
+               ? kSine2MinimumDuty
+               : (duty > kSine2MaximumDuty ? kSine2MaximumDuty : duty);
+    float value = bandLimitedPulse(phase_, phaseIncrement, duty);
+    const float targetCutoff = clampCutoff(
+        frequencyHz * kSine2Voicing.harmonicFactor, sampleRate);
+    const float cutoffSmoothing = 1.0f / (0.004f * sampleRate);
+    state.smoothedCutoff +=
+        (targetCutoff - state.smoothedCutoff) * cutoffSmoothing;
+    if (state.cutoffUpdateCountdown == 0) {
+        state.filters[0].setCutoff(state.smoothedCutoff, sampleRate);
+        state.cutoffUpdateCountdown = 15;
+    } else {
+        --state.cutoffUpdateCountdown;
+    }
+    value = state.filters[0].process(value);
+    value = analogSaturate(value, kSine2Voicing.drive,
+                           kSine2Voicing.asymmetry);
+    return state.dcBlocker.process(value) * kSine2Voicing.outputGain;
+}
+
+float Oscillator::nextExtendedSine2(float frequencyHz,
+                                    float sampleRate) const {
     const float phase = phase_ * TWO_PI;
     float value = sinf(phase);
     if (frequencyHz * 2.0f < sampleRate * 0.45f)
-        value += PerformanceConfig::kSine2Second * sinf(phase * 2.0f);
+        value += PerformanceConfig::kExtendedSine2Second * sinf(phase * 2.0f);
     if (frequencyHz * 3.0f < sampleRate * 0.45f)
-        value += PerformanceConfig::kSine2Third * sinf(phase * 3.0f);
-    return value * PerformanceConfig::kSine2Gain;
+        value += PerformanceConfig::kExtendedSine2Third * sinf(phase * 3.0f);
+    return value * PerformanceConfig::kExtendedSine2Gain;
 }
 
 float Oscillator::nextTestTone(float, float, bool lfoGate, float, float sampleRate) {

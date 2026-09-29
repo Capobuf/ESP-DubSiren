@@ -35,6 +35,7 @@ private:
     float nextSine2(float frequencyHz, float modulation,
                     float envelopeLevel, float phaseIncrement,
                     float sampleRate);
+    float nextExtendedSine2(float frequencyHz, float sampleRate) const;
     float nextTestTone(float frequencyHz, float envelopeLevel, bool lfoGate,
                        float phaseIncrement, float sampleRate);
     float nextSquare(float frequencyHz, float modulation, float envelopeLevel,

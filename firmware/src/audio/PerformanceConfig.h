@@ -17,9 +17,11 @@ inline int selectorZone(float position, int current, int zones) {
     return current;
 }
 constexpr float kSine1Gain = 0.72f;
-constexpr float kSine2Gain = 0.64f;
-constexpr float kSine2Second = 0.18f;
-constexpr float kSine2Third = 0.12f;
+// Preserve the existing Extended V2 carrier independently from the Classic
+// voicing below.
+constexpr float kExtendedSine2Gain = 0.64f;
+constexpr float kExtendedSine2Second = 0.18f;
+constexpr float kExtendedSine2Third = 0.12f;
 constexpr float kTestGain = 0.72f;
 constexpr float kManualAttackMs = 8.0f;
 constexpr float kManualReleaseMs = 12.0f;
@@ -54,6 +56,11 @@ constexpr SirenVoicing kSine1Voicing = {
 };
 constexpr float kSine1MinimumDuty = 0.270f;
 constexpr float kSine1MaximumDuty = 0.450f;
+constexpr SirenVoicing kSine2Voicing = {
+    1, 8.00f, 0.240f, 0.050f, 1.04f, 0.012f, 0.54f,
+};
+constexpr float kSine2MinimumDuty = 0.190f;
+constexpr float kSine2MaximumDuty = 0.290f;
 constexpr SirenVoicing kSquareVoicing = {
     1, 7.50f, 0.470f, 0.006f, 1.06f, 0.018f, 0.56f,
 };
