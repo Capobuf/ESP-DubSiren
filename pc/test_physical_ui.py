@@ -188,6 +188,7 @@ class PhysicalUiTests(unittest.TestCase):
         display._focus = None
         display._focus_value = ""
         display._focus_until = 0.0
+        display._transition_until = 0.0
         display._screen = "home"
         display._menu = ([], 0, False)
 
@@ -195,7 +196,9 @@ class PhysicalUiTests(unittest.TestCase):
             2, 1, "TWO TONE", "TRIANGLE", "1.00 oct",
             True, True, True,
         )
+        home = display.render_image()
         display.render_overlay("RATE · PING N/A", "20.00 Hz")
+        focused = display.render_image()
         display.render_menu(
             [("CONFIGURE PAD", "2"), ("ASSIGNMENT", "TWO TONE"),
              ("VARIANT", "TRIANGLE"), ("HOLD", "ON"),
@@ -204,25 +207,12 @@ class PhysicalUiTests(unittest.TestCase):
             True,
         )
 
-        text = " ".join(
-            call[2].get("text", "") for call in display.canvas.calls
-            if call[0] == "text"
-        )
-        for expected in (
-            "TUNE", "RATE", "DEPTH", "HOLD", "LOOP", "RACK LABEL / EDIT"
-        ):
-            self.assertIn(expected, text)
-        for kind, args, _kwargs in display.canvas.calls:
-            if kind == "text":
-                self.assertGreaterEqual(args[0], 0)
-                self.assertLessEqual(args[0], DISPLAY_WIDTH)
-                self.assertGreaterEqual(args[1], 0)
-                self.assertLess(args[1], DISPLAY_HEIGHT)
-            elif kind == "rectangle":
-                self.assertGreaterEqual(min(args[0], args[2]), 0)
-                self.assertLessEqual(max(args[0], args[2]), DISPLAY_WIDTH)
-                self.assertGreaterEqual(min(args[1], args[3]), 0)
-                self.assertLessEqual(max(args[1], args[3]), DISPLAY_HEIGHT)
+        menu = display.render_image()
+
+        for image in (home, focused, menu):
+            self.assertEqual(image.size, (DISPLAY_WIDTH, DISPLAY_HEIGHT))
+        self.assertNotEqual(home.tobytes(), focused.tobytes())
+        self.assertNotEqual(focused.tobytes(), menu.tobytes())
 
     def test_rate_is_visibly_inactive_for_ping(self):
         app = make_app()

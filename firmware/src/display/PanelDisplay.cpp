@@ -1,30 +1,59 @@
 #include "PanelDisplay.h"
 
 #include <SPI.h>
+#include <esp_heap_caps.h>
+#include <esp32-hal-psram.h>
 
 #include "Config.h"
+#include "assets/DisplayAssets.h"
 
 namespace {
 
-// A deliberately small 16-bit palette: night, wood, steel and warm electronics.
-constexpr uint16_t kNight = 0x0864;
-constexpr uint16_t kNightHigh = 0x10C7;
-constexpr uint16_t kGround = 0x18E4;
-constexpr uint16_t kBlack = 0x0021;
-constexpr uint16_t kCabinet = 0x2985;
-constexpr uint16_t kCabinetEdge = 0x5A88;
-constexpr uint16_t kSteel = 0x4228;
-constexpr uint16_t kSteelLight = 0x7BCB;
-constexpr uint16_t kCream = 0xE6F1;
-constexpr uint16_t kAmber = 0xFD20;
-constexpr uint16_t kAmberDim = 0x8320;
-constexpr uint16_t kRed = 0xD1E4;
-constexpr uint16_t kGreen = 0x4666;
-constexpr uint16_t kGreenBright = 0x8EC9;
-constexpr uint16_t kSkin = 0xD4CC;
-constexpr uint16_t kShirt = 0xB1C6;
-constexpr uint16_t kDenim = 0x3A49;
-constexpr uint16_t kCable = 0xD343;
+constexpr uint16_t kBlack = 0x0020;
+constexpr uint16_t kPanel = 0x08A2;
+constexpr uint16_t kChartreuse = 0xCFE6;
+constexpr uint16_t kChartreuseDim = 0x7446;
+constexpr uint16_t kOffWhite = 0xE73B;
+constexpr uint16_t kMuted = 0x73EE;
+constexpr uint16_t kAmber = 0xFD85;
+constexpr uint16_t kRed = 0xFA67;
+constexpr uint16_t kScanline = 0x2142;
+
+namespace DisplayLayout {
+constexpr int16_t kHeaderX = 159;
+constexpr int16_t kHeaderY = 25;
+constexpr int16_t kHeaderW = 80;
+constexpr int16_t kHeaderH = 18;
+constexpr int16_t kTuneX = 160;
+constexpr int16_t kTuneY = 61;
+constexpr int16_t kRateX = 207;
+constexpr int16_t kRateY = 61;
+constexpr int16_t kDepthX = 160;
+constexpr int16_t kDepthY = 78;
+constexpr int16_t kMasterX = 207;
+constexpr int16_t kMasterY = 78;
+constexpr int16_t kModuleW = 46;
+constexpr int16_t kModuleH = 16;
+constexpr int16_t kEchoX = 160;
+constexpr int16_t kEchoY = 94;
+constexpr int16_t kEchoW = 93;
+constexpr int16_t kEchoH = 21;
+constexpr int16_t kStatusX = 23;
+constexpr int16_t kStatusY = 154;
+constexpr int16_t kStatusW = 274;
+constexpr int16_t kStatusH = 12;
+constexpr int16_t kMenuTitleX = 83;
+constexpr int16_t kMenuTitleY = 21;
+constexpr int16_t kMenuTitleW = 155;
+constexpr int16_t kMenuTitleH = 14;
+constexpr int16_t kMenuRowsX = 63;
+constexpr int16_t kMenuRowsY = 48;
+constexpr int16_t kMenuRowsW = 196;
+constexpr int16_t kMenuFooterX = 22;
+constexpr int16_t kMenuFooterY = 155;
+constexpr int16_t kMenuFooterW = 276;
+constexpr int16_t kMenuFooterH = 11;
+}  // namespace DisplayLayout
 
 bool changed(float left, float right) {
     return fabsf(left - right) > 0.0001f;
@@ -50,42 +79,58 @@ bool PanelDisplay::begin() {
     tft_.setRotation(1);
     ready_ = tft_.width() == PerformanceController::kDisplayWidth &&
              tft_.height() == PerformanceController::kDisplayHeight;
-    if (ready_) {
-        tft_.fillScreen(kNight);
-        bootStartedMs_ = millis();
+    if (!ready_) return false;
+
+    if (psramFound()) {
+        constexpr size_t bytes = PerformanceController::kDisplayWidth *
+                                 PerformanceController::kDisplayHeight *
+                                 sizeof(uint16_t);
+        framebuffer_ = static_cast<uint16_t *>(
+            heap_caps_malloc(bytes, MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT));
     }
-    return ready_;
+    tft_.fillScreen(kBlack);
+    bootStartedMs_ = millis();
+    return true;
 }
 
 void PanelDisplay::update(bool linked, uint8_t audioPeak) {
     if (!ready_) return;
     const uint32_t now = millis();
-    if (!firstFrame_ && now - lastFrameMs_ < kAnimationFrameMs) return;
+    if (!firstFrame_ && now - lastFrameMs_ < kFrameMs) return;
 
     const ControlState state = controls_.snapshot();
     const unsigned revision = controller_.panelRevision();
+    const auto mode = controller_.displayMode();
     const bool stateChanged = firstFrame_ || captureOverlay(lastState_, state);
     const bool panelChanged = firstFrame_ || revision != lastRevision_;
     const bool linkChanged = firstFrame_ || linked != lastLinked_;
+    const bool modeChanged = !firstFrame_ && mode != lastMode_;
     const bool booting = now - bootStartedMs_ < kBootDurationMs;
-    const bool overlayActive = static_cast<int32_t>(overlayUntilMs_ - now) > 0;
-    const bool animated = booting ||
-        controller_.displayMode() == PerformanceController::DisplayMode::Home;
 
+    if (panelChanged && !firstFrame_) interactUntilMs_ = now + 650;
+    if (modeChanged) transitionUntilMs_ = now + kTransitionMs;
+    if (!booting && scene_ == DisplayScene::BootPower) {
+        transitionUntilMs_ = now + kTransitionMs;
+    }
+    const bool transitionActive =
+        static_cast<int32_t>(transitionUntilMs_ - now) > 0;
+    const bool animated = booting || transitionActive ||
+        mode == PerformanceController::DisplayMode::Home;
     if (!firstFrame_ && !animated && !stateChanged && !panelChanged &&
-        !linkChanged) return;
+        !linkChanged && !modeChanged) return;
 
     lastFrameMs_ = now;
     const uint32_t renderStart = micros();
     if (booting) {
         renderBoot(now - bootStartedMs_);
-    } else if (controller_.displayMode() ==
-               PerformanceController::DisplayMode::Menu) {
+    } else if (mode == PerformanceController::DisplayMode::Menu) {
+        scene_ = DisplayScene::Menu;
         overlayUntilMs_ = 0;
         focus_ = Focus::None;
-        renderMenu(state);
+        renderMenu(state, transitionActive);
     } else {
-        if (!overlayActive) {
+        scene_ = DisplayScene::Home;
+        if (static_cast<int32_t>(overlayUntilMs_ - now) <= 0) {
             focus_ = Focus::None;
             overlayValue_ = "";
         }
@@ -98,290 +143,312 @@ void PanelDisplay::update(bool linked, uint8_t audioPeak) {
     lastState_ = state;
     lastRevision_ = revision;
     lastLinked_ = linked;
+    lastMode_ = mode;
 }
 
 void PanelDisplay::renderBoot(uint32_t elapsedMs) {
-    drawBackdrop();
-    const uint8_t stage = elapsedMs < 650 ? 0
-        : elapsedMs < 1250 ? 1
-        : elapsedMs < 1850 ? 2
-        : elapsedMs < 2450 ? 3
-        : elapsedMs < 2850 ? 4 : 5;
-
-    if (stage >= 1) drawStack(elapsedMs, 0, false, stage);
-    if (stage >= 3) {
-        const ControlState state = controls_.snapshot();
-        drawRack(state, false, elapsedMs, 0, Focus::None, "", stage >= 5,
-                 stage);
+    const uint16_t *background = DisplayAssets::kBootInit;
+    const char *label = "SYS/INIT";
+    uint8_t shot = 0;
+    if (elapsedMs >= 2250) {
+        scene_ = DisplayScene::BootPower;
+        background = DisplayAssets::kBootPower;
+        label = "POWER/ONLINE";
+        shot = 3;
+    } else if (elapsedMs >= 1500) {
+        scene_ = DisplayScene::BootConnect;
+        background = DisplayAssets::kBootConnect;
+        label = "SIGNAL/CONNECT";
+        shot = 2;
+    } else if (elapsedMs >= 650) {
+        scene_ = DisplayScene::BootRollIn;
+        background = DisplayAssets::kBootRollin;
+        label = "RIG/ROLL-IN";
+        shot = 1;
+    } else {
+        scene_ = DisplayScene::BootInit;
     }
-    if (stage >= 4) drawCable(stage >= 5);
 
-    const int16_t boyX = stage == 0
-        ? static_cast<int16_t>(306 - elapsedMs / 13)
-        : stage == 1 ? 171 : stage == 2 ? 228 : 274;
-    drawSoundboy(elapsedMs, boyX, stage == 0, stage >= 5, stage >= 3);
+    beginBitmapFrame(background);
+    const uint16_t phase = shot == 0 ? elapsedMs
+        : shot == 1 ? elapsedMs - 650
+        : shot == 2 ? elapsedMs - 1500 : elapsedMs - 2250;
+    if (phase < 120 || phase > 610) drawGlitch();
+    presentBitmapFrame();
 
-    if (stage == 0) {
-        drawCabinet(boyX - 42, 100, 39, 54, true, 0);
+    tft_.fillRect(7, 7, 86, 12, kBlack);
+    drawText(10, 9, label, 1, kChartreuse);
+    tft_.drawFastHLine(10, 20, 58 + shot * 13, kChartreuse);
+    for (int16_t y = (phase / 17) % 9; y < 170; y += 12) {
+        for (int16_t x = 0; x < 320; x += 2) {
+            tft_.drawPixel(x, y, kScanline);
+        }
     }
-    if (stage >= 5) {
-        drawText(149, 148, "POWER UP", 1,
-                 ((elapsedMs / 120) & 1U) ? kAmber : kGreenBright);
+    if (shot == 2) {
+        const uint8_t radius = 3 + ((elapsedMs / 70) % 5);
+        tft_.drawCircle(207, 112, radius, kAmber);
+    } else if (shot == 3) {
+        const uint8_t bars = 4 + ((elapsedMs / 90) % 9);
+        for (uint8_t index = 0; index < bars; ++index) {
+            tft_.fillRect(170 + index * 5, 144, 4, 4, kChartreuse);
+        }
     }
 }
 
 void PanelDisplay::renderHome(const ControlState &state, bool linked,
                               uint32_t now, uint8_t audioPeak) {
-    drawScene(state, linked, now, audioPeak, focus_, overlayValue_);
-}
+    beginBitmapFrame(DisplayAssets::kHome);
+    const uint8_t level = speakerLevel(audioPeak);
+    const uint16_t *speakerPixels[] = {
+        DisplayAssets::kSpeakerReactiveFrame0,
+        DisplayAssets::kSpeakerReactiveFrame1,
+        DisplayAssets::kSpeakerReactiveFrame2,
+    };
+    const uint8_t *speakerMasks[] = {
+        DisplayAssets::kSpeakerReactiveFrame0Mask,
+        DisplayAssets::kSpeakerReactiveFrame1Mask,
+        DisplayAssets::kSpeakerReactiveFrame2Mask,
+    };
+    drawMaskedBitmap(8, 21, speakerPixels[level], speakerMasks[level], 126, 132);
 
-void PanelDisplay::drawScene(const ControlState &state, bool linked,
-                             uint32_t now, uint8_t audioPeak, Focus focus,
-                             const String &focusValue) {
-    drawBackdrop();
-    drawStack(now, audioPeak, true, 5);
-    drawCable(true);
-    drawRack(state, linked, now, audioPeak, focus, focusValue, true, 5);
-    drawSoundboy(now, 276, false, true,
-                 focus != Focus::None || controller_.activePad() != 0);
-}
-
-void PanelDisplay::drawBackdrop() {
-    tft_.fillScreen(kNight);
-    tft_.fillRect(0, 139, 320, 31, kGround);
-    tft_.drawFastHLine(0, 138, 320, kCabinetEdge);
-    for (int16_t x = 4; x < 320; x += 24) {
-        tft_.drawPixel(x, 15 + ((x / 24) & 1) * 7, kNightHigh);
-    }
-    tft_.fillRect(5, 157, 310, 2, kBlack);
-}
-
-void PanelDisplay::drawStack(uint32_t now, uint8_t audioPeak, bool powered,
-                             uint8_t buildStage) {
-    if (buildStage < 1) return;
-    const uint8_t cone = powered ? static_cast<uint8_t>(audioPeak / 48) : 0;
-    drawCabinet(8, 95, 126, 61, true, cone);
-    if (buildStage < 2) return;
-    drawCabinet(14, 58, 114, 38, false, cone > 0 ? cone - 1 : 0);
-    tft_.fillRect(21, 31, 100, 28, kCabinet);
-    tft_.drawRect(21, 31, 100, 28, kCabinetEdge);
-    tft_.fillTriangle(31, 38, 31, 51, 70, 45, kSteel);
-    tft_.fillTriangle(111, 38, 111, 51, 72, 45, kSteel);
-    tft_.fillRect(68, 40, 7, 10, kBlack);
-    tft_.drawFastHLine(25, 55, 92, kBlack);
-    const bool pulse = powered && ((now / 80) % 8) < 2;
-    tft_.fillCircle(18, 36, 2, pulse ? kAmber : kAmberDim);
-}
-
-void PanelDisplay::drawCabinet(int16_t x, int16_t y, int16_t width,
-                               int16_t height, bool sub, uint8_t cone) {
-    tft_.fillRect(x, y, width, height, kBlack);
-    tft_.drawRect(x, y, width, height, kCabinetEdge);
-    tft_.drawRect(x + 3, y + 3, width - 6, height - 6, kCabinet);
-    if (sub) {
-        const int16_t radius = min<int16_t>(height / 2 - 7, 25);
-        const int16_t cy = y + height / 2;
-        for (int side = 0; side < 2; ++side) {
-            const int16_t cx = x + width / 4 + side * width / 2;
-            tft_.fillCircle(cx, cy, radius, kSteel);
-            tft_.drawCircle(cx, cy, radius, kSteelLight);
-            tft_.fillCircle(cx, cy, max<int16_t>(4, radius / 2 + cone), kBlack);
-            tft_.fillCircle(cx - 3, cy - 3, 2, kCabinetEdge);
-        }
+    const bool interacting = focus_ != Focus::None ||
+        controller_.activePad() != 0 ||
+        static_cast<int32_t>(interactUntilMs_ - now) > 0;
+    if (interacting) {
+        const uint8_t frame = (now / 220) % 3;
+        const uint16_t *pixels[] = {
+            DisplayAssets::kSoundboyInteractFrame0,
+            DisplayAssets::kSoundboyInteractFrame1,
+            DisplayAssets::kSoundboyInteractFrame2,
+        };
+        const uint8_t *masks[] = {
+            DisplayAssets::kSoundboyInteractFrame0Mask,
+            DisplayAssets::kSoundboyInteractFrame1Mask,
+            DisplayAssets::kSoundboyInteractFrame2Mask,
+        };
+        drawMaskedBitmap(248, 77, pixels[frame], masks[frame], 72, 76);
     } else {
-        const int16_t cy = y + height / 2;
-        for (int side = 0; side < 3; ++side) {
-            const int16_t cx = x + 21 + side * 36;
-            tft_.fillCircle(cx, cy, 12, kSteel);
-            tft_.drawCircle(cx, cy, 12, kSteelLight);
-            tft_.fillCircle(cx, cy, 4 + cone / 2, kBlack);
-        }
+        constexpr uint8_t cadence[] = {0, 0, 1, 0, 2, 0};
+        const uint8_t frame = cadence[(now / 480) % 6];
+        const uint16_t *pixels[] = {
+            DisplayAssets::kSoundboyIdleFrame0,
+            DisplayAssets::kSoundboyIdleFrame1,
+            DisplayAssets::kSoundboyIdleFrame2,
+        };
+        const uint8_t *masks[] = {
+            DisplayAssets::kSoundboyIdleFrame0Mask,
+            DisplayAssets::kSoundboyIdleFrame1Mask,
+            DisplayAssets::kSoundboyIdleFrame2Mask,
+        };
+        drawMaskedBitmap(271, 68, pixels[frame], masks[frame], 46, 88);
     }
-    tft_.fillRect(x + 5, y + height - 4, 5, 2, kAmberDim);
+    if (static_cast<int32_t>(transitionUntilMs_ - now) > 0) drawGlitch();
+    presentBitmapFrame();
+    drawHomeUi(state, linked, audioPeak, focus_, overlayValue_);
 }
 
-void PanelDisplay::drawRack(const ControlState &state, bool linked,
-                            uint32_t now, uint8_t audioPeak, Focus focus,
-                            const String &focusValue, bool powered,
-                            uint8_t buildStage) {
-    if (buildStage < 3) return;
-    constexpr int16_t x = 143;
-    constexpr int16_t width = 122;
-    tft_.fillRect(x, 28, width, 128, kBlack);
-    tft_.drawRect(x, 28, width, 128, kSteelLight);
-    tft_.fillRect(x + 4, 32, width - 8, 20, kSteel);
-    tft_.fillRect(x + 8, 35, width - 34, 14, kNightHigh);
-    drawText(x + 11, 34, controller_.padSoundName(controller_.selectedPad()),
-             1, powered ? kGreenBright : kSteelLight);
-    drawText(x + 11, 43, controller_.padVariantName(controller_.selectedPad()),
-             1, kGreen);
-    tft_.fillRect(x + width - 22, 36, 14, 12, kBlack);
-    drawText(x + width - 19, 38, String("P") + controller_.selectedPad(), 1,
-             kAmber);
+void PanelDisplay::renderMenu(const ControlState &state, bool glitch) {
+    beginBitmapFrame(DisplayAssets::kMenu);
+    if (glitch) drawGlitch();
+    presentBitmapFrame();
 
-    tft_.fillRect(x + 4, 55, width - 8, 26, kCabinet);
-    drawFocusFrame(x + 5, 56, 55, 24, focus == Focus::Tune);
-    drawFocusFrame(x + 61, 56, 55, 24, focus == Focus::Rate);
-    drawText(x + 9, 58, "TUNE", 1, kSteelLight);
-    drawText(x + 65, 58, "RATE", 1, kSteelLight);
-    const String tune = focus == Focus::Tune ? focusValue
-        : decimal(state.tuneHz, 0) + "H";
-    const String rate = focus == Focus::Rate ? focusValue
-        : decimal(state.lfoRateHz, 1) + "H";
-    drawText(x + 9, 69, tune, 1, kAmber);
-    drawText(x + 65, 69, rate, 1, kGreenBright);
-
-    tft_.fillRect(x + 4, 84, width - 8, 25, kSteel);
-    drawFocusFrame(x + 5, 85, width - 10, 23, focus == Focus::Depth);
-    drawText(x + 9, 88, "DEPTH", 1, kSteelLight);
-    drawKnob(x + 91, 96, state.lfoDepthOctaves / 2.0f,
-             focus == Focus::Depth ? kAmber : kCream);
-    const String depth = focus == Focus::Depth ? focusValue
-        : decimal(state.lfoDepthOctaves, 2);
-    drawText(x + 9, 98, depth, 1, kCream);
-    if (controller_.padHold(controller_.currentPad())) {
-        tft_.fillCircle(x + 72, 91, 3, kRed);
-        drawText(x + 61, 99, "HOLD", 1, kRed);
-    }
-
-    tft_.fillRect(x + 4, 112, width - 8, 28, kCabinet);
-    const Focus echoFocus = focus == Focus::EchoLevel ||
-        focus == Focus::EchoTime || focus == Focus::EchoFeedback ||
-        focus == Focus::EchoTone ? focus : Focus::None;
-    drawFocusFrame(x + 5, 113, width - 10, 26, echoFocus != Focus::None);
-    drawText(x + 9, 115, "T", 1,
-             focus == Focus::EchoTime ? kAmber : kSteelLight);
-    drawText(x + 36, 115, "FB", 1,
-             focus == Focus::EchoFeedback ? kAmber : kSteelLight);
-    drawText(x + 68, 115, "LV", 1,
-             focus == Focus::EchoLevel ? kAmber : kSteelLight);
-    drawText(x + 98, 115, "EQ", 1,
-             focus == Focus::EchoTone ? kAmber : kSteelLight);
-    drawKnob(x + 14, 131, normalized(state.delayMs, 20.0f, 1000.0f), kCream);
-    drawKnob(x + 45, 131, state.feedback / 1.05f, kCream);
-    drawKnob(x + 76, 131, state.echoLevel, kCream);
-    const float tone = normalized(logf(state.highPassHz / 60.0f) -
-                                  logf(state.lowPassHz / 16000.0f),
-                                  0.0f, 4.2f);
-    drawKnob(x + 107, 131, tone, kCream);
-    if (echoFocus != Focus::None && focusValue.length() > 0) {
-        tft_.fillRect(x + 7, 126, 104, 11, kNightHigh);
-        drawText(x + 10, 128, focusValue, 1, kAmber);
-    }
-
-    tft_.fillRect(x + 4, 143, width - 8, 10, kSteel);
-    drawFocusFrame(x + 5, 143, width - 10, 10, focus == Focus::Master);
-    drawVu(x + 8, 146, powered ? audioPeak : 0,
-           focus == Focus::Master ? kAmber : kGreenBright);
-    drawText(x + 79, 145, state.echoLoop ? "LOOP" : "AMP", 1,
-             state.echoLoop ? kRed : kSteelLight);
-    tft_.fillCircle(x + 109, 148, 2,
-                    powered ? (((now / 160) & 1U) ? kGreenBright : kGreen)
-                            : kSteel);
-    if (linked) tft_.drawPixel(x + 113, 148, kAmber);
-}
-
-void PanelDisplay::drawSoundboy(uint32_t now, int16_t x, bool carrying,
-                                bool powered, bool watchingRack) {
-    const int16_t bob = powered ? static_cast<int16_t>((now / 240) & 1U) : 0;
-    const int16_t y = 76 + bob;
-    tft_.fillRect(x - 4, y - 12, 18, 5, kBlack);
-    tft_.fillRect(x - 7, y - 8, 5, 20, kBlack);
-    tft_.fillRect(x + 11, y - 8, 5, 18, kBlack);
-    tft_.fillRect(x, y - 9, 12, 13, kSkin);
-    tft_.drawPixel(x + (watchingRack ? 1 : 9), y - 4, kBlack);
-    tft_.fillRect(x - 2, y + 4, 16, 31, kShirt);
-    tft_.fillRect(x + 1, y + 35, 6, 29, kDenim);
-    tft_.fillRect(x + 9, y + 35, 6, 29, kDenim);
-    tft_.fillRect(x - 2, y + 63, 10, 4, kBlack);
-    tft_.fillRect(x + 9, y + 63, 10, 4, kBlack);
-    if (carrying) {
-        tft_.drawLine(x - 2, y + 12, x - 18, y + 28, kSkin);
-        tft_.drawLine(x + 13, y + 13, x + 17, y + 28, kSkin);
-    } else if (watchingRack) {
-        tft_.drawLine(x - 2, y + 12, x - 14, y + 23, kSkin);
-        tft_.fillCircle(x - 15, y + 23, 2, kSkin);
-    } else {
-        const int16_t hand = ((now / 480) & 1U) ? 1 : 0;
-        tft_.drawLine(x - 1, y + 12, x - 7, y + 30 - hand, kSkin);
-        tft_.drawLine(x + 13, y + 12, x + 18, y + 29 + hand, kSkin);
-    }
-}
-
-void PanelDisplay::drawCable(bool powered) {
-    const uint16_t color = powered ? kCable : kSteel;
-    tft_.drawLine(132, 148, 139, 148, color);
-    tft_.drawLine(139, 148, 139, 160, color);
-    tft_.drawLine(139, 160, 270, 160, color);
-    tft_.drawLine(270, 160, 270, 132, color);
-}
-
-void PanelDisplay::drawKnob(int16_t x, int16_t y, float amount,
-                            uint16_t color) {
-    amount = max(0.0f, min(1.0f, amount));
-    tft_.fillCircle(x, y, 7, kBlack);
-    tft_.drawCircle(x, y, 7, kSteelLight);
-    const float angle = (225.0f - amount * 270.0f) * PI / 180.0f;
-    tft_.drawLine(x, y, x + cosf(angle) * 5.0f,
-                  y - sinf(angle) * 5.0f, color);
-}
-
-void PanelDisplay::drawVu(int16_t x, int16_t y, uint8_t level,
-                          uint16_t color) {
-    const uint8_t bars = min<uint8_t>(10, level / 24);
-    for (uint8_t index = 0; index < 10; ++index) {
-        tft_.fillRect(x + index * 6, y, 4, 4,
-                      index < bars ? (index > 7 ? kRed : color) : kNightHigh);
-    }
-}
-
-void PanelDisplay::drawFocusFrame(int16_t x, int16_t y, int16_t width,
-                                  int16_t height, bool active) {
-    if (active) {
-        tft_.drawRect(x, y, width, height, kAmber);
-        tft_.drawPixel(x + 1, y + 1, kCream);
-    }
-}
-
-void PanelDisplay::renderMenu(const ControlState &state) {
-    drawBackdrop();
-    tft_.fillRect(16, 12, 288, 146, kBlack);
-    tft_.drawRect(16, 12, 288, 146, kSteelLight);
-    tft_.drawRect(20, 16, 280, 138, kCabinetEdge);
-    for (const int16_t x : {20, 294}) {
-        tft_.fillRect(x, 16, 6, 6, kSteelLight);
-        tft_.fillRect(x, 148, 6, 6, kSteelLight);
-    }
-    drawText(31, 23, controller_.menuEditing() ? "RACK LABEL / EDIT"
-                                               : "RACK LABEL / SELECT",
-             1, kAmber);
+    using namespace DisplayLayout;
+    tft_.fillRect(kMenuTitleX, kMenuTitleY, kMenuTitleW, kMenuTitleH, kBlack);
+    drawText(kMenuTitleX + 4, kMenuTitleY + 3,
+             controller_.menuEditing() ? "RACK/EDIT" : "RACK/SELECT", 1,
+             controller_.menuEditing() ? kAmber : kChartreuse);
     const unsigned count = controller_.menuItemCount();
     const unsigned index = controller_.menuIndex();
     unsigned start = index > 0 ? index - 1 : 0;
     if (count > 3 && start > count - 3) start = count - 3;
     for (unsigned row = 0; row < 3 && start + row < count; ++row) {
         const unsigned absolute = start + row;
-        const int16_t y = 49 + static_cast<int16_t>(row) * 30;
+        const int16_t y = kMenuRowsY + static_cast<int16_t>(row) * 26;
         const bool active = absolute == index;
-        if (active) tft_.fillRect(27, y - 5, 266, 23, kNightHigh);
+        tft_.fillRect(kMenuRowsX, y, kMenuRowsW, 22, active ? kPanel : kBlack);
+        tft_.drawRect(kMenuRowsX, y, kMenuRowsW, 22,
+                      active ? kChartreuse : kChartreuseDim);
         const char *key = controller_.menuItemKey(absolute);
         String label = strcmp(key, "PAD") == 0 ? "CONFIGURE PAD" : key;
         label.replace('_', ' ');
-        drawText(34, y, String(active ? "> " : "  ") + label, 1,
-                 active ? kCream : kSteelLight);
+        drawText(kMenuRowsX + 5, y + 7, String(active ? "> " : "  ") + label,
+                 1, active ? kOffWhite : kMuted);
         const String value = menuValue(key, state);
-        if (value.length() > 0) {
+        if (value.length()) {
             int16_t x1, y1;
-            uint16_t textWidth, textHeight;
+            uint16_t width, height;
             tft_.setTextSize(1);
-            tft_.getTextBounds(value, 0, 0, &x1, &y1, &textWidth, &textHeight);
-            drawText(286 - textWidth, y, value, 1,
-                     active ? kAmber : kGreen);
+            tft_.getTextBounds(value, 0, 0, &x1, &y1, &width, &height);
+            drawText(kMenuRowsX + kMenuRowsW - width - 5, y + 7, value, 1,
+                     active ? kAmber : kChartreuseDim);
         }
     }
-    drawText(34, 140, controller_.menuEditing() ? "TURN CHANGE  PUSH SAVE"
-                                                : "TURN SELECT  PUSH OPEN",
-             1, kSteelLight);
+    tft_.fillRect(kMenuFooterX, kMenuFooterY, kMenuFooterW, kMenuFooterH, kBlack);
+    drawText(kMenuFooterX + 5, kMenuFooterY + 2,
+             controller_.menuEditing() ? "TURN CHANGE / PUSH SAVE"
+                                       : "TURN SELECT / PUSH OPEN",
+             1, kOffWhite);
+}
+
+void PanelDisplay::beginBitmapFrame(const uint16_t *background) {
+    constexpr size_t pixelCount = PerformanceController::kDisplayWidth *
+                                  PerformanceController::kDisplayHeight;
+    if (framebuffer_) {
+        memcpy(framebuffer_, background, pixelCount * sizeof(uint16_t));
+    } else {
+        tft_.drawRGBBitmap(0, 0, background, PerformanceController::kDisplayWidth,
+                           PerformanceController::kDisplayHeight);
+    }
+}
+
+void PanelDisplay::drawMaskedBitmap(int16_t x, int16_t y,
+                                    const uint16_t *pixels,
+                                    const uint8_t *mask, uint16_t width,
+                                    uint16_t height) {
+    if (framebuffer_) {
+        for (uint16_t row = 0; row < height; ++row) {
+            for (uint16_t column = 0; column < width; ++column) {
+                const uint32_t source = static_cast<uint32_t>(row) * width + column;
+                if ((mask[source >> 3] & (0x80 >> (source & 7))) == 0) continue;
+                const int16_t targetX = x + column;
+                const int16_t targetY = y + row;
+                if (targetX >= 0 && targetX < 320 && targetY >= 0 && targetY < 170) {
+                    framebuffer_[targetY * 320 + targetX] = pixels[source];
+                }
+            }
+        }
+        return;
+    }
+    for (uint16_t row = 0; row < height; ++row) {
+        uint16_t column = 0;
+        while (column < width) {
+            while (column < width) {
+                const uint32_t source = static_cast<uint32_t>(row) * width + column;
+                if (mask[source >> 3] & (0x80 >> (source & 7))) break;
+                ++column;
+            }
+            const uint16_t start = column;
+            while (column < width) {
+                const uint32_t source = static_cast<uint32_t>(row) * width + column;
+                if ((mask[source >> 3] & (0x80 >> (source & 7))) == 0) break;
+                ++column;
+            }
+            if (column > start) {
+                const uint32_t source = static_cast<uint32_t>(row) * width + start;
+                tft_.drawRGBBitmap(x + start, y + row, pixels + source,
+                                   column - start, 1);
+            }
+        }
+    }
+}
+
+void PanelDisplay::presentBitmapFrame() {
+    if (framebuffer_) {
+        tft_.drawRGBBitmap(0, 0, framebuffer_,
+                           PerformanceController::kDisplayWidth,
+                           PerformanceController::kDisplayHeight);
+    }
+}
+
+void PanelDisplay::drawHomeUi(const ControlState &state, bool linked,
+                              uint8_t audioPeak, Focus focus,
+                              const String &focusValue) {
+    using namespace DisplayLayout;
+    tft_.fillRect(kHeaderX, kHeaderY, kHeaderW, kHeaderH, kBlack);
+    drawText(kHeaderX + 3, kHeaderY + 2,
+             controller_.padSoundName(controller_.selectedPad()), 1,
+             kChartreuse);
+    drawText(kHeaderX + 3, kHeaderY + 10,
+             controller_.padVariantName(controller_.selectedPad()), 1,
+             kOffWhite);
+    drawText(kHeaderX + kHeaderW - 16, kHeaderY + 5,
+             String("P") + controller_.selectedPad(), 1, kAmber);
+
+    const String tune = focus == Focus::Tune ? focusValue
+        : decimal(state.tuneHz, 0) + "H";
+    const String rate = focus == Focus::Rate ? focusValue
+        : decimal(state.lfoRateHz, 1) + "H";
+    const String depth = focus == Focus::Depth ? focusValue
+        : decimal(state.lfoDepthOctaves, 2);
+    const String master = focus == Focus::Master ? focusValue
+        : decimal(state.masterVolume * 100.0f, 0) + "%";
+    drawModule(kTuneX, kTuneY, kModuleW, kModuleH, "TUNE", tune,
+               focus == Focus::Tune);
+    drawModule(kRateX, kRateY, kModuleW, kModuleH, "RATE", rate,
+               focus == Focus::Rate);
+    drawModule(kDepthX, kDepthY, kModuleW, kModuleH - 1, "DEPTH", depth,
+               focus == Focus::Depth);
+    drawModule(kMasterX, kMasterY, kModuleW, kModuleH - 1, "MASTER", master,
+               focus == Focus::Master);
+
+    const bool echoFocus = focus == Focus::EchoTime ||
+        focus == Focus::EchoFeedback || focus == Focus::EchoLevel ||
+        focus == Focus::EchoTone;
+    tft_.fillRect(kEchoX, kEchoY, kEchoW, kEchoH, kBlack);
+    tft_.drawRect(kEchoX, kEchoY, kEchoW, kEchoH,
+                  echoFocus ? kAmber : kChartreuseDim);
+    const char *labels[] = {"T", "FB", "LV", "EQ"};
+    const Focus focuses[] = {Focus::EchoTime, Focus::EchoFeedback,
+                             Focus::EchoLevel, Focus::EchoTone};
+    String values[] = {
+        decimal(state.delayMs, 0),
+        decimal(state.feedback * 100.0f, 0),
+        decimal(state.echoLevel * 100.0f, 0),
+        "CUS",
+    };
+    for (uint8_t column = 0; column < 4; ++column) {
+        const int16_t left = kEchoX + 3 + column * 23;
+        drawText(left, kEchoY + 2, labels[column], 1,
+                 focus == focuses[column] ? kAmber : kMuted);
+        drawText(left, kEchoY + 11,
+                 focus == focuses[column] ? focusValue.substring(0, 6)
+                                           : values[column],
+                 1, kOffWhite);
+    }
+
+    tft_.fillRect(kStatusX, kStatusY, kStatusW, kStatusH, kBlack);
+    String status;
+    if (controller_.padHold(controller_.currentPad())) status += "HOLD";
+    if (state.echoLoop) status += (status.length() ? "/LOOP" : "LOOP");
+    if (linked) status += (status.length() ? "/LINK" : "LINK");
+    if (!status.length()) status = "SYSTEM READY";
+    drawText(kStatusX + 4, kStatusY + 2, status, 1,
+             state.echoLoop ? kRed : kChartreuse);
+    drawVu(kStatusX + 168, kStatusY + 4, audioPeak, kChartreuse);
+}
+
+void PanelDisplay::drawModule(int16_t x, int16_t y, int16_t width,
+                              int16_t height, const char *label,
+                              const String &value, bool focus) {
+    tft_.fillRect(x, y, width, height, kBlack);
+    tft_.drawRect(x, y, width, height, focus ? kAmber : kChartreuseDim);
+    drawText(x + 2, y + 1, label, 1, focus ? kAmber : kMuted);
+    drawText(x + 2, y + 8, value.substring(0, 9), 1,
+             focus ? kAmber : kOffWhite);
+}
+
+void PanelDisplay::drawGlitch() {
+    drawMaskedBitmap(0, 0, DisplayAssets::kGlitch,
+                     DisplayAssets::kGlitchMask, 320, 170);
+}
+
+void PanelDisplay::drawVu(int16_t x, int16_t y, uint8_t level,
+                          uint16_t color) {
+    const uint8_t bars = min<uint8_t>(16, (level + 8) / 16);
+    for (uint8_t index = 0; index < 16; ++index) {
+        const uint16_t active = index >= 13 ? kRed : index >= 10 ? kAmber : color;
+        tft_.fillRect(x + index * 6, y, 4, 4,
+                      index < bars ? active : kPanel);
+    }
+}
+
+uint8_t PanelDisplay::speakerLevel(uint8_t peak) {
+    if (peak >= 166) speakerLevel_ = 2;
+    else if (speakerLevel_ == 2 && peak >= 133) speakerLevel_ = 2;
+    else if (peak >= 77) speakerLevel_ = 1;
+    else if (speakerLevel_ == 1 && peak >= 56) speakerLevel_ = 1;
+    else speakerLevel_ = 0;
+    return speakerLevel_;
 }
 
 bool PanelDisplay::captureOverlay(const ControlState &before,
@@ -400,18 +467,17 @@ bool PanelDisplay::captureOverlay(const ControlState &before,
         value = decimal(after.lfoDepthOctaves, 2) + " oct";
     } else if (changed(before.echoLevel, after.echoLevel)) {
         focus = Focus::EchoLevel;
-        value = decimal(after.echoLevel * 100.0f, 0) + "% WET";
+        value = decimal(after.echoLevel * 100.0f, 0) + "%";
     } else if (changed(before.delayMs, after.delayMs)) {
         focus = Focus::EchoTime;
-        value = decimal(after.delayMs, 0) + " ms";
+        value = decimal(after.delayMs, 0) + "ms";
     } else if (changed(before.feedback, after.feedback)) {
         focus = Focus::EchoFeedback;
-        value = decimal(after.feedback * 100.0f, 0) + "% FB";
+        value = decimal(after.feedback * 100.0f, 0) + "%";
     } else if (changed(before.highPassHz, after.highPassHz) ||
                changed(before.lowPassHz, after.lowPassHz)) {
         focus = Focus::EchoTone;
-        value = decimal(after.highPassHz, 0) + "-" +
-                decimal(after.lowPassHz, 0) + "H";
+        value = decimal(after.highPassHz, 0) + "H";
     } else if (changed(before.masterVolume, after.masterVolume)) {
         focus = Focus::Master;
         value = decimal(after.masterVolume * 100.0f, 0) + "%";
@@ -454,14 +520,4 @@ void PanelDisplay::drawText(int16_t x, int16_t y, const String &text,
     tft_.setTextColor(color);
     tft_.setCursor(x, y);
     tft_.print(text);
-}
-
-void PanelDisplay::drawCentered(int16_t y, const String &text, uint8_t size,
-                                uint16_t color) {
-    int16_t x1, y1;
-    uint16_t width, height;
-    tft_.setTextSize(size);
-    tft_.getTextBounds(text, 0, 0, &x1, &y1, &width, &height);
-    drawText((PerformanceController::kDisplayWidth - width) / 2, y, text,
-             size, color);
 }

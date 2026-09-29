@@ -1,0 +1,90 @@
+{
+  "logical_width": 320,
+  "logical_height": 170,
+  "backgrounds": {
+    "home": {
+      "source": "source/home_bg.png",
+      "output": "runtime/home_bg.png",
+      "crop": [12, 6, 1708, 907],
+      "runtime_size": [320, 170]
+    },
+    "menu": {
+      "source": "source/menu_bg.png",
+      "output": "runtime/menu_bg.png",
+      "crop": [12, 6, 1708, 907],
+      "runtime_size": [320, 170]
+    },
+    "boot_init": {
+      "source": "source/boot_01_init.png",
+      "output": "runtime/boot_01_init.png",
+      "crop": [12, 6, 1708, 907],
+      "runtime_size": [320, 170]
+    },
+    "boot_rollin": {
+      "source": "source/boot_02_rollin.png",
+      "output": "runtime/boot_02_rollin.png",
+      "crop": [12, 6, 1708, 907],
+      "runtime_size": [320, 170]
+    },
+    "boot_connect": {
+      "source": "source/boot_03_connect.png",
+      "output": "runtime/boot_03_connect.png",
+      "crop": [12, 6, 1708, 907],
+      "runtime_size": [320, 170]
+    },
+    "boot_power": {
+      "source": "source/boot_04_power.png",
+      "output": "runtime/boot_04_power.png",
+      "crop": [12, 6, 1708, 907],
+      "runtime_size": [320, 170]
+    }
+  },
+  "sprites": {
+    "soundboy_idle": {
+      "source": "source/soundboy_idle_strip.png",
+      "frames": 3,
+      "frame_rect": [0, 0, 724, 724],
+      "runtime_size": [46, 88],
+      "anchor": [23, 88],
+      "position": [294, 156],
+      "alpha_threshold": 64
+    },
+    "soundboy_interact": {
+      "source": "source/soundboy_interact_strip.png",
+      "frames": 3,
+      "frame_rect": [0, 0, 724, 724],
+      "runtime_size": [72, 76],
+      "anchor": [36, 76],
+      "position": [286, 153],
+      "alpha_threshold": 64
+    },
+    "glitch": {
+      "source": "source/fx_glitch_overlay.png",
+      "frames": 1,
+      "frame_rect": [0, 0, 1721, 914],
+      "crop": [12, 6, 1708, 907],
+      "runtime_size": [320, 170],
+      "anchor": [0, 0],
+      "position": [0, 0],
+      "alpha_threshold": 96
+    },
+    "speaker_reactive": {
+      "source": "source/speaker_reactive_strip.png",
+      "frames": 3,
+      "frame_rect": [0, 0, 724, 724],
+      "runtime_size": [126, 132],
+      "anchor": [0, 0],
+      "position": [8, 21],
+      "alpha_threshold": 96
+    }
+  },
+  "layout": {
+    "home_header": [159, 25, 80, 18],
+    "home_main": [159, 60, 96, 57],
+    "home_status": [23, 154, 274, 12],
+    "menu_title": [83, 21, 155, 14],
+    "menu_rows": [63, 48, 196, 82],
+    "menu_footer": [22, 155, 276, 11],
+    "speaker_reactive_position": [8, 21]
+  }
+}

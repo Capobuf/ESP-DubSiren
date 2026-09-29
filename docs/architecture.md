@@ -45,14 +45,19 @@ for the default 256-byte ring to drain. Packet writes complete any partial
 `Serial.write` before another packet starts.
 
 `PanelDisplay` is outside `audioTask`. The main loop takes controller and
-`ControlStore` snapshots and renders the boot/idle scene at 10 fps. Menu frames
-remain event-driven. It uses direct Adafruit GFX primitives and no RGB565
-framebuffer or bitmap assets. The audio task is pinned at the higher priority
-and contains no SPI or display calls, so display traffic cannot change DSP
-state or block rendering inside the audio loop. A single-byte peak envelope is
-derived from the already-rendered PCM block and passed to the display; it does
-not feed back into the DSP. STATUS exposes `displayRenderUs` and
-`maxDisplayRenderUs` separately from the audio timing counters.
+`ControlStore` snapshots and maps them into BootInit/BootRollIn/BootConnect/
+BootPower/Home/Menu scenes. Boot and Home are rendered at 10 fps; Menu is
+event-driven apart from its short scene cut. Source artwork is preprocessed to
+raw RGB565 backgrounds and RGB565/1-bit-mask sprites. The renderer composites
+those bitmaps in a 108,800-byte OPI-PSRAM framebuffer when runtime detection and
+allocation succeed, then falls back to direct ST7789 blits when they do not.
+Adafruit GFX draws only the dynamic rack UI. The audio task is pinned at the
+higher priority and contains no SPI or display calls, so display traffic cannot
+change DSP state or block rendering inside the audio loop. A single-byte peak
+envelope is derived from the already-rendered PCM block and passed to the
+speaker layer and VU; it does not feed back into the DSP. STATUS exposes
+`displayRenderUs` and `maxDisplayRenderUs` separately from the audio timing
+counters.
 
 `I2sPcm5102Sink` duplicates each of the 480 mono int16 samples into a stereo
 left/right frame and writes the resulting 960 values to I2S DMA. ESP32-S3 is

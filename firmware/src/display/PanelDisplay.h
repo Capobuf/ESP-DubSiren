@@ -13,10 +13,20 @@ public:
     bool begin();
     void update(bool linked, uint8_t audioPeak);
     bool ready() const { return ready_; }
+    bool usesPsramFramebuffer() const { return framebuffer_ != nullptr; }
     uint32_t lastRenderUs() const { return lastRenderUs_; }
     uint32_t maximumRenderUs() const { return maximumRenderUs_; }
 
 private:
+    enum class DisplayScene : uint8_t {
+        BootInit,
+        BootRollIn,
+        BootConnect,
+        BootPower,
+        Home,
+        Menu,
+    };
+
     enum class Focus : uint8_t {
         None,
         Tune,
@@ -29,48 +39,49 @@ private:
         Master,
     };
 
-    static constexpr uint32_t kAnimationFrameMs = 100;
+    static constexpr uint32_t kFrameMs = 100;
     static constexpr uint32_t kOverlayDurationMs = 1100;
-    static constexpr uint32_t kBootDurationMs = 3300;
+    static constexpr uint32_t kTransitionMs = 120;
+    static constexpr uint32_t kBootDurationMs = 3350;
 
     void renderBoot(uint32_t elapsedMs);
     void renderHome(const ControlState &state, bool linked, uint32_t now,
                     uint8_t audioPeak);
-    void renderMenu(const ControlState &state);
-    void drawScene(const ControlState &state, bool linked, uint32_t now,
-                   uint8_t audioPeak, Focus focus, const String &focusValue);
-    void drawBackdrop();
-    void drawStack(uint32_t now, uint8_t audioPeak, bool powered,
-                   uint8_t buildStage);
-    void drawRack(const ControlState &state, bool linked, uint32_t now,
-                  uint8_t audioPeak, Focus focus, const String &focusValue,
-                  bool powered, uint8_t buildStage);
-    void drawSoundboy(uint32_t now, int16_t x, bool carrying, bool powered,
-                      bool watchingRack);
-    void drawCable(bool powered);
-    void drawCabinet(int16_t x, int16_t y, int16_t width, int16_t height,
-                     bool sub, uint8_t cone);
-    void drawKnob(int16_t x, int16_t y, float normalized, uint16_t color);
+    void renderMenu(const ControlState &state, bool glitch);
+    void beginBitmapFrame(const uint16_t *background);
+    void drawMaskedBitmap(int16_t x, int16_t y, const uint16_t *pixels,
+                          const uint8_t *mask, uint16_t width,
+                          uint16_t height);
+    void presentBitmapFrame();
+    void drawHomeUi(const ControlState &state, bool linked, uint8_t audioPeak,
+                    Focus focus, const String &focusValue);
+    void drawModule(int16_t x, int16_t y, int16_t width, int16_t height,
+                    const char *label, const String &value, bool focus);
+    void drawGlitch();
     void drawVu(int16_t x, int16_t y, uint8_t level, uint16_t color);
-    void drawFocusFrame(int16_t x, int16_t y, int16_t width, int16_t height,
-                        bool active);
     void drawText(int16_t x, int16_t y, const String &text, uint8_t size,
                   uint16_t color);
-    void drawCentered(int16_t y, const String &text, uint8_t size,
-                      uint16_t color);
     String menuValue(const char *key, const ControlState &state) const;
     bool captureOverlay(const ControlState &before, const ControlState &after);
+    uint8_t speakerLevel(uint8_t peak);
     static float normalized(float value, float minimum, float maximum);
 
     ControlStore &controls_;
     CommandParser &controller_;
     Adafruit_ST7789 tft_;
+    uint16_t *framebuffer_ = nullptr;
     bool ready_ = false;
     bool firstFrame_ = true;
     bool lastLinked_ = false;
+    PerformanceController::DisplayMode lastMode_ =
+        PerformanceController::DisplayMode::Home;
+    DisplayScene scene_ = DisplayScene::BootInit;
+    uint8_t speakerLevel_ = 0;
     uint32_t bootStartedMs_ = 0;
     uint32_t lastFrameMs_ = 0;
     uint32_t overlayUntilMs_ = 0;
+    uint32_t transitionUntilMs_ = 0;
+    uint32_t interactUntilMs_ = 0;
     uint32_t lastRenderUs_ = 0;
     uint32_t maximumRenderUs_ = 0;
     unsigned lastRevision_ = 0;

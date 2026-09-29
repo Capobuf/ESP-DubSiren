@@ -1,0 +1,85 @@
+#pragma once
+
+#include <Arduino.h>
+
+namespace DisplayAssets {
+constexpr uint16_t kHomeWidth = 320;
+constexpr uint16_t kHomeHeight = 170;
+extern const uint16_t kHome[] PROGMEM;
+constexpr uint16_t kMenuWidth = 320;
+constexpr uint16_t kMenuHeight = 170;
+extern const uint16_t kMenu[] PROGMEM;
+constexpr uint16_t kBootInitWidth = 320;
+constexpr uint16_t kBootInitHeight = 170;
+extern const uint16_t kBootInit[] PROGMEM;
+constexpr uint16_t kBootRollinWidth = 320;
+constexpr uint16_t kBootRollinHeight = 170;
+extern const uint16_t kBootRollin[] PROGMEM;
+constexpr uint16_t kBootConnectWidth = 320;
+constexpr uint16_t kBootConnectHeight = 170;
+extern const uint16_t kBootConnect[] PROGMEM;
+constexpr uint16_t kBootPowerWidth = 320;
+constexpr uint16_t kBootPowerHeight = 170;
+extern const uint16_t kBootPower[] PROGMEM;
+constexpr uint16_t kSoundboyIdleFrame0Width = 46;
+constexpr uint16_t kSoundboyIdleFrame0Height = 88;
+extern const uint16_t kSoundboyIdleFrame0[] PROGMEM;
+constexpr uint16_t kSoundboyIdleFrame0MaskWidth = 46;
+constexpr uint16_t kSoundboyIdleFrame0MaskHeight = 88;
+extern const uint8_t kSoundboyIdleFrame0Mask[] PROGMEM;
+constexpr uint16_t kSoundboyIdleFrame1Width = 46;
+constexpr uint16_t kSoundboyIdleFrame1Height = 88;
+extern const uint16_t kSoundboyIdleFrame1[] PROGMEM;
+constexpr uint16_t kSoundboyIdleFrame1MaskWidth = 46;
+constexpr uint16_t kSoundboyIdleFrame1MaskHeight = 88;
+extern const uint8_t kSoundboyIdleFrame1Mask[] PROGMEM;
+constexpr uint16_t kSoundboyIdleFrame2Width = 46;
+constexpr uint16_t kSoundboyIdleFrame2Height = 88;
+extern const uint16_t kSoundboyIdleFrame2[] PROGMEM;
+constexpr uint16_t kSoundboyIdleFrame2MaskWidth = 46;
+constexpr uint16_t kSoundboyIdleFrame2MaskHeight = 88;
+extern const uint8_t kSoundboyIdleFrame2Mask[] PROGMEM;
+constexpr uint16_t kSoundboyInteractFrame0Width = 72;
+constexpr uint16_t kSoundboyInteractFrame0Height = 76;
+extern const uint16_t kSoundboyInteractFrame0[] PROGMEM;
+constexpr uint16_t kSoundboyInteractFrame0MaskWidth = 72;
+constexpr uint16_t kSoundboyInteractFrame0MaskHeight = 76;
+extern const uint8_t kSoundboyInteractFrame0Mask[] PROGMEM;
+constexpr uint16_t kSoundboyInteractFrame1Width = 72;
+constexpr uint16_t kSoundboyInteractFrame1Height = 76;
+extern const uint16_t kSoundboyInteractFrame1[] PROGMEM;
+constexpr uint16_t kSoundboyInteractFrame1MaskWidth = 72;
+constexpr uint16_t kSoundboyInteractFrame1MaskHeight = 76;
+extern const uint8_t kSoundboyInteractFrame1Mask[] PROGMEM;
+constexpr uint16_t kSoundboyInteractFrame2Width = 72;
+constexpr uint16_t kSoundboyInteractFrame2Height = 76;
+extern const uint16_t kSoundboyInteractFrame2[] PROGMEM;
+constexpr uint16_t kSoundboyInteractFrame2MaskWidth = 72;
+constexpr uint16_t kSoundboyInteractFrame2MaskHeight = 76;
+extern const uint8_t kSoundboyInteractFrame2Mask[] PROGMEM;
+constexpr uint16_t kGlitchWidth = 320;
+constexpr uint16_t kGlitchHeight = 170;
+extern const uint16_t kGlitch[] PROGMEM;
+constexpr uint16_t kGlitchMaskWidth = 320;
+constexpr uint16_t kGlitchMaskHeight = 170;
+extern const uint8_t kGlitchMask[] PROGMEM;
+constexpr uint16_t kSpeakerReactiveFrame0Width = 126;
+constexpr uint16_t kSpeakerReactiveFrame0Height = 132;
+extern const uint16_t kSpeakerReactiveFrame0[] PROGMEM;
+constexpr uint16_t kSpeakerReactiveFrame0MaskWidth = 126;
+constexpr uint16_t kSpeakerReactiveFrame0MaskHeight = 132;
+extern const uint8_t kSpeakerReactiveFrame0Mask[] PROGMEM;
+constexpr uint16_t kSpeakerReactiveFrame1Width = 126;
+constexpr uint16_t kSpeakerReactiveFrame1Height = 132;
+extern const uint16_t kSpeakerReactiveFrame1[] PROGMEM;
+constexpr uint16_t kSpeakerReactiveFrame1MaskWidth = 126;
+constexpr uint16_t kSpeakerReactiveFrame1MaskHeight = 132;
+extern const uint8_t kSpeakerReactiveFrame1Mask[] PROGMEM;
+constexpr uint16_t kSpeakerReactiveFrame2Width = 126;
+constexpr uint16_t kSpeakerReactiveFrame2Height = 132;
+extern const uint16_t kSpeakerReactiveFrame2[] PROGMEM;
+constexpr uint16_t kSpeakerReactiveFrame2MaskWidth = 126;
+constexpr uint16_t kSpeakerReactiveFrame2MaskHeight = 132;
+extern const uint8_t kSpeakerReactiveFrame2Mask[] PROGMEM;
+
+}  // namespace DisplayAssets

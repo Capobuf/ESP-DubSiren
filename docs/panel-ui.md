@@ -75,13 +75,15 @@ The only logical viewport is 320×170 in landscape orientation. The desktop
 widget may occupy more monitor pixels in the future, but its internal layout
 and validation coordinates remain 320×170 with uniform scaling only.
 
-Home is a pixel-art dub stage rather than a text dashboard. A large handmade
-speaker stack occupies the left side, the active rack occupies the center, and
-the soundboy remains secondary on the right. The rack's own green display shows
-the selected pad assignment and variant. The selected pad normally follows the
-last played pad. The menu can select another pad without playing it, then edit
-only that pad's assignment, supported variant, and Hold. Echo Loop remains
-available as a secondary function. Back returns to the same assembled scene.
+Home is a source-art-driven cyber-dub scene rather than a text dashboard. The
+preprocessed `home_bg.png` supplies the speaker system, rack, environment and
+empty diegetic screens. Small alpha sprites add Soundboy and three levels of
+speaker reaction; only real values, focus outlines, status lamps and the VU are
+drawn at runtime. The selected pad normally follows the last played pad. The
+menu uses `menu_bg.png` as a close-up of the same rack and can select another
+pad without playing it, then edit only that pad's assignment, supported
+variant, and Hold. Echo Loop remains a secondary function. Back returns to the
+same sound-system scene through a short glitch cut.
 
 `PerformanceController` owns Home/Menu mode, the current menu row, edit mode,
 the menu's conditional Hold row, and all encoder behavior. Python sends raw
@@ -111,11 +113,12 @@ path.
 | Rendered PCM peak | VU bars and speaker-cone excursion |
 | Link | tiny amber service LED on the rack |
 
-The soundboy enters carrying the first cabinet, completes the stack, places the
-rack, connects the cable and powers the system over a 3.3 second boot sequence.
-The last boot composition is already the Home composition. Idle runs at 10 fps
-with only head/body bob, hand movement, power LEDs, VU and cone excursion. The
-desktop preview has a `Replay boot` control for visual verification.
+Boot is a 3.35 second camera-cut sequence: INIT, ROLL-IN, CONNECT and POWER use
+four separate 320x170 backgrounds. Only scanlines, connector/power pulses and
+brief deterministic glitch cuts are procedural. Home is capped at 10 fps;
+Soundboy uses a deliberately sparse six-step idle cadence while the interaction
+strip is used briefly for control/pad activity. The desktop preview has a
+`Replay boot` control for visual verification.
 
 Confirmed pad assignment and variant changes are saved to
 `%APPDATA%\ESP-DubSiren\panel.json`. Only configuration is persisted: pressed
@@ -155,24 +158,44 @@ Firmware 0.8.0 includes an Adafruit GFX/ST7789 renderer for Product 5394. It
 uses the existing hardware SPI nets on GPIO11 MOSI and GPIO12 SCK, with GPIO9
 CS, GPIO8 DC, GPIO7 reset, and GPIO14 backlight held high. Initialization is
 `init(170, 320)` followed by rotation 1; runtime width and height must be
-320×170. No touch, microSD, LVGL, framebuffer, or brightness menu is included.
+320×170. No touch, microSD, image decoder, filesystem, LVGL or brightness menu
+is included.
 
 Rendering runs from `loop()`, never from `audioTask`. Boot and Home are capped
-at 10 fps; Menu redraws only on state changes. A full RGB565 framebuffer would
-cost 108,800 bytes and is deliberately not allocated. The scene has no bitmap
-assets, so asset RAM/flash cost is 0 bytes; it is drawn from Adafruit GFX
-primitives. The `PanelDisplay` global is 428 bytes in the linked image and its
-release code/constant sections are about 10,099 bytes. The full firmware build
-uses 119,204 bytes of static RAM (36.4%) and 341,085 bytes of flash (10.2%).
-The ST7789 library selects a 32 MHz SPI clock; a full 320×170 RGB565 clear has a
-27.2 ms theoretical wire time before primitive overhead. Runtime STATUS exposes
-`displayRenderUs` and `maxDisplayRenderUs` so the actual board can be checked
-against the 100 ms frame budget. The audio task remains higher priority and
-owns no display calls.
+at 10 fps; Menu redraws only on state changes and the 120 ms transition. Six
+backgrounds are raw RGB565 in flash. Soundboy, glitch and speaker frames are
+RGB565 plus a 1-bit mask. The generated payload is 935,119 bytes. On the
+ESP32-S3 N16R8 build, flash is configured for 16 MB and OPI PSRAM is enabled
+with `qio_opi`; `psramFound()` is checked at runtime. When available, a
+108,800-byte framebuffer is allocated with `MALLOC_CAP_SPIRAM` for bitmap
+composition. Allocation failure falls back to direct ST7789 background blits
+and masked row runs, so the firmware remains usable without PSRAM. Dynamic rack
+text and indicators are drawn with compact Adafruit GFX bitmap glyphs after the
+bitmap frame. The final build uses 119,408 bytes of static RAM (36.4%) and
+1,278,313 bytes of flash (19.5% of the 6.25 MB application partition). The
+ST7789 library selects a 32 MHz SPI clock; a full 320×170 RGB565 frame has a
+27.2 ms theoretical wire time before command and UI overhead. Runtime STATUS
+exposes `displayRenderUs` and `maxDisplayRenderUs`; board measurements remain
+the authority for checking the 100 ms budget. The audio task remains higher
+priority and owns no display calls.
+
+### Asset pipeline
+
+`assets/display/source/` contains the ten high-resolution source artworks.
+`assets/display/manifest.json` is the source of truth for crop rectangles,
+runtime sizes, frame counts, anchors and UI zones. Background sources use the
+explicit centered crop `[12, 6, 1708, 907]` (1696×901, exactly 32:17) before a
+proportional Lanczos resize to 320×170. Three-frame strips are split into 724px
+square cells, alpha-bounded and proportionally contained in their runtime
+rectangles. Run `python tools/display_assets/build_assets.py` to regenerate
+`assets/display/runtime/` and the deterministic `DisplayAssets.h/.cpp` arrays.
+Pillow is the only new desktop dependency; it is used for the same PNG
+compositing path in the Virtual ESP and reference capture generator.
 
 Reference captures generated from the same desktop renderer are in
-`docs/screenshots/display-idle.png`, `display-tune.png`, `display-echo.png`,
-`display-menu.png`, and `display-boot.png`.
+`docs/screenshots/display-boot-01.png` through `display-boot-04.png`, plus
+`display-idle.png`, `display-tune.png`, `display-echo.png` and
+`display-menu.png`. Every capture is exactly 320×170.
 
 The current PCB is not display-ready: J3 exposes power, I²C, CS, DC, reset and
 backlight, but not `SPI_MOSI` or `SPI_SCK`. J3 must be revised or another
