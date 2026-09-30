@@ -1,0 +1,378 @@
+[gd_scene format=3 uid="uid://b1ghlvwqgexft"]
+
+[ext_resource type="PackedScene" path="res://characters/boxman.tscn" id="1_boxman"]
+[ext_resource type="PackedScene" path="res://props/scoop.tscn" id="2_scoop"]
+[ext_resource type="PackedScene" path="res://props/mid_cabinet.tscn" id="3_mid"]
+[ext_resource type="PackedScene" path="res://props/horn_cabinet.tscn" id="4_horn"]
+[ext_resource type="PackedScene" path="res://props/top_hf.tscn" id="5_top"]
+
+[sub_resource type="Animation" id="Animation_build"]
+resource_name = "build"
+length = 8.7
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("SoundStack/Scoop1:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = false
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.24, 0.68, 0.76, 8.7),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 0,
+"values": [Vector2(-48, 144), Vector2(-40, 144), Vector2(184, 144), Vector2(184, 146), Vector2(184, 144)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("SoundStack/Scoop2:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = false
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.94, 1.38, 1.46, 8.7),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 0,
+"values": [Vector2(-48, 144), Vector2(-40, 144), Vector2(218, 144), Vector2(218, 146), Vector2(218, 144)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("SoundStack/Scoop3:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = false
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 1.64, 2.08, 2.16, 8.7),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 0,
+"values": [Vector2(-48, 144), Vector2(-40, 144), Vector2(252, 144), Vector2(252, 146), Vector2(252, 144)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("SoundStack/Scoop4:position")
+tracks/3/interp = 1
+tracks/3/loop_wrap = false
+tracks/3/keys = {
+"times": PackedFloat32Array(0, 2.34, 2.78, 2.86, 8.7),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 0,
+"values": [Vector2(-48, 144), Vector2(-40, 144), Vector2(286, 144), Vector2(286, 146), Vector2(286, 144)]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("SoundStack/Mid1:position")
+tracks/4/interp = 1
+tracks/4/loop_wrap = false
+tracks/4/keys = {
+"times": PackedFloat32Array(0, 3.04, 3.48, 3.66, 3.73, 8.7),
+"transitions": PackedFloat32Array(1, 1, 1, 0.6, 1, 1),
+"update": 0,
+"values": [Vector2(-50, 120), Vector2(-40, 120), Vector2(174, 120), Vector2(190, 112), Vector2(190, 114), Vector2(190, 112)]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("SoundStack/Mid2:position")
+tracks/5/interp = 1
+tracks/5/loop_wrap = false
+tracks/5/keys = {
+"times": PackedFloat32Array(0, 3.79, 4.23, 4.41, 4.48, 8.7),
+"transitions": PackedFloat32Array(1, 1, 1, 0.6, 1, 1),
+"update": 0,
+"values": [Vector2(-50, 120), Vector2(-40, 120), Vector2(216, 120), Vector2(232, 112), Vector2(232, 114), Vector2(232, 112)]
+}
+tracks/6/type = "value"
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/path = NodePath("SoundStack/Mid3:position")
+tracks/6/interp = 1
+tracks/6/loop_wrap = false
+tracks/6/keys = {
+"times": PackedFloat32Array(0, 4.54, 4.98, 5.16, 5.23, 8.7),
+"transitions": PackedFloat32Array(1, 1, 1, 0.6, 1, 1),
+"update": 0,
+"values": [Vector2(-50, 120), Vector2(-40, 120), Vector2(258, 120), Vector2(274, 112), Vector2(274, 114), Vector2(274, 112)]
+}
+tracks/7/type = "value"
+tracks/7/imported = false
+tracks/7/enabled = true
+tracks/7/path = NodePath("SoundStack/Horn1:position")
+tracks/7/interp = 1
+tracks/7/loop_wrap = false
+tracks/7/keys = {
+"times": PackedFloat32Array(0, 5.29, 5.75, 5.94, 6.01, 8.7),
+"transitions": PackedFloat32Array(1, 1, 1, 0.55, 1, 1),
+"update": 0,
+"values": [Vector2(-50, 116), Vector2(-40, 116), Vector2(194, 108), Vector2(210, 86), Vector2(210, 88), Vector2(210, 86)]
+}
+tracks/8/type = "value"
+tracks/8/imported = false
+tracks/8/enabled = true
+tracks/8/path = NodePath("SoundStack/Horn2:position")
+tracks/8/interp = 1
+tracks/8/loop_wrap = false
+tracks/8/keys = {
+"times": PackedFloat32Array(0, 6.09, 6.55, 6.74, 6.81, 8.7),
+"transitions": PackedFloat32Array(1, 1, 1, 0.55, 1, 1),
+"update": 0,
+"values": [Vector2(-50, 116), Vector2(-40, 116), Vector2(242, 108), Vector2(258, 86), Vector2(258, 88), Vector2(258, 86)]
+}
+tracks/9/type = "value"
+tracks/9/imported = false
+tracks/9/enabled = true
+tracks/9/path = NodePath("SoundStack/TopHF:position")
+tracks/9/interp = 1
+tracks/9/loop_wrap = false
+tracks/9/keys = {
+"times": PackedFloat32Array(0, 6.89, 7.38, 7.62, 7.7, 7.78, 8.7),
+"transitions": PackedFloat32Array(1, 1, 1, 0.5, 1, 1, 1),
+"update": 0,
+"values": [Vector2(-60, 116), Vector2(-48, 116), Vector2(218, 106), Vector2(234, 65), Vector2(234, 67), Vector2(234, 65), Vector2(234, 65)]
+}
+tracks/10/type = "value"
+tracks/10/imported = false
+tracks/10/enabled = true
+tracks/10/path = NodePath("Boxman:position")
+tracks/10/interp = 1
+tracks/10/loop_wrap = false
+tracks/10/keys = {
+"times": PackedFloat32Array(0, 0.24, 0.46, 0.68, 0.76, 0.9, 0.94, 1.16, 1.38, 1.46, 1.6, 1.64, 1.86, 2.08, 2.16, 2.3, 2.34, 2.56, 2.78, 2.86, 3, 3.04, 3.26, 3.48, 3.66, 3.73, 3.76, 3.79, 4.01, 4.23, 4.41, 4.48, 4.51, 4.54, 4.76, 4.98, 5.16, 5.23, 5.26, 5.29, 5.52, 5.75, 5.94, 6.01, 6.06, 6.09, 6.32, 6.55, 6.74, 6.81, 6.86, 6.89, 7.14, 7.38, 7.62, 7.7, 7.82, 8.08, 8.7),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 0,
+"values": [Vector2(-58, 160), Vector2(-38, 160), Vector2(56, 158), Vector2(154, 160), Vector2(154, 160), Vector2(-58, 160), Vector2(-38, 160), Vector2(70, 158), Vector2(188, 160), Vector2(188, 160), Vector2(-58, 160), Vector2(-38, 160), Vector2(88, 158), Vector2(222, 160), Vector2(222, 160), Vector2(-58, 160), Vector2(-38, 160), Vector2(106, 158), Vector2(256, 160), Vector2(256, 160), Vector2(-58, 160), Vector2(-38, 160), Vector2(62, 158), Vector2(148, 160), Vector2(160, 158), Vector2(160, 160), Vector2(-58, 160), Vector2(-38, 160), Vector2(82, 158), Vector2(190, 160), Vector2(202, 158), Vector2(202, 160), Vector2(-58, 160), Vector2(-38, 160), Vector2(102, 158), Vector2(232, 160), Vector2(244, 158), Vector2(244, 160), Vector2(-58, 160), Vector2(-38, 160), Vector2(74, 158), Vector2(166, 160), Vector2(180, 158), Vector2(180, 160), Vector2(-58, 160), Vector2(-38, 160), Vector2(96, 158), Vector2(214, 160), Vector2(228, 158), Vector2(228, 160), Vector2(-58, 160), Vector2(-38, 160), Vector2(84, 158), Vector2(190, 160), Vector2(204, 158), Vector2(204, 160), Vector2(174, 160), Vector2(146, 160), Vector2(146, 160)]
+}
+tracks/11/type = "value"
+tracks/11/imported = false
+tracks/11/enabled = true
+tracks/11/path = NodePath("Boxman/Body:rotation")
+tracks/11/interp = 1
+tracks/11/loop_wrap = false
+tracks/11/keys = {
+"times": PackedFloat32Array(0, 0.24, 0.68, 0.76, 0.9, 0.94, 1.38, 1.46, 1.6, 1.64, 2.08, 2.16, 2.3, 2.34, 2.78, 2.86, 3, 3.04, 3.48, 3.66, 3.76, 3.79, 4.23, 4.41, 4.51, 4.54, 4.98, 5.16, 5.26, 5.29, 5.75, 5.94, 6.06, 6.09, 6.55, 6.74, 6.86, 6.89, 7.38, 7.62, 7.78, 8.08, 8.7),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 0,
+"values": [0.0, -0.28, -0.22, -0.34, 0.0, -0.28, -0.22, -0.34, 0.0, -0.28, -0.22, -0.34, 0.0, -0.28, -0.22, -0.34, 0.0, 0.12, 0.1, -0.08, 0.0, 0.12, 0.1, -0.08, 0.0, 0.12, 0.1, -0.08, 0.0, 0.14, 0.08, -0.12, 0.0, 0.14, 0.08, -0.12, 0.0, 0.14, 0.08, -0.16, 0.0, -0.04, -0.04]
+}
+tracks/12/type = "value"
+tracks/12/imported = false
+tracks/12/enabled = true
+tracks/12/path = NodePath("Boxman/Head:rotation")
+tracks/12/interp = 1
+tracks/12/loop_wrap = false
+tracks/12/keys = {
+"times": PackedFloat32Array(0, 3.04, 5.29, 6.89, 7.62, 8.08, 8.7),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1),
+"update": 0,
+"values": [0.08, 0.02, -0.08, -0.16, -0.22, -0.1, -0.1]
+}
+tracks/13/type = "value"
+tracks/13/imported = false
+tracks/13/enabled = true
+tracks/13/path = NodePath("Boxman/ArmL:rotation")
+tracks/13/interp = 1
+tracks/13/loop_wrap = false
+tracks/13/keys = {
+"times": PackedFloat32Array(0, 0.24, 0.46, 0.68, 0.9, 0.94, 1.16, 1.38, 1.6, 1.64, 1.86, 2.08, 2.3, 2.34, 2.56, 2.78, 3, 3.04, 3.48, 3.66, 3.76, 3.79, 4.23, 4.41, 4.51, 4.54, 4.98, 5.16, 5.26, 5.29, 5.75, 5.94, 6.06, 6.09, 6.55, 6.74, 6.86, 6.89, 7.38, 7.62, 7.78, 8.08, 8.7),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 0,
+"values": [0.0, -1.1, -1.28, -1.12, 0.1, -1.12, -1.3, -1.12, 0.1, -1.12, -1.3, -1.12, 0.1, -1.12, -1.3, -1.12, 0.0, -1.48, -1.55, -1.08, 0.0, -1.48, -1.55, -1.08, 0.0, -1.48, -1.55, -1.08, 0.0, -1.45, -1.82, -2.12, 0.0, -1.45, -1.82, -2.12, 0.0, -1.45, -1.9, -2.62, -0.2, 0.05, 0.05]
+}
+tracks/14/type = "value"
+tracks/14/imported = false
+tracks/14/enabled = true
+tracks/14/path = NodePath("Boxman/ArmL/ForearmL:rotation")
+tracks/14/interp = 1
+tracks/14/loop_wrap = false
+tracks/14/keys = {
+"times": PackedFloat32Array(0, 0.24, 0.68, 0.9, 0.94, 1.38, 1.6, 1.64, 2.08, 2.3, 2.34, 2.78, 3, 3.04, 3.48, 3.66, 3.76, 3.79, 4.23, 4.41, 4.51, 4.54, 4.98, 5.16, 5.26, 5.29, 5.75, 5.94, 6.06, 6.09, 6.55, 6.74, 6.86, 6.89, 7.38, 7.62, 7.78, 8.7),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 0,
+"values": [-0.05, -0.35, -0.48, 0.0, -0.35, -0.48, 0.0, -0.35, -0.48, 0.0, -0.35, -0.48, 0.0, 0.72, 0.62, 0.34, 0.0, 0.72, 0.62, 0.34, 0.0, 0.72, 0.62, 0.34, 0.0, 0.55, 0.2, 0.08, 0.0, 0.55, 0.2, 0.08, 0.0, 0.5, 0.12, -0.05, 0.0, 0.0]
+}
+tracks/15/type = "value"
+tracks/15/imported = false
+tracks/15/enabled = true
+tracks/15/path = NodePath("Boxman/ArmR:rotation")
+tracks/15/interp = 1
+tracks/15/loop_wrap = false
+tracks/15/keys = {
+"times": PackedFloat32Array(0, 0.24, 0.46, 0.68, 0.9, 0.94, 1.16, 1.38, 1.6, 1.64, 1.86, 2.08, 2.3, 2.34, 2.56, 2.78, 3, 3.04, 3.48, 3.66, 3.76, 3.79, 4.23, 4.41, 4.51, 4.54, 4.98, 5.16, 5.26, 5.29, 5.75, 5.94, 6.06, 6.09, 6.55, 6.74, 6.86, 6.89, 7.38, 7.62, 7.78, 8.08, 8.7),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 0,
+"values": [0.0, -1.28, -1.08, -1.3, -0.1, -1.3, -1.08, -1.3, -0.1, -1.3, -1.08, -1.3, -0.1, -1.3, -1.08, -1.3, 0.0, -1.62, -1.5, -1.18, 0.0, -1.62, -1.5, -1.18, 0.0, -1.62, -1.5, -1.18, 0.0, -1.62, -1.9, -2.28, 0.0, -1.62, -1.9, -2.28, 0.0, -1.62, -2.05, -2.72, 0.2, -0.05, -0.05]
+}
+tracks/16/type = "value"
+tracks/16/imported = false
+tracks/16/enabled = true
+tracks/16/path = NodePath("Boxman/ArmR/ForearmR:rotation")
+tracks/16/interp = 1
+tracks/16/loop_wrap = false
+tracks/16/keys = {
+"times": PackedFloat32Array(0, 0.24, 0.68, 0.9, 0.94, 1.38, 1.6, 1.64, 2.08, 2.3, 2.34, 2.78, 3, 3.04, 3.48, 3.66, 3.76, 3.79, 4.23, 4.41, 4.51, 4.54, 4.98, 5.16, 5.26, 5.29, 5.75, 5.94, 6.06, 6.09, 6.55, 6.74, 6.86, 6.89, 7.38, 7.62, 7.78, 8.7),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 0,
+"values": [0.05, -0.28, -0.42, 0.0, -0.28, -0.42, 0.0, -0.28, -0.42, 0.0, -0.28, -0.42, 0.0, 0.62, 0.52, 0.25, 0.0, 0.62, 0.52, 0.25, 0.0, 0.62, 0.52, 0.25, 0.0, 0.48, 0.18, 0.0, 0.0, 0.48, 0.18, 0.0, 0.0, 0.45, 0.08, -0.12, 0.0, 0.0]
+}
+tracks/17/type = "value"
+tracks/17/imported = false
+tracks/17/enabled = true
+tracks/17/path = NodePath("Boxman/LegL:rotation")
+tracks/17/interp = 1
+tracks/17/loop_wrap = false
+tracks/17/keys = {
+"times": PackedFloat32Array(0, 0.24, 0.35, 0.46, 0.57, 0.68, 0.76, 0.94, 1.05, 1.16, 1.27, 1.38, 1.46, 1.64, 1.75, 1.86, 1.97, 2.08, 2.16, 2.34, 2.45, 2.56, 2.67, 2.78, 2.86, 3.04, 3.15, 3.26, 3.37, 3.48, 3.66, 3.79, 3.9, 4.01, 4.12, 4.23, 4.41, 4.54, 4.65, 4.76, 4.87, 4.98, 5.16, 5.29, 5.4, 5.52, 5.64, 5.75, 5.94, 6.09, 6.2, 6.32, 6.44, 6.55, 6.74, 6.89, 7.01, 7.14, 7.26, 7.38, 7.62, 7.82, 8.08, 8.7),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 0,
+"values": [0.0, -0.28, 0.24, -0.3, 0.22, -0.18, 0.0, -0.28, 0.24, -0.3, 0.22, -0.18, 0.0, -0.28, 0.24, -0.3, 0.22, -0.18, 0.0, -0.28, 0.24, -0.3, 0.22, -0.18, 0.0, -0.26, 0.22, -0.28, 0.2, -0.12, 0.0, -0.26, 0.22, -0.28, 0.2, -0.12, 0.0, -0.26, 0.22, -0.28, 0.2, -0.12, 0.0, -0.24, 0.2, -0.26, 0.18, -0.1, 0.0, -0.24, 0.2, -0.26, 0.18, -0.1, 0.0, -0.24, 0.2, -0.26, 0.18, -0.1, 0.0, -0.18, 0.0, 0.0]
+}
+tracks/18/type = "value"
+tracks/18/imported = false
+tracks/18/enabled = true
+tracks/18/path = NodePath("Boxman/LegL/LowerLegL:rotation")
+tracks/18/interp = 1
+tracks/18/loop_wrap = false
+tracks/18/keys = {
+"times": PackedFloat32Array(0, 0.35, 0.57, 0.76, 1.05, 1.27, 1.46, 1.75, 1.97, 2.16, 2.45, 2.67, 2.86, 3.15, 3.37, 3.66, 3.9, 4.12, 4.41, 4.65, 4.87, 5.16, 5.4, 5.64, 5.94, 6.2, 6.44, 6.74, 7.01, 7.26, 7.62, 8.08, 8.7),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 0,
+"values": [0.0, -0.35, 0.2, 0.0, -0.35, 0.2, 0.0, -0.35, 0.2, 0.0, -0.35, 0.2, 0.0, -0.32, 0.18, 0.0, -0.32, 0.18, 0.0, -0.32, 0.18, 0.0, -0.3, 0.16, 0.0, -0.3, 0.16, 0.0, -0.3, 0.16, 0.0, 0.0, 0.0]
+}
+tracks/19/type = "value"
+tracks/19/imported = false
+tracks/19/enabled = true
+tracks/19/path = NodePath("Boxman/LegR:rotation")
+tracks/19/interp = 1
+tracks/19/loop_wrap = false
+tracks/19/keys = {
+"times": PackedFloat32Array(0, 0.24, 0.35, 0.46, 0.57, 0.68, 0.76, 0.94, 1.05, 1.16, 1.27, 1.38, 1.46, 1.64, 1.75, 1.86, 1.97, 2.08, 2.16, 2.34, 2.45, 2.56, 2.67, 2.78, 2.86, 3.04, 3.15, 3.26, 3.37, 3.48, 3.66, 3.79, 3.9, 4.01, 4.12, 4.23, 4.41, 4.54, 4.65, 4.76, 4.87, 4.98, 5.16, 5.29, 5.4, 5.52, 5.64, 5.75, 5.94, 6.09, 6.2, 6.32, 6.44, 6.55, 6.74, 6.89, 7.01, 7.14, 7.26, 7.38, 7.62, 7.82, 8.08, 8.7),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 0,
+"values": [0.0, 0.28, -0.24, 0.3, -0.22, 0.18, 0.0, 0.28, -0.24, 0.3, -0.22, 0.18, 0.0, 0.28, -0.24, 0.3, -0.22, 0.18, 0.0, 0.28, -0.24, 0.3, -0.22, 0.18, 0.0, 0.26, -0.22, 0.28, -0.2, 0.12, 0.0, 0.26, -0.22, 0.28, -0.2, 0.12, 0.0, 0.26, -0.22, 0.28, -0.2, 0.12, 0.0, 0.24, -0.2, 0.26, -0.18, 0.1, 0.0, 0.24, -0.2, 0.26, -0.18, 0.1, 0.0, 0.24, -0.2, 0.26, -0.18, 0.1, 0.0, 0.18, 0.0, 0.0]
+}
+tracks/20/type = "value"
+tracks/20/imported = false
+tracks/20/enabled = true
+tracks/20/path = NodePath("Boxman/LegR/LowerLegR:rotation")
+tracks/20/interp = 1
+tracks/20/loop_wrap = false
+tracks/20/keys = {
+"times": PackedFloat32Array(0, 0.35, 0.57, 0.76, 1.05, 1.27, 1.46, 1.75, 1.97, 2.16, 2.45, 2.67, 2.86, 3.15, 3.37, 3.66, 3.9, 4.12, 4.41, 4.65, 4.87, 5.16, 5.4, 5.64, 5.94, 6.2, 6.44, 6.74, 7.01, 7.26, 7.62, 8.08, 8.7),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 0,
+"values": [0.0, 0.35, -0.2, 0.0, 0.35, -0.2, 0.0, 0.35, -0.2, 0.0, 0.35, -0.2, 0.0, 0.32, -0.18, 0.0, 0.32, -0.18, 0.0, 0.32, -0.18, 0.0, 0.3, -0.16, 0.0, 0.3, -0.16, 0.0, 0.3, -0.16, 0.0, 0.0, 0.0]
+}
+tracks/21/type = "value"
+tracks/21/imported = false
+tracks/21/enabled = true
+tracks/21/path = NodePath("FX/IndicatorL:modulate")
+tracks/21/interp = 1
+tracks/21/loop_wrap = false
+tracks/21/keys = {
+"times": PackedFloat32Array(0, 7.72, 7.8, 7.9, 8.7),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 0), Color(1, 1, 1, 1), Color(1, 0.6, 0.3, 0.45), Color(1, 0.6, 0.3, 0.8)]
+}
+tracks/22/type = "value"
+tracks/22/imported = false
+tracks/22/enabled = true
+tracks/22/path = NodePath("FX/IndicatorR:modulate")
+tracks/22/interp = 1
+tracks/22/loop_wrap = false
+tracks/22/keys = {
+"times": PackedFloat32Array(0, 7.76, 7.84, 7.94, 8.7),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 0), Color(1, 1, 1, 1), Color(1, 0.6, 0.3, 0.45), Color(1, 0.6, 0.3, 0.8)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_main"]
+_data = {
+&"build": SubResource("Animation_build")
+}
+
+[node name="IntroSoundBuild" type="Node2D" unique_id=131564004]
+
+[node name="Background" type="Polygon2D" parent="." unique_id=1065739175]
+color = Color(0.035, 0.043, 0.041, 1)
+polygon = PackedVector2Array(0, 0, 320, 0, 320, 170, 0, 170)
+
+[node name="BackGlow" type="Polygon2D" parent="." unique_id=1188898251]
+color = Color(0.16, 0.09, 0.055, 1)
+polygon = PackedVector2Array(164, 18, 320, 18, 320, 156, 142, 156)
+
+[node name="WallBand" type="Polygon2D" parent="." unique_id=1045093278]
+color = Color(0.08, 0.095, 0.075, 1)
+polygon = PackedVector2Array(0, 112, 320, 96, 320, 108, 0, 126)
+
+[node name="Grit1" type="Polygon2D" parent="." unique_id=1619033244]
+color = Color(0.34, 0.16, 0.075, 0.55)
+polygon = PackedVector2Array(12, 28, 78, 20, 78, 24, 12, 32)
+
+[node name="Grit2" type="Polygon2D" parent="." unique_id=329681889]
+color = Color(0.23, 0.27, 0.14, 0.65)
+polygon = PackedVector2Array(22, 42, 126, 30, 126, 34, 22, 46)
+
+[node name="Ground" type="Node2D" parent="." unique_id=1887795894]
+
+[node name="Floor" type="Polygon2D" parent="Ground" unique_id=796930550]
+color = Color(0.095, 0.085, 0.06, 1)
+polygon = PackedVector2Array(0, 156, 320, 156, 320, 170, 0, 170)
+
+[node name="FloorEdge" type="Polygon2D" parent="Ground" unique_id=868854999]
+color = Color(0.54, 0.31, 0.13, 1)
+polygon = PackedVector2Array(0, 156, 320, 156, 320, 160, 0, 160)
+
+[node name="SoundStack" type="Node2D" parent="." unique_id=1165099499]
+z_index = 1
+
+[node name="Scoop1" parent="SoundStack" unique_id=1649782841 instance=ExtResource("2_scoop")]
+position = Vector2(-48, 144)
+
+[node name="Scoop2" parent="SoundStack" unique_id=305587152 instance=ExtResource("2_scoop")]
+position = Vector2(-48, 144)
+
+[node name="Scoop3" parent="SoundStack" unique_id=1289991835 instance=ExtResource("2_scoop")]
+position = Vector2(-48, 144)
+
+[node name="Scoop4" parent="SoundStack" unique_id=1632885229 instance=ExtResource("2_scoop")]
+position = Vector2(-48, 144)
+
+[node name="Mid1" parent="SoundStack" unique_id=318492688 instance=ExtResource("3_mid")]
+position = Vector2(-50, 120)
+
+[node name="Mid2" parent="SoundStack" unique_id=1427563233 instance=ExtResource("3_mid")]
+position = Vector2(-50, 120)
+
+[node name="Mid3" parent="SoundStack" unique_id=203457031 instance=ExtResource("3_mid")]
+position = Vector2(-50, 120)
+
+[node name="Horn1" parent="SoundStack" unique_id=1275385280 instance=ExtResource("4_horn")]
+position = Vector2(-50, 116)
+
+[node name="Horn2" parent="SoundStack" unique_id=653986779 instance=ExtResource("4_horn")]
+position = Vector2(-50, 116)
+
+[node name="TopHF" parent="SoundStack" unique_id=69545245 instance=ExtResource("5_top")]
+position = Vector2(-60, 116)
+
+[node name="Boxman" parent="." unique_id=1160117433 instance=ExtResource("1_boxman")]
+z_index = 2
+position = Vector2(-58, 160)
+
+[node name="FX" type="Node2D" parent="." unique_id=2047760375]
+z_index = 3
+
+[node name="IndicatorL" type="Polygon2D" parent="FX" unique_id=1558583795]
+modulate = Color(1, 1, 1, 0)
+color = Color(0.95, 0.3, 0.08, 1)
+polygon = PackedVector2Array(225, 60, 229, 60, 229, 64, 225, 64)
+
+[node name="IndicatorR" type="Polygon2D" parent="FX" unique_id=881090163]
+modulate = Color(1, 1, 1, 0)
+color = Color(0.95, 0.3, 0.08, 1)
+polygon = PackedVector2Array(239, 60, 243, 60, 243, 64, 239, 64)
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=491958785]
+libraries/ = SubResource("AnimationLibrary_main")
+autoplay = &"build"
