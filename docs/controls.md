@@ -24,12 +24,16 @@ A/B measurement was performed. These are functional references, not evidence
 of circuit or sonic identity. The single-button manual gesture and bipolar
 filter calibration below are project implementation choices.
 
-| Selector | Project calibration (not documented or measured Benidub values) |
+| Selector | Current Classic calibration |
 |---|---|
-| PITCH LOW / MID / HIGH | 110 / 220 / 440 Hz |
+| PITCH LOW / MID / HIGH | 261.63 / 392.00 / 587.33 Hz |
 | RATE SLOW / MID / FAST | 0.35 / 0.70 / 2.80 Hz |
 | RATE MANUAL | automatic phase stopped; BTN3 controls manual modulation |
 | Depth | 1 octave either side of base pitch |
+
+The pitch presets reflect the completed DS01E audio/video analysis. Rate and
+depth remain project values because that analysis did not support replacing
+them numerically.
 
 Musical calibration, Extended defaults and DSP safety constants live in
 `firmware/src/audio/PerformanceConfig.h`.

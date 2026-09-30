@@ -125,8 +125,8 @@ FEEDBACK value. ECHO_LOOP takes precedence and recirculates existing ring-buffer
 audio without acquiring dry input or applying feedback to the write. ECHO_CUT
 continues to mute only wet output.
 
-The boot profile is CLASSIC. Pitch 110/220/440 Hz and automatic rates
-0.35/0.70/2.80 Hz are project calibration values, not Benidub measurements.
+The boot profile is CLASSIC. Pitch 261.63/392.00/587.33 Hz reflects the completed
+DS01E analysis; automatic rates 0.35/0.70/2.80 Hz remain project values.
 Classic uses fixed depth, a finite 2 ms attack / 3 ms release anti-click gate,
 and ignores Extended decay, sweep, legacy voicing, automatic bend and retrigger.
 Manual stops the automatic LFO and connects its gate to the manual button.

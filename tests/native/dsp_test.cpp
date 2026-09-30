@@ -743,6 +743,31 @@ void testClassicControls() {
     assert(store.snapshot().profile == PerformanceProfile::Extended);
 }
 
+void testClassicCalibration() {
+    constexpr float expected[] = {261.63f, 392.00f, 587.33f};
+    constexpr float tolerance[] = {2.0f, 3.0f, 5.0f};
+    float observed[3];
+    ControlState state;
+    state.mode = SirenMode::Sine1;
+    state.classicModulation = ClassicModulation::Manual;
+
+    for (int i = 0; i < 3; ++i) {
+        assert(fabsf(PerformanceConfig::kClassicPitchHz[i] - expected[i]) <
+               0.001f);
+        state.classicPitch = static_cast<ClassicPitch>(i);
+        observed[i] = renderFrequency(state);
+        assert(fabsf(observed[i] - expected[i]) <= tolerance[i]);
+    }
+    assert(fabsf(observed[1] / observed[0] - 1.498f) <= 0.01498f);
+    assert(fabsf(observed[2] / observed[0] - 2.245f) <= 0.02245f);
+
+    assert(PerformanceConfig::kClassicRateHz[0] == 0.35f);
+    assert(PerformanceConfig::kClassicRateHz[1] == 0.70f);
+    assert(PerformanceConfig::kClassicRateHz[2] == 2.80f);
+    assert(PerformanceConfig::kEchoTimeMinMs == 50.0f);
+    assert(PerformanceConfig::kEchoTimeMaxMs == 1000.0f);
+}
+
 void testSelectors() {
     for (int zones : {3, 4}) {
         for (int boundary = 1; boundary < zones; ++boundary) {
@@ -878,9 +903,9 @@ void testManualAndClassicVoices() {
     const float low = renderFrequency(state);
     state.modUp = true;
     const float high = renderFrequency(state);
-    assert(low > 108 && low < 112 && high > 438 && high < 442);
+    assert(low > 194 && low < 198 && high > 779 && high < 789);
     state.mode = SirenMode::TestTone;
-    assert(fabsf(renderFrequency(state) - 220) < 2);
+    assert(fabsf(renderFrequency(state) - 392) < 3);
     state.modUp = false;
     assert(renderFrequency(state) == 0);
     // Classic ignores advanced sweep, legacy switch and automatic bend.
@@ -914,8 +939,8 @@ void testClassicAutomaticVoices() {
                 heardHigh |= blockRms(block, 4800) > 1000;
             } else {
                 const float frequency = estimateFrequency(block, 4800);
-                heardLow |= frequency > 108 && frequency < 112;
-                heardHigh |= frequency > 438 && frequency < 442;
+                heardLow |= frequency > 194 && frequency < 198;
+                heardHigh |= frequency > 779 && frequency < 789;
             }
         }
         assert(heardLow && heardHigh);
@@ -940,6 +965,7 @@ void testClassicAutomaticVoices() {
 int main() {
     testClassicAutomaticVoices();
     testClassicControls();
+    testClassicCalibration();
     testSelectors();
     testClassicDryRelease();
     testWetIsolation();

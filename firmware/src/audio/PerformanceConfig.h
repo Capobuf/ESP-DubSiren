@@ -1,9 +1,9 @@
 #pragma once
 
-// Project tuning points, not measured values from another instrument.
+// Shared performance calibration and project tuning points.
 namespace PerformanceConfig {
-// DS01E functional baseline: project calibration, not Benidub measurements.
-constexpr float kClassicPitchHz[] = {110.0f, 220.0f, 440.0f};
+// DS01E Classic pitch calibration; other tuning points remain project values.
+constexpr float kClassicPitchHz[] = {261.63f, 392.00f, 587.33f};
 constexpr float kClassicRateHz[] = {0.35f, 0.70f, 2.80f};
 constexpr float kClassicDepthOctaves = 1.0f;
 constexpr float kLfoChargeRatio = 0.18f;
