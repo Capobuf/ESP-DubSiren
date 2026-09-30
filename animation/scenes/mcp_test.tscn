@@ -1,0 +1,67 @@
+[gd_scene format=3 uid="uid://dsr60r0qxxruj"]
+
+[sub_resource type="Animation" id="Animation_reset"]
+resource_name = "RESET"
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("TestRect:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(40, 85)]
+}
+
+[sub_resource type="Animation" id="Animation_move"]
+resource_name = "move"
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("TestRect:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.5, 1),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector2(40, 85), Vector2(280, 85), Vector2(40, 85)]
+}
+
+[sub_resource type="Animation" id="Animation_km1hb"]
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("TestRect:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.5, 1),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [0.0, 0.35, 0.0]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_main"]
+_data = {
+&"RESET": SubResource("Animation_reset"),
+&"move": SubResource("Animation_move"),
+&"pulse": SubResource("Animation_km1hb")
+}
+
+[node name="McpTest" type="Node2D" unique_id=2116598407]
+
+[node name="TestRect" type="Polygon2D" parent="." unique_id=357912929]
+z_index = 1
+position = Vector2(40, 85)
+color = Color(0.2, 0.8, 0.95, 1)
+polygon = PackedVector2Array(-14, -14, 14, -14, 14, 14, -14, 14)
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=394984391]
+libraries/ = SubResource("AnimationLibrary_main")
+autoplay = &"pulse"

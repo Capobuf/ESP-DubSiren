@@ -1,0 +1,36 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=5
+
+[application]
+
+config/name="ESP-DubSiren Animation"
+run/main_scene="res://scenes/mcp_test.tscn"
+config/features=PackedStringArray("4.7")
+
+[autoload]
+
+ClaudeBridgeGameCapture="*uid://co0pyiny5fv1t"
+
+[display]
+
+window/size/viewport_width=320
+window/size/viewport_height=170
+window/size/resizable=false
+window/stretch/mode="canvas_items"
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/godot_mcp_bridge/plugin.cfg")
+
+[rendering]
+
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
+environment/defaults/default_clear_color=Color(0.035, 0.047, 0.071, 1)
