@@ -1,0 +1,1885 @@
+{
+  "toolsets": [
+    "library"
+  ],
+  "calls": [
+    {
+      "name": "create_footprint",
+      "arguments": {
+        "output": "C:/Users/dot/Documents/ESP-DubSiren/pcb/v2/footprints/ESP-DubSiren-V2-Mechanical.pretty/Adafruit_5393_DisplayFace.kicad_mod",
+        "name": "Adafruit_5393_DisplayFace",
+        "pads": [
+          {
+            "number": "1",
+            "type": "thru_hole",
+            "shape": "rect",
+            "x": -12.7,
+            "y": 13.335,
+            "width": 1.9304,
+            "height": 1.9304,
+            "drill": 1.0
+          },
+          {
+            "number": "2",
+            "type": "thru_hole",
+            "shape": "circle",
+            "x": -10.16,
+            "y": 13.335,
+            "width": 1.9304,
+            "height": 1.9304,
+            "drill": 1.0
+          },
+          {
+            "number": "3",
+            "type": "thru_hole",
+            "shape": "circle",
+            "x": -7.62,
+            "y": 13.335,
+            "width": 1.9304,
+            "height": 1.9304,
+            "drill": 1.0
+          },
+          {
+            "number": "4",
+            "type": "thru_hole",
+            "shape": "circle",
+            "x": -5.08,
+            "y": 13.335,
+            "width": 1.9304,
+            "height": 1.9304,
+            "drill": 1.0
+          },
+          {
+            "number": "5",
+            "type": "thru_hole",
+            "shape": "circle",
+            "x": -2.54,
+            "y": 13.335,
+            "width": 1.9304,
+            "height": 1.9304,
+            "drill": 1.0
+          },
+          {
+            "number": "6",
+            "type": "thru_hole",
+            "shape": "circle",
+            "x": 0.0,
+            "y": 13.335,
+            "width": 1.9304,
+            "height": 1.9304,
+            "drill": 1.0
+          },
+          {
+            "number": "7",
+            "type": "thru_hole",
+            "shape": "circle",
+            "x": 2.54,
+            "y": 13.335,
+            "width": 1.9304,
+            "height": 1.9304,
+            "drill": 1.0
+          },
+          {
+            "number": "8",
+            "type": "thru_hole",
+            "shape": "circle",
+            "x": 5.08,
+            "y": 13.335,
+            "width": 1.9304,
+            "height": 1.9304,
+            "drill": 1.0
+          },
+          {
+            "number": "9",
+            "type": "thru_hole",
+            "shape": "circle",
+            "x": 7.62,
+            "y": 13.335,
+            "width": 1.9304,
+            "height": 1.9304,
+            "drill": 1.0
+          },
+          {
+            "number": "10",
+            "type": "thru_hole",
+            "shape": "circle",
+            "x": 10.16,
+            "y": 13.335,
+            "width": 1.9304,
+            "height": 1.9304,
+            "drill": 1.0
+          },
+          {
+            "number": "11",
+            "type": "thru_hole",
+            "shape": "circle",
+            "x": 12.7,
+            "y": 13.335,
+            "width": 1.9304,
+            "height": 1.9304,
+            "drill": 1.0
+          },
+          {
+            "number": "",
+            "type": "np_thru_hole",
+            "shape": "circle",
+            "x": -15.875,
+            "y": -12.7,
+            "width": 2.5,
+            "height": 2.5,
+            "drill": 2.5
+          },
+          {
+            "number": "",
+            "type": "np_thru_hole",
+            "shape": "circle",
+            "x": 15.875,
+            "y": -12.7,
+            "width": 2.5,
+            "height": 2.5,
+            "drill": 2.5
+          },
+          {
+            "number": "",
+            "type": "np_thru_hole",
+            "shape": "circle",
+            "x": -15.875,
+            "y": 12.7,
+            "width": 2.5,
+            "height": 2.5,
+            "drill": 2.5
+          },
+          {
+            "number": "",
+            "type": "np_thru_hole",
+            "shape": "circle",
+            "x": 15.875,
+            "y": 12.7,
+            "width": 2.5,
+            "height": 2.5,
+            "drill": 2.5
+          }
+        ],
+        "body_width": 36.83,
+        "body_height": 30.48,
+        "package_type": "through_hole",
+        "description": "Adafruit 5393; official Eagle geometry; display face / Eagle bottom; see physical lead map."
+      }
+    },
+    {
+      "name": "set_footprint_graphics",
+      "arguments": {
+        "footprint_path": "C:/Users/dot/Documents/ESP-DubSiren/pcb/v2/footprints/ESP-DubSiren-V2-Mechanical.pretty/Adafruit_5393_DisplayFace.kicad_mod",
+        "selector": {
+          "layer": "F.Fab"
+        },
+        "mode": "replace",
+        "graphics": [
+          {
+            "type": "line",
+            "start": {
+              "x": 18.415,
+              "y": -12.7
+            },
+            "end": {
+              "x": 18.415,
+              "y": 12.7
+            },
+            "stroke_width_mm": 0.1
+          },
+          {
+            "type": "arc",
+            "start": {
+              "x": 18.415,
+              "y": 12.7
+            },
+            "mid": {
+              "x": 17.671051,
+              "y": 14.496051
+            },
+            "end": {
+              "x": 15.875,
+              "y": 15.24
+            },
+            "stroke_width_mm": 0.1
+          },
+          {
+            "type": "line",
+            "start": {
+              "x": 15.875,
+              "y": 15.24
+            },
+            "end": {
+              "x": -15.875,
+              "y": 15.24
+            },
+            "stroke_width_mm": 0.1
+          },
+          {
+            "type": "arc",
+            "start": {
+              "x": -15.875,
+              "y": 15.24
+            },
+            "mid": {
+              "x": -17.671051,
+              "y": 14.496051
+            },
+            "end": {
+              "x": -18.415,
+              "y": 12.7
+            },
+            "stroke_width_mm": 0.1
+          },
+          {
+            "type": "line",
+            "start": {
+              "x": -18.415,
+              "y": 12.7
+            },
+            "end": {
+              "x": -18.415,
+              "y": -12.7
+            },
+            "stroke_width_mm": 0.1
+          },
+          {
+            "type": "arc",
+            "start": {
+              "x": -18.415,
+              "y": -12.7
+            },
+            "mid": {
+              "x": -17.671051,
+              "y": -14.496051
+            },
+            "end": {
+              "x": -15.875,
+              "y": -15.24
+            },
+            "stroke_width_mm": 0.1
+          },
+          {
+            "type": "line",
+            "start": {
+              "x": -15.875,
+              "y": -15.24
+            },
+            "end": {
+              "x": 15.875,
+              "y": -15.24
+            },
+            "stroke_width_mm": 0.1
+          },
+          {
+            "type": "arc",
+            "start": {
+              "x": 15.875,
+              "y": -15.24
+            },
+            "mid": {
+              "x": 17.671051,
+              "y": -14.496051
+            },
+            "end": {
+              "x": 18.415,
+              "y": -12.7
+            },
+            "stroke_width_mm": 0.1
+          },
+          {
+            "type": "line",
+            "start": {
+              "x": -16.791,
+              "y": -6.777
+            },
+            "end": {
+              "x": -16.791,
+              "y": -7.777
+            },
+            "stroke_width_mm": 0.1
+          },
+          {
+            "type": "line",
+            "start": {
+              "x": -16.791,
+              "y": -7.777
+            },
+            "end": {
+              "x": -1.691,
+              "y": -7.777
+            },
+            "stroke_width_mm": 0.1
+          },
+          {
+            "type": "line",
+            "start": {
+              "x": -1.691,
+              "y": -7.777
+            },
+            "end": {
+              "x": -1.691,
+              "y": 6.223
+            },
+            "stroke_width_mm": 0.1
+          },
+          {
+            "type": "line",
+            "start": {
+              "x": -1.691,
+              "y": 6.223
+            },
+            "end": {
+              "x": -16.091,
+              "y": 6.223
+            },
+            "stroke_width_mm": 0.1
+          },
+          {
+            "type": "line",
+            "start": {
+              "x": -16.091,
+              "y": 6.223
+            },
+            "end": {
+              "x": -16.091,
+              "y": 5.223
+            },
+            "stroke_width_mm": 0.1
+          },
+          {
+            "type": "arc",
+            "start": {
+              "x": -16.091,
+              "y": 5.223
+            },
+            "mid": {
+              "x": -15.496025,
+              "y": 5.059396
+            },
+            "end": {
+              "x": -15.191,
+              "y": 4.523
+            },
+            "stroke_width_mm": 0.1
+          },
+          {
+            "type": "line",
+            "start": {
+              "x": -15.191,
+              "y": 4.523
+            },
+            "end": {
+              "x": -15.191,
+              "y": -5.177
+            },
+            "stroke_width_mm": 0.1
+          },
+          {
+            "type": "arc",
+            "start": {
+              "x": -15.191,
+              "y": -5.177
+            },
+            "mid": {
+              "x": -15.659629,
+              "y": -6.308371
+            },
+            "end": {
+              "x": -16.791,
+              "y": -6.777
+            },
+            "stroke_width_mm": 0.1
+          },
+          {
+            "type": "arc",
+            "start": {
+              "x": -16.351,
+              "y": 5.823
+            },
+            "mid": {
+              "x": -17.199528,
+              "y": 5.471528
+            },
+            "end": {
+              "x": -17.551,
+              "y": 4.623
+            },
+            "stroke_width_mm": 0.1
+          },
+          {
+            "type": "line",
+            "start": {
+              "x": -17.551,
+              "y": 4.623
+            },
+            "end": {
+              "x": -17.551,
+              "y": -4.577
+            },
+            "stroke_width_mm": 0.1
+          },
+          {
+            "type": "arc",
+            "start": {
+              "x": -17.551,
+              "y": -4.577
+            },
+            "mid": {
+              "x": -17.270239,
+              "y": -5.454817
+            },
+            "end": {
+              "x": -16.451,
+              "y": -5.877
+            },
+            "stroke_width_mm": 0.1
+          },
+          {
+            "type": "arc",
+            "start": {
+              "x": -17.251,
+              "y": 5.823
+            },
+            "mid": {
+              "x": -18.099528,
+              "y": 5.471528
+            },
+            "end": {
+              "x": -18.451,
+              "y": 4.623
+            },
+            "stroke_width_mm": 0.1
+          },
+          {
+            "type": "line",
+            "start": {
+              "x": -18.451,
+              "y": 4.623
+            },
+            "end": {
+              "x": -18.451,
+              "y": -4.577
+            },
+            "stroke_width_mm": 0.1
+          },
+          {
+            "type": "arc",
+            "start": {
+              "x": -18.451,
+              "y": -4.577
+            },
+            "mid": {
+              "x": -18.170239,
+              "y": -5.454817
+            },
+            "end": {
+              "x": -17.351,
+              "y": -5.877
+            },
+            "stroke_width_mm": 0.1
+          },
+          {
+            "type": "arc",
+            "start": {
+              "x": -21.051,
+              "y": 5.823
+            },
+            "mid": {
+              "x": -21.899528,
+              "y": 5.471528
+            },
+            "end": {
+              "x": -22.251,
+              "y": 4.623
+            },
+            "stroke_width_mm": 0.1
+          },
+          {
+            "type": "line",
+            "start": {
+              "x": -22.251,
+              "y": 4.623
+            },
+            "end": {
+              "x": -22.251,
+              "y": -4.577
+            },
+            "stroke_width_mm": 0.1
+          },
+          {
+            "type": "arc",
+            "start": {
+              "x": -22.251,
+              "y": -4.577
+            },
+            "mid": {
+              "x": -21.970239,
+              "y": -5.454817
+            },
+            "end": {
+              "x": -21.151,
+              "y": -5.877
+            },
+            "stroke_width_mm": 0.1
+          },
+          {
+            "type": "line",
+            "start": {
+              "x": -15.216,
+              "y": -9.7
+            },
+            "end": {
+              "x": 15.084,
+              "y": -9.7
+            },
+            "stroke_width_mm": 0.1
+          },
+          {
+            "type": "arc",
+            "start": {
+              "x": 15.084,
+              "y": -9.7
+            },
+            "mid": {
+              "x": 17.20532,
+              "y": -8.82132
+            },
+            "end": {
+              "x": 18.084,
+              "y": -6.7
+            },
+            "stroke_width_mm": 0.1
+          },
+          {
+            "type": "line",
+            "start": {
+              "x": 18.084,
+              "y": -6.7
+            },
+            "end": {
+              "x": 18.084,
+              "y": 6.7
+            },
+            "stroke_width_mm": 0.1
+          },
+          {
+            "type": "arc",
+            "start": {
+              "x": 18.084,
+              "y": 6.7
+            },
+            "mid": {
+              "x": 17.20532,
+              "y": 8.82132
+            },
+            "end": {
+              "x": 15.084,
+              "y": 9.7
+            },
+            "stroke_width_mm": 0.1
+          },
+          {
+            "type": "line",
+            "start": {
+              "x": 15.084,
+              "y": 9.7
+            },
+            "end": {
+              "x": -15.216,
+              "y": 9.7
+            },
+            "stroke_width_mm": 0.1
+          },
+          {
+            "type": "arc",
+            "start": {
+              "x": -15.216,
+              "y": 9.7
+            },
+            "mid": {
+              "x": -17.33732,
+              "y": 8.82132
+            },
+            "end": {
+              "x": -18.216,
+              "y": 6.7
+            },
+            "stroke_width_mm": 0.1
+          },
+          {
+            "type": "line",
+            "start": {
+              "x": -18.216,
+              "y": 6.7
+            },
+            "end": {
+              "x": -18.216,
+              "y": -6.7
+            },
+            "stroke_width_mm": 0.1
+          },
+          {
+            "type": "arc",
+            "start": {
+              "x": -18.216,
+              "y": -6.7
+            },
+            "mid": {
+              "x": -17.33732,
+              "y": -8.82132
+            },
+            "end": {
+              "x": -15.216,
+              "y": -9.7
+            },
+            "stroke_width_mm": 0.1
+          },
+          {
+            "type": "line",
+            "start": {
+              "x": -14.191,
+              "y": -8.7
+            },
+            "end": {
+              "x": 12.159,
+              "y": -8.7
+            },
+            "stroke_width_mm": 0.1
+          },
+          {
+            "type": "arc",
+            "start": {
+              "x": 12.159,
+              "y": -8.7
+            },
+            "mid": {
+              "x": 14.28032,
+              "y": -7.82132
+            },
+            "end": {
+              "x": 15.159,
+              "y": -5.7
+            },
+            "stroke_width_mm": 0.1
+          },
+          {
+            "type": "line",
+            "start": {
+              "x": 15.159,
+              "y": -5.7
+            },
+            "end": {
+              "x": 15.159,
+              "y": 5.7
+            },
+            "stroke_width_mm": 0.1
+          },
+          {
+            "type": "arc",
+            "start": {
+              "x": 15.159,
+              "y": 5.7
+            },
+            "mid": {
+              "x": 14.28032,
+              "y": 7.82132
+            },
+            "end": {
+              "x": 12.159,
+              "y": 8.7
+            },
+            "stroke_width_mm": 0.1
+          },
+          {
+            "type": "line",
+            "start": {
+              "x": 12.159,
+              "y": 8.7
+            },
+            "end": {
+              "x": -14.191,
+              "y": 8.7
+            },
+            "stroke_width_mm": 0.1
+          },
+          {
+            "type": "arc",
+            "start": {
+              "x": -14.191,
+              "y": 8.7
+            },
+            "mid": {
+              "x": -16.31232,
+              "y": 7.82132
+            },
+            "end": {
+              "x": -17.191,
+              "y": 5.7
+            },
+            "stroke_width_mm": 0.1
+          },
+          {
+            "type": "line",
+            "start": {
+              "x": -17.191,
+              "y": 5.7
+            },
+            "end": {
+              "x": -17.191,
+              "y": -5.7
+            },
+            "stroke_width_mm": 0.1
+          },
+          {
+            "type": "arc",
+            "start": {
+              "x": -17.191,
+              "y": -5.7
+            },
+            "mid": {
+              "x": -16.31232,
+              "y": -7.82132
+            },
+            "end": {
+              "x": -14.191,
+              "y": -8.7
+            },
+            "stroke_width_mm": 0.1
+          },
+          {
+            "type": "line",
+            "start": {
+              "x": 15.834,
+              "y": 6.4
+            },
+            "end": {
+              "x": 15.834,
+              "y": -6.4
+            },
+            "stroke_width_mm": 0.1
+          },
+          {
+            "type": "arc",
+            "start": {
+              "x": 15.834,
+              "y": -6.4
+            },
+            "mid": {
+              "x": 14.95532,
+              "y": -8.52132
+            },
+            "end": {
+              "x": 12.834,
+              "y": -9.4
+            },
+            "stroke_width_mm": 0.1
+          },
+          {
+            "type": "line",
+            "start": {
+              "x": 12.834,
+              "y": -9.4
+            },
+            "end": {
+              "x": -14.866,
+              "y": -9.4
+            },
+            "stroke_width_mm": 0.1
+          },
+          {
+            "type": "arc",
+            "start": {
+              "x": -14.866,
+              "y": -9.4
+            },
+            "mid": {
+              "x": -16.98732,
+              "y": -8.52132
+            },
+            "end": {
+              "x": -17.866,
+              "y": -6.4
+            },
+            "stroke_width_mm": 0.1
+          },
+          {
+            "type": "line",
+            "start": {
+              "x": -17.866,
+              "y": -6.4
+            },
+            "end": {
+              "x": -17.866,
+              "y": 6.4
+            },
+            "stroke_width_mm": 0.1
+          },
+          {
+            "type": "arc",
+            "start": {
+              "x": -17.866,
+              "y": 6.4
+            },
+            "mid": {
+              "x": -16.98732,
+              "y": 8.52132
+            },
+            "end": {
+              "x": -14.866,
+              "y": 9.4
+            },
+            "stroke_width_mm": 0.1
+          },
+          {
+            "type": "line",
+            "start": {
+              "x": -14.866,
+              "y": 9.4
+            },
+            "end": {
+              "x": 12.834,
+              "y": 9.4
+            },
+            "stroke_width_mm": 0.1
+          },
+          {
+            "type": "arc",
+            "start": {
+              "x": 12.834,
+              "y": 9.4
+            },
+            "mid": {
+              "x": 14.95532,
+              "y": 8.52132
+            },
+            "end": {
+              "x": 15.834,
+              "y": 6.4
+            },
+            "stroke_width_mm": 0.1
+          },
+          {
+            "type": "line",
+            "start": {
+              "x": 14.984,
+              "y": -5.75
+            },
+            "end": {
+              "x": 9.484,
+              "y": -5.75
+            },
+            "stroke_width_mm": 0.1
+          },
+          {
+            "type": "arc",
+            "start": {
+              "x": 9.484,
+              "y": -5.75
+            },
+            "mid": {
+              "x": 8.42334,
+              "y": -5.31066
+            },
+            "end": {
+              "x": 7.984,
+              "y": -4.25
+            },
+            "stroke_width_mm": 0.1
+          },
+          {
+            "type": "line",
+            "start": {
+              "x": 7.984,
+              "y": -4.25
+            },
+            "end": {
+              "x": 7.984,
+              "y": 4.25
+            },
+            "stroke_width_mm": 0.1
+          },
+          {
+            "type": "arc",
+            "start": {
+              "x": 7.984,
+              "y": 4.25
+            },
+            "mid": {
+              "x": 8.42334,
+              "y": 5.31066
+            },
+            "end": {
+              "x": 9.484,
+              "y": 5.75
+            },
+            "stroke_width_mm": 0.1
+          },
+          {
+            "type": "line",
+            "start": {
+              "x": 9.484,
+              "y": 5.75
+            },
+            "end": {
+              "x": 14.984,
+              "y": 5.75
+            },
+            "stroke_width_mm": 0.1
+          },
+          {
+            "type": "line",
+            "start": {
+              "x": 12.864,
+              "y": -6.5
+            },
+            "end": {
+              "x": 12.864,
+              "y": 6.5
+            },
+            "stroke_width_mm": 0.1
+          },
+          {
+            "type": "line",
+            "start": {
+              "x": 17.264,
+              "y": -6.5
+            },
+            "end": {
+              "x": 17.264,
+              "y": 6.5
+            },
+            "stroke_width_mm": 0.1
+          },
+          {
+            "type": "line",
+            "start": {
+              "x": 12.864,
+              "y": -6.5
+            },
+            "end": {
+              "x": 17.264,
+              "y": -6.5
+            },
+            "stroke_width_mm": 0.1
+          },
+          {
+            "type": "line",
+            "start": {
+              "x": 12.864,
+              "y": 6.5
+            },
+            "end": {
+              "x": 17.264,
+              "y": 6.5
+            },
+            "stroke_width_mm": 0.1
+          },
+          {
+            "type": "line",
+            "start": {
+              "x": 12.664,
+              "y": -4.9
+            },
+            "end": {
+              "x": 12.664,
+              "y": -6.9
+            },
+            "stroke_width_mm": 0.1
+          },
+          {
+            "type": "line",
+            "start": {
+              "x": 12.664,
+              "y": -6.9
+            },
+            "end": {
+              "x": 14.064,
+              "y": -6.9
+            },
+            "stroke_width_mm": 0.1
+          },
+          {
+            "type": "line",
+            "start": {
+              "x": 12.664,
+              "y": 4.9
+            },
+            "end": {
+              "x": 12.664,
+              "y": 6.9
+            },
+            "stroke_width_mm": 0.1
+          },
+          {
+            "type": "line",
+            "start": {
+              "x": 12.664,
+              "y": 6.9
+            },
+            "end": {
+              "x": 14.064,
+              "y": 6.9
+            },
+            "stroke_width_mm": 0.1
+          }
+        ]
+      }
+    },
+    {
+      "name": "set_footprint_graphics",
+      "arguments": {
+        "footprint_path": "C:/Users/dot/Documents/ESP-DubSiren/pcb/v2/footprints/ESP-DubSiren-V2-Mechanical.pretty/Adafruit_5393_DisplayFace.kicad_mod",
+        "selector": {
+          "layer": "F.SilkS"
+        },
+        "mode": "replace",
+        "graphics": [
+          {
+            "type": "line",
+            "start": {
+              "x": 18.415,
+              "y": -12.7
+            },
+            "end": {
+              "x": 18.415,
+              "y": 12.7
+            },
+            "stroke_width_mm": 0.12
+          },
+          {
+            "type": "arc",
+            "start": {
+              "x": 18.415,
+              "y": 12.7
+            },
+            "mid": {
+              "x": 17.671051,
+              "y": 14.496051
+            },
+            "end": {
+              "x": 15.875,
+              "y": 15.24
+            },
+            "stroke_width_mm": 0.12
+          },
+          {
+            "type": "line",
+            "start": {
+              "x": 15.875,
+              "y": 15.24
+            },
+            "end": {
+              "x": -15.875,
+              "y": 15.24
+            },
+            "stroke_width_mm": 0.12
+          },
+          {
+            "type": "arc",
+            "start": {
+              "x": -15.875,
+              "y": 15.24
+            },
+            "mid": {
+              "x": -17.671051,
+              "y": 14.496051
+            },
+            "end": {
+              "x": -18.415,
+              "y": 12.7
+            },
+            "stroke_width_mm": 0.12
+          },
+          {
+            "type": "line",
+            "start": {
+              "x": -18.415,
+              "y": 12.7
+            },
+            "end": {
+              "x": -18.415,
+              "y": -12.7
+            },
+            "stroke_width_mm": 0.12
+          },
+          {
+            "type": "arc",
+            "start": {
+              "x": -18.415,
+              "y": -12.7
+            },
+            "mid": {
+              "x": -17.671051,
+              "y": -14.496051
+            },
+            "end": {
+              "x": -15.875,
+              "y": -15.24
+            },
+            "stroke_width_mm": 0.12
+          },
+          {
+            "type": "line",
+            "start": {
+              "x": -15.875,
+              "y": -15.24
+            },
+            "end": {
+              "x": 15.875,
+              "y": -15.24
+            },
+            "stroke_width_mm": 0.12
+          },
+          {
+            "type": "arc",
+            "start": {
+              "x": 15.875,
+              "y": -15.24
+            },
+            "mid": {
+              "x": 17.671051,
+              "y": -14.496051
+            },
+            "end": {
+              "x": 18.415,
+              "y": -12.7
+            },
+            "stroke_width_mm": 0.12
+          },
+          {
+            "type": "circle",
+            "center": {
+              "x": -12.7,
+              "y": 11.735000000000001
+            },
+            "radius_mm": 0.25,
+            "stroke_width_mm": 0.12,
+            "fill": "none"
+          }
+        ]
+      }
+    },
+    {
+      "name": "set_footprint_graphics",
+      "arguments": {
+        "footprint_path": "C:/Users/dot/Documents/ESP-DubSiren/pcb/v2/footprints/ESP-DubSiren-V2-Mechanical.pretty/Adafruit_5393_DisplayFace.kicad_mod",
+        "selector": {
+          "layer": "F.CrtYd"
+        },
+        "mode": "replace",
+        "graphics": [
+          {
+            "type": "rect",
+            "start": {
+              "x": -18.915,
+              "y": -15.74
+            },
+            "end": {
+              "x": 18.915,
+              "y": 15.74
+            },
+            "stroke_width_mm": 0.05,
+            "fill": "none"
+          }
+        ]
+      }
+    },
+    {
+      "name": "get_footprint_info",
+      "arguments": {
+        "footprint_path": "C:/Users/dot/Documents/ESP-DubSiren/pcb/v2/footprints/ESP-DubSiren-V2-Mechanical.pretty/Adafruit_5393_DisplayFace.kicad_mod",
+        "include_pads": true,
+        "include_graphics": true
+      }
+    },
+    {
+      "name": "create_footprint",
+      "arguments": {
+        "output": "C:/Users/dot/Documents/ESP-DubSiren/pcb/v2/footprints/ESP-DubSiren-V2-Mechanical.pretty/Adafruit_6250_ComponentFace.kicad_mod",
+        "name": "Adafruit_6250_ComponentFace",
+        "pads": [
+          {
+            "number": "1",
+            "type": "thru_hole",
+            "shape": "rect",
+            "x": -8.89,
+            "y": 7.62,
+            "width": 1.6764,
+            "height": 1.6764,
+            "drill": 1.0
+          },
+          {
+            "number": "2",
+            "type": "thru_hole",
+            "shape": "circle",
+            "x": -6.35,
+            "y": 7.62,
+            "width": 1.6764,
+            "height": 1.6764,
+            "drill": 1.0
+          },
+          {
+            "number": "3",
+            "type": "thru_hole",
+            "shape": "circle",
+            "x": -3.81,
+            "y": 7.62,
+            "width": 1.6764,
+            "height": 1.6764,
+            "drill": 1.0
+          },
+          {
+            "number": "4",
+            "type": "thru_hole",
+            "shape": "circle",
+            "x": -1.27,
+            "y": 7.62,
+            "width": 1.6764,
+            "height": 1.6764,
+            "drill": 1.0
+          },
+          {
+            "number": "5",
+            "type": "thru_hole",
+            "shape": "circle",
+            "x": 1.27,
+            "y": 7.62,
+            "width": 1.6764,
+            "height": 1.6764,
+            "drill": 1.0
+          },
+          {
+            "number": "6",
+            "type": "thru_hole",
+            "shape": "circle",
+            "x": 3.81,
+            "y": 7.62,
+            "width": 1.6764,
+            "height": 1.6764,
+            "drill": 1.0
+          },
+          {
+            "number": "7",
+            "type": "thru_hole",
+            "shape": "circle",
+            "x": 6.35,
+            "y": 7.62,
+            "width": 1.6764,
+            "height": 1.6764,
+            "drill": 1.0
+          },
+          {
+            "number": "8",
+            "type": "thru_hole",
+            "shape": "circle",
+            "x": 8.89,
+            "y": 7.62,
+            "width": 1.6764,
+            "height": 1.6764,
+            "drill": 1.0
+          },
+          {
+            "number": "9",
+            "type": "thru_hole",
+            "shape": "circle",
+            "x": 6.35,
+            "y": -7.62,
+            "width": 1.778,
+            "height": 1.778,
+            "drill": 1.0
+          },
+          {
+            "number": "10",
+            "type": "thru_hole",
+            "shape": "circle",
+            "x": 3.81,
+            "y": -7.62,
+            "width": 1.778,
+            "height": 1.778,
+            "drill": 1.0
+          },
+          {
+            "number": "11",
+            "type": "thru_hole",
+            "shape": "circle",
+            "x": 1.27,
+            "y": -7.62,
+            "width": 1.778,
+            "height": 1.778,
+            "drill": 1.0
+          },
+          {
+            "number": "12",
+            "type": "thru_hole",
+            "shape": "circle",
+            "x": -1.27,
+            "y": -7.62,
+            "width": 1.778,
+            "height": 1.778,
+            "drill": 1.0
+          },
+          {
+            "number": "13",
+            "type": "thru_hole",
+            "shape": "circle",
+            "x": -3.81,
+            "y": -7.62,
+            "width": 1.778,
+            "height": 1.778,
+            "drill": 1.0
+          },
+          {
+            "number": "14",
+            "type": "thru_hole",
+            "shape": "circle",
+            "x": -6.35,
+            "y": -7.62,
+            "width": 1.778,
+            "height": 1.778,
+            "drill": 1.0
+          },
+          {
+            "number": "",
+            "type": "np_thru_hole",
+            "shape": "circle",
+            "x": -12.7,
+            "y": 7.62,
+            "width": 2.5,
+            "height": 2.5,
+            "drill": 2.5
+          },
+          {
+            "number": "",
+            "type": "np_thru_hole",
+            "shape": "circle",
+            "x": 12.7,
+            "y": 7.62,
+            "width": 2.5,
+            "height": 2.5,
+            "drill": 2.5
+          },
+          {
+            "number": "",
+            "type": "np_thru_hole",
+            "shape": "circle",
+            "x": -12.7,
+            "y": -7.62,
+            "width": 2.5,
+            "height": 2.5,
+            "drill": 2.5
+          },
+          {
+            "number": "",
+            "type": "np_thru_hole",
+            "shape": "circle",
+            "x": 12.7,
+            "y": -7.62,
+            "width": 2.5,
+            "height": 2.5,
+            "drill": 2.5
+          }
+        ],
+        "body_width": 30.48,
+        "body_height": 20.32,
+        "package_type": "through_hole",
+        "description": "Adafruit 6250; official Eagle geometry; component face / Eagle top; see physical lead map."
+      }
+    },
+    {
+      "name": "set_footprint_graphics",
+      "arguments": {
+        "footprint_path": "C:/Users/dot/Documents/ESP-DubSiren/pcb/v2/footprints/ESP-DubSiren-V2-Mechanical.pretty/Adafruit_6250_ComponentFace.kicad_mod",
+        "selector": {
+          "layer": "F.Fab"
+        },
+        "mode": "replace",
+        "graphics": [
+          {
+            "type": "line",
+            "start": {
+              "x": -12.7,
+              "y": -10.16
+            },
+            "end": {
+              "x": 12.7,
+              "y": -10.16
+            },
+            "stroke_width_mm": 0.1
+          },
+          {
+            "type": "arc",
+            "start": {
+              "x": 12.7,
+              "y": -10.16
+            },
+            "mid": {
+              "x": 14.496051,
+              "y": -9.416051
+            },
+            "end": {
+              "x": 15.24,
+              "y": -7.62
+            },
+            "stroke_width_mm": 0.1
+          },
+          {
+            "type": "line",
+            "start": {
+              "x": 15.24,
+              "y": -7.62
+            },
+            "end": {
+              "x": 15.24,
+              "y": 7.62
+            },
+            "stroke_width_mm": 0.1
+          },
+          {
+            "type": "arc",
+            "start": {
+              "x": 15.24,
+              "y": 7.62
+            },
+            "mid": {
+              "x": 14.496051,
+              "y": 9.416051
+            },
+            "end": {
+              "x": 12.7,
+              "y": 10.16
+            },
+            "stroke_width_mm": 0.1
+          },
+          {
+            "type": "line",
+            "start": {
+              "x": 12.7,
+              "y": 10.16
+            },
+            "end": {
+              "x": -12.7,
+              "y": 10.16
+            },
+            "stroke_width_mm": 0.1
+          },
+          {
+            "type": "arc",
+            "start": {
+              "x": -12.7,
+              "y": 10.16
+            },
+            "mid": {
+              "x": -14.496051,
+              "y": 9.416051
+            },
+            "end": {
+              "x": -15.24,
+              "y": 7.62
+            },
+            "stroke_width_mm": 0.1
+          },
+          {
+            "type": "line",
+            "start": {
+              "x": -15.24,
+              "y": 7.62
+            },
+            "end": {
+              "x": -15.24,
+              "y": -7.62
+            },
+            "stroke_width_mm": 0.1
+          },
+          {
+            "type": "arc",
+            "start": {
+              "x": -15.24,
+              "y": -7.62
+            },
+            "mid": {
+              "x": -14.496051,
+              "y": -9.416051
+            },
+            "end": {
+              "x": -12.7,
+              "y": -10.16
+            },
+            "stroke_width_mm": 0.1
+          },
+          {
+            "type": "line",
+            "start": {
+              "x": 3.311934,
+              "y": -3.110256
+            },
+            "end": {
+              "x": 3.311934,
+              "y": 3.152572
+            },
+            "stroke_width_mm": 0.1
+          },
+          {
+            "type": "line",
+            "start": {
+              "x": 3.311934,
+              "y": 3.152572
+            },
+            "end": {
+              "x": 11.182784,
+              "y": 3.152572
+            },
+            "stroke_width_mm": 0.1
+          },
+          {
+            "type": "line",
+            "start": {
+              "x": 11.182784,
+              "y": 3.152572
+            },
+            "end": {
+              "x": 13.954506,
+              "y": 3.152572
+            },
+            "stroke_width_mm": 0.1
+          },
+          {
+            "type": "line",
+            "start": {
+              "x": 13.954506,
+              "y": 3.152572
+            },
+            "end": {
+              "x": 15.224,
+              "y": 3.152572
+            },
+            "stroke_width_mm": 0.1
+          },
+          {
+            "type": "line",
+            "start": {
+              "x": 15.224,
+              "y": 3.152572
+            },
+            "end": {
+              "x": 15.224,
+              "y": -3.152572
+            },
+            "stroke_width_mm": 0.1
+          },
+          {
+            "type": "line",
+            "start": {
+              "x": 15.224,
+              "y": -3.152572
+            },
+            "end": {
+              "x": 13.954506,
+              "y": -3.152572
+            },
+            "stroke_width_mm": 0.1
+          },
+          {
+            "type": "line",
+            "start": {
+              "x": 13.954506,
+              "y": -3.152572
+            },
+            "end": {
+              "x": 3.311934,
+              "y": -3.152572
+            },
+            "stroke_width_mm": 0.1
+          },
+          {
+            "type": "line",
+            "start": {
+              "x": 3.311934,
+              "y": -3.152572
+            },
+            "end": {
+              "x": 3.311934,
+              "y": -3.131416
+            },
+            "stroke_width_mm": 0.1
+          },
+          {
+            "type": "line",
+            "start": {
+              "x": 15.245159,
+              "y": -2.496669
+            },
+            "end": {
+              "x": 17.212872,
+              "y": -2.496669
+            },
+            "stroke_width_mm": 0.1
+          },
+          {
+            "type": "line",
+            "start": {
+              "x": 17.212872,
+              "y": -2.496669
+            },
+            "end": {
+              "x": 17.212872,
+              "y": 2.517825
+            },
+            "stroke_width_mm": 0.1
+          },
+          {
+            "type": "line",
+            "start": {
+              "x": 17.212872,
+              "y": 2.517825
+            },
+            "end": {
+              "x": 15.224,
+              "y": 2.517825
+            },
+            "stroke_width_mm": 0.1
+          },
+          {
+            "type": "line",
+            "start": {
+              "x": 13.954506,
+              "y": -3.152572
+            },
+            "end": {
+              "x": 13.954506,
+              "y": -0.994438
+            },
+            "stroke_width_mm": 0.1
+          },
+          {
+            "type": "line",
+            "start": {
+              "x": 13.954506,
+              "y": -0.994438
+            },
+            "end": {
+              "x": 13.446712,
+              "y": -0.994438
+            },
+            "stroke_width_mm": 0.1
+          },
+          {
+            "type": "line",
+            "start": {
+              "x": 13.446712,
+              "y": -0.994438
+            },
+            "end": {
+              "x": 13.446712,
+              "y": 1.121384
+            },
+            "stroke_width_mm": 0.1
+          },
+          {
+            "type": "line",
+            "start": {
+              "x": 13.446712,
+              "y": 1.121384
+            },
+            "end": {
+              "x": 13.954506,
+              "y": 1.121384
+            },
+            "stroke_width_mm": 0.1
+          },
+          {
+            "type": "line",
+            "start": {
+              "x": 13.954506,
+              "y": 1.121384
+            },
+            "end": {
+              "x": 13.954506,
+              "y": 3.152572
+            },
+            "stroke_width_mm": 0.1
+          },
+          {
+            "type": "line",
+            "start": {
+              "x": 11.182784,
+              "y": -3.131416
+            },
+            "end": {
+              "x": 11.182784,
+              "y": 3.152572
+            },
+            "stroke_width_mm": 0.1
+          }
+        ]
+      }
+    },
+    {
+      "name": "set_footprint_graphics",
+      "arguments": {
+        "footprint_path": "C:/Users/dot/Documents/ESP-DubSiren/pcb/v2/footprints/ESP-DubSiren-V2-Mechanical.pretty/Adafruit_6250_ComponentFace.kicad_mod",
+        "selector": {
+          "layer": "F.SilkS"
+        },
+        "mode": "replace",
+        "graphics": [
+          {
+            "type": "line",
+            "start": {
+              "x": -12.7,
+              "y": -10.16
+            },
+            "end": {
+              "x": 12.7,
+              "y": -10.16
+            },
+            "stroke_width_mm": 0.12
+          },
+          {
+            "type": "arc",
+            "start": {
+              "x": 12.7,
+              "y": -10.16
+            },
+            "mid": {
+              "x": 14.496051,
+              "y": -9.416051
+            },
+            "end": {
+              "x": 15.24,
+              "y": -7.62
+            },
+            "stroke_width_mm": 0.12
+          },
+          {
+            "type": "line",
+            "start": {
+              "x": 15.24,
+              "y": -7.62
+            },
+            "end": {
+              "x": 15.24,
+              "y": 7.62
+            },
+            "stroke_width_mm": 0.12
+          },
+          {
+            "type": "arc",
+            "start": {
+              "x": 15.24,
+              "y": 7.62
+            },
+            "mid": {
+              "x": 14.496051,
+              "y": 9.416051
+            },
+            "end": {
+              "x": 12.7,
+              "y": 10.16
+            },
+            "stroke_width_mm": 0.12
+          },
+          {
+            "type": "line",
+            "start": {
+              "x": 12.7,
+              "y": 10.16
+            },
+            "end": {
+              "x": -12.7,
+              "y": 10.16
+            },
+            "stroke_width_mm": 0.12
+          },
+          {
+            "type": "arc",
+            "start": {
+              "x": -12.7,
+              "y": 10.16
+            },
+            "mid": {
+              "x": -14.496051,
+              "y": 9.416051
+            },
+            "end": {
+              "x": -15.24,
+              "y": 7.62
+            },
+            "stroke_width_mm": 0.12
+          },
+          {
+            "type": "line",
+            "start": {
+              "x": -15.24,
+              "y": 7.62
+            },
+            "end": {
+              "x": -15.24,
+              "y": -7.62
+            },
+            "stroke_width_mm": 0.12
+          },
+          {
+            "type": "arc",
+            "start": {
+              "x": -15.24,
+              "y": -7.62
+            },
+            "mid": {
+              "x": -14.496051,
+              "y": -9.416051
+            },
+            "end": {
+              "x": -12.7,
+              "y": -10.16
+            },
+            "stroke_width_mm": 0.12
+          },
+          {
+            "type": "circle",
+            "center": {
+              "x": -8.89,
+              "y": 6.02
+            },
+            "radius_mm": 0.25,
+            "stroke_width_mm": 0.12,
+            "fill": "none"
+          }
+        ]
+      }
+    },
+    {
+      "name": "set_footprint_graphics",
+      "arguments": {
+        "footprint_path": "C:/Users/dot/Documents/ESP-DubSiren/pcb/v2/footprints/ESP-DubSiren-V2-Mechanical.pretty/Adafruit_6250_ComponentFace.kicad_mod",
+        "selector": {
+          "layer": "F.CrtYd"
+        },
+        "mode": "replace",
+        "graphics": [
+          {
+            "type": "rect",
+            "start": {
+              "x": -15.74,
+              "y": -10.66
+            },
+            "end": {
+              "x": 17.713,
+              "y": 10.66
+            },
+            "stroke_width_mm": 0.05,
+            "fill": "none"
+          }
+        ]
+      }
+    },
+    {
+      "name": "get_footprint_info",
+      "arguments": {
+        "footprint_path": "C:/Users/dot/Documents/ESP-DubSiren/pcb/v2/footprints/ESP-DubSiren-V2-Mechanical.pretty/Adafruit_6250_ComponentFace.kicad_mod",
+        "include_pads": true,
+        "include_graphics": true
+      }
+    }
+  ]
+}

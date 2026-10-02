@@ -34,7 +34,8 @@ bool PanelDisplay::begin() {
     digitalWrite(Config::kDisplayBacklightPin, HIGH);
     SPI.begin(Config::kSpiSckPin, Config::kSpiMisoPin,
               Config::kSpiMosiPin, Config::kDisplayCsPin);
-    tft_.init(170, 320);
+    // Adafruit Product 5393: 172x320 native, 320x172 at rotation 1.
+    tft_.init(172, 320);
     tft_.setRotation(1);
     ready_ = tft_.width() == PerformanceController::kDisplayWidth &&
              tft_.height() == PerformanceController::kDisplayHeight;

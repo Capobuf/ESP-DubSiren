@@ -52,8 +52,9 @@ at most once every 100 ms. No display buffer is allocated. STATUS exposes
 The audio task contains no SPI or display calls.
 
 The intended product display is a small, primarily text-based interface for
-status, parameters, menus and settings. The existing ST7789 initialization and
-pins remain for development; the smaller physical display is not implemented.
+status, parameters, menus and settings. ST7789 initialization targets Adafruit
+Product 5393 at 320x172 in landscape; physical wiring and mounting remain
+unverified. The existing SPI GPIO assignments are retained.
 
 `I2sPcm5102Sink` duplicates each of the 480 mono int16 samples into a stereo
 left/right frame and writes the resulting 960 values to I2S DMA. ESP32-S3 is
@@ -128,7 +129,7 @@ Extended retains pad assignment, variant, priority, combinations and Depth.
 Saved Extended assignments never activate themselves during Classic startup.
 
 VirtualESP exports the same compact logical display state through its C ABI:
-320×170 dimensions, Home/Menu mode, menu index/edit flag, ordered menu item
+320×172 dimensions, Home/Menu mode, menu index/edit flag, ordered menu item
 keys, profile/voice, confirmed Pitch/Rate, Hold/Echo Cut, Depth and Echo Loop. `VirtualTransport` adds these values to
 `panel.display`. Both the desktop text widget and the Adafruit renderer show
 Classic and Extended state, temporary parameter values and encoder menus.

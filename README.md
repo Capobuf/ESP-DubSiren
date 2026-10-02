@@ -20,7 +20,7 @@ le verifiche della revisione sono in [baseline validation](docs/baseline-validat
 
 - ESP32-S3 DevKitC-1 collegata con un cavo USB dati
 - modulo DAC PCM5102A per l'uscita audio GPIO
-- display Adafruit 5394 / ST7789 opzionale per lo sviluppo firmware; il
+- display Adafruit 5393 / ST7789 opzionale per lo sviluppo firmware; il
   collegamento PCB V1 non è ancora completo, come descritto sotto
 - VS Code con estensione PlatformIO IDE, oppure PlatformIO Core 6.x
 - Python 3.11 o successivo (verificato con Python 3.13.14)
@@ -88,11 +88,11 @@ sorgenti cambiano.
 La superficie predefinita presenta PITCH, RATE, ECHO LEVEL, ECHO TIME,
 ECHO FEEDBACK ed ECHO FILTER; BTN1 TRIGGER, BTN2 HOLD, BTN3 MANUAL MOD e
 BTN4 ECHO CUT. L'encoder cicla i quattro voicing; premendolo si apre il menu
-con accesso a Extended. Il Master resta separato sul retro. La Home 320x170
+con accesso a Extended. Il Master resta separato sul retro. La Home 320x172
 mostra voicing, Pitch/Rate e stato Hold/Echo, con overlay temporanei dei pot.
 Il prodotto finale userà un display piccolo, principalmente testuale, per
 stato, parametri, menu e impostazioni. Classic ed Extended mostrano solo testo;
-il driver ST7789 esistente resta per lo sviluppo, in attesa del nuovo hardware.
+il driver ST7789 usa la configurazione del 5393, ancora da verificare su hardware.
 Dettagli: [pannello UI](docs/panel-ui.md).
 
 Per lavorare senza hardware:
@@ -159,8 +159,8 @@ La revisione hardware diretta con ESP32-S3-WROOM-1, USB-C, ADC, I/O expander e
 DAC Adafruit 6421 è documentata in [pcb/README.md](pcb/README.md). Il layout
 corrente è pre-produzione e non deve essere inviato in fabbricazione.
 
-Il firmware configura il 5394 con `init(170, 320)` e rotazione landscape,
-ottenendo un'area runtime di 320×170. Usa lo SPI hardware esistente:
+Il firmware configura il 5393 con `init(172, 320)` e rotazione landscape,
+ottenendo un'area runtime di 320×172. Usa lo SPI hardware esistente:
 
 ```text
 GPIO7  -> TFT RST
@@ -173,7 +173,7 @@ GPIO14 -> backlight (livello fisso HIGH)
 
 GPIO13/MISO non serve al TFT write-only e la microSD del breakout non è
 implementata. Le librerie sono **Adafruit GFX Library** e **Adafruit ST7735 and
-ST7789 Library**. In base alla [guida ufficiale Adafruit 5394](https://learn.adafruit.com/adafruit-1-9-color-ips-tft-display/arduino-wiring-test),
+ST7789 Library**. In base alla [guida ufficiale Adafruit 5393](https://learn.adafruit.com/adafruit-1-47-round-rectangle-tft-display/arduino-wiring-test),
 gli offset del pannello sono gestiti dalla libreria.
 
 **BLOCKER PCB:** J3 deve essere rivisto per portare almeno `SPI_MOSI` e

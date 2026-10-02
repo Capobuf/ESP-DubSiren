@@ -1,0 +1,2 @@
+73022f63a4b82117093ff5c250c119b6720005df
+https://api.github.com/repos/adafruit/Adafruit-1.47in-320x172-Round-Rectangle-TFT-PCB/zipball/73022f63a4b82117093ff5c250c119b6720005df

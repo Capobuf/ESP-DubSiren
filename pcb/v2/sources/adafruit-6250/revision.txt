@@ -1,0 +1,2 @@
+2edfe9e71b59e6acc73d0ab2b2f796149146ce74
+https://api.github.com/repos/adafruit/Adafruit-PCM510x-I2S-DAC-PCB/zipball/2edfe9e71b59e6acc73d0ab2b2f796149146ce74

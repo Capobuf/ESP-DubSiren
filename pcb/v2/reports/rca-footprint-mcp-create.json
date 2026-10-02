@@ -1,0 +1,38 @@
+[
+  {
+    "name": "create_footprint",
+    "result": {
+      "content": [
+        {
+          "text": "{\"courtyard\":true,\"footprint\":\"SameSky_RCJ-2123\",\"model\":\"\",\"output\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\footprints\\\\ESP-DubSiren-V2-Mechanical.pretty\\\\SameSky_RCJ-2123.kicad_mod\",\"pad_count\":6,\"pin1_marked\":true,\"success\":true}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "set_footprint_graphics",
+    "result": {
+      "content": [
+        {
+          "text": "{\"added_count\":3,\"footprint_path\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\footprints\\\\ESP-DubSiren-V2-Mechanical.pretty\\\\SameSky_RCJ-2123.kicad_mod\",\"layer\":\"F.Fab\",\"matched_count\":1,\"mode\":\"replace\",\"success\":true}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "set_footprint_graphics",
+    "result": {
+      "content": [
+        {
+          "text": "{\"added_count\":1,\"footprint_path\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\footprints\\\\ESP-DubSiren-V2-Mechanical.pretty\\\\SameSky_RCJ-2123.kicad_mod\",\"layer\":\"F.CrtYd\",\"matched_count\":1,\"mode\":\"replace\",\"success\":true}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  }
+]

@@ -179,7 +179,7 @@ class PhysicalUiTests(unittest.TestCase):
         self.assertFalse(any(command.startswith("SET MODE") for command in app.commands))
 
     def test_text_display_preserves_home_parameters_overlay_and_menu(self):
-        self.assertEqual((DISPLAY_WIDTH, DISPLAY_HEIGHT), (320, 170))
+        self.assertEqual((DISPLAY_WIDTH, DISPLAY_HEIGHT), (320, 172))
         display = object.__new__(PanelDisplay)
         display.canvas = FakeCanvas()
 

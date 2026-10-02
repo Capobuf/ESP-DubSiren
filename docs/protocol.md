@@ -151,7 +151,7 @@ An AUDIO payload is always 960 bytes: 480 signed int16 mono PCM samples at
 48,000 Hz. A STATUS payload is UTF-8 JSON. `HELLO` currently returns:
 
 ```json
-{"name":"DubSiren","protocol":1,"sampleRate":48000,"blockSamples":480,"firmware":"0.8.0","renderUs":0,"maxRenderUs":0,"cycleUs":0,"maxCycleUs":0,"maxUsbWriteUs":0,"maxI2sWriteUs":0,"displayRenderUs":0,"maxDisplayRenderUs":0,"output":"BOTH","i2sReady":true,"panel":{"revision":1,"menuRevision":0,"selectedPad":1,"currentPad":1,"activePad":0,"pads":[{"sound":"CLASSIC","variant":"SINE 1","variantIndex":0,"hold":false,"holdSupported":true}],"display":{"width":320,"height":170,"mode":"HOME","menuIndex":0,"editing":false,"menuItems":["PROFILE","BACK"],"profile":"CLASSIC","voice":"SINE 1","pitch":"MID","rate":"MID","hold":false,"echoCut":false,"tuneHz":220.0,"rateHz":0.7,"depth":1.0,"echoLoop":false}}}
+{"name":"DubSiren","protocol":1,"sampleRate":48000,"blockSamples":480,"firmware":"0.8.0","renderUs":0,"maxRenderUs":0,"cycleUs":0,"maxCycleUs":0,"maxUsbWriteUs":0,"maxI2sWriteUs":0,"displayRenderUs":0,"maxDisplayRenderUs":0,"output":"BOTH","i2sReady":true,"panel":{"revision":1,"menuRevision":0,"selectedPad":1,"currentPad":1,"activePad":0,"pads":[{"sound":"CLASSIC","variant":"SINE 1","variantIndex":0,"hold":false,"holdSupported":true}],"display":{"width":320,"height":172,"mode":"HOME","menuIndex":0,"editing":false,"menuItems":["PROFILE","BACK"],"profile":"CLASSIC","voice":"SINE 1","pitch":"MID","rate":"MID","hold":false,"echoCut":false,"tuneHz":220.0,"rateHz":0.7,"depth":1.0,"echoLoop":false}}}
 ```
 
 Timing zeros above are placeholders, not measured performance. `renderUs` is the

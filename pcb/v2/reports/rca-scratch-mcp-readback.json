@@ -1,0 +1,62 @@
+[
+  {
+    "name": "get_footprint_info",
+    "result": {
+      "content": [
+        {
+          "text": "{\"coordinate_space\":\"footprint_local\",\"description\":\"Same Sky RCJ-2123 dual RCA; RCJ-21 datasheet rev1.06 p2 top-view. Origin at mounting-slot-row center.\",\"graphic_count\":6,\"graphics\":[{\"end\":{\"x\":13.55,\"y\":6.0},\"fill\":\"none\",\"item_id\":\"fe4b2ca4-fc2d-4576-a4d1-daf6b28f40bf\",\"layer\":\"F.SilkS\",\"start\":{\"x\":-13.55,\"y\":-2.25},\"stroke_width_mm\":0.12,\"type\":\"rect\"},{\"center\":{\"x\":13.95,\"y\":0.0},\"fill\":\"solid\",\"item_id\":\"2bdd8f62-cb9c-4ec4-8363-a2b6353a9aaf\",\"layer\":\"F.SilkS\",\"radius_mm\":0.15000000000000036,\"stroke_width_mm\":0.1,\"type\":\"circle\"},{\"end\":{\"x\":14.25,\"y\":6.35},\"fill\":\"none\",\"item_id\":\"a84648d7-3a13-4f2e-a1a1-d8ea6942b3a4\",\"layer\":\"F.CrtYd\",\"start\":{\"x\":-14.25,\"y\":-15.0},\"stroke_width_mm\":0.05,\"type\":\"rect\"},{\"end\":{\"x\":13.75,\"y\":3.75},\"fill\":\"none\",\"item_id\":\"520f16cc-2ca7-4403-9c11-a8e0bbb74aae\",\"layer\":\"F.Fab\",\"start\":{\"x\":-13.75,\"y\":-6.5},\"stroke_width_mm\":0.1,\"type\":\"rect\"},{\"end\":{\"x\":-1.9,\"y\":-6.5},\"fill\":\"none\",\"item_id\":\"95ab4678-a6f1-46a5-b5cf-b19016d81a48\",\"layer\":\"F.Fab\",\"start\":{\"x\":-12.1,\"y\":-14.5},\"stroke_width_mm\":0.1,\"type\":\"rect\"},{\"end\":{\"x\":12.1,\"y\":-6.5},\"fill\":\"none\",\"item_id\":\"e8cbef02-0fc4-4640-938a-f956232167bc\",\"layer\":\"F.Fab\",\"start\":{\"x\":1.9,\"y\":-14.5},\"stroke_width_mm\":0.1,\"type\":\"rect\"}],\"has_3d_model\":false,\"has_courtyard\":true,\"name\":\"SameSky_RCJ-2123\",\"pad_count\":6,\"pads\":[{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"*.Cu\",\"offset\":null,\"shape\":\"oval\",\"size\":{\"x\":2.5,\"y\":4.2}}],\"drill\":{\"end_layer\":null,\"shape\":\"oval\",\"size\":{\"x\":2.5,\"y\":4.2},\"start_layer\":null},\"layers\":[\"*.Cu\",\"*.Mask\"],\"net\":\"\",\"number\":\"\",\"pad_type\":\"np_thru_hole\",\"rotation_deg\":0.0,\"shape\":\"oval\",\"size\":{\"x\":2.5,\"y\":4.2},\"uuid\":\"5d91c3b5-f819-4674-812d-14c233c2411f\",\"x\":-12.15,\"y\":0.0},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"*.Cu\",\"offset\":null,\"shape\":\"oval\",\"size\":{\"x\":2.5,\"y\":4.2}}],\"drill\":{\"end_layer\":null,\"shape\":\"oval\",\"size\":{\"x\":2.5,\"y\":4.2},\"start_layer\":null},\"layers\":[\"*.Cu\",\"*.Mask\"],\"net\":\"\",\"number\":\"\",\"pad_type\":\"np_thru_hole\",\"rotation_deg\":0.0,\"shape\":\"oval\",\"size\":{\"x\":2.5,\"y\":4.2},\"uuid\":\"00714a0e-c07d-4cd2-af85-3174ad0828ba\",\"x\":12.15,\"y\":0.0},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"*.Cu\",\"offset\":null,\"shape\":\"rect\",\"size\":{\"x\":3.5,\"y\":3.5}}],\"drill\":{\"end_layer\":null,\"shape\":\"circle\",\"size\":{\"x\":2.5,\"y\":2.5},\"start_layer\":null},\"layers\":[\"*.Cu\",\"*.Mask\"],\"net\":\"\",\"number\":\"1\",\"pad_type\":\"thru_hole\",\"rotation_deg\":0.0,\"shape\":\"rect\",\"size\":{\"x\":3.5,\"y\":3.5},\"uuid\":\"94e8b982-79a3-4686-9630-a5c3b63166c4\",\"x\":7.0,\"y\":0.0},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"*.Cu\",\"offset\":null,\"shape\":\"circle\",\"size\":{\"x\":2.2,\"y\":2.2}}],\"drill\":{\"end_layer\":null,\"shape\":\"circle\",\"size\":{\"x\":1.2,\"y\":1.2},\"start_layer\":null},\"layers\":[\"*.Cu\",\"*.Mask\"],\"net\":\"\",\"number\":\"2\",\"pad_type\":\"thru_hole\",\"rotation_deg\":0.0,\"shape\":\"circle\",\"size\":{\"x\":2.2,\"y\":2.2},\"uuid\":\"51de109d-7b64-4189-b160-434be873c245\",\"x\":3.0,\"y\":4.75},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"*.Cu\",\"offset\":null,\"shape\":\"circle\",\"size\":{\"x\":3.5,\"y\":3.5}}],\"drill\":{\"end_layer\":null,\"shape\":\"circle\",\"size\":{\"x\":2.5,\"y\":2.5},\"start_layer\":null},\"layers\":[\"*.Cu\",\"*.Mask\"],\"net\":\"\",\"number\":\"3\",\"pad_type\":\"thru_hole\",\"rotation_deg\":0.0,\"shape\":\"circle\",\"size\":{\"x\":3.5,\"y\":3.5},\"uuid\":\"495899f2-2548-4dcb-bbce-d6e91d835ce7\",\"x\":-7.0,\"y\":0.0},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"*.Cu\",\"offset\":null,\"shape\":\"circle\",\"size\":{\"x\":2.2,\"y\":2.2}}],\"drill\":{\"end_layer\":null,\"shape\":\"circle\",\"size\":{\"x\":1.2,\"y\":1.2},\"start_layer\":null},\"layers\":[\"*.Cu\",\"*.Mask\"],\"net\":\"\",\"number\":\"4\",\"pad_type\":\"thru_hole\",\"rotation_deg\":0.0,\"shape\":\"circle\",\"size\":{\"x\":2.2,\"y\":2.2},\"uuid\":\"9d7b1c4f-5b2a-49c3-9691-cdb0c8b73d78\",\"x\":-11.0,\"y\":4.75}],\"path\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\footprints\\\\ESP-DubSiren-V2-Mechanical.pretty\\\\SameSky_RCJ-2123.kicad_mod\"}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "place_component",
+    "result": {
+      "content": [
+        {
+          "text": "{\"footprint\":\"ESP-DubSiren-V2-Mechanical:SameSky_RCJ-2123\",\"layer\":\"F.Cu\",\"placed\":\"J2123\",\"rotation\":0.0,\"source\":\"ipc\",\"x\":160.0,\"y\":120.0}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "get_component_pads",
+    "result": {
+      "content": [
+        {
+          "text": "{\"pad_count\":6,\"pads\":[{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"oval\",\"size\":{\"x\":2.5,\"y\":4.2}}],\"drill\":{\"end_layer\":\"B.Cu\",\"shape\":\"oval\",\"size\":{\"x\":2.5,\"y\":4.2},\"start_layer\":\"F.Cu\"},\"layers\":[\"F.Cu\",\"F.Mask\",\"B.Cu\",\"B.Mask\",\"In1.Cu\",\"In2.Cu\",\"In3.Cu\",\"In4.Cu\",\"In5.Cu\",\"In6.Cu\",\"In7.Cu\",\"In8.Cu\",\"In9.Cu\",\"In10.Cu\",\"In11.Cu\",\"In12.Cu\",\"In13.Cu\",\"In14.Cu\",\"In15.Cu\",\"In16.Cu\",\"In17.Cu\",\"In18.Cu\",\"In19.Cu\",\"In20.Cu\",\"In21.Cu\",\"In22.Cu\",\"In23.Cu\",\"In24.Cu\",\"In25.Cu\",\"In26.Cu\",\"In27.Cu\",\"In28.Cu\",\"In29.Cu\",\"In30.Cu\"],\"net\":\"\",\"number\":\"\",\"pad_type\":\"np_thru_hole\",\"rotation_deg\":0.0,\"shape\":\"oval\",\"size\":{\"x\":2.5,\"y\":4.2},\"uuid\":\"362340fa-cf25-4f87-be11-f1ce62511e6c\",\"x\":147.85,\"y\":120.0},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"oval\",\"size\":{\"x\":2.5,\"y\":4.2}}],\"drill\":{\"end_layer\":\"B.Cu\",\"shape\":\"oval\",\"size\":{\"x\":2.5,\"y\":4.2},\"start_layer\":\"F.Cu\"},\"layers\":[\"F.Cu\",\"F.Mask\",\"B.Cu\",\"B.Mask\",\"In1.Cu\",\"In2.Cu\",\"In3.Cu\",\"In4.Cu\",\"In5.Cu\",\"In6.Cu\",\"In7.Cu\",\"In8.Cu\",\"In9.Cu\",\"In10.Cu\",\"In11.Cu\",\"In12.Cu\",\"In13.Cu\",\"In14.Cu\",\"In15.Cu\",\"In16.Cu\",\"In17.Cu\",\"In18.Cu\",\"In19.Cu\",\"In20.Cu\",\"In21.Cu\",\"In22.Cu\",\"In23.Cu\",\"In24.Cu\",\"In25.Cu\",\"In26.Cu\",\"In27.Cu\",\"In28.Cu\",\"In29.Cu\",\"In30.Cu\"],\"net\":\"\",\"number\":\"\",\"pad_type\":\"np_thru_hole\",\"rotation_deg\":0.0,\"shape\":\"oval\",\"size\":{\"x\":2.5,\"y\":4.2},\"uuid\":\"03009b82-4658-4287-bc2d-632a246cf08c\",\"x\":172.15,\"y\":120.0},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"rect\",\"size\":{\"x\":3.5,\"y\":3.5}}],\"drill\":{\"end_layer\":\"B.Cu\",\"shape\":\"circle\",\"size\":{\"x\":2.5,\"y\":2.5},\"start_layer\":\"F.Cu\"},\"layers\":[\"F.Cu\",\"F.Mask\",\"B.Cu\",\"B.Mask\",\"In1.Cu\",\"In2.Cu\",\"In3.Cu\",\"In4.Cu\",\"In5.Cu\",\"In6.Cu\",\"In7.Cu\",\"In8.Cu\",\"In9.Cu\",\"In10.Cu\",\"In11.Cu\",\"In12.Cu\",\"In13.Cu\",\"In14.Cu\",\"In15.Cu\",\"In16.Cu\",\"In17.Cu\",\"In18.Cu\",\"In19.Cu\",\"In20.Cu\",\"In21.Cu\",\"In22.Cu\",\"In23.Cu\",\"In24.Cu\",\"In25.Cu\",\"In26.Cu\",\"In27.Cu\",\"In28.Cu\",\"In29.Cu\",\"In30.Cu\"],\"net\":\"\",\"number\":\"1\",\"pad_type\":\"thru_hole\",\"rotation_deg\":0.0,\"shape\":\"rect\",\"size\":{\"x\":3.5,\"y\":3.5},\"uuid\":\"efbdbd84-cd1d-49d4-8b09-4ddfc08e87a9\",\"x\":167.0,\"y\":120.0},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"circle\",\"size\":{\"x\":2.2,\"y\":2.2}}],\"drill\":{\"end_layer\":\"B.Cu\",\"shape\":\"circle\",\"size\":{\"x\":1.2,\"y\":1.2},\"start_layer\":\"F.Cu\"},\"layers\":[\"F.Cu\",\"F.Mask\",\"B.Cu\",\"B.Mask\",\"In1.Cu\",\"In2.Cu\",\"In3.Cu\",\"In4.Cu\",\"In5.Cu\",\"In6.Cu\",\"In7.Cu\",\"In8.Cu\",\"In9.Cu\",\"In10.Cu\",\"In11.Cu\",\"In12.Cu\",\"In13.Cu\",\"In14.Cu\",\"In15.Cu\",\"In16.Cu\",\"In17.Cu\",\"In18.Cu\",\"In19.Cu\",\"In20.Cu\",\"In21.Cu\",\"In22.Cu\",\"In23.Cu\",\"In24.Cu\",\"In25.Cu\",\"In26.Cu\",\"In27.Cu\",\"In28.Cu\",\"In29.Cu\",\"In30.Cu\"],\"net\":\"\",\"number\":\"2\",\"pad_type\":\"thru_hole\",\"rotation_deg\":0.0,\"shape\":\"circle\",\"size\":{\"x\":2.2,\"y\":2.2},\"uuid\":\"dc9d663e-75a4-464a-acd0-f85e9172b9dd\",\"x\":163.0,\"y\":124.75},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"circle\",\"size\":{\"x\":3.5,\"y\":3.5}}],\"drill\":{\"end_layer\":\"B.Cu\",\"shape\":\"circle\",\"size\":{\"x\":2.5,\"y\":2.5},\"start_layer\":\"F.Cu\"},\"layers\":[\"F.Cu\",\"F.Mask\",\"B.Cu\",\"B.Mask\",\"In1.Cu\",\"In2.Cu\",\"In3.Cu\",\"In4.Cu\",\"In5.Cu\",\"In6.Cu\",\"In7.Cu\",\"In8.Cu\",\"In9.Cu\",\"In10.Cu\",\"In11.Cu\",\"In12.Cu\",\"In13.Cu\",\"In14.Cu\",\"In15.Cu\",\"In16.Cu\",\"In17.Cu\",\"In18.Cu\",\"In19.Cu\",\"In20.Cu\",\"In21.Cu\",\"In22.Cu\",\"In23.Cu\",\"In24.Cu\",\"In25.Cu\",\"In26.Cu\",\"In27.Cu\",\"In28.Cu\",\"In29.Cu\",\"In30.Cu\"],\"net\":\"\",\"number\":\"3\",\"pad_type\":\"thru_hole\",\"rotation_deg\":0.0,\"shape\":\"circle\",\"size\":{\"x\":3.5,\"y\":3.5},\"uuid\":\"3553d0ec-04c4-4f8c-9608-55e1c769303b\",\"x\":153.0,\"y\":120.0},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"circle\",\"size\":{\"x\":2.2,\"y\":2.2}}],\"drill\":{\"end_layer\":\"B.Cu\",\"shape\":\"circle\",\"size\":{\"x\":1.2,\"y\":1.2},\"start_layer\":\"F.Cu\"},\"layers\":[\"F.Cu\",\"F.Mask\",\"B.Cu\",\"B.Mask\",\"In1.Cu\",\"In2.Cu\",\"In3.Cu\",\"In4.Cu\",\"In5.Cu\",\"In6.Cu\",\"In7.Cu\",\"In8.Cu\",\"In9.Cu\",\"In10.Cu\",\"In11.Cu\",\"In12.Cu\",\"In13.Cu\",\"In14.Cu\",\"In15.Cu\",\"In16.Cu\",\"In17.Cu\",\"In18.Cu\",\"In19.Cu\",\"In20.Cu\",\"In21.Cu\",\"In22.Cu\",\"In23.Cu\",\"In24.Cu\",\"In25.Cu\",\"In26.Cu\",\"In27.Cu\",\"In28.Cu\",\"In29.Cu\",\"In30.Cu\"],\"net\":\"\",\"number\":\"4\",\"pad_type\":\"thru_hole\",\"rotation_deg\":0.0,\"shape\":\"circle\",\"size\":{\"x\":2.2,\"y\":2.2},\"uuid\":\"0667e9ff-b707-402e-8660-884fe17c855c\",\"x\":149.0,\"y\":124.75}],\"reference\":\"J2123\",\"source\":\"ipc\"}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "save_project",
+    "result": {
+      "content": [
+        {
+          "text": "Board saved successfully.",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "export_svg",
+    "result": {
+      "content": [
+        {
+          "text": "{\"black_and_white\":false,\"output\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\reports\\\\rca-scratch.svg\",\"success\":true}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  }
+]

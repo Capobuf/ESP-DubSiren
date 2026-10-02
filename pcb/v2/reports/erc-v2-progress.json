@@ -1,0 +1,226 @@
+[
+  {
+    "description": "Label connected to only one pin: Etichetta \"POT1_TOP\"",
+    "items": [
+      {
+        "description": "Etichetta \"POT1_TOP\"",
+        "uuid": "62e80255-e75c-42c6-b79e-9ef1b29cdef5",
+        "x": 0.4064,
+        "y": 1.7907
+      }
+    ],
+    "rule": "isolated_pin_label",
+    "severity": "warning",
+    "sheet": "/",
+    "x": 0.4064,
+    "y": 1.7907
+  },
+  {
+    "description": "Label connected to only one pin: Etichetta \"POT4_TOP\"",
+    "items": [
+      {
+        "description": "Etichetta \"POT4_TOP\"",
+        "uuid": "c2847c29-fbad-41e4-b7b6-66e3ce2d3f1e",
+        "x": 0.4064,
+        "y": 2.4765
+      }
+    ],
+    "rule": "isolated_pin_label",
+    "severity": "warning",
+    "sheet": "/",
+    "x": 0.4064,
+    "y": 2.4765
+  },
+  {
+    "description": "Label connected to only one pin: Etichetta \"POT2_TOP\"",
+    "items": [
+      {
+        "description": "Etichetta \"POT2_TOP\"",
+        "uuid": "bbf39bd9-1223-4430-bedb-04dc83faff8c",
+        "x": 0.9144,
+        "y": 1.7907
+      }
+    ],
+    "rule": "isolated_pin_label",
+    "severity": "warning",
+    "sheet": "/",
+    "x": 0.9144,
+    "y": 1.7907
+  },
+  {
+    "description": "Label connected to only one pin: Etichetta \"POT5_TOP\"",
+    "items": [
+      {
+        "description": "Etichetta \"POT5_TOP\"",
+        "uuid": "511b2e68-5456-459d-826d-f23a593c2497",
+        "x": 0.9144,
+        "y": 2.4765
+      }
+    ],
+    "rule": "isolated_pin_label",
+    "severity": "warning",
+    "sheet": "/",
+    "x": 0.9144,
+    "y": 2.4765
+  },
+  {
+    "description": "Label connected to only one pin: Etichetta \"POT3_TOP\"",
+    "items": [
+      {
+        "description": "Etichetta \"POT3_TOP\"",
+        "uuid": "5c1aa0d0-476d-4c74-89dd-30afa59f9663",
+        "x": 1.4224,
+        "y": 1.7907
+      }
+    ],
+    "rule": "isolated_pin_label",
+    "severity": "warning",
+    "sheet": "/",
+    "x": 1.4224,
+    "y": 1.7907
+  },
+  {
+    "description": "Label connected to only one pin: Etichetta \"POT6_TOP\"",
+    "items": [
+      {
+        "description": "Etichetta \"POT6_TOP\"",
+        "uuid": "4514c40e-dd36-4e12-b844-fd6394cbbcbd",
+        "x": 1.4224,
+        "y": 2.4765
+      }
+    ],
+    "rule": "isolated_pin_label",
+    "severity": "warning",
+    "sheet": "/",
+    "x": 1.4224,
+    "y": 2.4765
+  },
+  {
+    "description": "Label connected to only one pin: Etichetta \"POT7_TOP\"",
+    "items": [
+      {
+        "description": "Etichetta \"POT7_TOP\"",
+        "uuid": "a6c56009-9295-4091-9b95-87b279ac9f8a",
+        "x": 1.9304,
+        "y": 1.7907
+      }
+    ],
+    "rule": "isolated_pin_label",
+    "severity": "warning",
+    "sheet": "/",
+    "x": 1.9304,
+    "y": 1.7907
+  },
+  {
+    "description": "Label connected to only one pin: Etichetta \"POT1\"",
+    "items": [
+      {
+        "description": "Etichetta \"POT1\"",
+        "uuid": "2f587843-9c0e-42a3-9d6f-db5912288fce",
+        "x": 3.0734,
+        "y": 2.159
+      }
+    ],
+    "rule": "isolated_pin_label",
+    "severity": "warning",
+    "sheet": "/",
+    "x": 3.0734,
+    "y": 2.159
+  },
+  {
+    "description": "Label connected to only one pin: Etichetta \"POT2\"",
+    "items": [
+      {
+        "description": "Etichetta \"POT2\"",
+        "uuid": "7f9a63c7-fbf5-4e0e-b473-988c132d22b1",
+        "x": 3.0734,
+        "y": 2.1844
+      }
+    ],
+    "rule": "isolated_pin_label",
+    "severity": "warning",
+    "sheet": "/",
+    "x": 3.0734,
+    "y": 2.1844
+  },
+  {
+    "description": "Label connected to only one pin: Etichetta \"POT3\"",
+    "items": [
+      {
+        "description": "Etichetta \"POT3\"",
+        "uuid": "1be493a5-4476-48b3-9c3b-0e6dc79f4b44",
+        "x": 3.0734,
+        "y": 2.2098
+      }
+    ],
+    "rule": "isolated_pin_label",
+    "severity": "warning",
+    "sheet": "/",
+    "x": 3.0734,
+    "y": 2.2098
+  },
+  {
+    "description": "Label connected to only one pin: Etichetta \"POT4\"",
+    "items": [
+      {
+        "description": "Etichetta \"POT4\"",
+        "uuid": "e21bac88-71d7-4f43-b71c-6b2932c1f706",
+        "x": 3.0734,
+        "y": 2.2352
+      }
+    ],
+    "rule": "isolated_pin_label",
+    "severity": "warning",
+    "sheet": "/",
+    "x": 3.0734,
+    "y": 2.2352
+  },
+  {
+    "description": "Label connected to only one pin: Etichetta \"POT5\"",
+    "items": [
+      {
+        "description": "Etichetta \"POT5\"",
+        "uuid": "08f91066-78d8-4085-8b4a-49d1c39bb5b4",
+        "x": 3.0734,
+        "y": 2.2606
+      }
+    ],
+    "rule": "isolated_pin_label",
+    "severity": "warning",
+    "sheet": "/",
+    "x": 3.0734,
+    "y": 2.2606
+  },
+  {
+    "description": "Label connected to only one pin: Etichetta \"POT6\"",
+    "items": [
+      {
+        "description": "Etichetta \"POT6\"",
+        "uuid": "48ec741e-c05f-4a54-ac2a-74ea3b809b69",
+        "x": 3.0734,
+        "y": 2.286
+      }
+    ],
+    "rule": "isolated_pin_label",
+    "severity": "warning",
+    "sheet": "/",
+    "x": 3.0734,
+    "y": 2.286
+  },
+  {
+    "description": "Label connected to only one pin: Etichetta \"MASTER\"",
+    "items": [
+      {
+        "description": "Etichetta \"MASTER\"",
+        "uuid": "36fbc4af-68d5-4cca-b820-8b5055895700",
+        "x": 3.0734,
+        "y": 2.3114
+      }
+    ],
+    "rule": "isolated_pin_label",
+    "severity": "warning",
+    "sheet": "/",
+    "x": 3.0734,
+    "y": 2.3114
+  }
+]

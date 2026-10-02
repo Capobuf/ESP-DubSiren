@@ -328,7 +328,7 @@ void testPanelDisplayState() {
     ControlStore store;
     CommandParser parser(store);
     assert(parser.parse("SET PROFILE EXTENDED"));
-    assert(parser.displayWidth() == 320 && parser.displayHeight() == 170);
+    assert(parser.displayWidth() == 320 && parser.displayHeight() == 172);
     assert(strcmp(parser.displayModeName(), "HOME") == 0);
     assert(parser.parse("ENCODER_ROTATE NEXT"));
     assert(fabsf(store.snapshot().lfoDepthOctaves - 1.05f) < 0.0001f);

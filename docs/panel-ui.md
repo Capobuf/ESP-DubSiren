@@ -1,9 +1,8 @@
 # Physical panel UI
 
 The panel remains six front pots, four buttons, one encoder with push, one
-small, primarily text-based display and one separate rear Master. The existing
-320x170 development display remains supported until the smaller hardware is
-implemented. No extra performance knobs.
+small, primarily text-based Adafruit Product 5393 display (320x172) and one
+separate rear Master. No extra performance knobs.
 
 | Control | Classic mapping / command |
 |---|---|
@@ -51,10 +50,13 @@ gate or Hold is restored from disk.
 
 ## Hardware display
 
-The existing Adafruit GFX/ST7789 text renderer uses Product 5394 for development.
+The Adafruit GFX/ST7789 text renderer targets Adafruit Product 5393.
 It retains SPI GPIO11 MOSI and GPIO12 SCK, GPIO9 CS, GPIO8 DC, GPIO7 reset,
-and GPIO14 backlight held high. Initialization remains `init(170, 320)` with
-rotation 1 (320x170). The smaller product display is not implemented yet.
+and GPIO14 backlight held high. Initialization is `init(172, 320)` with
+rotation 1 (320x172), as specified in the
+[Adafruit guide](https://learn.adafruit.com/adafruit-1-47-round-rectangle-tft-display/arduino-wiring-test).
+The library supplies the centered panel offsets. Physical operation remains
+unverified; the V2 PCB connection and mounting are not yet implemented.
 
 Rendering runs from `loop()`, never from `audioTask`. Home and Menu redraw on
 state changes, at most once every 100 ms; temporary parameter text expires

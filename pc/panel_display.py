@@ -5,7 +5,7 @@ from tkinter import ttk
 
 
 DISPLAY_WIDTH = 320
-DISPLAY_HEIGHT = 170
+DISPLAY_HEIGHT = 172
 BLACK = "#050806"
 TEXT = "#e5e8d8"
 ACCENT = "#c9ff37"

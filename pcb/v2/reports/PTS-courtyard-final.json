@@ -1,0 +1,164 @@
+[
+  {
+    "name": "load_toolset",
+    "args": {
+      "name": [
+        "library",
+        "pcb_components",
+        "pcb_export",
+        "project"
+      ]
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"errors\":[],\"loaded\":[\"library\",\"pcb_components\",\"pcb_export\",\"project\"],\"tools\":[{\"description\":\"Create a new footprint (.kicad_mod) file from a pad layout description.\",\"name\":\"create_footprint\"},{\"description\":\"Atomically append, replace, or delete graphical primitives on one layer of an existing .kicad_mod footprint. Replacement and deletion refuse graphics referenced by a group.\",\"name\":\"set_footprint_graphics\"},{\"description\":\"Atomically replace a footprint's description, tags, or supported attributes while preserving pads, graphics, properties, groups, and models.\",\"name\":\"set_footprint_metadata\"},{\"description\":\"Atomically append, replace, or delete top-level 3D model blocks in an existing .kicad_mod footprint while preserving every non-model child.\",\"name\":\"set_footprint_models\"},{\"description\":\"Edit the size, shape, or position of a pad in an existing .kicad_mod footprint file.\",\"name\":\"edit_footprint_pad\"},{\"description\":\"Register a local footprint library directory in the KiCAD global or project library table.\",\"name\":\"register_footprint_library\"},{\"description\":\"List all registered footprint libraries (global and optionally project-level).\",\"name\":\"list_footprint_libraries\"},{\"description\":\"Create a new KiCAD schematic symbol and append it to a .kicad_sym library file. Supports single-unit symbols (via `pins`) and multi-unit parts like dual/quad op-amps or gate banks (via `units` + optional `power_pins`). By default each unit gets a rectangular body sized to its pins; set `glyph` (symbol-level and/or per unit) to draw a conventional op-amp triangle or logic-gate body instead. With a glyph, pins auto-place by their `type` (inputs left in the order listed top-to- bottom, output right, power top/bottom) and their x/y are ignored.\",\"name\":\"create_symbol\"},{\"description\":\"Delete a symbol definition from a .kicad_sym library file.\",\"name\":\"delete_symbol\"},{\"description\":\"List all symbol names defined in a .kicad_sym library file.\",\"name\":\"list_symbols_in_library\"},{\"description\":\"Register a .kicad_sym library file in the KiCAD global or project symbol table. Reports whether the entry was inserted, left unchanged, or updated \u2014 an existing nickname is kept as-is unless replace_existing is set.\",\"name\":\"register_symbol_library\"},{\"description\":\"List all registered symbol libraries (global and optionally project-level).\",\"name\":\"list_symbol_libraries\"},{\"description\":\"Search for symbols across all registered libraries by name or keyword.\",\"name\":\"search_symbols\"},{\"description\":\"List all footprints in a specific registered footprint library (.pretty directory).\",\"name\":\"list_library_footprints\"},{\"description\":\"Return detailed information about a footprint: pad layout, courtyard, description, and optionally its supported graphical primitives.\",\"name\":\"get_footprint_info\"},{\"description\":\"Search for footprints across all registered libraries by name or keyword.\",\"name\":\"search_footprints\"},{\"description\":\"Return detailed information about a schematic symbol: pins, properties, description.\",\"name\":\"get_symbol_info\"},{\"description\":\"Place a footprint on the PCB. Uses live KiCAD IPC when reachable; otherwise safely edits a closed board file with revision checks.\",\"name\":\"place_component\"},{\"description\":\"Move a placed footprint to a new X/Y position. Uses live KiCAD IPC when reachable; otherwise safely edits a closed board file with revision checks.\",\"name\":\"move_component\"},{\"description\":\"Set the rotation angle of a placed footprint. Uses live KiCAD IPC when reachable; otherwise safely edits a closed board file with revision checks.\",\"name\":\"rotate_component\"},{\"description\":\"Set X/Y positions and rotations for multiple existing footprints atomically. Uses one live KiCAD IPC update and one undo step when reachable; otherwise safely edits a closed board file once with revision checks.\",\"name\":\"set_component_placements\"},{\"description\":\"Set a placed footprint to F.Cu or B.Cu. When the board is open in KiCad 10.0.6 or newer, this uses KiCad's own native FlipItems IPC command \u2014 the same transform the GUI's F key performs, including 3D-model offset/rotation \u2014 inside one KiCad undo step. Older or unsupported KiCad reachable over IPC returns an explicit unsupported_capability error rather than falling back to the file. Only when no live KiCad holds this board does it fall back to a guarded closed-board file edit, which flips supported geometry with revision checks and refuses any footprint whose 3D model would need a transform the file path cannot perform.\",\"name\":\"flip_component\"},{\"description\":\"Remove a footprint from the board via KiCAD IPC.\",\"name\":\"delete_component\"},{\"description\":\"Update the value or other properties of a placed footprint via KiCAD IPC.\",\"name\":\"edit_component\"},{\"description\":\"Repair the exact legacy corruption from Konnect issue #244: footprint drawing shapes rewritten as anonymous pads with empty layer sets. Resolves each affected footprint from its library, restores its pads and drawing shapes while preserving placement, identity and pad nets, and applies every requested repair in one KiCad undo commit. Defaults to a non-mutating dry run; apply requires the exact returned plan revision. Requires KiCAD running with the requested board open.\",\"name\":\"repair_corrupted_footprints\"},{\"description\":\"Find a footprint on the board by reference designator and return its position.\",\"name\":\"find_component\"},{\"description\":\"Plan or atomically apply KiCad's Update Footprints from Library operation to placed footprints on the live board. Defaults to a non-mutating dry run; apply requires its exact plan revision. Preserves placed-instance state and pad nets while refreshing supported library-owned content.\",\"name\":\"update_footprints_from_library\"},{\"description\":\"List the graphic items inside a footprint placed on the board \u2014 silkscreen, fabrication, and courtyard artwork \u2014 with the UUID needed to edit one. Points are footprint-local millimetres, as the .kicad_mod shows them. Each item reports 'editable', plus 'outlines' and 'holes' for polygons: 'points' covers the first outline only, so an item with more than one outline or any holes is reported but cannot be edited here. Requires KiCAD running with the board open.\",\"name\":\"list_board_footprint_graphics\"},{\"description\":\"Replace the vertices of a polygon inside a footprint placed on the board, selected by UUID. Points are footprint-local millimetres, as the .kicad_mod shows them. Use this to bring one placed instance in line with a library change without re-placing the part. Only a single-outline polygon with no holes can be replaced; anything else is refused by name rather than flattened. Requires KiCAD running with the board open.\",\"name\":\"edit_board_footprint_graphic\"},{\"description\":\"Return live board-space pad positions, effective rotations, physical geometry, drills, copper-layer shapes, layers and net assignments for a footprint. Reads the board open in KiCad when it is reachable and falls back to the file only when no live KiCad holds this board \u2014 IPC unreachable, or that board not open \u2014 'source' says which, so unsaved placements are visible without a save. A pad's 'net' is its net name, \\\"\\\" if the pad carries no net (unconnected), or \u2014 reading the file \u2014 null if the net node is present but unreadable; treat null as an error, not as an unconnected pad.\",\"name\":\"get_component_pads\"},{\"description\":\"Return the live board-space position, effective rotation, physical geometry, drill, layers and net of a specific pad number on a footprint.\",\"name\":\"get_pad_position\"},{\"description\":\"List all footprints on the board with their positions, layers, and values.\",\"name\":\"get_component_list\"},{\"description\":\"Place multiple copies of a footprint in a grid or line array via KiCAD IPC.\",\"name\":\"place_component_array\"},{\"description\":\"Align multiple footprints along a common X or Y axis via KiCAD IPC.\",\"name\":\"align_components\"},{\"description\":\"Duplicate an existing footprint at a new position via KiCAD IPC.\",\"name\":\"duplicate_component\"},{\"description\":\"Render the board with kicad-cli and return it as a base64 PNG. Note this is              kicad-cli's 3-D board render viewed from the top, not a layer plot -- there is              no layer selection. Use export_svg for layer-aware 2-D output.\",\"name\":\"get_board_2d_view\"},{\"description\":\"Export Gerber production files using kicad-cli. By default Konnect selects all enabled copper layers, masks, silkscreens, and Edge.Cuts while excluding documentation-only layers.\",\"name\":\"export_gerber\"},{\"description\":\"Export the PCB layout to a PDF file using kicad-cli.\",\"name\":\"export_pdf\"},{\"description\":\"Export the PCB layout to an SVG file using kicad-cli.\",\"name\":\"export_svg\"},{\"description\":\"Export the PCB as a 3D model (STEP or VRML) using kicad-cli.\",\"name\":\"export_3d\"},{\"description\":\"Generate a Bill of Materials (BOM) CSV from the schematic's component data.\",\"name\":\"export_bom\"},{\"description\":\"Export the PCB netlist to a file in KiCAD or IPC-D-356 format.\",\"name\":\"export_netlist\"},{\"description\":\"Export a deterministic Specctra DSN routing job from the exact live KiCad PCB editor revision. Requires the named board to be open with IPC enabled. On KiCad 10, an enabled authenticated ActionPlugin bridge supplies KiCad's native DSN while the IPC snapshot and reverse manifest remain authoritative; otherwise the Rust exporter is used. The first supported profile is deliberately narrow: two copper layers, front-side SMD or through-hole footprints, circle/rectangle pads, one straight-line closed outline, and no existing tracks, vias, or zones. Konnect refuses unsupported geometry or custom DRC rules, or incomplete effective routing rules instead of approximating them, and writes a revision-bound reverse manifest beside the DSN for later SES import.\",\"name\":\"export_specctra_dsn\"},{\"description\":\"Generate a component placement (pick-and-place) position file for SMT assembly. KiCad automatically omits footprints marked exclude_from_pos_files.\",\"name\":\"export_position_file\"},{\"description\":\"Export the PCB to DXF using kicad-cli, one file per requested layer. Useful for mechanical CAD interchange (enclosures, panelization, laser cutting).\",\"name\":\"export_dxf\"},{\"description\":\"Export the PCB in GenCAD format using kicad-cli. GenCAD is accepted by some CAM and test-fixture tooling as an alternative to a raw Gerber bundle.\",\"name\":\"export_gencad\"},{\"description\":\"Export the PCB in IPC-2581 format using kicad-cli. IPC-2581 is a unified fabrication/assembly/test data format accepted by many contract manufacturers as an alternative to a Gerber + drill + BOM + pick-and-place bundle.\",\"name\":\"export_ipc2581\"},{\"description\":\"Export the PCB in ODB++ format using kicad-cli. ODB++ is a unified fabrication data format accepted by many fab houses as an alternative to a Gerber + drill bundle.\",\"name\":\"export_odb\"},{\"description\":\"Refill all copper pour zones on the board. KiCad IPC refills the complete board; per-zone selection is not available. Requires a running KiCad instance with IPC enabled.\",\"name\":\"refill_zones\"},{\"description\":\"Run the Design Rule Check (DRC) on the PCB and return a list of violations. Provided in `pcb_export` because the output is handy to bundle alongside Gerbers when preparing a build package. For interactive / iterative DRC work, prefer `run_drc` (verification toolset) \u2014 same kicad-cli check, cleaner summary with error/warning counts.\",\"name\":\"get_drc_violations\"},{\"description\":\"Create a new KiCAD project at the given path. Creates the directory, a blank .kicad_pro file, an empty .kicad_sch schematic, and a blank .kicad_pcb board file. Refuses to replace any existing project file.\",\"name\":\"create_project\"},{\"description\":\"List PCB documents open in the running KiCad UI and optionally check whether one specific KiCad project or board is open over IPC.\",\"name\":\"open_project\"},{\"description\":\"Save the currently open PCB board file via KiCAD IPC. Requires KiCAD to be running with IPC enabled.\",\"name\":\"save_project\"},{\"description\":\"Rename a KiCAD project: renames the .kicad_pro/.kicad_sch/.kicad_pcb/.kicad_prl files and rewrites the internal references that carry the old name. Renaming the files alone is NOT enough \u2014 every symbol instance stores (project \\\"name\\\"), and a mismatch there makes KiCAD treat the design as unannotated, losing every reference designator. Equivalent to eeschema's File > Save As. Use dry_run first.\",\"name\":\"rename_project\"},{\"description\":\"Read project metadata from a .kicad_pro file. Returns the project name, schematic and PCB paths, last modified time, project-file format version, and the generator versions recorded by the sibling design files. The compatibility kicad_version is null when those siblings disagree.\",\"name\":\"get_project_info\"},{\"description\":\"Export the schematic and PCB to PDF as a timestamped snapshot/checkpoint. Useful for saving progress before major edits.\",\"name\":\"snapshot_project\"},{\"description\":\"Launch the live schematic viewer. The viewer shows the schematic as SVG and auto-refreshes when the file changes. Use this after placing components so the user can see the schematic in real-time as you edit it. For hierarchical designs, pass the root schematic \u2014 the viewer discovers every sheet reachable from it and shows a sheet selector.\",\"name\":\"open_schematic_viewer\"}],\"tools_added\":57}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "set_footprint_graphics",
+    "args": {
+      "footprint_path": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\footprints\\ESP-DubSiren-V2-Electrical.pretty\\CK_PTS636SM43SMTR_LFS.kicad_mod",
+      "selector": {
+        "layer": "F.CrtYd"
+      },
+      "mode": "replace",
+      "graphics": [
+        {
+          "type": "rect",
+          "start": {
+            "x": -5.35,
+            "y": -2.1
+          },
+          "end": {
+            "x": 5.35,
+            "y": 2.1
+          },
+          "stroke_width_mm": 0.05,
+          "fill": "none"
+        }
+      ]
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"added_count\":1,\"footprint_path\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\footprints\\\\ESP-DubSiren-V2-Electrical.pretty\\\\CK_PTS636SM43SMTR_LFS.kicad_mod\",\"layer\":\"F.CrtYd\",\"matched_count\":1,\"mode\":\"replace\",\"success\":true}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "update_footprints_from_library",
+    "args": {
+      "board": "C:\\Users\\dot\\AppData\\Local\\Temp\\dubsiren-v2-tools\\electrical-acceptance\\Electrical-Acceptance.kicad_pcb",
+      "references": [
+        "SW900"
+      ],
+      "dry_run": true
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"changes\":[{\"changed_domains\":[\"pads\",\"graphics\"],\"library_id\":\"ESP-DubSiren-V2-Electrical:CK_PTS636SM43SMTR_LFS\",\"preserved\":{\"instance_overrides\":true,\"kiid\":true,\"layer\":true,\"locked\":true,\"pad_nets\":true,\"position\":true,\"rotation\":true,\"symbol_path\":true},\"reference\":\"SW900\"}],\"coverage\":{\"atomicity\":\"single_kicad_undo_commit\",\"changed\":{\"applied\":0,\"planned\":1},\"conflicts\":{\"applied\":0,\"planned\":0},\"selected\":{\"applied\":0,\"planned\":1},\"skipped_unlinked\":{\"applied\":0,\"planned\":0},\"transport\":\"live_kicad_ipc\",\"unchanged\":{\"applied\":0,\"planned\":0}},\"diagnostics\":[],\"plan_revision\":\"22d7870070cc7535924aef921df1762bf7555492168a61bdd3bb70148627072c\",\"status\":\"ready\",\"undo\":null}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "update_footprints_from_library",
+    "args": {
+      "board": "C:\\Users\\dot\\AppData\\Local\\Temp\\dubsiren-v2-tools\\electrical-acceptance\\Electrical-Acceptance.kicad_pcb",
+      "references": [
+        "SW900"
+      ],
+      "dry_run": false,
+      "expected_plan_revision": "22d7870070cc7535924aef921df1762bf7555492168a61bdd3bb70148627072c"
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"changes\":[{\"changed_domains\":[\"pads\",\"graphics\"],\"library_id\":\"ESP-DubSiren-V2-Electrical:CK_PTS636SM43SMTR_LFS\",\"preserved\":{\"instance_overrides\":true,\"kiid\":true,\"layer\":true,\"locked\":true,\"pad_nets\":true,\"position\":true,\"rotation\":true,\"symbol_path\":true},\"reference\":\"SW900\"}],\"coverage\":{\"atomicity\":\"single_kicad_undo_commit\",\"changed\":{\"applied\":1,\"planned\":1},\"conflicts\":{\"applied\":0,\"planned\":0},\"selected\":{\"applied\":1,\"planned\":1},\"skipped_unlinked\":{\"applied\":0,\"planned\":0},\"transport\":\"live_kicad_ipc\",\"unchanged\":{\"applied\":0,\"planned\":0}},\"diagnostics\":[],\"plan_revision\":\"22d7870070cc7535924aef921df1762bf7555492168a61bdd3bb70148627072c\",\"status\":\"applied\",\"undo\":\"Ctrl-Z reverses the whole footprint library update.\"}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "get_footprint_info",
+    "args": {
+      "footprint_path": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\footprints\\ESP-DubSiren-V2-Electrical.pretty\\CK_PTS636SM43SMTR_LFS.kicad_mod",
+      "include_pads": true,
+      "include_graphics": true
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"coordinate_space\":\"footprint_local\",\"description\":\"C&K PTS636SM43SMTR LFS, gull-wing 4.3mm height; MI 09/02/26 p2; symmetric two-terminal SPST\",\"graphic_count\":4,\"graphics\":[{\"end\":{\"x\":5.35,\"y\":2.1},\"fill\":\"none\",\"item_id\":null,\"layer\":\"F.CrtYd\",\"start\":{\"x\":-5.35,\"y\":-2.1},\"stroke_width_mm\":0.05,\"type\":\"rect\"},{\"end\":{\"x\":3.12,\"y\":-1.87},\"item_id\":null,\"layer\":\"F.SilkS\",\"start\":{\"x\":-3.12,\"y\":-1.87},\"stroke_width_mm\":0.12,\"type\":\"line\"},{\"end\":{\"x\":3.12,\"y\":1.87},\"item_id\":null,\"layer\":\"F.SilkS\",\"start\":{\"x\":-3.12,\"y\":1.87},\"stroke_width_mm\":0.12,\"type\":\"line\"},{\"closed\":true,\"fill\":\"none\",\"item_id\":null,\"layer\":\"F.Fab\",\"point_count\":5,\"points\":[{\"x\":-3.0,\"y\":-0.875},{\"x\":-2.125,\"y\":-1.75},{\"x\":3.0,\"y\":-1.75},{\"x\":3.0,\"y\":1.75},{\"x\":-3.0,\"y\":1.75}],\"stroke_width_mm\":0.1,\"type\":\"poly\"}],\"has_3d_model\":false,\"has_courtyard\":true,\"name\":\"CK_PTS636SM43SMTR_LFS\",\"pad_count\":2,\"pads\":[{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":null,\"shape\":\"rect\",\"size\":{\"x\":2.0,\"y\":1.5}}],\"drill\":null,\"layers\":[\"F.Cu\",\"F.Paste\",\"F.Mask\"],\"net\":\"\",\"number\":\"1\",\"pad_type\":\"smd\",\"rotation_deg\":0.0,\"shape\":\"rect\",\"size\":{\"x\":2.0,\"y\":1.5},\"uuid\":null,\"x\":-4.1,\"y\":0.0},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":null,\"shape\":\"rect\",\"size\":{\"x\":2.0,\"y\":1.5}}],\"drill\":null,\"layers\":[\"F.Cu\",\"F.Paste\",\"F.Mask\"],\"net\":\"\",\"number\":\"2\",\"pad_type\":\"smd\",\"rotation_deg\":0.0,\"shape\":\"rect\",\"size\":{\"x\":2.0,\"y\":1.5},\"uuid\":null,\"x\":4.1,\"y\":0.0}],\"path\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\footprints\\\\ESP-DubSiren-V2-Electrical.pretty\\\\CK_PTS636SM43SMTR_LFS.kicad_mod\"}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "get_component_pads",
+    "args": {
+      "board": "C:\\Users\\dot\\AppData\\Local\\Temp\\dubsiren-v2-tools\\electrical-acceptance\\Electrical-Acceptance.kicad_pcb",
+      "reference": "SW900"
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"pad_count\":2,\"pads\":[{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"rect\",\"size\":{\"x\":2.0,\"y\":1.5}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"F.Cu\",\"F.Mask\",\"F.Paste\"],\"net\":\"\",\"number\":\"1\",\"pad_type\":\"smd\",\"rotation_deg\":0.0,\"shape\":\"rect\",\"size\":{\"x\":2.0,\"y\":1.5},\"uuid\":\"c0496425-c348-40d4-893e-33ba31fc12a5\",\"x\":145.9,\"y\":70.0},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"rect\",\"size\":{\"x\":2.0,\"y\":1.5}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"F.Cu\",\"F.Mask\",\"F.Paste\"],\"net\":\"\",\"number\":\"2\",\"pad_type\":\"smd\",\"rotation_deg\":0.0,\"shape\":\"rect\",\"size\":{\"x\":2.0,\"y\":1.5},\"uuid\":\"78ae243e-fdc6-4c17-b659-1565b237bd9e\",\"x\":154.1,\"y\":70.0}],\"reference\":\"SW900\",\"source\":\"ipc\"}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "save_project",
+    "args": {},
+    "result": {
+      "content": [
+        {
+          "text": "Board saved successfully.",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "export_svg",
+    "args": {
+      "board": "C:\\Users\\dot\\AppData\\Local\\Temp\\dubsiren-v2-tools\\electrical-acceptance\\Electrical-Acceptance.kicad_pcb",
+      "output": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\reports\\electrical-remaining-scratch.svg",
+      "layers": [
+        "F.Cu",
+        "F.SilkS",
+        "F.Fab",
+        "F.CrtYd",
+        "Edge.Cuts"
+      ]
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"black_and_white\":false,\"output\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\reports\\\\electrical-remaining-scratch.svg\",\"success\":true}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  }
+]

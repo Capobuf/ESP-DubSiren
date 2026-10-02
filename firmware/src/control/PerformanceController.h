@@ -7,7 +7,7 @@
 class PerformanceController {
 public:
     static constexpr unsigned kDisplayWidth = 320;
-    static constexpr unsigned kDisplayHeight = 170;
+    static constexpr unsigned kDisplayHeight = 172;
 
     enum class DisplayMode : uint8_t { Home, Menu };
     enum class MenuItem : uint8_t {

@@ -1,0 +1,1763 @@
+[
+  {
+    "name": "load_toolset",
+    "args": {
+      "name": [
+        "sch_components",
+        "sch_export",
+        "pcb_export",
+        "sch_analysis",
+        "sch_batch"
+      ]
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"errors\":[],\"loaded\":[\"sch_components\",\"sch_export\",\"pcb_export\",\"sch_analysis\",\"sch_batch\"],\"tools\":[{\"description\":\"Create a new blank .kicad_sch schematic file, on A4 unless another paper size is given. Use set_schematic_page to change it later.\",\"name\":\"create_schematic\"},{\"description\":\"Set the sheet's paper size (A0-A5, A-E, USLetter, USLegal, USLedger) and orientation. Content outside the frame still exports and still nets up, so a too-small page is a silent defect \u2014 check the layout extents against the size.\",\"name\":\"set_schematic_page\"},{\"description\":\"Add a symbol from a KiCAD library to the schematic. The symbol is snapped to the 1.27mm schematic grid. Preserves every saved hierarchy instance, reports committed-file readback, copies the library Value and Footprint unless explicitly overridden, and refuses stale instance metadata before writing. Specify position in schematic mm coordinates.\",\"name\":\"add_schematic_component\"},{\"description\":\"Remove a component by reference designator, including every placed unit of a multi-unit symbol.\",\"name\":\"delete_schematic_component\"},{\"description\":\"Update fields (Reference, Value, Footprint, custom properties) consistently across every placed unit of a component, and move or hide the text of any of them.\",\"name\":\"edit_schematic_component\"},{\"description\":\"Get a component's shared properties and every placed unit's position. Use get_schematic_pin_locations for pins.\",\"name\":\"get_schematic_component\"},{\"description\":\"List all symbol instances in a schematic with their positions, values, footprints, and pin locations.\",\"name\":\"list_schematic_components\"},{\"description\":\"Move a component's lowest-numbered unit to a new position and translate every other placed unit by the same delta. Does NOT adjust connected wires. Junction dots are re-judged where the pins moved: a dot the pins leave unjustified is removed and a pin landing mid-span on a wire gains one, reported as junctions_pruned_count and junctions_added_count. A no-connect flag travels with the pin it protects, reported as no_connects_moved; the move is refused before writing when that pin cannot be followed one-to-one.\",\"name\":\"move_schematic_component\"},{\"description\":\"Set the lowest-numbered unit's absolute rotation and rotate every other placed unit by the same delta. Does NOT adjust connected wires. Junction dots are re-judged where the pins turned, reported as junctions_pruned_count and junctions_added_count. A no-connect flag travels with the pin it protects, reported as no_connects_moved; the turn is refused before writing when that pin cannot be followed one-to-one.\",\"name\":\"rotate_schematic_component\"},{\"description\":\"REFUSED until implemented: moving a symbol while stretching its connected              wires is not built yet. Calling this returns an error naming              move_schematic_component as the working alternative \u2014 it moves the symbol              only, leaving wires where they are.\",\"name\":\"move_connected\"},{\"description\":\"Move all symbol units whose origins are within a bounding box by a given offset. Does NOT adjust connected wires. Junction dots are re-judged once for the whole region where its pins moved, reported as junctions_pruned_count and junctions_added_count. No-connect flags travel with the pins they protect, reported as no_connects_moved; the move is refused before writing when a pin cannot be followed one-to-one.\",\"name\":\"move_region\"},{\"description\":\"Assign reference designators in the saved schematic the way eeschema's Tools \u2192 Annotate does with its defaults: every '?' designator gets the first free number for its prefix in the project, in ascending X per sheet instance, numbers used on any sheet instance in the file are reserved, and numbered designators are kept. The units of one multi-unit part (same embedded definition and value, distinct units) share one designator; when which units belong together is not proven they are reported in 'unresolved', never guessed. Two separate parts sharing a designator are reported in 'unresolved' with a 'partial' outcome; they are renumbered only when resolve_duplicates is true (the first in ascending X keeps the number). Annotates one project's instance records \u2014 the schematic's owner by default, or 'project' \u2014 and never touches another project's. Writes both the Reference property and the instances block, then reads the file back; every count in the response comes from that readback. Numbers used on the project's other sheets are reserved through its sheet tree ('other_sheets_consulted'); duplicates already spread across sheets are not detected here. Konnect's own implementation \u2014 kicad-cli has no annotate command. dry_run returns the plan without writing.\",\"name\":\"annotate_schematic\"},{\"description\":\"Get the exact schematic-space (X,Y) coordinates of every pin on every placed unit of a component, accounting for rotation and mirroring. Uses the canonical pin transform. Each pin also reports 'orientation_degrees', the direction leading away from the symbol body (0 = east) \u2014 a net label at the pin must read that way or its text runs back over the symbol's pin names \u2014 and 'length_mm'.\",\"name\":\"get_schematic_pin_locations\"},{\"description\":\"Get pin locations for multiple components in a single file read. Reports the same per-pin fields as get_schematic_pin_locations, including 'orientation_degrees' and 'length_mm'.\",\"name\":\"batch_get_schematic_pin_locations\"},{\"description\":\"Add or update a custom property consistently across every placed unit of a component.\",\"name\":\"add_component_annotation\"},{\"description\":\"Add or update a group property on every placed unit of multiple components.\",\"name\":\"group_components\"},{\"description\":\"Replace every placed unit of a component with a new library symbol while preserving unit numbers. A unit override is accepted only for a single placement. Junction dots are re-judged once for the whole replacement, reported as junctions_pruned_count and junctions_added_count. A no-connect flag follows the same symbol UUID, unit, and pin number when that mapping is one-to-one; removed, renumbered, or duplicated protected pins refuse before writing.\",\"name\":\"replace_component\"},{\"description\":\"Re-embed placed symbols' definitions from their libraries, like KiCad's 'Update Symbols from Library'. A schematic carries its own copy of every symbol, so editing one in its library leaves the sheet drawing the old shape \u2014 this refreshes it. A symbol whose pins moved or disappeared in the library is refused (reported in pins_moved) unless allow_pin_moves is set, because wires and labels attach at pin coordinates.\",\"name\":\"update_symbols_from_library\"},{\"description\":\"Move each placed symbol's Reference and Value text back to the position its library definition anchors them at, carried through the symbol's own rotation \u2014 KiCad's 'Reset field text positions'. Use it on a sheet whose fields sit at a uniform offset instead of where the library puts them (labels inside a connector body, a rail's name below an up-pointing arrow). Fields a symbol's definition gives no anchor for are left alone.\",\"name\":\"reset_schematic_field_positions\"},{\"description\":\"Render a schematic sheet with kicad-cli and return the path to the SVG it wrote.              There is no PNG: KiCad ships no schematic rasteriser \u2014 `sch export` offers no bitmap              format and there is no `sch render` \u2014 so this is a vector file, not an image that can              be shown inline. It lands in a temporary directory and is overwritten by the next view              of the same sheet; use export_schematic_svg (toolset sch_export) to choose where it              goes. The SVG doubles as a geometry source: kicad-cli writes every string a second              time as an invisible <text opacity=\\\"0\\\"> element carrying x, y, textLength, font-size              and text-anchor, so text content, position and width can be checked without rendering              a pixel.\",\"name\":\"get_schematic_view\"},{\"description\":\"Export a schematic sheet to an SVG file using kicad-cli. The result doubles as a              machine-readable geometry source: kicad-cli writes every string twice \u2014 visibly as              stroke paths, and again as an invisible <text opacity=\\\"0\\\"> element carrying x, y,              textLength, font-size and text-anchor \u2014 so text content, position and width are              checkable without rendering a pixel.\",\"name\":\"export_schematic_svg\"},{\"description\":\"Render a schematic sheet to PNG: kicad-cli SVG export rasterized in-process (deterministic stroke-font rendering, no system fonts consulted). Returns the PNG path and its actual pixel dimensions; with 'inline' true the response also carries the image as base64 so the caller can inspect its own output. Width is capped at 4096 px.\",\"name\":\"render_schematic_png\"},{\"description\":\"Capture the current render of a schematic sheet as its visual baseline, stored under the project's .konnect/baselines/ keyed by sheet name, with the source file's hash and the renderer identity recorded so a later compare can tell design drift from a stale renderer.\",\"name\":\"set_visual_baseline\"},{\"description\":\"Re-render a sheet at its stored baseline's width and report pixel drift: changed-pixel percentage against a 2% threshold, the changed region's pixel bounding box, and whether the source file changed since the baseline. 'No baseline stored' is an explicit result, not an error; a baseline made by a different renderer version is flagged, never silently trusted.\",\"name\":\"compare_visual_baseline\"},{\"description\":\"Export a schematic sheet to a PDF file using kicad-cli.\",\"name\":\"export_schematic_pdf\"},{\"description\":\"Generate a KiCAD netlist file from the schematic using kicad-cli.\",\"name\":\"generate_netlist\"},{\"description\":\"Return a human-readable JSON summary of the schematic netlist: all components, their nets, pin counts. Nets come from labels and from power symbols. Does not require kicad-cli.\",\"name\":\"export_netlist_summary\"},{\"description\":\"Run the Electrical Rules Check (ERC) on the schematic via kicad-cli and return a list of violations filtered by severity.\",\"name\":\"run_erc\"},{\"description\":\"Scan the schematic for near-miss wire endpoints (within snap_tolerance of a pin or label but not exactly on it) and snap them into place. Use dry_run to preview fixes without writing.\",\"name\":\"fix_connectivity\"},{\"description\":\"Plan or atomically apply saved schematic hierarchy changes to the live KiCad PCB. Defaults to a non-mutating dry run; apply requires its exact plan revision. Preserves placement, routing, board-only footprints, and footprint artwork. A symbol with no footprint assigned is reported under `unassigned_footprints` and the sync proceeds for every other component.\",\"name\":\"update_pcb_from_schematic\"},{\"description\":\"Export Gerber production files using kicad-cli. By default Konnect selects all enabled copper layers, masks, silkscreens, and Edge.Cuts while excluding documentation-only layers.\",\"name\":\"export_gerber\"},{\"description\":\"Export the PCB layout to a PDF file using kicad-cli.\",\"name\":\"export_pdf\"},{\"description\":\"Export the PCB layout to an SVG file using kicad-cli.\",\"name\":\"export_svg\"},{\"description\":\"Export the PCB as a 3D model (STEP or VRML) using kicad-cli.\",\"name\":\"export_3d\"},{\"description\":\"Generate a Bill of Materials (BOM) CSV from the schematic's component data.\",\"name\":\"export_bom\"},{\"description\":\"Export the PCB netlist to a file in KiCAD or IPC-D-356 format.\",\"name\":\"export_netlist\"},{\"description\":\"Export a deterministic Specctra DSN routing job from the exact live KiCad PCB editor revision. Requires the named board to be open with IPC enabled. On KiCad 10, an enabled authenticated ActionPlugin bridge supplies KiCad's native DSN while the IPC snapshot and reverse manifest remain authoritative; otherwise the Rust exporter is used. The first supported profile is deliberately narrow: two copper layers, front-side SMD or through-hole footprints, circle/rectangle pads, one straight-line closed outline, and no existing tracks, vias, or zones. Konnect refuses unsupported geometry or custom DRC rules, or incomplete effective routing rules instead of approximating them, and writes a revision-bound reverse manifest beside the DSN for later SES import.\",\"name\":\"export_specctra_dsn\"},{\"description\":\"Generate a component placement (pick-and-place) position file for SMT assembly. KiCad automatically omits footprints marked exclude_from_pos_files.\",\"name\":\"export_position_file\"},{\"description\":\"Export the PCB to DXF using kicad-cli, one file per requested layer. Useful for mechanical CAD interchange (enclosures, panelization, laser cutting).\",\"name\":\"export_dxf\"},{\"description\":\"Export the PCB in GenCAD format using kicad-cli. GenCAD is accepted by some CAM and test-fixture tooling as an alternative to a raw Gerber bundle.\",\"name\":\"export_gencad\"},{\"description\":\"Export the PCB in IPC-2581 format using kicad-cli. IPC-2581 is a unified fabrication/assembly/test data format accepted by many contract manufacturers as an alternative to a Gerber + drill + BOM + pick-and-place bundle.\",\"name\":\"export_ipc2581\"},{\"description\":\"Export the PCB in ODB++ format using kicad-cli. ODB++ is a unified fabrication data format accepted by many fab houses as an alternative to a Gerber + drill bundle.\",\"name\":\"export_odb\"},{\"description\":\"Refill all copper pour zones on the board. KiCad IPC refills the complete board; per-zone selection is not available. Requires a running KiCad instance with IPC enabled.\",\"name\":\"refill_zones\"},{\"description\":\"Run the Design Rule Check (DRC) on the PCB and return a list of violations. Provided in `pcb_export` because the output is handy to bundle alongside Gerbers when preparing a build package. For interactive / iterative DRC work, prefer `run_drc` (verification toolset) \u2014 same kicad-cli check, cleaner summary with error/warning counts.\",\"name\":\"get_drc_violations\"},{\"description\":\"List all wire segments in a schematic with start/end coordinates and UUIDs.\",\"name\":\"list_schematic_wires\"},{\"description\":\"List all distinct net names derived from net labels, global labels, and power symbols.\",\"name\":\"list_schematic_nets\"},{\"description\":\"List all label instances (net_label, global_label, hierarchical_label) with their positions, net names, and types.\",\"name\":\"list_schematic_labels\"},{\"description\":\"Get all pins and labels connected to a named net.\",\"name\":\"get_net_connections\"},{\"description\":\"Build the full connectivity graph for a net using union-find. Returns all wire segments, labels, and T-junction locations.\",\"name\":\"get_net_connectivity\"},{\"description\":\"Get the net connected to a specific pin on a component by tracing wires from the pin endpoint.\",\"name\":\"get_pin_connections\"},{\"description\":\"Return just the net name for a specific pin on a component.\",\"name\":\"get_pin_net_name\"},{\"description\":\"Get all nets connected to every pin of a component.\",\"name\":\"get_component_nets\"},{\"description\":\"Get all components (and their pins) connected to a named net.\",\"name\":\"get_net_components\"},{\"description\":\"Trace connectivity from any (X,Y) point \u2014 returns the wires, labels, component pins and junction dots at that point, and the net it belongs to. Hierarchical sheet pins and no-connect flags are not reported, so an empty pins_here does not prove a wire dangles.\",\"name\":\"trace_from_point\"},{\"description\":\"Find dangling wire ends, floating labels, and unconnected pin endpoints. Pins, sheet pins, junctions, and no-connect flags all count as connections.\",\"name\":\"find_orphan_items\"},{\"description\":\"Detect accidentally merged nets \u2014 distinct net names that KiCad nets together, through a wire path they share or through a name that joins their segments.\",\"name\":\"find_shorted_nets\"},{\"description\":\"Find nets that reach at most one pin \u2014 often a missing counterpart, an orphan label, or a stub left by a deleted component. Component pins and hierarchical sheet pins count; a power symbol's own pin names the rail rather than consuming it and does not. Reports the pin and label counts, and every label kind that named the net. Read per sheet: a net a global, hierarchical or power label can carry off this one is flagged cross_sheet_unverified.\",\"name\":\"find_single_pin_nets\"},{\"description\":\"Get all wires, labels, and components connected to a given component reference by tracing net connectivity from each of its pins.\",\"name\":\"get_connected_items\"},{\"description\":\"Find overlapping symbols from their transformed drawing/pin bounds (excluding free text), plus conflicting labels at the same location. Reports any symbol whose embedded geometry could not be resolved and used the origin fallback instead.\",\"name\":\"check_schematic_overlaps\"},{\"description\":\"Connect multiple component pins to a named net by adding net labels at each pin endpoint. Single file read \u2192 all labels inserted \u2192 single file write. Labels are sheet-local: a sheet instanced N times gets N independent nets. Use add_power_symbol or a global_label for a rail shared by every instance, and only a local label for one that must stay per-instance \u2014 power symbols and global labels are one net across all sheets and instances.\",\"name\":\"batch_connect_to_net\"},{\"description\":\"Place multiple symbols from KiCAD libraries in one write with committed-file readback. Preserves every saved hierarchy instance and preflights stale metadata before any placement. Copies each library Value and Footprint unless that entry explicitly overrides it. Pins that land mid-segment on an existing wire gain the required junction in the same atomic write; the response reports junctions_added_count and junctions_pruned_count. Pass explicit references -- there is no auto-numbering; an omitted reference becomes '?' like an eeschema-unannotated symbol, same as add_schematic_component.\",\"name\":\"batch_place_components\"},{\"description\":\"Connect multiple component pin pairs by reference and pin number, in a single file read/write cycle.\",\"name\":\"batch_connect_pins\"},{\"description\":\"Delete multiple schematic items (wires, labels, junctions, components) by UUID or component reference designator \u2014 single file write.\",\"name\":\"batch_delete\"},{\"description\":\"Move multiple components by a uniform dx/dy offset in a single atomic file write. Junction dots are re-judged where the pins moved: a dot the pins leave unjustified is removed and a pin landing mid-span on a wire gains one, reported as junctions_pruned_count and junctions_added_count. A no-connect flag travels with the pin it protects, reported as no_connects_moved; the shift is refused before writing when that pin cannot be followed one-to-one.\",\"name\":\"bulk_move_schematic_components\"},{\"description\":\"Apply field updates (Value, Footprint, custom properties) to multiple components in a single atomic file write.\",\"name\":\"batch_edit_schematic_components\"},{\"description\":\"Delete multiple components by reference designator in a single atomic file write.\",\"name\":\"batch_delete_schematic_components\"},{\"description\":\"Add a wire stub and matching net label at a point to route a signal through a region without drawing a full wire path. Direction controls stub orientation.\",\"name\":\"connect_passthrough\"},{\"description\":\"Add a text annotation (non-net label) to the schematic at a given position.\",\"name\":\"add_schematic_text\"},{\"description\":\"Return a compact spatial summary of the schematic: component positions, transformed drawing/pin bounds (excluding free text), and optionally wire segments and label locations. Reports any component whose embedded library geometry could not be resolved.\",\"name\":\"get_schematic_layout\"},{\"description\":\"Check all wire endpoints for floating ends (not connected to a pin, label, or another wire). Reports each floating endpoint with its coordinates.\",\"name\":\"validate_wire_connections\"},{\"description\":\"Check that every connectable pin on every component has at least one wire or label connected. Symbol pins typed no_connect and pins carrying a no-connect marker are exempt. Reports unconnected pins with reference, pin number, electrical type, and schematic position.\",\"name\":\"validate_component_connections\"}],\"tools_added\":71}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "edit_schematic_component",
+    "args": {
+      "schematic": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_sch",
+      "reference": "U1",
+      "fields": {
+        "MPN": "ESP32-S3-WROOM-1U-N16R8",
+        "Manufacturer": "Espressif",
+        "DesignStatus": "INTERIM - incomplete controls and USB power qualification"
+      },
+      "field_placements": {
+        "MPN": {
+          "hide": true
+        },
+        "Manufacturer": {
+          "hide": true
+        },
+        "DesignStatus": {
+          "hide": true
+        }
+      }
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"changes\":[\"DesignStatus \u2192 INTERIM - incomplete controls and USB power qualification (0 updated, 1 added)\",\"MPN \u2192 ESP32-S3-WROOM-1U-N16R8 (1 updated, 0 added)\",\"Manufacturer \u2192 Espressif (1 updated, 0 added)\",\"DesignStatus placement (1 unit(s))\",\"MPN placement (1 unit(s))\",\"Manufacturer placement (1 unit(s))\"],\"datasheet\":\"https://www.espressif.com/sites/default/files/documentation/esp32-s3-wroom-1_wroom-1u_datasheet_en.pdf\",\"fields\":{\"Datasheet\":\"https://www.espressif.com/sites/default/files/documentation/esp32-s3-wroom-1_wroom-1u_datasheet_en.pdf\",\"Description\":\"\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"ESP-DubSiren-V2-Electrical:Espressif_ESP32-S3-WROOM-1U\",\"MPN\":\"ESP32-S3-WROOM-1U-N16R8\",\"Manufacturer\":\"Espressif\",\"Reference\":\"U1\",\"Value\":\"ESP32-S3-WROOM-1U-N16R8\"},\"footprint\":\"ESP-DubSiren-V2-Electrical:Espressif_ESP32-S3-WROOM-1U\",\"lib_id\":\"ESP-DubSiren-V2:ESP32-S3-WROOM-1U-N16R8\",\"mirror_x\":false,\"mirror_y\":false,\"reference\":\"U1\",\"rotation\":0.0,\"schematic\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\ESP-DubSiren-V2.kicad_sch\",\"unit_count\":1,\"units\":[{\"field_placements\":{\"Datasheet\":{\"hide\":true,\"rotation\":0.0,\"x\":330.2,\"y\":63.5},\"Description\":{\"hide\":true,\"rotation\":0.0,\"x\":330.2,\"y\":63.5},\"DesignStatus\":{\"hide\":true,\"rotation\":0.0,\"x\":330.2,\"y\":63.5},\"Footprint\":{\"hide\":true,\"rotation\":0.0,\"x\":330.2,\"y\":63.5},\"MPN\":{\"hide\":true,\"rotation\":0.0,\"x\":330.2,\"y\":63.5},\"Manufacturer\":{\"hide\":true,\"rotation\":0.0,\"x\":330.2,\"y\":63.5},\"Reference\":{\"hide\":false,\"rotation\":0.0,\"x\":330.2,\"y\":27.94},\"Value\":{\"hide\":false,\"rotation\":0.0,\"x\":330.2,\"y\":101.6}},\"fields\":{\"Datasheet\":\"https://www.espressif.com/sites/default/files/documentation/esp32-s3-wroom-1_wroom-1u_datasheet_en.pdf\",\"Description\":\"\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"ESP-DubSiren-V2-Electrical:Espressif_ESP32-S3-WROOM-1U\",\"MPN\":\"ESP32-S3-WROOM-1U-N16R8\",\"Manufacturer\":\"Espressif\",\"Reference\":\"U1\",\"Value\":\"ESP32-S3-WROOM-1U-N16R8\"},\"instance_paths\":[[\"ESP-DubSiren-V2\",\"/2037f81d-e33e-4c09-903b-90b25af374ad\"]],\"instance_references\":[\"U1\"],\"lib_id\":\"ESP-DubSiren-V2:ESP32-S3-WROOM-1U-N16R8\",\"mirror_x\":false,\"mirror_y\":false,\"rotation\":0.0,\"unit\":1,\"uuid\":\"db108e7f-d969-486f-a109-ffaf00374473\",\"x\":330.2,\"y\":63.5}],\"uuid\":\"db108e7f-d969-486f-a109-ffaf00374473\",\"value\":\"ESP32-S3-WROOM-1U-N16R8\",\"x\":330.2,\"y\":63.5}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "edit_schematic_component",
+    "args": {
+      "schematic": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_sch",
+      "reference": "U2",
+      "fields": {
+        "MPN": "MPM3612GLQ-33-Z",
+        "Manufacturer": "MPS",
+        "DesignStatus": "INTERIM - incomplete controls and USB power qualification"
+      },
+      "field_placements": {
+        "MPN": {
+          "hide": true
+        },
+        "Manufacturer": {
+          "hide": true
+        },
+        "DesignStatus": {
+          "hide": true
+        }
+      }
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"changes\":[\"DesignStatus \u2192 INTERIM - incomplete controls and USB power qualification (0 updated, 1 added)\",\"MPN \u2192 MPM3612GLQ-33-Z (0 updated, 1 added)\",\"Manufacturer \u2192 MPS (0 updated, 1 added)\",\"DesignStatus placement (1 unit(s))\",\"MPN placement (1 unit(s))\",\"Manufacturer placement (1 unit(s))\"],\"datasheet\":\"https://www.monolithicpower.com/en/documentview/productdocument/index/version/2/document_type/Datasheet/lang/en/sku/MPM3612GLQ-33/document_id/11833/\",\"fields\":{\"Datasheet\":\"https://www.monolithicpower.com/en/documentview/productdocument/index/version/2/document_type/Datasheet/lang/en/sku/MPM3612GLQ-33/document_id/11833/\",\"Description\":\"\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"ESP-DubSiren-V2-Electrical:MPS_MPM3612GLQ-33_LGA-8-1EP_3x3mm\",\"MPN\":\"MPM3612GLQ-33-Z\",\"Manufacturer\":\"MPS\",\"Reference\":\"U2\",\"Value\":\"MPM3612GLQ-33-Z\"},\"footprint\":\"ESP-DubSiren-V2-Electrical:MPS_MPM3612GLQ-33_LGA-8-1EP_3x3mm\",\"lib_id\":\"ESP-DubSiren-V2:MPM3612GLQ-33\",\"mirror_x\":false,\"mirror_y\":false,\"reference\":\"U2\",\"rotation\":0.0,\"schematic\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\ESP-DubSiren-V2.kicad_sch\",\"unit_count\":1,\"units\":[{\"field_placements\":{\"Datasheet\":{\"hide\":true,\"rotation\":0.0,\"x\":185.42,\"y\":50.8},\"Description\":{\"hide\":true,\"rotation\":0.0,\"x\":185.42,\"y\":50.8},\"DesignStatus\":{\"hide\":true,\"rotation\":0.0,\"x\":185.42,\"y\":50.8},\"Footprint\":{\"hide\":true,\"rotation\":0.0,\"x\":185.42,\"y\":50.8},\"MPN\":{\"hide\":true,\"rotation\":0.0,\"x\":185.42,\"y\":50.8},\"Manufacturer\":{\"hide\":true,\"rotation\":0.0,\"x\":185.42,\"y\":50.8},\"Reference\":{\"hide\":false,\"rotation\":0.0,\"x\":185.42,\"y\":27.94},\"Value\":{\"hide\":false,\"rotation\":0.0,\"x\":185.42,\"y\":76.2}},\"fields\":{\"Datasheet\":\"https://www.monolithicpower.com/en/documentview/productdocument/index/version/2/document_type/Datasheet/lang/en/sku/MPM3612GLQ-33/document_id/11833/\",\"Description\":\"\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"ESP-DubSiren-V2-Electrical:MPS_MPM3612GLQ-33_LGA-8-1EP_3x3mm\",\"MPN\":\"MPM3612GLQ-33-Z\",\"Manufacturer\":\"MPS\",\"Reference\":\"U2\",\"Value\":\"MPM3612GLQ-33-Z\"},\"instance_paths\":[[\"ESP-DubSiren-V2\",\"/2037f81d-e33e-4c09-903b-90b25af374ad\"]],\"instance_references\":[\"U2\"],\"lib_id\":\"ESP-DubSiren-V2:MPM3612GLQ-33\",\"mirror_x\":false,\"mirror_y\":false,\"rotation\":0.0,\"unit\":1,\"uuid\":\"1334b857-009d-4cd1-9022-c23145f29c05\",\"x\":185.42,\"y\":50.8}],\"uuid\":\"1334b857-009d-4cd1-9022-c23145f29c05\",\"value\":\"MPM3612GLQ-33-Z\",\"x\":185.42,\"y\":50.8}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "edit_schematic_component",
+    "args": {
+      "schematic": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_sch",
+      "reference": "U3",
+      "fields": {
+        "MPN": "74HC4051D",
+        "Manufacturer": "Toshiba",
+        "DesignStatus": "INTERIM - incomplete controls and USB power qualification"
+      },
+      "field_placements": {
+        "MPN": {
+          "hide": true
+        },
+        "Manufacturer": {
+          "hide": true
+        },
+        "DesignStatus": {
+          "hide": true
+        }
+      }
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"changes\":[\"DesignStatus \u2192 INTERIM - incomplete controls and USB power qualification (0 updated, 1 added)\",\"MPN \u2192 74HC4051D (0 updated, 1 added)\",\"Manufacturer \u2192 Toshiba (0 updated, 1 added)\",\"DesignStatus placement (1 unit(s))\",\"MPN placement (1 unit(s))\",\"Manufacturer placement (1 unit(s))\"],\"datasheet\":\"http://www.ti.com/lit/ds/symlink/cd74hc4051.pdf\",\"fields\":{\"Datasheet\":\"http://www.ti.com/lit/ds/symlink/cd74hc4051.pdf\",\"Description\":\"8-channel analog multiplexer/demultiplexer, DIP-16/SOIC-16/TSSOP-16\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"Package_SO:SOIC-16_3.9x9.9mm_P1.27mm\",\"MPN\":\"74HC4051D\",\"Manufacturer\":\"Toshiba\",\"Reference\":\"U3\",\"Value\":\"74HC4051D\"},\"footprint\":\"Package_SO:SOIC-16_3.9x9.9mm_P1.27mm\",\"lib_id\":\"74xx:74HC4051\",\"mirror_x\":false,\"mirror_y\":false,\"reference\":\"U3\",\"rotation\":0.0,\"schematic\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\ESP-DubSiren-V2.kicad_sch\",\"unit_count\":1,\"units\":[{\"field_placements\":{\"Datasheet\":{\"hide\":true,\"rotation\":0.0,\"x\":292.1,\"y\":223.52},\"Description\":{\"hide\":true,\"rotation\":0.0,\"x\":292.1,\"y\":223.52},\"DesignStatus\":{\"hide\":true,\"rotation\":0.0,\"x\":292.1,\"y\":223.52},\"Footprint\":{\"hide\":true,\"rotation\":0.0,\"x\":292.1,\"y\":223.52},\"MPN\":{\"hide\":true,\"rotation\":0.0,\"x\":292.1,\"y\":223.52},\"Manufacturer\":{\"hide\":true,\"rotation\":0.0,\"x\":292.1,\"y\":223.52},\"Reference\":{\"hide\":false,\"rotation\":0.0,\"x\":292.1,\"y\":200.66},\"Value\":{\"hide\":false,\"rotation\":0.0,\"x\":292.1,\"y\":248.92}},\"fields\":{\"Datasheet\":\"http://www.ti.com/lit/ds/symlink/cd74hc4051.pdf\",\"Description\":\"8-channel analog multiplexer/demultiplexer, DIP-16/SOIC-16/TSSOP-16\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"Package_SO:SOIC-16_3.9x9.9mm_P1.27mm\",\"MPN\":\"74HC4051D\",\"Manufacturer\":\"Toshiba\",\"Reference\":\"U3\",\"Value\":\"74HC4051D\"},\"instance_paths\":[[\"ESP-DubSiren-V2\",\"/2037f81d-e33e-4c09-903b-90b25af374ad\"]],\"instance_references\":[\"U3\"],\"lib_id\":\"74xx:74HC4051\",\"mirror_x\":false,\"mirror_y\":false,\"rotation\":0.0,\"unit\":1,\"uuid\":\"f03751d9-9a2f-4097-a114-7f59578447c1\",\"x\":292.1,\"y\":223.52}],\"uuid\":\"f03751d9-9a2f-4097-a114-7f59578447c1\",\"value\":\"74HC4051D\",\"x\":292.1,\"y\":223.52}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "edit_schematic_component",
+    "args": {
+      "schematic": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_sch",
+      "reference": "U4",
+      "fields": {
+        "MPN": "USBLC6-2SC6",
+        "Manufacturer": "SLKOR",
+        "DesignStatus": "INTERIM - incomplete controls and USB power qualification"
+      },
+      "field_placements": {
+        "MPN": {
+          "hide": true
+        },
+        "Manufacturer": {
+          "hide": true
+        },
+        "DesignStatus": {
+          "hide": true
+        }
+      }
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"changes\":[\"DesignStatus \u2192 INTERIM - incomplete controls and USB power qualification (0 updated, 1 added)\",\"MPN \u2192 USBLC6-2SC6 (0 updated, 1 added)\",\"Manufacturer \u2192 SLKOR (0 updated, 1 added)\",\"DesignStatus placement (1 unit(s))\",\"MPN placement (1 unit(s))\",\"Manufacturer placement (1 unit(s))\"],\"datasheet\":\"https://www.st.com/resource/en/datasheet/usblc6-2.pdf\",\"fields\":{\"Datasheet\":\"https://www.st.com/resource/en/datasheet/usblc6-2.pdf\",\"Description\":\"Very low capacitance ESD protection diode, 2 data-line, SOT-23-6\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"Package_TO_SOT_SMD:SOT-23-6\",\"MPN\":\"USBLC6-2SC6\",\"Manufacturer\":\"SLKOR\",\"Reference\":\"U4\",\"Value\":\"USBLC6-2SC6\"},\"footprint\":\"Package_TO_SOT_SMD:SOT-23-6\",\"lib_id\":\"Power_Protection:USBLC6-2SC6\",\"mirror_x\":false,\"mirror_y\":false,\"reference\":\"U4\",\"rotation\":0.0,\"schematic\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\ESP-DubSiren-V2.kicad_sch\",\"unit_count\":1,\"units\":[{\"field_placements\":{\"Datasheet\":{\"hide\":true,\"rotation\":0.0,\"x\":86.36,\"y\":76.2},\"Description\":{\"hide\":true,\"rotation\":0.0,\"x\":86.36,\"y\":76.2},\"DesignStatus\":{\"hide\":true,\"rotation\":0.0,\"x\":86.36,\"y\":76.2},\"Footprint\":{\"hide\":true,\"rotation\":0.0,\"x\":86.36,\"y\":76.2},\"MPN\":{\"hide\":true,\"rotation\":0.0,\"x\":86.36,\"y\":76.2},\"Manufacturer\":{\"hide\":true,\"rotation\":0.0,\"x\":86.36,\"y\":76.2},\"Reference\":{\"hide\":false,\"rotation\":0.0,\"x\":86.995,\"y\":70.485},\"Value\":{\"hide\":false,\"rotation\":0.0,\"x\":86.995,\"y\":72.39}},\"fields\":{\"Datasheet\":\"https://www.st.com/resource/en/datasheet/usblc6-2.pdf\",\"Description\":\"Very low capacitance ESD protection diode, 2 data-line, SOT-23-6\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"Package_TO_SOT_SMD:SOT-23-6\",\"MPN\":\"USBLC6-2SC6\",\"Manufacturer\":\"SLKOR\",\"Reference\":\"U4\",\"Value\":\"USBLC6-2SC6\"},\"instance_paths\":[[\"ESP-DubSiren-V2\",\"/2037f81d-e33e-4c09-903b-90b25af374ad\"]],\"instance_references\":[\"U4\"],\"lib_id\":\"Power_Protection:USBLC6-2SC6\",\"mirror_x\":false,\"mirror_y\":false,\"rotation\":0.0,\"unit\":1,\"uuid\":\"927d4489-7225-44c5-83f8-a18d0cd1016e\",\"x\":86.36,\"y\":76.2}],\"uuid\":\"927d4489-7225-44c5-83f8-a18d0cd1016e\",\"value\":\"USBLC6-2SC6\",\"x\":86.36,\"y\":76.2}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "edit_schematic_component",
+    "args": {
+      "schematic": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_sch",
+      "reference": "U5",
+      "fields": {
+        "MPN": "5393",
+        "Manufacturer": "Adafruit",
+        "DesignStatus": "INTERIM - incomplete controls and USB power qualification"
+      },
+      "field_placements": {
+        "MPN": {
+          "hide": true
+        },
+        "Manufacturer": {
+          "hide": true
+        },
+        "DesignStatus": {
+          "hide": true
+        }
+      }
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"changes\":[\"DesignStatus \u2192 INTERIM - incomplete controls and USB power qualification (0 updated, 1 added)\",\"MPN \u2192 5393 (0 updated, 1 added)\",\"Manufacturer \u2192 Adafruit (0 updated, 1 added)\",\"DesignStatus placement (1 unit(s))\",\"MPN placement (1 unit(s))\",\"Manufacturer placement (1 unit(s))\"],\"datasheet\":\"https://www.adafruit.com/product/5393\",\"fields\":{\"Datasheet\":\"https://www.adafruit.com/product/5393\",\"Description\":\"\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"ESP-DubSiren-V2-Mechanical:Adafruit_5393_DisplayFace\",\"MPN\":\"5393\",\"Manufacturer\":\"Adafruit\",\"Reference\":\"U5\",\"Value\":\"Adafruit 5393\"},\"footprint\":\"ESP-DubSiren-V2-Mechanical:Adafruit_5393_DisplayFace\",\"lib_id\":\"ESP-DubSiren-V2:Adafruit_5393\",\"mirror_x\":false,\"mirror_y\":false,\"reference\":\"U5\",\"rotation\":0.0,\"schematic\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\ESP-DubSiren-V2.kicad_sch\",\"unit_count\":1,\"units\":[{\"field_placements\":{\"Datasheet\":{\"hide\":true,\"rotation\":0.0,\"x\":474.98,\"y\":55.88},\"Description\":{\"hide\":true,\"rotation\":0.0,\"x\":474.98,\"y\":55.88},\"DesignStatus\":{\"hide\":true,\"rotation\":0.0,\"x\":474.98,\"y\":55.88},\"Footprint\":{\"hide\":true,\"rotation\":0.0,\"x\":474.98,\"y\":55.88},\"MPN\":{\"hide\":true,\"rotation\":0.0,\"x\":474.98,\"y\":55.88},\"Manufacturer\":{\"hide\":true,\"rotation\":0.0,\"x\":474.98,\"y\":55.88},\"Reference\":{\"hide\":false,\"rotation\":0.0,\"x\":474.98,\"y\":27.94},\"Value\":{\"hide\":false,\"rotation\":0.0,\"x\":474.98,\"y\":83.82}},\"fields\":{\"Datasheet\":\"https://www.adafruit.com/product/5393\",\"Description\":\"\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"ESP-DubSiren-V2-Mechanical:Adafruit_5393_DisplayFace\",\"MPN\":\"5393\",\"Manufacturer\":\"Adafruit\",\"Reference\":\"U5\",\"Value\":\"Adafruit 5393\"},\"instance_paths\":[[\"ESP-DubSiren-V2\",\"/2037f81d-e33e-4c09-903b-90b25af374ad\"]],\"instance_references\":[\"U5\"],\"lib_id\":\"ESP-DubSiren-V2:Adafruit_5393\",\"mirror_x\":false,\"mirror_y\":false,\"rotation\":0.0,\"unit\":1,\"uuid\":\"0f752a3f-c86f-4374-a86a-d945935cf589\",\"x\":474.98,\"y\":55.88}],\"uuid\":\"0f752a3f-c86f-4374-a86a-d945935cf589\",\"value\":\"Adafruit 5393\",\"x\":474.98,\"y\":55.88}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "edit_schematic_component",
+    "args": {
+      "schematic": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_sch",
+      "reference": "U6",
+      "fields": {
+        "MPN": "6250",
+        "Manufacturer": "Adafruit",
+        "DesignStatus": "INTERIM - incomplete controls and USB power qualification"
+      },
+      "field_placements": {
+        "MPN": {
+          "hide": true
+        },
+        "Manufacturer": {
+          "hide": true
+        },
+        "DesignStatus": {
+          "hide": true
+        }
+      }
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"changes\":[\"DesignStatus \u2192 INTERIM - incomplete controls and USB power qualification (0 updated, 1 added)\",\"MPN \u2192 6250 (0 updated, 1 added)\",\"Manufacturer \u2192 Adafruit (0 updated, 1 added)\",\"DesignStatus placement (1 unit(s))\",\"MPN placement (1 unit(s))\",\"Manufacturer placement (1 unit(s))\"],\"datasheet\":\"https://www.adafruit.com/product/6250\",\"fields\":{\"Datasheet\":\"https://www.adafruit.com/product/6250\",\"Description\":\"\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"ESP-DubSiren-V2-Mechanical:Adafruit_6250_ComponentFace\",\"MPN\":\"6250\",\"Manufacturer\":\"Adafruit\",\"Reference\":\"U6\",\"Value\":\"Adafruit 6250\"},\"footprint\":\"ESP-DubSiren-V2-Mechanical:Adafruit_6250_ComponentFace\",\"lib_id\":\"ESP-DubSiren-V2:Adafruit_6250\",\"mirror_x\":false,\"mirror_y\":false,\"reference\":\"U6\",\"rotation\":0.0,\"schematic\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\ESP-DubSiren-V2.kicad_sch\",\"unit_count\":1,\"units\":[{\"field_placements\":{\"Datasheet\":{\"hide\":true,\"rotation\":0.0,\"x\":474.98,\"y\":132.08},\"Description\":{\"hide\":true,\"rotation\":0.0,\"x\":474.98,\"y\":132.08},\"DesignStatus\":{\"hide\":true,\"rotation\":0.0,\"x\":474.98,\"y\":132.08},\"Footprint\":{\"hide\":true,\"rotation\":0.0,\"x\":474.98,\"y\":132.08},\"MPN\":{\"hide\":true,\"rotation\":0.0,\"x\":474.98,\"y\":132.08},\"Manufacturer\":{\"hide\":true,\"rotation\":0.0,\"x\":474.98,\"y\":132.08},\"Reference\":{\"hide\":false,\"rotation\":0.0,\"x\":474.98,\"y\":101.6},\"Value\":{\"hide\":false,\"rotation\":0.0,\"x\":474.98,\"y\":165.1}},\"fields\":{\"Datasheet\":\"https://www.adafruit.com/product/6250\",\"Description\":\"\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"ESP-DubSiren-V2-Mechanical:Adafruit_6250_ComponentFace\",\"MPN\":\"6250\",\"Manufacturer\":\"Adafruit\",\"Reference\":\"U6\",\"Value\":\"Adafruit 6250\"},\"instance_paths\":[[\"ESP-DubSiren-V2\",\"/2037f81d-e33e-4c09-903b-90b25af374ad\"]],\"instance_references\":[\"U6\"],\"lib_id\":\"ESP-DubSiren-V2:Adafruit_6250\",\"mirror_x\":false,\"mirror_y\":false,\"rotation\":0.0,\"unit\":1,\"uuid\":\"d632ff63-fe8c-428f-a61c-85277eb5b748\",\"x\":474.98,\"y\":132.08}],\"uuid\":\"d632ff63-fe8c-428f-a61c-85277eb5b748\",\"value\":\"Adafruit 6250\",\"x\":474.98,\"y\":132.08}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "edit_schematic_component",
+    "args": {
+      "schematic": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_sch",
+      "reference": "D1",
+      "fields": {
+        "MPN": "SMF5.0A_R1_00001",
+        "Manufacturer": "PANJIT",
+        "DesignStatus": "INTERIM - incomplete controls and USB power qualification"
+      },
+      "field_placements": {
+        "MPN": {
+          "hide": true
+        },
+        "Manufacturer": {
+          "hide": true
+        },
+        "DesignStatus": {
+          "hide": true
+        }
+      }
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"changes\":[\"DesignStatus \u2192 INTERIM - incomplete controls and USB power qualification (0 updated, 1 added)\",\"MPN \u2192 SMF5.0A_R1_00001 (0 updated, 1 added)\",\"Manufacturer \u2192 PANJIT (0 updated, 1 added)\",\"DesignStatus placement (1 unit(s))\",\"MPN placement (1 unit(s))\",\"Manufacturer placement (1 unit(s))\"],\"datasheet\":\"\",\"fields\":{\"Datasheet\":\"\",\"Description\":\"Zener diode\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"Diode_SMD:D_SOD-123F\",\"MPN\":\"SMF5.0A_R1_00001\",\"Manufacturer\":\"PANJIT\",\"Reference\":\"D1\",\"Value\":\"SMF5.0A\"},\"footprint\":\"Diode_SMD:D_SOD-123F\",\"lib_id\":\"Device:D_Zener\",\"mirror_x\":false,\"mirror_y\":false,\"reference\":\"D1\",\"rotation\":90.0,\"schematic\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\ESP-DubSiren-V2.kicad_sch\",\"unit_count\":1,\"units\":[{\"field_placements\":{\"Datasheet\":{\"hide\":true,\"rotation\":0.0,\"x\":101.6,\"y\":33.02},\"Description\":{\"hide\":true,\"rotation\":0.0,\"x\":101.6,\"y\":33.02},\"DesignStatus\":{\"hide\":true,\"rotation\":0.0,\"x\":101.6,\"y\":33.02},\"Footprint\":{\"hide\":true,\"rotation\":0.0,\"x\":101.6,\"y\":33.02},\"MPN\":{\"hide\":true,\"rotation\":0.0,\"x\":101.6,\"y\":33.02},\"Manufacturer\":{\"hide\":true,\"rotation\":0.0,\"x\":101.6,\"y\":33.02},\"Reference\":{\"hide\":false,\"rotation\":0.0,\"x\":99.06,\"y\":33.02},\"Value\":{\"hide\":false,\"rotation\":0.0,\"x\":104.14,\"y\":33.02}},\"fields\":{\"Datasheet\":\"\",\"Description\":\"Zener diode\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"Diode_SMD:D_SOD-123F\",\"MPN\":\"SMF5.0A_R1_00001\",\"Manufacturer\":\"PANJIT\",\"Reference\":\"D1\",\"Value\":\"SMF5.0A\"},\"instance_paths\":[[\"ESP-DubSiren-V2\",\"/2037f81d-e33e-4c09-903b-90b25af374ad\"]],\"instance_references\":[\"D1\"],\"lib_id\":\"Device:D_Zener\",\"mirror_x\":false,\"mirror_y\":false,\"rotation\":90.0,\"unit\":1,\"uuid\":\"619dff73-dc76-419c-9114-e555647eef01\",\"x\":101.6,\"y\":33.02}],\"uuid\":\"619dff73-dc76-419c-9114-e555647eef01\",\"value\":\"SMF5.0A\",\"x\":101.6,\"y\":33.02}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "edit_schematic_component",
+    "args": {
+      "schematic": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_sch",
+      "reference": "F1",
+      "fields": {
+        "MPN": "0ZCG0110CF2B",
+        "Manufacturer": "Bel",
+        "DesignStatus": "INTERIM - incomplete controls and USB power qualification"
+      },
+      "field_placements": {
+        "MPN": {
+          "hide": true
+        },
+        "Manufacturer": {
+          "hide": true
+        },
+        "DesignStatus": {
+          "hide": true
+        }
+      }
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"changes\":[\"DesignStatus \u2192 INTERIM - incomplete controls and USB power qualification (0 updated, 1 added)\",\"MPN \u2192 0ZCG0110CF2B (0 updated, 1 added)\",\"Manufacturer \u2192 Bel (0 updated, 1 added)\",\"DesignStatus placement (1 unit(s))\",\"MPN placement (1 unit(s))\",\"Manufacturer placement (1 unit(s))\"],\"datasheet\":\"\",\"fields\":{\"Datasheet\":\"\",\"Description\":\"Resettable fuse, polymeric positive temperature coefficient\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"ESP-DubSiren-V2-Electrical:Bel_0ZCG0110CF2B_1812\",\"MPN\":\"0ZCG0110CF2B\",\"Manufacturer\":\"Bel\",\"Reference\":\"F1\",\"Value\":\"1.1A PTC\"},\"footprint\":\"ESP-DubSiren-V2-Electrical:Bel_0ZCG0110CF2B_1812\",\"lib_id\":\"Device:Polyfuse\",\"mirror_x\":false,\"mirror_y\":false,\"reference\":\"F1\",\"rotation\":90.0,\"schematic\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\ESP-DubSiren-V2.kicad_sch\",\"unit_count\":1,\"units\":[{\"field_placements\":{\"Datasheet\":{\"hide\":true,\"rotation\":0.0,\"x\":76.2,\"y\":25.4},\"Description\":{\"hide\":true,\"rotation\":0.0,\"x\":76.2,\"y\":25.4},\"DesignStatus\":{\"hide\":true,\"rotation\":0.0,\"x\":76.2,\"y\":25.4},\"Footprint\":{\"hide\":true,\"rotation\":0.0,\"x\":76.2,\"y\":25.4},\"MPN\":{\"hide\":true,\"rotation\":0.0,\"x\":76.2,\"y\":25.4},\"Manufacturer\":{\"hide\":true,\"rotation\":0.0,\"x\":76.2,\"y\":25.4},\"Reference\":{\"hide\":false,\"rotation\":90.0,\"x\":76.2,\"y\":27.94},\"Value\":{\"hide\":false,\"rotation\":90.0,\"x\":76.2,\"y\":22.86}},\"fields\":{\"Datasheet\":\"\",\"Description\":\"Resettable fuse, polymeric positive temperature coefficient\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"ESP-DubSiren-V2-Electrical:Bel_0ZCG0110CF2B_1812\",\"MPN\":\"0ZCG0110CF2B\",\"Manufacturer\":\"Bel\",\"Reference\":\"F1\",\"Value\":\"1.1A PTC\"},\"instance_paths\":[[\"ESP-DubSiren-V2\",\"/2037f81d-e33e-4c09-903b-90b25af374ad\"]],\"instance_references\":[\"F1\"],\"lib_id\":\"Device:Polyfuse\",\"mirror_x\":false,\"mirror_y\":false,\"rotation\":90.0,\"unit\":1,\"uuid\":\"4d1fa772-387c-43d4-a0ee-87fbb1d188cc\",\"x\":76.2,\"y\":25.4}],\"uuid\":\"4d1fa772-387c-43d4-a0ee-87fbb1d188cc\",\"value\":\"1.1A PTC\",\"x\":76.2,\"y\":25.4}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "edit_schematic_component",
+    "args": {
+      "schematic": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_sch",
+      "reference": "R1",
+      "fields": {
+        "MPN": "NRC06J100TRF",
+        "Manufacturer": "NIC",
+        "DesignStatus": "INTERIM - incomplete controls and USB power qualification"
+      },
+      "field_placements": {
+        "MPN": {
+          "hide": true
+        },
+        "Manufacturer": {
+          "hide": true
+        },
+        "DesignStatus": {
+          "hide": true
+        }
+      }
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"changes\":[\"DesignStatus \u2192 INTERIM - incomplete controls and USB power qualification (0 updated, 1 added)\",\"MPN \u2192 NRC06J100TRF (0 updated, 1 added)\",\"Manufacturer \u2192 NIC (0 updated, 1 added)\",\"DesignStatus placement (1 unit(s))\",\"MPN placement (1 unit(s))\",\"Manufacturer placement (1 unit(s))\"],\"datasheet\":\"\",\"fields\":{\"Datasheet\":\"\",\"Description\":\"Resistor\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"Resistor_SMD:R_0603_1608Metric\",\"MPN\":\"NRC06J100TRF\",\"Manufacturer\":\"NIC\",\"Reference\":\"R1\",\"Value\":\"10\"},\"footprint\":\"Resistor_SMD:R_0603_1608Metric\",\"lib_id\":\"Device:R\",\"mirror_x\":false,\"mirror_y\":false,\"reference\":\"R1\",\"rotation\":90.0,\"schematic\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\ESP-DubSiren-V2.kicad_sch\",\"unit_count\":1,\"units\":[{\"field_placements\":{\"Datasheet\":{\"hide\":true,\"rotation\":0.0,\"x\":223.52,\"y\":60.96},\"Description\":{\"hide\":true,\"rotation\":0.0,\"x\":223.52,\"y\":60.96},\"DesignStatus\":{\"hide\":true,\"rotation\":0.0,\"x\":223.52,\"y\":60.96},\"Footprint\":{\"hide\":true,\"rotation\":0.0,\"x\":223.52,\"y\":60.96},\"MPN\":{\"hide\":true,\"rotation\":0.0,\"x\":223.52,\"y\":60.96},\"Manufacturer\":{\"hide\":true,\"rotation\":0.0,\"x\":223.52,\"y\":60.96},\"Reference\":{\"hide\":false,\"rotation\":90.0,\"x\":223.52,\"y\":58.928},\"Value\":{\"hide\":false,\"rotation\":90.0,\"x\":223.52,\"y\":60.96}},\"fields\":{\"Datasheet\":\"\",\"Description\":\"Resistor\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"Resistor_SMD:R_0603_1608Metric\",\"MPN\":\"NRC06J100TRF\",\"Manufacturer\":\"NIC\",\"Reference\":\"R1\",\"Value\":\"10\"},\"instance_paths\":[[\"ESP-DubSiren-V2\",\"/2037f81d-e33e-4c09-903b-90b25af374ad\"]],\"instance_references\":[\"R1\"],\"lib_id\":\"Device:R\",\"mirror_x\":false,\"mirror_y\":false,\"rotation\":90.0,\"unit\":1,\"uuid\":\"324f224d-e104-4827-92d6-1fc0d19322ed\",\"x\":223.52,\"y\":60.96}],\"uuid\":\"324f224d-e104-4827-92d6-1fc0d19322ed\",\"value\":\"10\",\"x\":223.52,\"y\":60.96}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "edit_schematic_component",
+    "args": {
+      "schematic": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_sch",
+      "reference": "R2",
+      "fields": {
+        "MPN": "RC0603JR-0722RL",
+        "Manufacturer": "Yageo",
+        "DesignStatus": "INTERIM - incomplete controls and USB power qualification"
+      },
+      "field_placements": {
+        "MPN": {
+          "hide": true
+        },
+        "Manufacturer": {
+          "hide": true
+        },
+        "DesignStatus": {
+          "hide": true
+        }
+      }
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"changes\":[\"DesignStatus \u2192 INTERIM - incomplete controls and USB power qualification (0 updated, 1 added)\",\"MPN \u2192 RC0603JR-0722RL (0 updated, 1 added)\",\"Manufacturer \u2192 Yageo (0 updated, 1 added)\",\"DesignStatus placement (1 unit(s))\",\"MPN placement (1 unit(s))\",\"Manufacturer placement (1 unit(s))\"],\"datasheet\":\"\",\"fields\":{\"Datasheet\":\"\",\"Description\":\"Resistor\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"Resistor_SMD:R_0603_1608Metric\",\"MPN\":\"RC0603JR-0722RL\",\"Manufacturer\":\"Yageo\",\"Reference\":\"R2\",\"Value\":\"22\"},\"footprint\":\"Resistor_SMD:R_0603_1608Metric\",\"lib_id\":\"Device:R\",\"mirror_x\":false,\"mirror_y\":false,\"reference\":\"R2\",\"rotation\":90.0,\"schematic\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\ESP-DubSiren-V2.kicad_sch\",\"unit_count\":1,\"units\":[{\"field_placements\":{\"Datasheet\":{\"hide\":true,\"rotation\":0.0,\"x\":127.0,\"y\":66.04},\"Description\":{\"hide\":true,\"rotation\":0.0,\"x\":127.0,\"y\":66.04},\"DesignStatus\":{\"hide\":true,\"rotation\":0.0,\"x\":127.0,\"y\":66.04},\"Footprint\":{\"hide\":true,\"rotation\":0.0,\"x\":127.0,\"y\":66.04},\"MPN\":{\"hide\":true,\"rotation\":0.0,\"x\":127.0,\"y\":66.04},\"Manufacturer\":{\"hide\":true,\"rotation\":0.0,\"x\":127.0,\"y\":66.04},\"Reference\":{\"hide\":false,\"rotation\":90.0,\"x\":127.0,\"y\":64.008},\"Value\":{\"hide\":false,\"rotation\":90.0,\"x\":127.0,\"y\":66.04}},\"fields\":{\"Datasheet\":\"\",\"Description\":\"Resistor\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"Resistor_SMD:R_0603_1608Metric\",\"MPN\":\"RC0603JR-0722RL\",\"Manufacturer\":\"Yageo\",\"Reference\":\"R2\",\"Value\":\"22\"},\"instance_paths\":[[\"ESP-DubSiren-V2\",\"/2037f81d-e33e-4c09-903b-90b25af374ad\"]],\"instance_references\":[\"R2\"],\"lib_id\":\"Device:R\",\"mirror_x\":false,\"mirror_y\":false,\"rotation\":90.0,\"unit\":1,\"uuid\":\"148febbe-8577-4a49-b7aa-7d730d4812ff\",\"x\":127.0,\"y\":66.04}],\"uuid\":\"148febbe-8577-4a49-b7aa-7d730d4812ff\",\"value\":\"22\",\"x\":127.0,\"y\":66.04}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "edit_schematic_component",
+    "args": {
+      "schematic": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_sch",
+      "reference": "R3",
+      "fields": {
+        "MPN": "RC0603JR-0722RL",
+        "Manufacturer": "Yageo",
+        "DesignStatus": "INTERIM - incomplete controls and USB power qualification"
+      },
+      "field_placements": {
+        "MPN": {
+          "hide": true
+        },
+        "Manufacturer": {
+          "hide": true
+        },
+        "DesignStatus": {
+          "hide": true
+        }
+      }
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"changes\":[\"DesignStatus \u2192 INTERIM - incomplete controls and USB power qualification (0 updated, 1 added)\",\"MPN \u2192 RC0603JR-0722RL (0 updated, 1 added)\",\"Manufacturer \u2192 Yageo (0 updated, 1 added)\",\"DesignStatus placement (1 unit(s))\",\"MPN placement (1 unit(s))\",\"Manufacturer placement (1 unit(s))\"],\"datasheet\":\"\",\"fields\":{\"Datasheet\":\"\",\"Description\":\"Resistor\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"Resistor_SMD:R_0603_1608Metric\",\"MPN\":\"RC0603JR-0722RL\",\"Manufacturer\":\"Yageo\",\"Reference\":\"R3\",\"Value\":\"22\"},\"footprint\":\"Resistor_SMD:R_0603_1608Metric\",\"lib_id\":\"Device:R\",\"mirror_x\":false,\"mirror_y\":false,\"reference\":\"R3\",\"rotation\":90.0,\"schematic\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\ESP-DubSiren-V2.kicad_sch\",\"unit_count\":1,\"units\":[{\"field_placements\":{\"Datasheet\":{\"hide\":true,\"rotation\":0.0,\"x\":127.0,\"y\":83.82},\"Description\":{\"hide\":true,\"rotation\":0.0,\"x\":127.0,\"y\":83.82},\"DesignStatus\":{\"hide\":true,\"rotation\":0.0,\"x\":127.0,\"y\":83.82},\"Footprint\":{\"hide\":true,\"rotation\":0.0,\"x\":127.0,\"y\":83.82},\"MPN\":{\"hide\":true,\"rotation\":0.0,\"x\":127.0,\"y\":83.82},\"Manufacturer\":{\"hide\":true,\"rotation\":0.0,\"x\":127.0,\"y\":83.82},\"Reference\":{\"hide\":false,\"rotation\":90.0,\"x\":127.0,\"y\":81.788},\"Value\":{\"hide\":false,\"rotation\":90.0,\"x\":127.0,\"y\":83.82}},\"fields\":{\"Datasheet\":\"\",\"Description\":\"Resistor\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"Resistor_SMD:R_0603_1608Metric\",\"MPN\":\"RC0603JR-0722RL\",\"Manufacturer\":\"Yageo\",\"Reference\":\"R3\",\"Value\":\"22\"},\"instance_paths\":[[\"ESP-DubSiren-V2\",\"/2037f81d-e33e-4c09-903b-90b25af374ad\"]],\"instance_references\":[\"R3\"],\"lib_id\":\"Device:R\",\"mirror_x\":false,\"mirror_y\":false,\"rotation\":90.0,\"unit\":1,\"uuid\":\"5241af7e-d6ec-4428-b666-729afb8d1d66\",\"x\":127.0,\"y\":83.82}],\"uuid\":\"5241af7e-d6ec-4428-b666-729afb8d1d66\",\"value\":\"22\",\"x\":127.0,\"y\":83.82}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "edit_schematic_component",
+    "args": {
+      "schematic": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_sch",
+      "reference": "R4",
+      "fields": {
+        "MPN": "AC0603FR-075K1L",
+        "Manufacturer": "Yageo",
+        "DesignStatus": "INTERIM - incomplete controls and USB power qualification"
+      },
+      "field_placements": {
+        "MPN": {
+          "hide": true
+        },
+        "Manufacturer": {
+          "hide": true
+        },
+        "DesignStatus": {
+          "hide": true
+        }
+      }
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"changes\":[\"DesignStatus \u2192 INTERIM - incomplete controls and USB power qualification (0 updated, 1 added)\",\"MPN \u2192 AC0603FR-075K1L (0 updated, 1 added)\",\"Manufacturer \u2192 Yageo (0 updated, 1 added)\",\"DesignStatus placement (1 unit(s))\",\"MPN placement (1 unit(s))\",\"Manufacturer placement (1 unit(s))\"],\"datasheet\":\"\",\"fields\":{\"Datasheet\":\"\",\"Description\":\"Resistor\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"Resistor_SMD:R_0603_1608Metric\",\"MPN\":\"AC0603FR-075K1L\",\"Manufacturer\":\"Yageo\",\"Reference\":\"R4\",\"Value\":\"5.1k\"},\"footprint\":\"Resistor_SMD:R_0603_1608Metric\",\"lib_id\":\"Device:R\",\"mirror_x\":false,\"mirror_y\":false,\"reference\":\"R4\",\"rotation\":0.0,\"schematic\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\ESP-DubSiren-V2.kicad_sch\",\"unit_count\":1,\"units\":[{\"field_placements\":{\"Datasheet\":{\"hide\":true,\"rotation\":0.0,\"x\":35.56,\"y\":109.22},\"Description\":{\"hide\":true,\"rotation\":0.0,\"x\":35.56,\"y\":109.22},\"DesignStatus\":{\"hide\":true,\"rotation\":0.0,\"x\":35.56,\"y\":109.22},\"Footprint\":{\"hide\":true,\"rotation\":0.0,\"x\":35.56,\"y\":109.22},\"MPN\":{\"hide\":true,\"rotation\":0.0,\"x\":35.56,\"y\":109.22},\"Manufacturer\":{\"hide\":true,\"rotation\":0.0,\"x\":35.56,\"y\":109.22},\"Reference\":{\"hide\":false,\"rotation\":90.0,\"x\":37.592,\"y\":109.22},\"Value\":{\"hide\":false,\"rotation\":90.0,\"x\":35.56,\"y\":109.22}},\"fields\":{\"Datasheet\":\"\",\"Description\":\"Resistor\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"Resistor_SMD:R_0603_1608Metric\",\"MPN\":\"AC0603FR-075K1L\",\"Manufacturer\":\"Yageo\",\"Reference\":\"R4\",\"Value\":\"5.1k\"},\"instance_paths\":[[\"ESP-DubSiren-V2\",\"/2037f81d-e33e-4c09-903b-90b25af374ad\"]],\"instance_references\":[\"R4\"],\"lib_id\":\"Device:R\",\"mirror_x\":false,\"mirror_y\":false,\"rotation\":0.0,\"unit\":1,\"uuid\":\"ad6df11e-4ede-463d-9c3c-176ddea0cd85\",\"x\":35.56,\"y\":109.22}],\"uuid\":\"ad6df11e-4ede-463d-9c3c-176ddea0cd85\",\"value\":\"5.1k\",\"x\":35.56,\"y\":109.22}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "edit_schematic_component",
+    "args": {
+      "schematic": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_sch",
+      "reference": "R5",
+      "fields": {
+        "MPN": "AC0603FR-075K1L",
+        "Manufacturer": "Yageo",
+        "DesignStatus": "INTERIM - incomplete controls and USB power qualification"
+      },
+      "field_placements": {
+        "MPN": {
+          "hide": true
+        },
+        "Manufacturer": {
+          "hide": true
+        },
+        "DesignStatus": {
+          "hide": true
+        }
+      }
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"changes\":[\"DesignStatus \u2192 INTERIM - incomplete controls and USB power qualification (0 updated, 1 added)\",\"MPN \u2192 AC0603FR-075K1L (0 updated, 1 added)\",\"Manufacturer \u2192 Yageo (0 updated, 1 added)\",\"DesignStatus placement (1 unit(s))\",\"MPN placement (1 unit(s))\",\"Manufacturer placement (1 unit(s))\"],\"datasheet\":\"\",\"fields\":{\"Datasheet\":\"\",\"Description\":\"Resistor\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"Resistor_SMD:R_0603_1608Metric\",\"MPN\":\"AC0603FR-075K1L\",\"Manufacturer\":\"Yageo\",\"Reference\":\"R5\",\"Value\":\"5.1k\"},\"footprint\":\"Resistor_SMD:R_0603_1608Metric\",\"lib_id\":\"Device:R\",\"mirror_x\":false,\"mirror_y\":false,\"reference\":\"R5\",\"rotation\":0.0,\"schematic\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\ESP-DubSiren-V2.kicad_sch\",\"unit_count\":1,\"units\":[{\"field_placements\":{\"Datasheet\":{\"hide\":true,\"rotation\":0.0,\"x\":58.42,\"y\":109.22},\"Description\":{\"hide\":true,\"rotation\":0.0,\"x\":58.42,\"y\":109.22},\"DesignStatus\":{\"hide\":true,\"rotation\":0.0,\"x\":58.42,\"y\":109.22},\"Footprint\":{\"hide\":true,\"rotation\":0.0,\"x\":58.42,\"y\":109.22},\"MPN\":{\"hide\":true,\"rotation\":0.0,\"x\":58.42,\"y\":109.22},\"Manufacturer\":{\"hide\":true,\"rotation\":0.0,\"x\":58.42,\"y\":109.22},\"Reference\":{\"hide\":false,\"rotation\":90.0,\"x\":60.452,\"y\":109.22},\"Value\":{\"hide\":false,\"rotation\":90.0,\"x\":58.42,\"y\":109.22}},\"fields\":{\"Datasheet\":\"\",\"Description\":\"Resistor\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"Resistor_SMD:R_0603_1608Metric\",\"MPN\":\"AC0603FR-075K1L\",\"Manufacturer\":\"Yageo\",\"Reference\":\"R5\",\"Value\":\"5.1k\"},\"instance_paths\":[[\"ESP-DubSiren-V2\",\"/2037f81d-e33e-4c09-903b-90b25af374ad\"]],\"instance_references\":[\"R5\"],\"lib_id\":\"Device:R\",\"mirror_x\":false,\"mirror_y\":false,\"rotation\":0.0,\"unit\":1,\"uuid\":\"ce96e7cd-1c45-4f62-9d9e-6b176fad920e\",\"x\":58.42,\"y\":109.22}],\"uuid\":\"ce96e7cd-1c45-4f62-9d9e-6b176fad920e\",\"value\":\"5.1k\",\"x\":58.42,\"y\":109.22}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "edit_schematic_component",
+    "args": {
+      "schematic": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_sch",
+      "reference": "R6",
+      "fields": {
+        "MPN": "RC0603JR-0710KL",
+        "Manufacturer": "Yageo",
+        "DesignStatus": "INTERIM - incomplete controls and USB power qualification"
+      },
+      "field_placements": {
+        "MPN": {
+          "hide": true
+        },
+        "Manufacturer": {
+          "hide": true
+        },
+        "DesignStatus": {
+          "hide": true
+        }
+      }
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"changes\":[\"DesignStatus \u2192 INTERIM - incomplete controls and USB power qualification (0 updated, 1 added)\",\"MPN \u2192 RC0603JR-0710KL (0 updated, 1 added)\",\"Manufacturer \u2192 Yageo (0 updated, 1 added)\",\"DesignStatus placement (1 unit(s))\",\"MPN placement (1 unit(s))\",\"Manufacturer placement (1 unit(s))\"],\"datasheet\":\"\",\"fields\":{\"Datasheet\":\"\",\"Description\":\"Resistor\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"Resistor_SMD:R_0603_1608Metric\",\"MPN\":\"RC0603JR-0710KL\",\"Manufacturer\":\"Yageo\",\"Reference\":\"R6\",\"Value\":\"10k\"},\"footprint\":\"Resistor_SMD:R_0603_1608Metric\",\"lib_id\":\"Device:R\",\"mirror_x\":false,\"mirror_y\":false,\"reference\":\"R6\",\"rotation\":0.0,\"schematic\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\ESP-DubSiren-V2.kicad_sch\",\"unit_count\":1,\"units\":[{\"field_placements\":{\"Datasheet\":{\"hide\":true,\"rotation\":0.0,\"x\":266.7,\"y\":60.96},\"Description\":{\"hide\":true,\"rotation\":0.0,\"x\":266.7,\"y\":60.96},\"DesignStatus\":{\"hide\":true,\"rotation\":0.0,\"x\":266.7,\"y\":60.96},\"Footprint\":{\"hide\":true,\"rotation\":0.0,\"x\":266.7,\"y\":60.96},\"MPN\":{\"hide\":true,\"rotation\":0.0,\"x\":266.7,\"y\":60.96},\"Manufacturer\":{\"hide\":true,\"rotation\":0.0,\"x\":266.7,\"y\":60.96},\"Reference\":{\"hide\":false,\"rotation\":90.0,\"x\":268.732,\"y\":60.96},\"Value\":{\"hide\":false,\"rotation\":90.0,\"x\":266.7,\"y\":60.96}},\"fields\":{\"Datasheet\":\"\",\"Description\":\"Resistor\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"Resistor_SMD:R_0603_1608Metric\",\"MPN\":\"RC0603JR-0710KL\",\"Manufacturer\":\"Yageo\",\"Reference\":\"R6\",\"Value\":\"10k\"},\"instance_paths\":[[\"ESP-DubSiren-V2\",\"/2037f81d-e33e-4c09-903b-90b25af374ad\"]],\"instance_references\":[\"R6\"],\"lib_id\":\"Device:R\",\"mirror_x\":false,\"mirror_y\":false,\"rotation\":0.0,\"unit\":1,\"uuid\":\"f5056b7a-a121-4e51-9070-9ad5e9ae96b2\",\"x\":266.7,\"y\":60.96}],\"uuid\":\"f5056b7a-a121-4e51-9070-9ad5e9ae96b2\",\"value\":\"10k\",\"x\":266.7,\"y\":60.96}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "edit_schematic_component",
+    "args": {
+      "schematic": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_sch",
+      "reference": "R7",
+      "fields": {
+        "MPN": "RC0603JR-0710KL",
+        "Manufacturer": "Yageo",
+        "DesignStatus": "INTERIM - incomplete controls and USB power qualification"
+      },
+      "field_placements": {
+        "MPN": {
+          "hide": true
+        },
+        "Manufacturer": {
+          "hide": true
+        },
+        "DesignStatus": {
+          "hide": true
+        }
+      }
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"changes\":[\"DesignStatus \u2192 INTERIM - incomplete controls and USB power qualification (0 updated, 1 added)\",\"MPN \u2192 RC0603JR-0710KL (0 updated, 1 added)\",\"Manufacturer \u2192 Yageo (0 updated, 1 added)\",\"DesignStatus placement (1 unit(s))\",\"MPN placement (1 unit(s))\",\"Manufacturer placement (1 unit(s))\"],\"datasheet\":\"\",\"fields\":{\"Datasheet\":\"\",\"Description\":\"Resistor\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"Resistor_SMD:R_0603_1608Metric\",\"MPN\":\"RC0603JR-0710KL\",\"Manufacturer\":\"Yageo\",\"Reference\":\"R7\",\"Value\":\"10k\"},\"footprint\":\"Resistor_SMD:R_0603_1608Metric\",\"lib_id\":\"Device:R\",\"mirror_x\":false,\"mirror_y\":false,\"reference\":\"R7\",\"rotation\":0.0,\"schematic\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\ESP-DubSiren-V2.kicad_sch\",\"unit_count\":1,\"units\":[{\"field_placements\":{\"Datasheet\":{\"hide\":true,\"rotation\":0.0,\"x\":287.02,\"y\":104.14},\"Description\":{\"hide\":true,\"rotation\":0.0,\"x\":287.02,\"y\":104.14},\"DesignStatus\":{\"hide\":true,\"rotation\":0.0,\"x\":287.02,\"y\":104.14},\"Footprint\":{\"hide\":true,\"rotation\":0.0,\"x\":287.02,\"y\":104.14},\"MPN\":{\"hide\":true,\"rotation\":0.0,\"x\":287.02,\"y\":104.14},\"Manufacturer\":{\"hide\":true,\"rotation\":0.0,\"x\":287.02,\"y\":104.14},\"Reference\":{\"hide\":false,\"rotation\":90.0,\"x\":289.052,\"y\":104.14},\"Value\":{\"hide\":false,\"rotation\":90.0,\"x\":287.02,\"y\":104.14}},\"fields\":{\"Datasheet\":\"\",\"Description\":\"Resistor\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"Resistor_SMD:R_0603_1608Metric\",\"MPN\":\"RC0603JR-0710KL\",\"Manufacturer\":\"Yageo\",\"Reference\":\"R7\",\"Value\":\"10k\"},\"instance_paths\":[[\"ESP-DubSiren-V2\",\"/2037f81d-e33e-4c09-903b-90b25af374ad\"]],\"instance_references\":[\"R7\"],\"lib_id\":\"Device:R\",\"mirror_x\":false,\"mirror_y\":false,\"rotation\":0.0,\"unit\":1,\"uuid\":\"5464926c-f378-4655-96bb-38edb3d9cb70\",\"x\":287.02,\"y\":104.14}],\"uuid\":\"5464926c-f378-4655-96bb-38edb3d9cb70\",\"value\":\"10k\",\"x\":287.02,\"y\":104.14}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "edit_schematic_component",
+    "args": {
+      "schematic": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_sch",
+      "reference": "R8",
+      "fields": {
+        "MPN": "RC0603FR-074K7L",
+        "Manufacturer": "Yageo",
+        "DesignStatus": "INTERIM - incomplete controls and USB power qualification"
+      },
+      "field_placements": {
+        "MPN": {
+          "hide": true
+        },
+        "Manufacturer": {
+          "hide": true
+        },
+        "DesignStatus": {
+          "hide": true
+        }
+      }
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"changes\":[\"DesignStatus \u2192 INTERIM - incomplete controls and USB power qualification (0 updated, 1 added)\",\"MPN \u2192 RC0603FR-074K7L (0 updated, 1 added)\",\"Manufacturer \u2192 Yageo (0 updated, 1 added)\",\"DesignStatus placement (1 unit(s))\",\"MPN placement (1 unit(s))\",\"Manufacturer placement (1 unit(s))\"],\"datasheet\":\"\",\"fields\":{\"Datasheet\":\"\",\"Description\":\"Resistor\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"Resistor_SMD:R_0603_1608Metric\",\"MPN\":\"RC0603FR-074K7L\",\"Manufacturer\":\"Yageo\",\"Reference\":\"R8\",\"Value\":\"4.7k\"},\"footprint\":\"Resistor_SMD:R_0603_1608Metric\",\"lib_id\":\"Device:R\",\"mirror_x\":false,\"mirror_y\":false,\"reference\":\"R8\",\"rotation\":0.0,\"schematic\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\ESP-DubSiren-V2.kicad_sch\",\"unit_count\":1,\"units\":[{\"field_placements\":{\"Datasheet\":{\"hide\":true,\"rotation\":0.0,\"x\":40.64,\"y\":170.18},\"Description\":{\"hide\":true,\"rotation\":0.0,\"x\":40.64,\"y\":170.18},\"DesignStatus\":{\"hide\":true,\"rotation\":0.0,\"x\":40.64,\"y\":170.18},\"Footprint\":{\"hide\":true,\"rotation\":0.0,\"x\":40.64,\"y\":170.18},\"MPN\":{\"hide\":true,\"rotation\":0.0,\"x\":40.64,\"y\":170.18},\"Manufacturer\":{\"hide\":true,\"rotation\":0.0,\"x\":40.64,\"y\":170.18},\"Reference\":{\"hide\":false,\"rotation\":90.0,\"x\":42.672,\"y\":170.18},\"Value\":{\"hide\":false,\"rotation\":90.0,\"x\":40.64,\"y\":170.18}},\"fields\":{\"Datasheet\":\"\",\"Description\":\"Resistor\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"Resistor_SMD:R_0603_1608Metric\",\"MPN\":\"RC0603FR-074K7L\",\"Manufacturer\":\"Yageo\",\"Reference\":\"R8\",\"Value\":\"4.7k\"},\"instance_paths\":[[\"ESP-DubSiren-V2\",\"/2037f81d-e33e-4c09-903b-90b25af374ad\"]],\"instance_references\":[\"R8\"],\"lib_id\":\"Device:R\",\"mirror_x\":false,\"mirror_y\":false,\"rotation\":0.0,\"unit\":1,\"uuid\":\"60739ebc-79c2-46fd-a72d-707e33c25261\",\"x\":40.64,\"y\":170.18}],\"uuid\":\"60739ebc-79c2-46fd-a72d-707e33c25261\",\"value\":\"4.7k\",\"x\":40.64,\"y\":170.18}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "edit_schematic_component",
+    "args": {
+      "schematic": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_sch",
+      "reference": "R9",
+      "fields": {
+        "MPN": "RC0603FR-074K7L",
+        "Manufacturer": "Yageo",
+        "DesignStatus": "INTERIM - incomplete controls and USB power qualification"
+      },
+      "field_placements": {
+        "MPN": {
+          "hide": true
+        },
+        "Manufacturer": {
+          "hide": true
+        },
+        "DesignStatus": {
+          "hide": true
+        }
+      }
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"changes\":[\"DesignStatus \u2192 INTERIM - incomplete controls and USB power qualification (0 updated, 1 added)\",\"MPN \u2192 RC0603FR-074K7L (0 updated, 1 added)\",\"Manufacturer \u2192 Yageo (0 updated, 1 added)\",\"DesignStatus placement (1 unit(s))\",\"MPN placement (1 unit(s))\",\"Manufacturer placement (1 unit(s))\"],\"datasheet\":\"\",\"fields\":{\"Datasheet\":\"\",\"Description\":\"Resistor\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"Resistor_SMD:R_0603_1608Metric\",\"MPN\":\"RC0603FR-074K7L\",\"Manufacturer\":\"Yageo\",\"Reference\":\"R9\",\"Value\":\"4.7k\"},\"footprint\":\"Resistor_SMD:R_0603_1608Metric\",\"lib_id\":\"Device:R\",\"mirror_x\":false,\"mirror_y\":false,\"reference\":\"R9\",\"rotation\":0.0,\"schematic\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\ESP-DubSiren-V2.kicad_sch\",\"unit_count\":1,\"units\":[{\"field_placements\":{\"Datasheet\":{\"hide\":true,\"rotation\":0.0,\"x\":91.44,\"y\":170.18},\"Description\":{\"hide\":true,\"rotation\":0.0,\"x\":91.44,\"y\":170.18},\"DesignStatus\":{\"hide\":true,\"rotation\":0.0,\"x\":91.44,\"y\":170.18},\"Footprint\":{\"hide\":true,\"rotation\":0.0,\"x\":91.44,\"y\":170.18},\"MPN\":{\"hide\":true,\"rotation\":0.0,\"x\":91.44,\"y\":170.18},\"Manufacturer\":{\"hide\":true,\"rotation\":0.0,\"x\":91.44,\"y\":170.18},\"Reference\":{\"hide\":false,\"rotation\":90.0,\"x\":93.472,\"y\":170.18},\"Value\":{\"hide\":false,\"rotation\":90.0,\"x\":91.44,\"y\":170.18}},\"fields\":{\"Datasheet\":\"\",\"Description\":\"Resistor\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"Resistor_SMD:R_0603_1608Metric\",\"MPN\":\"RC0603FR-074K7L\",\"Manufacturer\":\"Yageo\",\"Reference\":\"R9\",\"Value\":\"4.7k\"},\"instance_paths\":[[\"ESP-DubSiren-V2\",\"/2037f81d-e33e-4c09-903b-90b25af374ad\"]],\"instance_references\":[\"R9\"],\"lib_id\":\"Device:R\",\"mirror_x\":false,\"mirror_y\":false,\"rotation\":0.0,\"unit\":1,\"uuid\":\"99b0918c-7063-4e59-b892-c447458f1ff8\",\"x\":91.44,\"y\":170.18}],\"uuid\":\"99b0918c-7063-4e59-b892-c447458f1ff8\",\"value\":\"4.7k\",\"x\":91.44,\"y\":170.18}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "edit_schematic_component",
+    "args": {
+      "schematic": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_sch",
+      "reference": "R10",
+      "fields": {
+        "MPN": "RC0603FR-074K7L",
+        "Manufacturer": "Yageo",
+        "DesignStatus": "INTERIM - incomplete controls and USB power qualification"
+      },
+      "field_placements": {
+        "MPN": {
+          "hide": true
+        },
+        "Manufacturer": {
+          "hide": true
+        },
+        "DesignStatus": {
+          "hide": true
+        }
+      }
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"changes\":[\"DesignStatus \u2192 INTERIM - incomplete controls and USB power qualification (0 updated, 1 added)\",\"MPN \u2192 RC0603FR-074K7L (0 updated, 1 added)\",\"Manufacturer \u2192 Yageo (0 updated, 1 added)\",\"DesignStatus placement (1 unit(s))\",\"MPN placement (1 unit(s))\",\"Manufacturer placement (1 unit(s))\"],\"datasheet\":\"\",\"fields\":{\"Datasheet\":\"\",\"Description\":\"Resistor\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"Resistor_SMD:R_0603_1608Metric\",\"MPN\":\"RC0603FR-074K7L\",\"Manufacturer\":\"Yageo\",\"Reference\":\"R10\",\"Value\":\"4.7k\"},\"footprint\":\"Resistor_SMD:R_0603_1608Metric\",\"lib_id\":\"Device:R\",\"mirror_x\":false,\"mirror_y\":false,\"reference\":\"R10\",\"rotation\":0.0,\"schematic\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\ESP-DubSiren-V2.kicad_sch\",\"unit_count\":1,\"units\":[{\"field_placements\":{\"Datasheet\":{\"hide\":true,\"rotation\":0.0,\"x\":142.24,\"y\":170.18},\"Description\":{\"hide\":true,\"rotation\":0.0,\"x\":142.24,\"y\":170.18},\"DesignStatus\":{\"hide\":true,\"rotation\":0.0,\"x\":142.24,\"y\":170.18},\"Footprint\":{\"hide\":true,\"rotation\":0.0,\"x\":142.24,\"y\":170.18},\"MPN\":{\"hide\":true,\"rotation\":0.0,\"x\":142.24,\"y\":170.18},\"Manufacturer\":{\"hide\":true,\"rotation\":0.0,\"x\":142.24,\"y\":170.18},\"Reference\":{\"hide\":false,\"rotation\":90.0,\"x\":144.272,\"y\":170.18},\"Value\":{\"hide\":false,\"rotation\":90.0,\"x\":142.24,\"y\":170.18}},\"fields\":{\"Datasheet\":\"\",\"Description\":\"Resistor\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"Resistor_SMD:R_0603_1608Metric\",\"MPN\":\"RC0603FR-074K7L\",\"Manufacturer\":\"Yageo\",\"Reference\":\"R10\",\"Value\":\"4.7k\"},\"instance_paths\":[[\"ESP-DubSiren-V2\",\"/2037f81d-e33e-4c09-903b-90b25af374ad\"]],\"instance_references\":[\"R10\"],\"lib_id\":\"Device:R\",\"mirror_x\":false,\"mirror_y\":false,\"rotation\":0.0,\"unit\":1,\"uuid\":\"2a0adf5b-de4e-4650-bfb2-eba635b26ed4\",\"x\":142.24,\"y\":170.18}],\"uuid\":\"2a0adf5b-de4e-4650-bfb2-eba635b26ed4\",\"value\":\"4.7k\",\"x\":142.24,\"y\":170.18}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "edit_schematic_component",
+    "args": {
+      "schematic": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_sch",
+      "reference": "R11",
+      "fields": {
+        "MPN": "RC0603FR-074K7L",
+        "Manufacturer": "Yageo",
+        "DesignStatus": "INTERIM - incomplete controls and USB power qualification"
+      },
+      "field_placements": {
+        "MPN": {
+          "hide": true
+        },
+        "Manufacturer": {
+          "hide": true
+        },
+        "DesignStatus": {
+          "hide": true
+        }
+      }
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"changes\":[\"DesignStatus \u2192 INTERIM - incomplete controls and USB power qualification (0 updated, 1 added)\",\"MPN \u2192 RC0603FR-074K7L (0 updated, 1 added)\",\"Manufacturer \u2192 Yageo (0 updated, 1 added)\",\"DesignStatus placement (1 unit(s))\",\"MPN placement (1 unit(s))\",\"Manufacturer placement (1 unit(s))\"],\"datasheet\":\"\",\"fields\":{\"Datasheet\":\"\",\"Description\":\"Resistor\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"Resistor_SMD:R_0603_1608Metric\",\"MPN\":\"RC0603FR-074K7L\",\"Manufacturer\":\"Yageo\",\"Reference\":\"R11\",\"Value\":\"4.7k\"},\"footprint\":\"Resistor_SMD:R_0603_1608Metric\",\"lib_id\":\"Device:R\",\"mirror_x\":false,\"mirror_y\":false,\"reference\":\"R11\",\"rotation\":0.0,\"schematic\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\ESP-DubSiren-V2.kicad_sch\",\"unit_count\":1,\"units\":[{\"field_placements\":{\"Datasheet\":{\"hide\":true,\"rotation\":0.0,\"x\":40.64,\"y\":238.76},\"Description\":{\"hide\":true,\"rotation\":0.0,\"x\":40.64,\"y\":238.76},\"DesignStatus\":{\"hide\":true,\"rotation\":0.0,\"x\":40.64,\"y\":238.76},\"Footprint\":{\"hide\":true,\"rotation\":0.0,\"x\":40.64,\"y\":238.76},\"MPN\":{\"hide\":true,\"rotation\":0.0,\"x\":40.64,\"y\":238.76},\"Manufacturer\":{\"hide\":true,\"rotation\":0.0,\"x\":40.64,\"y\":238.76},\"Reference\":{\"hide\":false,\"rotation\":90.0,\"x\":42.672,\"y\":238.76},\"Value\":{\"hide\":false,\"rotation\":90.0,\"x\":40.64,\"y\":238.76}},\"fields\":{\"Datasheet\":\"\",\"Description\":\"Resistor\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"Resistor_SMD:R_0603_1608Metric\",\"MPN\":\"RC0603FR-074K7L\",\"Manufacturer\":\"Yageo\",\"Reference\":\"R11\",\"Value\":\"4.7k\"},\"instance_paths\":[[\"ESP-DubSiren-V2\",\"/2037f81d-e33e-4c09-903b-90b25af374ad\"]],\"instance_references\":[\"R11\"],\"lib_id\":\"Device:R\",\"mirror_x\":false,\"mirror_y\":false,\"rotation\":0.0,\"unit\":1,\"uuid\":\"b461b4fa-00a3-4565-af6b-7c12af045272\",\"x\":40.64,\"y\":238.76}],\"uuid\":\"b461b4fa-00a3-4565-af6b-7c12af045272\",\"value\":\"4.7k\",\"x\":40.64,\"y\":238.76}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "edit_schematic_component",
+    "args": {
+      "schematic": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_sch",
+      "reference": "R12",
+      "fields": {
+        "MPN": "RC0603FR-074K7L",
+        "Manufacturer": "Yageo",
+        "DesignStatus": "INTERIM - incomplete controls and USB power qualification"
+      },
+      "field_placements": {
+        "MPN": {
+          "hide": true
+        },
+        "Manufacturer": {
+          "hide": true
+        },
+        "DesignStatus": {
+          "hide": true
+        }
+      }
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"changes\":[\"DesignStatus \u2192 INTERIM - incomplete controls and USB power qualification (0 updated, 1 added)\",\"MPN \u2192 RC0603FR-074K7L (0 updated, 1 added)\",\"Manufacturer \u2192 Yageo (0 updated, 1 added)\",\"DesignStatus placement (1 unit(s))\",\"MPN placement (1 unit(s))\",\"Manufacturer placement (1 unit(s))\"],\"datasheet\":\"\",\"fields\":{\"Datasheet\":\"\",\"Description\":\"Resistor\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"Resistor_SMD:R_0603_1608Metric\",\"MPN\":\"RC0603FR-074K7L\",\"Manufacturer\":\"Yageo\",\"Reference\":\"R12\",\"Value\":\"4.7k\"},\"footprint\":\"Resistor_SMD:R_0603_1608Metric\",\"lib_id\":\"Device:R\",\"mirror_x\":false,\"mirror_y\":false,\"reference\":\"R12\",\"rotation\":0.0,\"schematic\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\ESP-DubSiren-V2.kicad_sch\",\"unit_count\":1,\"units\":[{\"field_placements\":{\"Datasheet\":{\"hide\":true,\"rotation\":0.0,\"x\":91.44,\"y\":238.76},\"Description\":{\"hide\":true,\"rotation\":0.0,\"x\":91.44,\"y\":238.76},\"DesignStatus\":{\"hide\":true,\"rotation\":0.0,\"x\":91.44,\"y\":238.76},\"Footprint\":{\"hide\":true,\"rotation\":0.0,\"x\":91.44,\"y\":238.76},\"MPN\":{\"hide\":true,\"rotation\":0.0,\"x\":91.44,\"y\":238.76},\"Manufacturer\":{\"hide\":true,\"rotation\":0.0,\"x\":91.44,\"y\":238.76},\"Reference\":{\"hide\":false,\"rotation\":90.0,\"x\":93.472,\"y\":238.76},\"Value\":{\"hide\":false,\"rotation\":90.0,\"x\":91.44,\"y\":238.76}},\"fields\":{\"Datasheet\":\"\",\"Description\":\"Resistor\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"Resistor_SMD:R_0603_1608Metric\",\"MPN\":\"RC0603FR-074K7L\",\"Manufacturer\":\"Yageo\",\"Reference\":\"R12\",\"Value\":\"4.7k\"},\"instance_paths\":[[\"ESP-DubSiren-V2\",\"/2037f81d-e33e-4c09-903b-90b25af374ad\"]],\"instance_references\":[\"R12\"],\"lib_id\":\"Device:R\",\"mirror_x\":false,\"mirror_y\":false,\"rotation\":0.0,\"unit\":1,\"uuid\":\"520bb992-c7bd-40d0-9801-a05634189888\",\"x\":91.44,\"y\":238.76}],\"uuid\":\"520bb992-c7bd-40d0-9801-a05634189888\",\"value\":\"4.7k\",\"x\":91.44,\"y\":238.76}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "edit_schematic_component",
+    "args": {
+      "schematic": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_sch",
+      "reference": "R13",
+      "fields": {
+        "MPN": "RC0603FR-074K7L",
+        "Manufacturer": "Yageo",
+        "DesignStatus": "INTERIM - incomplete controls and USB power qualification"
+      },
+      "field_placements": {
+        "MPN": {
+          "hide": true
+        },
+        "Manufacturer": {
+          "hide": true
+        },
+        "DesignStatus": {
+          "hide": true
+        }
+      }
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"changes\":[\"DesignStatus \u2192 INTERIM - incomplete controls and USB power qualification (0 updated, 1 added)\",\"MPN \u2192 RC0603FR-074K7L (0 updated, 1 added)\",\"Manufacturer \u2192 Yageo (0 updated, 1 added)\",\"DesignStatus placement (1 unit(s))\",\"MPN placement (1 unit(s))\",\"Manufacturer placement (1 unit(s))\"],\"datasheet\":\"\",\"fields\":{\"Datasheet\":\"\",\"Description\":\"Resistor\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"Resistor_SMD:R_0603_1608Metric\",\"MPN\":\"RC0603FR-074K7L\",\"Manufacturer\":\"Yageo\",\"Reference\":\"R13\",\"Value\":\"4.7k\"},\"footprint\":\"Resistor_SMD:R_0603_1608Metric\",\"lib_id\":\"Device:R\",\"mirror_x\":false,\"mirror_y\":false,\"reference\":\"R13\",\"rotation\":0.0,\"schematic\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\ESP-DubSiren-V2.kicad_sch\",\"unit_count\":1,\"units\":[{\"field_placements\":{\"Datasheet\":{\"hide\":true,\"rotation\":0.0,\"x\":142.24,\"y\":238.76},\"Description\":{\"hide\":true,\"rotation\":0.0,\"x\":142.24,\"y\":238.76},\"DesignStatus\":{\"hide\":true,\"rotation\":0.0,\"x\":142.24,\"y\":238.76},\"Footprint\":{\"hide\":true,\"rotation\":0.0,\"x\":142.24,\"y\":238.76},\"MPN\":{\"hide\":true,\"rotation\":0.0,\"x\":142.24,\"y\":238.76},\"Manufacturer\":{\"hide\":true,\"rotation\":0.0,\"x\":142.24,\"y\":238.76},\"Reference\":{\"hide\":false,\"rotation\":90.0,\"x\":144.272,\"y\":238.76},\"Value\":{\"hide\":false,\"rotation\":90.0,\"x\":142.24,\"y\":238.76}},\"fields\":{\"Datasheet\":\"\",\"Description\":\"Resistor\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"Resistor_SMD:R_0603_1608Metric\",\"MPN\":\"RC0603FR-074K7L\",\"Manufacturer\":\"Yageo\",\"Reference\":\"R13\",\"Value\":\"4.7k\"},\"instance_paths\":[[\"ESP-DubSiren-V2\",\"/2037f81d-e33e-4c09-903b-90b25af374ad\"]],\"instance_references\":[\"R13\"],\"lib_id\":\"Device:R\",\"mirror_x\":false,\"mirror_y\":false,\"rotation\":0.0,\"unit\":1,\"uuid\":\"9eb814be-2c44-4bd4-a612-21bf0787c4bc\",\"x\":142.24,\"y\":238.76}],\"uuid\":\"9eb814be-2c44-4bd4-a612-21bf0787c4bc\",\"value\":\"4.7k\",\"x\":142.24,\"y\":238.76}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "edit_schematic_component",
+    "args": {
+      "schematic": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_sch",
+      "reference": "R14",
+      "fields": {
+        "MPN": "RC0603FR-074K7L",
+        "Manufacturer": "Yageo",
+        "DesignStatus": "INTERIM - incomplete controls and USB power qualification"
+      },
+      "field_placements": {
+        "MPN": {
+          "hide": true
+        },
+        "Manufacturer": {
+          "hide": true
+        },
+        "DesignStatus": {
+          "hide": true
+        }
+      }
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"changes\":[\"DesignStatus \u2192 INTERIM - incomplete controls and USB power qualification (0 updated, 1 added)\",\"MPN \u2192 RC0603FR-074K7L (0 updated, 1 added)\",\"Manufacturer \u2192 Yageo (0 updated, 1 added)\",\"DesignStatus placement (1 unit(s))\",\"MPN placement (1 unit(s))\",\"Manufacturer placement (1 unit(s))\"],\"datasheet\":\"\",\"fields\":{\"Datasheet\":\"\",\"Description\":\"Resistor\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"Resistor_SMD:R_0603_1608Metric\",\"MPN\":\"RC0603FR-074K7L\",\"Manufacturer\":\"Yageo\",\"Reference\":\"R14\",\"Value\":\"4.7k\"},\"footprint\":\"Resistor_SMD:R_0603_1608Metric\",\"lib_id\":\"Device:R\",\"mirror_x\":false,\"mirror_y\":false,\"reference\":\"R14\",\"rotation\":0.0,\"schematic\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\ESP-DubSiren-V2.kicad_sch\",\"unit_count\":1,\"units\":[{\"field_placements\":{\"Datasheet\":{\"hide\":true,\"rotation\":0.0,\"x\":193.04,\"y\":170.18},\"Description\":{\"hide\":true,\"rotation\":0.0,\"x\":193.04,\"y\":170.18},\"DesignStatus\":{\"hide\":true,\"rotation\":0.0,\"x\":193.04,\"y\":170.18},\"Footprint\":{\"hide\":true,\"rotation\":0.0,\"x\":193.04,\"y\":170.18},\"MPN\":{\"hide\":true,\"rotation\":0.0,\"x\":193.04,\"y\":170.18},\"Manufacturer\":{\"hide\":true,\"rotation\":0.0,\"x\":193.04,\"y\":170.18},\"Reference\":{\"hide\":false,\"rotation\":90.0,\"x\":195.072,\"y\":170.18},\"Value\":{\"hide\":false,\"rotation\":90.0,\"x\":193.04,\"y\":170.18}},\"fields\":{\"Datasheet\":\"\",\"Description\":\"Resistor\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"Resistor_SMD:R_0603_1608Metric\",\"MPN\":\"RC0603FR-074K7L\",\"Manufacturer\":\"Yageo\",\"Reference\":\"R14\",\"Value\":\"4.7k\"},\"instance_paths\":[[\"ESP-DubSiren-V2\",\"/2037f81d-e33e-4c09-903b-90b25af374ad\"]],\"instance_references\":[\"R14\"],\"lib_id\":\"Device:R\",\"mirror_x\":false,\"mirror_y\":false,\"rotation\":0.0,\"unit\":1,\"uuid\":\"136d2d65-ba3e-49d6-8df6-cd53c388c855\",\"x\":193.04,\"y\":170.18}],\"uuid\":\"136d2d65-ba3e-49d6-8df6-cd53c388c855\",\"value\":\"4.7k\",\"x\":193.04,\"y\":170.18}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "edit_schematic_component",
+    "args": {
+      "schematic": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_sch",
+      "reference": "R15",
+      "fields": {
+        "MPN": "RC0603JR-0710KL",
+        "Manufacturer": "Yageo",
+        "DesignStatus": "INTERIM - incomplete controls and USB power qualification"
+      },
+      "field_placements": {
+        "MPN": {
+          "hide": true
+        },
+        "Manufacturer": {
+          "hide": true
+        },
+        "DesignStatus": {
+          "hide": true
+        }
+      }
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"changes\":[\"DesignStatus \u2192 INTERIM - incomplete controls and USB power qualification (0 updated, 1 added)\",\"MPN \u2192 RC0603JR-0710KL (0 updated, 1 added)\",\"Manufacturer \u2192 Yageo (0 updated, 1 added)\",\"DesignStatus placement (1 unit(s))\",\"MPN placement (1 unit(s))\",\"Manufacturer placement (1 unit(s))\"],\"datasheet\":\"\",\"fields\":{\"Datasheet\":\"\",\"Description\":\"Resistor\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"Resistor_SMD:R_0603_1608Metric\",\"MPN\":\"RC0603JR-0710KL\",\"Manufacturer\":\"Yageo\",\"Reference\":\"R15\",\"Value\":\"10k\"},\"footprint\":\"Resistor_SMD:R_0603_1608Metric\",\"lib_id\":\"Device:R\",\"mirror_x\":false,\"mirror_y\":false,\"reference\":\"R15\",\"rotation\":0.0,\"schematic\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\ESP-DubSiren-V2.kicad_sch\",\"unit_count\":1,\"units\":[{\"field_placements\":{\"Datasheet\":{\"hide\":true,\"rotation\":0.0,\"x\":401.32,\"y\":220.98},\"Description\":{\"hide\":true,\"rotation\":0.0,\"x\":401.32,\"y\":220.98},\"DesignStatus\":{\"hide\":true,\"rotation\":0.0,\"x\":401.32,\"y\":220.98},\"Footprint\":{\"hide\":true,\"rotation\":0.0,\"x\":401.32,\"y\":220.98},\"MPN\":{\"hide\":true,\"rotation\":0.0,\"x\":401.32,\"y\":220.98},\"Manufacturer\":{\"hide\":true,\"rotation\":0.0,\"x\":401.32,\"y\":220.98},\"Reference\":{\"hide\":false,\"rotation\":90.0,\"x\":403.352,\"y\":220.98},\"Value\":{\"hide\":false,\"rotation\":90.0,\"x\":401.32,\"y\":220.98}},\"fields\":{\"Datasheet\":\"\",\"Description\":\"Resistor\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"Resistor_SMD:R_0603_1608Metric\",\"MPN\":\"RC0603JR-0710KL\",\"Manufacturer\":\"Yageo\",\"Reference\":\"R15\",\"Value\":\"10k\"},\"instance_paths\":[[\"ESP-DubSiren-V2\",\"/2037f81d-e33e-4c09-903b-90b25af374ad\"]],\"instance_references\":[\"R15\"],\"lib_id\":\"Device:R\",\"mirror_x\":false,\"mirror_y\":false,\"rotation\":0.0,\"unit\":1,\"uuid\":\"892dc2ee-a519-4a1c-b05e-2e2038ab7f7f\",\"x\":401.32,\"y\":220.98}],\"uuid\":\"892dc2ee-a519-4a1c-b05e-2e2038ab7f7f\",\"value\":\"10k\",\"x\":401.32,\"y\":220.98}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "edit_schematic_component",
+    "args": {
+      "schematic": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_sch",
+      "reference": "R16",
+      "fields": {
+        "MPN": "RC0603JR-0710KL",
+        "Manufacturer": "Yageo",
+        "DesignStatus": "INTERIM - incomplete controls and USB power qualification"
+      },
+      "field_placements": {
+        "MPN": {
+          "hide": true
+        },
+        "Manufacturer": {
+          "hide": true
+        },
+        "DesignStatus": {
+          "hide": true
+        }
+      }
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"changes\":[\"DesignStatus \u2192 INTERIM - incomplete controls and USB power qualification (0 updated, 1 added)\",\"MPN \u2192 RC0603JR-0710KL (0 updated, 1 added)\",\"Manufacturer \u2192 Yageo (0 updated, 1 added)\",\"DesignStatus placement (1 unit(s))\",\"MPN placement (1 unit(s))\",\"Manufacturer placement (1 unit(s))\"],\"datasheet\":\"\",\"fields\":{\"Datasheet\":\"\",\"Description\":\"Resistor\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"Resistor_SMD:R_0603_1608Metric\",\"MPN\":\"RC0603JR-0710KL\",\"Manufacturer\":\"Yageo\",\"Reference\":\"R16\",\"Value\":\"10k\"},\"footprint\":\"Resistor_SMD:R_0603_1608Metric\",\"lib_id\":\"Device:R\",\"mirror_x\":false,\"mirror_y\":false,\"reference\":\"R16\",\"rotation\":0.0,\"schematic\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\ESP-DubSiren-V2.kicad_sch\",\"unit_count\":1,\"units\":[{\"field_placements\":{\"Datasheet\":{\"hide\":true,\"rotation\":0.0,\"x\":439.42,\"y\":220.98},\"Description\":{\"hide\":true,\"rotation\":0.0,\"x\":439.42,\"y\":220.98},\"DesignStatus\":{\"hide\":true,\"rotation\":0.0,\"x\":439.42,\"y\":220.98},\"Footprint\":{\"hide\":true,\"rotation\":0.0,\"x\":439.42,\"y\":220.98},\"MPN\":{\"hide\":true,\"rotation\":0.0,\"x\":439.42,\"y\":220.98},\"Manufacturer\":{\"hide\":true,\"rotation\":0.0,\"x\":439.42,\"y\":220.98},\"Reference\":{\"hide\":false,\"rotation\":90.0,\"x\":441.452,\"y\":220.98},\"Value\":{\"hide\":false,\"rotation\":90.0,\"x\":439.42,\"y\":220.98}},\"fields\":{\"Datasheet\":\"\",\"Description\":\"Resistor\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"Resistor_SMD:R_0603_1608Metric\",\"MPN\":\"RC0603JR-0710KL\",\"Manufacturer\":\"Yageo\",\"Reference\":\"R16\",\"Value\":\"10k\"},\"instance_paths\":[[\"ESP-DubSiren-V2\",\"/2037f81d-e33e-4c09-903b-90b25af374ad\"]],\"instance_references\":[\"R16\"],\"lib_id\":\"Device:R\",\"mirror_x\":false,\"mirror_y\":false,\"rotation\":0.0,\"unit\":1,\"uuid\":\"baf9ea89-ac77-4f6e-8021-a3cbd7c1955d\",\"x\":439.42,\"y\":220.98}],\"uuid\":\"baf9ea89-ac77-4f6e-8021-a3cbd7c1955d\",\"value\":\"10k\",\"x\":439.42,\"y\":220.98}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "edit_schematic_component",
+    "args": {
+      "schematic": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_sch",
+      "reference": "R17",
+      "fields": {
+        "MPN": "RC0603JR-0710KL",
+        "Manufacturer": "Yageo",
+        "DesignStatus": "INTERIM - incomplete controls and USB power qualification"
+      },
+      "field_placements": {
+        "MPN": {
+          "hide": true
+        },
+        "Manufacturer": {
+          "hide": true
+        },
+        "DesignStatus": {
+          "hide": true
+        }
+      }
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"changes\":[\"DesignStatus \u2192 INTERIM - incomplete controls and USB power qualification (0 updated, 1 added)\",\"MPN \u2192 RC0603JR-0710KL (0 updated, 1 added)\",\"Manufacturer \u2192 Yageo (0 updated, 1 added)\",\"DesignStatus placement (1 unit(s))\",\"MPN placement (1 unit(s))\",\"Manufacturer placement (1 unit(s))\"],\"datasheet\":\"\",\"fields\":{\"Datasheet\":\"\",\"Description\":\"Resistor\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"Resistor_SMD:R_0603_1608Metric\",\"MPN\":\"RC0603JR-0710KL\",\"Manufacturer\":\"Yageo\",\"Reference\":\"R17\",\"Value\":\"10k\"},\"footprint\":\"Resistor_SMD:R_0603_1608Metric\",\"lib_id\":\"Device:R\",\"mirror_x\":false,\"mirror_y\":false,\"reference\":\"R17\",\"rotation\":0.0,\"schematic\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\ESP-DubSiren-V2.kicad_sch\",\"unit_count\":1,\"units\":[{\"field_placements\":{\"Datasheet\":{\"hide\":true,\"rotation\":0.0,\"x\":477.52,\"y\":220.98},\"Description\":{\"hide\":true,\"rotation\":0.0,\"x\":477.52,\"y\":220.98},\"DesignStatus\":{\"hide\":true,\"rotation\":0.0,\"x\":477.52,\"y\":220.98},\"Footprint\":{\"hide\":true,\"rotation\":0.0,\"x\":477.52,\"y\":220.98},\"MPN\":{\"hide\":true,\"rotation\":0.0,\"x\":477.52,\"y\":220.98},\"Manufacturer\":{\"hide\":true,\"rotation\":0.0,\"x\":477.52,\"y\":220.98},\"Reference\":{\"hide\":false,\"rotation\":90.0,\"x\":479.552,\"y\":220.98},\"Value\":{\"hide\":false,\"rotation\":90.0,\"x\":477.52,\"y\":220.98}},\"fields\":{\"Datasheet\":\"\",\"Description\":\"Resistor\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"Resistor_SMD:R_0603_1608Metric\",\"MPN\":\"RC0603JR-0710KL\",\"Manufacturer\":\"Yageo\",\"Reference\":\"R17\",\"Value\":\"10k\"},\"instance_paths\":[[\"ESP-DubSiren-V2\",\"/2037f81d-e33e-4c09-903b-90b25af374ad\"]],\"instance_references\":[\"R17\"],\"lib_id\":\"Device:R\",\"mirror_x\":false,\"mirror_y\":false,\"rotation\":0.0,\"unit\":1,\"uuid\":\"6033d996-2ed4-4e8e-9f05-c0762cf2ed59\",\"x\":477.52,\"y\":220.98}],\"uuid\":\"6033d996-2ed4-4e8e-9f05-c0762cf2ed59\",\"value\":\"10k\",\"x\":477.52,\"y\":220.98}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "edit_schematic_component",
+    "args": {
+      "schematic": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_sch",
+      "reference": "R18",
+      "fields": {
+        "MPN": "RC0603JR-0710KL",
+        "Manufacturer": "Yageo",
+        "DesignStatus": "INTERIM - incomplete controls and USB power qualification"
+      },
+      "field_placements": {
+        "MPN": {
+          "hide": true
+        },
+        "Manufacturer": {
+          "hide": true
+        },
+        "DesignStatus": {
+          "hide": true
+        }
+      }
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"changes\":[\"DesignStatus \u2192 INTERIM - incomplete controls and USB power qualification (0 updated, 1 added)\",\"MPN \u2192 RC0603JR-0710KL (0 updated, 1 added)\",\"Manufacturer \u2192 Yageo (0 updated, 1 added)\",\"DesignStatus placement (1 unit(s))\",\"MPN placement (1 unit(s))\",\"Manufacturer placement (1 unit(s))\"],\"datasheet\":\"\",\"fields\":{\"Datasheet\":\"\",\"Description\":\"Resistor\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"Resistor_SMD:R_0603_1608Metric\",\"MPN\":\"RC0603JR-0710KL\",\"Manufacturer\":\"Yageo\",\"Reference\":\"R18\",\"Value\":\"10k\"},\"footprint\":\"Resistor_SMD:R_0603_1608Metric\",\"lib_id\":\"Device:R\",\"mirror_x\":false,\"mirror_y\":false,\"reference\":\"R18\",\"rotation\":0.0,\"schematic\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\ESP-DubSiren-V2.kicad_sch\",\"unit_count\":1,\"units\":[{\"field_placements\":{\"Datasheet\":{\"hide\":true,\"rotation\":0.0,\"x\":515.62,\"y\":220.98},\"Description\":{\"hide\":true,\"rotation\":0.0,\"x\":515.62,\"y\":220.98},\"DesignStatus\":{\"hide\":true,\"rotation\":0.0,\"x\":515.62,\"y\":220.98},\"Footprint\":{\"hide\":true,\"rotation\":0.0,\"x\":515.62,\"y\":220.98},\"MPN\":{\"hide\":true,\"rotation\":0.0,\"x\":515.62,\"y\":220.98},\"Manufacturer\":{\"hide\":true,\"rotation\":0.0,\"x\":515.62,\"y\":220.98},\"Reference\":{\"hide\":false,\"rotation\":90.0,\"x\":517.652,\"y\":220.98},\"Value\":{\"hide\":false,\"rotation\":90.0,\"x\":515.62,\"y\":220.98}},\"fields\":{\"Datasheet\":\"\",\"Description\":\"Resistor\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"Resistor_SMD:R_0603_1608Metric\",\"MPN\":\"RC0603JR-0710KL\",\"Manufacturer\":\"Yageo\",\"Reference\":\"R18\",\"Value\":\"10k\"},\"instance_paths\":[[\"ESP-DubSiren-V2\",\"/2037f81d-e33e-4c09-903b-90b25af374ad\"]],\"instance_references\":[\"R18\"],\"lib_id\":\"Device:R\",\"mirror_x\":false,\"mirror_y\":false,\"rotation\":0.0,\"unit\":1,\"uuid\":\"930d954e-fbca-40cb-87d1-3eef317263ea\",\"x\":515.62,\"y\":220.98}],\"uuid\":\"930d954e-fbca-40cb-87d1-3eef317263ea\",\"value\":\"10k\",\"x\":515.62,\"y\":220.98}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "edit_schematic_component",
+    "args": {
+      "schematic": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_sch",
+      "reference": "R19",
+      "fields": {
+        "MPN": "RC0603JR-0710KL",
+        "Manufacturer": "Yageo",
+        "DesignStatus": "INTERIM - incomplete controls and USB power qualification"
+      },
+      "field_placements": {
+        "MPN": {
+          "hide": true
+        },
+        "Manufacturer": {
+          "hide": true
+        },
+        "DesignStatus": {
+          "hide": true
+        }
+      }
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"changes\":[\"DesignStatus \u2192 INTERIM - incomplete controls and USB power qualification (0 updated, 1 added)\",\"MPN \u2192 RC0603JR-0710KL (0 updated, 1 added)\",\"Manufacturer \u2192 Yageo (0 updated, 1 added)\",\"DesignStatus placement (1 unit(s))\",\"MPN placement (1 unit(s))\",\"Manufacturer placement (1 unit(s))\"],\"datasheet\":\"\",\"fields\":{\"Datasheet\":\"\",\"Description\":\"Resistor\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"Resistor_SMD:R_0603_1608Metric\",\"MPN\":\"RC0603JR-0710KL\",\"Manufacturer\":\"Yageo\",\"Reference\":\"R19\",\"Value\":\"10k\"},\"footprint\":\"Resistor_SMD:R_0603_1608Metric\",\"lib_id\":\"Device:R\",\"mirror_x\":false,\"mirror_y\":false,\"reference\":\"R19\",\"rotation\":0.0,\"schematic\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\ESP-DubSiren-V2.kicad_sch\",\"unit_count\":1,\"units\":[{\"field_placements\":{\"Datasheet\":{\"hide\":true,\"rotation\":0.0,\"x\":411.48,\"y\":304.8},\"Description\":{\"hide\":true,\"rotation\":0.0,\"x\":411.48,\"y\":304.8},\"DesignStatus\":{\"hide\":true,\"rotation\":0.0,\"x\":411.48,\"y\":304.8},\"Footprint\":{\"hide\":true,\"rotation\":0.0,\"x\":411.48,\"y\":304.8},\"MPN\":{\"hide\":true,\"rotation\":0.0,\"x\":411.48,\"y\":304.8},\"Manufacturer\":{\"hide\":true,\"rotation\":0.0,\"x\":411.48,\"y\":304.8},\"Reference\":{\"hide\":false,\"rotation\":90.0,\"x\":413.512,\"y\":304.8},\"Value\":{\"hide\":false,\"rotation\":90.0,\"x\":411.48,\"y\":304.8}},\"fields\":{\"Datasheet\":\"\",\"Description\":\"Resistor\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"Resistor_SMD:R_0603_1608Metric\",\"MPN\":\"RC0603JR-0710KL\",\"Manufacturer\":\"Yageo\",\"Reference\":\"R19\",\"Value\":\"10k\"},\"instance_paths\":[[\"ESP-DubSiren-V2\",\"/2037f81d-e33e-4c09-903b-90b25af374ad\"]],\"instance_references\":[\"R19\"],\"lib_id\":\"Device:R\",\"mirror_x\":false,\"mirror_y\":false,\"rotation\":0.0,\"unit\":1,\"uuid\":\"cfe627d1-c5eb-4227-8bef-c1f9ef305cf9\",\"x\":411.48,\"y\":304.8}],\"uuid\":\"cfe627d1-c5eb-4227-8bef-c1f9ef305cf9\",\"value\":\"10k\",\"x\":411.48,\"y\":304.8}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "edit_schematic_component",
+    "args": {
+      "schematic": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_sch",
+      "reference": "R20",
+      "fields": {
+        "MPN": "RC0603JR-0710KL",
+        "Manufacturer": "Yageo",
+        "DesignStatus": "INTERIM - incomplete controls and USB power qualification"
+      },
+      "field_placements": {
+        "MPN": {
+          "hide": true
+        },
+        "Manufacturer": {
+          "hide": true
+        },
+        "DesignStatus": {
+          "hide": true
+        }
+      }
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"changes\":[\"DesignStatus \u2192 INTERIM - incomplete controls and USB power qualification (0 updated, 1 added)\",\"MPN \u2192 RC0603JR-0710KL (0 updated, 1 added)\",\"Manufacturer \u2192 Yageo (0 updated, 1 added)\",\"DesignStatus placement (1 unit(s))\",\"MPN placement (1 unit(s))\",\"Manufacturer placement (1 unit(s))\"],\"datasheet\":\"\",\"fields\":{\"Datasheet\":\"\",\"Description\":\"Resistor\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"Resistor_SMD:R_0603_1608Metric\",\"MPN\":\"RC0603JR-0710KL\",\"Manufacturer\":\"Yageo\",\"Reference\":\"R20\",\"Value\":\"10k\"},\"footprint\":\"Resistor_SMD:R_0603_1608Metric\",\"lib_id\":\"Device:R\",\"mirror_x\":false,\"mirror_y\":false,\"reference\":\"R20\",\"rotation\":0.0,\"schematic\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\ESP-DubSiren-V2.kicad_sch\",\"unit_count\":1,\"units\":[{\"field_placements\":{\"Datasheet\":{\"hide\":true,\"rotation\":0.0,\"x\":439.42,\"y\":304.8},\"Description\":{\"hide\":true,\"rotation\":0.0,\"x\":439.42,\"y\":304.8},\"DesignStatus\":{\"hide\":true,\"rotation\":0.0,\"x\":439.42,\"y\":304.8},\"Footprint\":{\"hide\":true,\"rotation\":0.0,\"x\":439.42,\"y\":304.8},\"MPN\":{\"hide\":true,\"rotation\":0.0,\"x\":439.42,\"y\":304.8},\"Manufacturer\":{\"hide\":true,\"rotation\":0.0,\"x\":439.42,\"y\":304.8},\"Reference\":{\"hide\":false,\"rotation\":90.0,\"x\":441.452,\"y\":304.8},\"Value\":{\"hide\":false,\"rotation\":90.0,\"x\":439.42,\"y\":304.8}},\"fields\":{\"Datasheet\":\"\",\"Description\":\"Resistor\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"Resistor_SMD:R_0603_1608Metric\",\"MPN\":\"RC0603JR-0710KL\",\"Manufacturer\":\"Yageo\",\"Reference\":\"R20\",\"Value\":\"10k\"},\"instance_paths\":[[\"ESP-DubSiren-V2\",\"/2037f81d-e33e-4c09-903b-90b25af374ad\"]],\"instance_references\":[\"R20\"],\"lib_id\":\"Device:R\",\"mirror_x\":false,\"mirror_y\":false,\"rotation\":0.0,\"unit\":1,\"uuid\":\"7aa84155-3d96-4ade-a6ac-2665162c873b\",\"x\":439.42,\"y\":304.8}],\"uuid\":\"7aa84155-3d96-4ade-a6ac-2665162c873b\",\"value\":\"10k\",\"x\":439.42,\"y\":304.8}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "edit_schematic_component",
+    "args": {
+      "schematic": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_sch",
+      "reference": "R21",
+      "fields": {
+        "MPN": "RC0603JR-0710KL",
+        "Manufacturer": "Yageo",
+        "DesignStatus": "INTERIM - incomplete controls and USB power qualification"
+      },
+      "field_placements": {
+        "MPN": {
+          "hide": true
+        },
+        "Manufacturer": {
+          "hide": true
+        },
+        "DesignStatus": {
+          "hide": true
+        }
+      }
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"changes\":[\"DesignStatus \u2192 INTERIM - incomplete controls and USB power qualification (0 updated, 1 added)\",\"MPN \u2192 RC0603JR-0710KL (0 updated, 1 added)\",\"Manufacturer \u2192 Yageo (0 updated, 1 added)\",\"DesignStatus placement (1 unit(s))\",\"MPN placement (1 unit(s))\",\"Manufacturer placement (1 unit(s))\"],\"datasheet\":\"\",\"fields\":{\"Datasheet\":\"\",\"Description\":\"Resistor\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"Resistor_SMD:R_0603_1608Metric\",\"MPN\":\"RC0603JR-0710KL\",\"Manufacturer\":\"Yageo\",\"Reference\":\"R21\",\"Value\":\"10k\"},\"footprint\":\"Resistor_SMD:R_0603_1608Metric\",\"lib_id\":\"Device:R\",\"mirror_x\":false,\"mirror_y\":false,\"reference\":\"R21\",\"rotation\":0.0,\"schematic\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\ESP-DubSiren-V2.kicad_sch\",\"unit_count\":1,\"units\":[{\"field_placements\":{\"Datasheet\":{\"hide\":true,\"rotation\":0.0,\"x\":467.36,\"y\":304.8},\"Description\":{\"hide\":true,\"rotation\":0.0,\"x\":467.36,\"y\":304.8},\"DesignStatus\":{\"hide\":true,\"rotation\":0.0,\"x\":467.36,\"y\":304.8},\"Footprint\":{\"hide\":true,\"rotation\":0.0,\"x\":467.36,\"y\":304.8},\"MPN\":{\"hide\":true,\"rotation\":0.0,\"x\":467.36,\"y\":304.8},\"Manufacturer\":{\"hide\":true,\"rotation\":0.0,\"x\":467.36,\"y\":304.8},\"Reference\":{\"hide\":false,\"rotation\":90.0,\"x\":469.392,\"y\":304.8},\"Value\":{\"hide\":false,\"rotation\":90.0,\"x\":467.36,\"y\":304.8}},\"fields\":{\"Datasheet\":\"\",\"Description\":\"Resistor\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"Resistor_SMD:R_0603_1608Metric\",\"MPN\":\"RC0603JR-0710KL\",\"Manufacturer\":\"Yageo\",\"Reference\":\"R21\",\"Value\":\"10k\"},\"instance_paths\":[[\"ESP-DubSiren-V2\",\"/2037f81d-e33e-4c09-903b-90b25af374ad\"]],\"instance_references\":[\"R21\"],\"lib_id\":\"Device:R\",\"mirror_x\":false,\"mirror_y\":false,\"rotation\":0.0,\"unit\":1,\"uuid\":\"97d18b83-7eff-4971-b761-c36e2b105ec8\",\"x\":467.36,\"y\":304.8}],\"uuid\":\"97d18b83-7eff-4971-b761-c36e2b105ec8\",\"value\":\"10k\",\"x\":467.36,\"y\":304.8}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "edit_schematic_component",
+    "args": {
+      "schematic": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_sch",
+      "reference": "C1",
+      "fields": {
+        "MPN": "CL21A226MPCLRNC",
+        "Manufacturer": "Samsung",
+        "DesignStatus": "INTERIM - incomplete controls and USB power qualification"
+      },
+      "field_placements": {
+        "MPN": {
+          "hide": true
+        },
+        "Manufacturer": {
+          "hide": true
+        },
+        "DesignStatus": {
+          "hide": true
+        }
+      }
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"changes\":[\"DesignStatus \u2192 INTERIM - incomplete controls and USB power qualification (0 updated, 1 added)\",\"MPN \u2192 CL21A226MPCLRNC (0 updated, 1 added)\",\"Manufacturer \u2192 Samsung (0 updated, 1 added)\",\"DesignStatus placement (1 unit(s))\",\"MPN placement (1 unit(s))\",\"Manufacturer placement (1 unit(s))\"],\"datasheet\":\"\",\"fields\":{\"Datasheet\":\"\",\"Description\":\"Unpolarized capacitor\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"Capacitor_SMD:C_0805_2012Metric\",\"MPN\":\"CL21A226MPCLRNC\",\"Manufacturer\":\"Samsung\",\"Reference\":\"C1\",\"Value\":\"22u\"},\"footprint\":\"Capacitor_SMD:C_0805_2012Metric\",\"lib_id\":\"Device:C\",\"mirror_x\":false,\"mirror_y\":false,\"reference\":\"C1\",\"rotation\":0.0,\"schematic\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\ESP-DubSiren-V2.kicad_sch\",\"unit_count\":1,\"units\":[{\"field_placements\":{\"Datasheet\":{\"hide\":true,\"rotation\":0.0,\"x\":124.46,\"y\":33.02},\"Description\":{\"hide\":true,\"rotation\":0.0,\"x\":124.46,\"y\":33.02},\"DesignStatus\":{\"hide\":true,\"rotation\":0.0,\"x\":124.46,\"y\":33.02},\"Footprint\":{\"hide\":true,\"rotation\":0.0,\"x\":124.46,\"y\":33.02},\"MPN\":{\"hide\":true,\"rotation\":0.0,\"x\":124.46,\"y\":33.02},\"Manufacturer\":{\"hide\":true,\"rotation\":0.0,\"x\":124.46,\"y\":33.02},\"Reference\":{\"hide\":false,\"rotation\":0.0,\"x\":125.095,\"y\":30.48},\"Value\":{\"hide\":false,\"rotation\":0.0,\"x\":125.095,\"y\":35.56}},\"fields\":{\"Datasheet\":\"\",\"Description\":\"Unpolarized capacitor\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"Capacitor_SMD:C_0805_2012Metric\",\"MPN\":\"CL21A226MPCLRNC\",\"Manufacturer\":\"Samsung\",\"Reference\":\"C1\",\"Value\":\"22u\"},\"instance_paths\":[[\"ESP-DubSiren-V2\",\"/2037f81d-e33e-4c09-903b-90b25af374ad\"]],\"instance_references\":[\"C1\"],\"lib_id\":\"Device:C\",\"mirror_x\":false,\"mirror_y\":false,\"rotation\":0.0,\"unit\":1,\"uuid\":\"c9a20b30-f9b2-41c7-b2e6-3667108fe517\",\"x\":124.46,\"y\":33.02}],\"uuid\":\"c9a20b30-f9b2-41c7-b2e6-3667108fe517\",\"value\":\"22u\",\"x\":124.46,\"y\":33.02}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "edit_schematic_component",
+    "args": {
+      "schematic": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_sch",
+      "reference": "C2",
+      "fields": {
+        "MPN": "CL10B104KO8NNNC",
+        "Manufacturer": "Samsung",
+        "DesignStatus": "INTERIM - incomplete controls and USB power qualification"
+      },
+      "field_placements": {
+        "MPN": {
+          "hide": true
+        },
+        "Manufacturer": {
+          "hide": true
+        },
+        "DesignStatus": {
+          "hide": true
+        }
+      }
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"changes\":[\"DesignStatus \u2192 INTERIM - incomplete controls and USB power qualification (0 updated, 1 added)\",\"MPN \u2192 CL10B104KO8NNNC (0 updated, 1 added)\",\"Manufacturer \u2192 Samsung (0 updated, 1 added)\",\"DesignStatus placement (1 unit(s))\",\"MPN placement (1 unit(s))\",\"Manufacturer placement (1 unit(s))\"],\"datasheet\":\"\",\"fields\":{\"Datasheet\":\"\",\"Description\":\"Unpolarized capacitor\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"Capacitor_SMD:C_0603_1608Metric\",\"MPN\":\"CL10B104KO8NNNC\",\"Manufacturer\":\"Samsung\",\"Reference\":\"C2\",\"Value\":\"100n\"},\"footprint\":\"Capacitor_SMD:C_0603_1608Metric\",\"lib_id\":\"Device:C\",\"mirror_x\":false,\"mirror_y\":false,\"reference\":\"C2\",\"rotation\":0.0,\"schematic\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\ESP-DubSiren-V2.kicad_sch\",\"unit_count\":1,\"units\":[{\"field_placements\":{\"Datasheet\":{\"hide\":true,\"rotation\":0.0,\"x\":142.24,\"y\":33.02},\"Description\":{\"hide\":true,\"rotation\":0.0,\"x\":142.24,\"y\":33.02},\"DesignStatus\":{\"hide\":true,\"rotation\":0.0,\"x\":142.24,\"y\":33.02},\"Footprint\":{\"hide\":true,\"rotation\":0.0,\"x\":142.24,\"y\":33.02},\"MPN\":{\"hide\":true,\"rotation\":0.0,\"x\":142.24,\"y\":33.02},\"Manufacturer\":{\"hide\":true,\"rotation\":0.0,\"x\":142.24,\"y\":33.02},\"Reference\":{\"hide\":false,\"rotation\":0.0,\"x\":142.875,\"y\":30.48},\"Value\":{\"hide\":false,\"rotation\":0.0,\"x\":142.875,\"y\":35.56}},\"fields\":{\"Datasheet\":\"\",\"Description\":\"Unpolarized capacitor\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"Capacitor_SMD:C_0603_1608Metric\",\"MPN\":\"CL10B104KO8NNNC\",\"Manufacturer\":\"Samsung\",\"Reference\":\"C2\",\"Value\":\"100n\"},\"instance_paths\":[[\"ESP-DubSiren-V2\",\"/2037f81d-e33e-4c09-903b-90b25af374ad\"]],\"instance_references\":[\"C2\"],\"lib_id\":\"Device:C\",\"mirror_x\":false,\"mirror_y\":false,\"rotation\":0.0,\"unit\":1,\"uuid\":\"f648a026-a576-43b4-b342-f83ada1a04b7\",\"x\":142.24,\"y\":33.02}],\"uuid\":\"f648a026-a576-43b4-b342-f83ada1a04b7\",\"value\":\"100n\",\"x\":142.24,\"y\":33.02}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "edit_schematic_component",
+    "args": {
+      "schematic": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_sch",
+      "reference": "C3",
+      "fields": {
+        "MPN": "CL21A226MPCLRNC",
+        "Manufacturer": "Samsung",
+        "DesignStatus": "INTERIM - incomplete controls and USB power qualification"
+      },
+      "field_placements": {
+        "MPN": {
+          "hide": true
+        },
+        "Manufacturer": {
+          "hide": true
+        },
+        "DesignStatus": {
+          "hide": true
+        }
+      }
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"changes\":[\"DesignStatus \u2192 INTERIM - incomplete controls and USB power qualification (0 updated, 1 added)\",\"MPN \u2192 CL21A226MPCLRNC (0 updated, 1 added)\",\"Manufacturer \u2192 Samsung (0 updated, 1 added)\",\"DesignStatus placement (1 unit(s))\",\"MPN placement (1 unit(s))\",\"Manufacturer placement (1 unit(s))\"],\"datasheet\":\"\",\"fields\":{\"Datasheet\":\"\",\"Description\":\"Unpolarized capacitor\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"Capacitor_SMD:C_0805_2012Metric\",\"MPN\":\"CL21A226MPCLRNC\",\"Manufacturer\":\"Samsung\",\"Reference\":\"C3\",\"Value\":\"22u\"},\"footprint\":\"Capacitor_SMD:C_0805_2012Metric\",\"lib_id\":\"Device:C\",\"mirror_x\":false,\"mirror_y\":false,\"reference\":\"C3\",\"rotation\":0.0,\"schematic\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\ESP-DubSiren-V2.kicad_sch\",\"unit_count\":1,\"units\":[{\"field_placements\":{\"Datasheet\":{\"hide\":true,\"rotation\":0.0,\"x\":220.98,\"y\":33.02},\"Description\":{\"hide\":true,\"rotation\":0.0,\"x\":220.98,\"y\":33.02},\"DesignStatus\":{\"hide\":true,\"rotation\":0.0,\"x\":220.98,\"y\":33.02},\"Footprint\":{\"hide\":true,\"rotation\":0.0,\"x\":220.98,\"y\":33.02},\"MPN\":{\"hide\":true,\"rotation\":0.0,\"x\":220.98,\"y\":33.02},\"Manufacturer\":{\"hide\":true,\"rotation\":0.0,\"x\":220.98,\"y\":33.02},\"Reference\":{\"hide\":false,\"rotation\":0.0,\"x\":221.615,\"y\":30.48},\"Value\":{\"hide\":false,\"rotation\":0.0,\"x\":221.615,\"y\":35.56}},\"fields\":{\"Datasheet\":\"\",\"Description\":\"Unpolarized capacitor\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"Capacitor_SMD:C_0805_2012Metric\",\"MPN\":\"CL21A226MPCLRNC\",\"Manufacturer\":\"Samsung\",\"Reference\":\"C3\",\"Value\":\"22u\"},\"instance_paths\":[[\"ESP-DubSiren-V2\",\"/2037f81d-e33e-4c09-903b-90b25af374ad\"]],\"instance_references\":[\"C3\"],\"lib_id\":\"Device:C\",\"mirror_x\":false,\"mirror_y\":false,\"rotation\":0.0,\"unit\":1,\"uuid\":\"400c114d-ff89-4b37-b4f7-79403515d9ba\",\"x\":220.98,\"y\":33.02}],\"uuid\":\"400c114d-ff89-4b37-b4f7-79403515d9ba\",\"value\":\"22u\",\"x\":220.98,\"y\":33.02}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "edit_schematic_component",
+    "args": {
+      "schematic": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_sch",
+      "reference": "C4",
+      "fields": {
+        "MPN": "CL10B104KO8NNNC",
+        "Manufacturer": "Samsung",
+        "DesignStatus": "INTERIM - incomplete controls and USB power qualification"
+      },
+      "field_placements": {
+        "MPN": {
+          "hide": true
+        },
+        "Manufacturer": {
+          "hide": true
+        },
+        "DesignStatus": {
+          "hide": true
+        }
+      }
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"changes\":[\"DesignStatus \u2192 INTERIM - incomplete controls and USB power qualification (0 updated, 1 added)\",\"MPN \u2192 CL10B104KO8NNNC (0 updated, 1 added)\",\"Manufacturer \u2192 Samsung (0 updated, 1 added)\",\"DesignStatus placement (1 unit(s))\",\"MPN placement (1 unit(s))\",\"Manufacturer placement (1 unit(s))\"],\"datasheet\":\"\",\"fields\":{\"Datasheet\":\"\",\"Description\":\"Unpolarized capacitor\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"Capacitor_SMD:C_0603_1608Metric\",\"MPN\":\"CL10B104KO8NNNC\",\"Manufacturer\":\"Samsung\",\"Reference\":\"C4\",\"Value\":\"100n\"},\"footprint\":\"Capacitor_SMD:C_0603_1608Metric\",\"lib_id\":\"Device:C\",\"mirror_x\":false,\"mirror_y\":false,\"reference\":\"C4\",\"rotation\":0.0,\"schematic\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\ESP-DubSiren-V2.kicad_sch\",\"unit_count\":1,\"units\":[{\"field_placements\":{\"Datasheet\":{\"hide\":true,\"rotation\":0.0,\"x\":238.76,\"y\":33.02},\"Description\":{\"hide\":true,\"rotation\":0.0,\"x\":238.76,\"y\":33.02},\"DesignStatus\":{\"hide\":true,\"rotation\":0.0,\"x\":238.76,\"y\":33.02},\"Footprint\":{\"hide\":true,\"rotation\":0.0,\"x\":238.76,\"y\":33.02},\"MPN\":{\"hide\":true,\"rotation\":0.0,\"x\":238.76,\"y\":33.02},\"Manufacturer\":{\"hide\":true,\"rotation\":0.0,\"x\":238.76,\"y\":33.02},\"Reference\":{\"hide\":false,\"rotation\":0.0,\"x\":239.395,\"y\":30.48},\"Value\":{\"hide\":false,\"rotation\":0.0,\"x\":239.395,\"y\":35.56}},\"fields\":{\"Datasheet\":\"\",\"Description\":\"Unpolarized capacitor\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"Capacitor_SMD:C_0603_1608Metric\",\"MPN\":\"CL10B104KO8NNNC\",\"Manufacturer\":\"Samsung\",\"Reference\":\"C4\",\"Value\":\"100n\"},\"instance_paths\":[[\"ESP-DubSiren-V2\",\"/2037f81d-e33e-4c09-903b-90b25af374ad\"]],\"instance_references\":[\"C4\"],\"lib_id\":\"Device:C\",\"mirror_x\":false,\"mirror_y\":false,\"rotation\":0.0,\"unit\":1,\"uuid\":\"a013b2b5-e0b6-4c3e-b953-6e6af008ed62\",\"x\":238.76,\"y\":33.02}],\"uuid\":\"a013b2b5-e0b6-4c3e-b953-6e6af008ed62\",\"value\":\"100n\",\"x\":238.76,\"y\":33.02}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "edit_schematic_component",
+    "args": {
+      "schematic": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_sch",
+      "reference": "C5",
+      "fields": {
+        "MPN": "CL21A226MPCLRNC",
+        "Manufacturer": "Samsung",
+        "DesignStatus": "INTERIM - incomplete controls and USB power qualification"
+      },
+      "field_placements": {
+        "MPN": {
+          "hide": true
+        },
+        "Manufacturer": {
+          "hide": true
+        },
+        "DesignStatus": {
+          "hide": true
+        }
+      }
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"changes\":[\"DesignStatus \u2192 INTERIM - incomplete controls and USB power qualification (0 updated, 1 added)\",\"MPN \u2192 CL21A226MPCLRNC (0 updated, 1 added)\",\"Manufacturer \u2192 Samsung (0 updated, 1 added)\",\"DesignStatus placement (1 unit(s))\",\"MPN placement (1 unit(s))\",\"Manufacturer placement (1 unit(s))\"],\"datasheet\":\"\",\"fields\":{\"Datasheet\":\"\",\"Description\":\"Unpolarized capacitor\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"Capacitor_SMD:C_0805_2012Metric\",\"MPN\":\"CL21A226MPCLRNC\",\"Manufacturer\":\"Samsung\",\"Reference\":\"C5\",\"Value\":\"22u\"},\"footprint\":\"Capacitor_SMD:C_0805_2012Metric\",\"lib_id\":\"Device:C\",\"mirror_x\":false,\"mirror_y\":false,\"reference\":\"C5\",\"rotation\":0.0,\"schematic\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\ESP-DubSiren-V2.kicad_sch\",\"unit_count\":1,\"units\":[{\"field_placements\":{\"Datasheet\":{\"hide\":true,\"rotation\":0.0,\"x\":281.94,\"y\":33.02},\"Description\":{\"hide\":true,\"rotation\":0.0,\"x\":281.94,\"y\":33.02},\"DesignStatus\":{\"hide\":true,\"rotation\":0.0,\"x\":281.94,\"y\":33.02},\"Footprint\":{\"hide\":true,\"rotation\":0.0,\"x\":281.94,\"y\":33.02},\"MPN\":{\"hide\":true,\"rotation\":0.0,\"x\":281.94,\"y\":33.02},\"Manufacturer\":{\"hide\":true,\"rotation\":0.0,\"x\":281.94,\"y\":33.02},\"Reference\":{\"hide\":false,\"rotation\":0.0,\"x\":282.575,\"y\":30.48},\"Value\":{\"hide\":false,\"rotation\":0.0,\"x\":282.575,\"y\":35.56}},\"fields\":{\"Datasheet\":\"\",\"Description\":\"Unpolarized capacitor\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"Capacitor_SMD:C_0805_2012Metric\",\"MPN\":\"CL21A226MPCLRNC\",\"Manufacturer\":\"Samsung\",\"Reference\":\"C5\",\"Value\":\"22u\"},\"instance_paths\":[[\"ESP-DubSiren-V2\",\"/2037f81d-e33e-4c09-903b-90b25af374ad\"]],\"instance_references\":[\"C5\"],\"lib_id\":\"Device:C\",\"mirror_x\":false,\"mirror_y\":false,\"rotation\":0.0,\"unit\":1,\"uuid\":\"d0eca9ee-a24f-4f63-ab1d-c116df83df86\",\"x\":281.94,\"y\":33.02}],\"uuid\":\"d0eca9ee-a24f-4f63-ab1d-c116df83df86\",\"value\":\"22u\",\"x\":281.94,\"y\":33.02}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "edit_schematic_component",
+    "args": {
+      "schematic": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_sch",
+      "reference": "C6",
+      "fields": {
+        "MPN": "CL10B104KO8NNNC",
+        "Manufacturer": "Samsung",
+        "DesignStatus": "INTERIM - incomplete controls and USB power qualification"
+      },
+      "field_placements": {
+        "MPN": {
+          "hide": true
+        },
+        "Manufacturer": {
+          "hide": true
+        },
+        "DesignStatus": {
+          "hide": true
+        }
+      }
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"changes\":[\"DesignStatus \u2192 INTERIM - incomplete controls and USB power qualification (0 updated, 1 added)\",\"MPN \u2192 CL10B104KO8NNNC (0 updated, 1 added)\",\"Manufacturer \u2192 Samsung (0 updated, 1 added)\",\"DesignStatus placement (1 unit(s))\",\"MPN placement (1 unit(s))\",\"Manufacturer placement (1 unit(s))\"],\"datasheet\":\"\",\"fields\":{\"Datasheet\":\"\",\"Description\":\"Unpolarized capacitor\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"Capacitor_SMD:C_0603_1608Metric\",\"MPN\":\"CL10B104KO8NNNC\",\"Manufacturer\":\"Samsung\",\"Reference\":\"C6\",\"Value\":\"100n\"},\"footprint\":\"Capacitor_SMD:C_0603_1608Metric\",\"lib_id\":\"Device:C\",\"mirror_x\":false,\"mirror_y\":false,\"reference\":\"C6\",\"rotation\":0.0,\"schematic\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\ESP-DubSiren-V2.kicad_sch\",\"unit_count\":1,\"units\":[{\"field_placements\":{\"Datasheet\":{\"hide\":true,\"rotation\":0.0,\"x\":299.72,\"y\":33.02},\"Description\":{\"hide\":true,\"rotation\":0.0,\"x\":299.72,\"y\":33.02},\"DesignStatus\":{\"hide\":true,\"rotation\":0.0,\"x\":299.72,\"y\":33.02},\"Footprint\":{\"hide\":true,\"rotation\":0.0,\"x\":299.72,\"y\":33.02},\"MPN\":{\"hide\":true,\"rotation\":0.0,\"x\":299.72,\"y\":33.02},\"Manufacturer\":{\"hide\":true,\"rotation\":0.0,\"x\":299.72,\"y\":33.02},\"Reference\":{\"hide\":false,\"rotation\":0.0,\"x\":300.355,\"y\":30.48},\"Value\":{\"hide\":false,\"rotation\":0.0,\"x\":300.355,\"y\":35.56}},\"fields\":{\"Datasheet\":\"\",\"Description\":\"Unpolarized capacitor\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"Capacitor_SMD:C_0603_1608Metric\",\"MPN\":\"CL10B104KO8NNNC\",\"Manufacturer\":\"Samsung\",\"Reference\":\"C6\",\"Value\":\"100n\"},\"instance_paths\":[[\"ESP-DubSiren-V2\",\"/2037f81d-e33e-4c09-903b-90b25af374ad\"]],\"instance_references\":[\"C6\"],\"lib_id\":\"Device:C\",\"mirror_x\":false,\"mirror_y\":false,\"rotation\":0.0,\"unit\":1,\"uuid\":\"977c8a54-9744-4a1b-be42-8cf3829bd4ff\",\"x\":299.72,\"y\":33.02}],\"uuid\":\"977c8a54-9744-4a1b-be42-8cf3829bd4ff\",\"value\":\"100n\",\"x\":299.72,\"y\":33.02}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "edit_schematic_component",
+    "args": {
+      "schematic": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_sch",
+      "reference": "C7",
+      "fields": {
+        "MPN": "CL10B105MO8NNWC",
+        "Manufacturer": "Samsung",
+        "DesignStatus": "INTERIM - incomplete controls and USB power qualification"
+      },
+      "field_placements": {
+        "MPN": {
+          "hide": true
+        },
+        "Manufacturer": {
+          "hide": true
+        },
+        "DesignStatus": {
+          "hide": true
+        }
+      }
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"changes\":[\"DesignStatus \u2192 INTERIM - incomplete controls and USB power qualification (0 updated, 1 added)\",\"MPN \u2192 CL10B105MO8NNWC (0 updated, 1 added)\",\"Manufacturer \u2192 Samsung (0 updated, 1 added)\",\"DesignStatus placement (1 unit(s))\",\"MPN placement (1 unit(s))\",\"Manufacturer placement (1 unit(s))\"],\"datasheet\":\"\",\"fields\":{\"Datasheet\":\"\",\"Description\":\"Unpolarized capacitor\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"Capacitor_SMD:C_0603_1608Metric\",\"MPN\":\"CL10B105MO8NNWC\",\"Manufacturer\":\"Samsung\",\"Reference\":\"C7\",\"Value\":\"1u\"},\"footprint\":\"Capacitor_SMD:C_0603_1608Metric\",\"lib_id\":\"Device:C\",\"mirror_x\":false,\"mirror_y\":false,\"reference\":\"C7\",\"rotation\":0.0,\"schematic\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\ESP-DubSiren-V2.kicad_sch\",\"unit_count\":1,\"units\":[{\"field_placements\":{\"Datasheet\":{\"hide\":true,\"rotation\":0.0,\"x\":266.7,\"y\":86.36},\"Description\":{\"hide\":true,\"rotation\":0.0,\"x\":266.7,\"y\":86.36},\"DesignStatus\":{\"hide\":true,\"rotation\":0.0,\"x\":266.7,\"y\":86.36},\"Footprint\":{\"hide\":true,\"rotation\":0.0,\"x\":266.7,\"y\":86.36},\"MPN\":{\"hide\":true,\"rotation\":0.0,\"x\":266.7,\"y\":86.36},\"Manufacturer\":{\"hide\":true,\"rotation\":0.0,\"x\":266.7,\"y\":86.36},\"Reference\":{\"hide\":false,\"rotation\":0.0,\"x\":267.335,\"y\":83.82},\"Value\":{\"hide\":false,\"rotation\":0.0,\"x\":267.335,\"y\":88.9}},\"fields\":{\"Datasheet\":\"\",\"Description\":\"Unpolarized capacitor\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"Capacitor_SMD:C_0603_1608Metric\",\"MPN\":\"CL10B105MO8NNWC\",\"Manufacturer\":\"Samsung\",\"Reference\":\"C7\",\"Value\":\"1u\"},\"instance_paths\":[[\"ESP-DubSiren-V2\",\"/2037f81d-e33e-4c09-903b-90b25af374ad\"]],\"instance_references\":[\"C7\"],\"lib_id\":\"Device:C\",\"mirror_x\":false,\"mirror_y\":false,\"rotation\":0.0,\"unit\":1,\"uuid\":\"1c754a9f-926c-4b42-9adf-b788b79c959c\",\"x\":266.7,\"y\":86.36}],\"uuid\":\"1c754a9f-926c-4b42-9adf-b788b79c959c\",\"value\":\"1u\",\"x\":266.7,\"y\":86.36}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "edit_schematic_component",
+    "args": {
+      "schematic": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_sch",
+      "reference": "C8",
+      "fields": {
+        "MPN": "CL10B104KO8NNNC",
+        "Manufacturer": "Samsung",
+        "DesignStatus": "INTERIM - incomplete controls and USB power qualification"
+      },
+      "field_placements": {
+        "MPN": {
+          "hide": true
+        },
+        "Manufacturer": {
+          "hide": true
+        },
+        "DesignStatus": {
+          "hide": true
+        }
+      }
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"changes\":[\"DesignStatus \u2192 INTERIM - incomplete controls and USB power qualification (0 updated, 1 added)\",\"MPN \u2192 CL10B104KO8NNNC (0 updated, 1 added)\",\"Manufacturer \u2192 Samsung (0 updated, 1 added)\",\"DesignStatus placement (1 unit(s))\",\"MPN placement (1 unit(s))\",\"Manufacturer placement (1 unit(s))\"],\"datasheet\":\"\",\"fields\":{\"Datasheet\":\"\",\"Description\":\"Unpolarized capacitor\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"Capacitor_SMD:C_0603_1608Metric\",\"MPN\":\"CL10B104KO8NNNC\",\"Manufacturer\":\"Samsung\",\"Reference\":\"C8\",\"Value\":\"100n\"},\"footprint\":\"Capacitor_SMD:C_0603_1608Metric\",\"lib_id\":\"Device:C\",\"mirror_x\":false,\"mirror_y\":false,\"reference\":\"C8\",\"rotation\":0.0,\"schematic\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\ESP-DubSiren-V2.kicad_sch\",\"unit_count\":1,\"units\":[{\"field_placements\":{\"Datasheet\":{\"hide\":true,\"rotation\":0.0,\"x\":269.24,\"y\":195.58},\"Description\":{\"hide\":true,\"rotation\":0.0,\"x\":269.24,\"y\":195.58},\"DesignStatus\":{\"hide\":true,\"rotation\":0.0,\"x\":269.24,\"y\":195.58},\"Footprint\":{\"hide\":true,\"rotation\":0.0,\"x\":269.24,\"y\":195.58},\"MPN\":{\"hide\":true,\"rotation\":0.0,\"x\":269.24,\"y\":195.58},\"Manufacturer\":{\"hide\":true,\"rotation\":0.0,\"x\":269.24,\"y\":195.58},\"Reference\":{\"hide\":false,\"rotation\":0.0,\"x\":269.875,\"y\":193.04},\"Value\":{\"hide\":false,\"rotation\":0.0,\"x\":269.875,\"y\":198.12}},\"fields\":{\"Datasheet\":\"\",\"Description\":\"Unpolarized capacitor\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"Capacitor_SMD:C_0603_1608Metric\",\"MPN\":\"CL10B104KO8NNNC\",\"Manufacturer\":\"Samsung\",\"Reference\":\"C8\",\"Value\":\"100n\"},\"instance_paths\":[[\"ESP-DubSiren-V2\",\"/2037f81d-e33e-4c09-903b-90b25af374ad\"]],\"instance_references\":[\"C8\"],\"lib_id\":\"Device:C\",\"mirror_x\":false,\"mirror_y\":false,\"rotation\":0.0,\"unit\":1,\"uuid\":\"b3f6900f-88e9-49d5-b140-d29b05f4d04c\",\"x\":269.24,\"y\":195.58}],\"uuid\":\"b3f6900f-88e9-49d5-b140-d29b05f4d04c\",\"value\":\"100n\",\"x\":269.24,\"y\":195.58}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "edit_schematic_component",
+    "args": {
+      "schematic": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_sch",
+      "reference": "C9",
+      "fields": {
+        "MPN": "CL10B104KO8NNNC",
+        "Manufacturer": "Samsung",
+        "DesignStatus": "INTERIM - incomplete controls and USB power qualification"
+      },
+      "field_placements": {
+        "MPN": {
+          "hide": true
+        },
+        "Manufacturer": {
+          "hide": true
+        },
+        "DesignStatus": {
+          "hide": true
+        }
+      }
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"changes\":[\"DesignStatus \u2192 INTERIM - incomplete controls and USB power qualification (0 updated, 1 added)\",\"MPN \u2192 CL10B104KO8NNNC (0 updated, 1 added)\",\"Manufacturer \u2192 Samsung (0 updated, 1 added)\",\"DesignStatus placement (1 unit(s))\",\"MPN placement (1 unit(s))\",\"Manufacturer placement (1 unit(s))\"],\"datasheet\":\"\",\"fields\":{\"Datasheet\":\"\",\"Description\":\"Unpolarized capacitor\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"Capacitor_SMD:C_0603_1608Metric\",\"MPN\":\"CL10B104KO8NNNC\",\"Manufacturer\":\"Samsung\",\"Reference\":\"C9\",\"Value\":\"100n\"},\"footprint\":\"Capacitor_SMD:C_0603_1608Metric\",\"lib_id\":\"Device:C\",\"mirror_x\":false,\"mirror_y\":false,\"reference\":\"C9\",\"rotation\":0.0,\"schematic\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\ESP-DubSiren-V2.kicad_sch\",\"unit_count\":1,\"units\":[{\"field_placements\":{\"Datasheet\":{\"hide\":true,\"rotation\":0.0,\"x\":340.36,\"y\":228.6},\"Description\":{\"hide\":true,\"rotation\":0.0,\"x\":340.36,\"y\":228.6},\"DesignStatus\":{\"hide\":true,\"rotation\":0.0,\"x\":340.36,\"y\":228.6},\"Footprint\":{\"hide\":true,\"rotation\":0.0,\"x\":340.36,\"y\":228.6},\"MPN\":{\"hide\":true,\"rotation\":0.0,\"x\":340.36,\"y\":228.6},\"Manufacturer\":{\"hide\":true,\"rotation\":0.0,\"x\":340.36,\"y\":228.6},\"Reference\":{\"hide\":false,\"rotation\":0.0,\"x\":340.995,\"y\":226.06},\"Value\":{\"hide\":false,\"rotation\":0.0,\"x\":340.995,\"y\":231.14}},\"fields\":{\"Datasheet\":\"\",\"Description\":\"Unpolarized capacitor\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"Capacitor_SMD:C_0603_1608Metric\",\"MPN\":\"CL10B104KO8NNNC\",\"Manufacturer\":\"Samsung\",\"Reference\":\"C9\",\"Value\":\"100n\"},\"instance_paths\":[[\"ESP-DubSiren-V2\",\"/2037f81d-e33e-4c09-903b-90b25af374ad\"]],\"instance_references\":[\"C9\"],\"lib_id\":\"Device:C\",\"mirror_x\":false,\"mirror_y\":false,\"rotation\":0.0,\"unit\":1,\"uuid\":\"16f62888-9582-459d-ad2b-52f7ec680874\",\"x\":340.36,\"y\":228.6}],\"uuid\":\"16f62888-9582-459d-ad2b-52f7ec680874\",\"value\":\"100n\",\"x\":340.36,\"y\":228.6}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "edit_schematic_component",
+    "args": {
+      "schematic": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_sch",
+      "reference": "TP1",
+      "fields": {
+        "MPN": "PCB test pad",
+        "Manufacturer": "PCB",
+        "DesignStatus": "INTERIM - incomplete controls and USB power qualification"
+      },
+      "field_placements": {
+        "MPN": {
+          "hide": true
+        },
+        "Manufacturer": {
+          "hide": true
+        },
+        "DesignStatus": {
+          "hide": true
+        }
+      }
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"changes\":[\"DesignStatus \u2192 INTERIM - incomplete controls and USB power qualification (0 updated, 1 added)\",\"MPN \u2192 PCB test pad (0 updated, 1 added)\",\"Manufacturer \u2192 PCB (0 updated, 1 added)\",\"DesignStatus placement (1 unit(s))\",\"MPN placement (1 unit(s))\",\"Manufacturer placement (1 unit(s))\"],\"datasheet\":\"\",\"fields\":{\"Datasheet\":\"\",\"Description\":\"test point\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"TestPoint:TestPoint_Pad_D1.0mm\",\"MPN\":\"PCB test pad\",\"Manufacturer\":\"PCB\",\"Reference\":\"TP1\",\"Value\":\"+5V\"},\"footprint\":\"TestPoint:TestPoint_Pad_D1.0mm\",\"lib_id\":\"Connector:TestPoint\",\"mirror_x\":false,\"mirror_y\":false,\"reference\":\"TP1\",\"rotation\":0.0,\"schematic\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\ESP-DubSiren-V2.kicad_sch\",\"unit_count\":1,\"units\":[{\"field_placements\":{\"Datasheet\":{\"hide\":true,\"rotation\":0.0,\"x\":134.62,\"y\":127.0},\"Description\":{\"hide\":true,\"rotation\":0.0,\"x\":134.62,\"y\":127.0},\"DesignStatus\":{\"hide\":true,\"rotation\":0.0,\"x\":134.62,\"y\":127.0},\"Footprint\":{\"hide\":true,\"rotation\":0.0,\"x\":134.62,\"y\":127.0},\"MPN\":{\"hide\":true,\"rotation\":0.0,\"x\":134.62,\"y\":127.0},\"Manufacturer\":{\"hide\":true,\"rotation\":0.0,\"x\":134.62,\"y\":127.0},\"Reference\":{\"hide\":false,\"rotation\":0.0,\"x\":134.62,\"y\":120.142},\"Value\":{\"hide\":false,\"rotation\":0.0,\"x\":134.62,\"y\":121.92}},\"fields\":{\"Datasheet\":\"\",\"Description\":\"test point\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"TestPoint:TestPoint_Pad_D1.0mm\",\"MPN\":\"PCB test pad\",\"Manufacturer\":\"PCB\",\"Reference\":\"TP1\",\"Value\":\"+5V\"},\"instance_paths\":[[\"ESP-DubSiren-V2\",\"/2037f81d-e33e-4c09-903b-90b25af374ad\"]],\"instance_references\":[\"TP1\"],\"lib_id\":\"Connector:TestPoint\",\"mirror_x\":false,\"mirror_y\":false,\"rotation\":0.0,\"unit\":1,\"uuid\":\"acb7e464-59c5-4929-9ae7-ba5f3fa5da3c\",\"x\":134.62,\"y\":127.0}],\"uuid\":\"acb7e464-59c5-4929-9ae7-ba5f3fa5da3c\",\"value\":\"+5V\",\"x\":134.62,\"y\":127.0}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "edit_schematic_component",
+    "args": {
+      "schematic": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_sch",
+      "reference": "TP2",
+      "fields": {
+        "MPN": "PCB test pad",
+        "Manufacturer": "PCB",
+        "DesignStatus": "INTERIM - incomplete controls and USB power qualification"
+      },
+      "field_placements": {
+        "MPN": {
+          "hide": true
+        },
+        "Manufacturer": {
+          "hide": true
+        },
+        "DesignStatus": {
+          "hide": true
+        }
+      }
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"changes\":[\"DesignStatus \u2192 INTERIM - incomplete controls and USB power qualification (0 updated, 1 added)\",\"MPN \u2192 PCB test pad (0 updated, 1 added)\",\"Manufacturer \u2192 PCB (0 updated, 1 added)\",\"DesignStatus placement (1 unit(s))\",\"MPN placement (1 unit(s))\",\"Manufacturer placement (1 unit(s))\"],\"datasheet\":\"\",\"fields\":{\"Datasheet\":\"\",\"Description\":\"test point\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"TestPoint:TestPoint_Pad_D1.0mm\",\"MPN\":\"PCB test pad\",\"Manufacturer\":\"PCB\",\"Reference\":\"TP2\",\"Value\":\"+3V3\"},\"footprint\":\"TestPoint:TestPoint_Pad_D1.0mm\",\"lib_id\":\"Connector:TestPoint\",\"mirror_x\":false,\"mirror_y\":false,\"reference\":\"TP2\",\"rotation\":0.0,\"schematic\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\ESP-DubSiren-V2.kicad_sch\",\"unit_count\":1,\"units\":[{\"field_placements\":{\"Datasheet\":{\"hide\":true,\"rotation\":0.0,\"x\":160.02,\"y\":127.0},\"Description\":{\"hide\":true,\"rotation\":0.0,\"x\":160.02,\"y\":127.0},\"DesignStatus\":{\"hide\":true,\"rotation\":0.0,\"x\":160.02,\"y\":127.0},\"Footprint\":{\"hide\":true,\"rotation\":0.0,\"x\":160.02,\"y\":127.0},\"MPN\":{\"hide\":true,\"rotation\":0.0,\"x\":160.02,\"y\":127.0},\"Manufacturer\":{\"hide\":true,\"rotation\":0.0,\"x\":160.02,\"y\":127.0},\"Reference\":{\"hide\":false,\"rotation\":0.0,\"x\":160.02,\"y\":120.142},\"Value\":{\"hide\":false,\"rotation\":0.0,\"x\":160.02,\"y\":121.92}},\"fields\":{\"Datasheet\":\"\",\"Description\":\"test point\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"TestPoint:TestPoint_Pad_D1.0mm\",\"MPN\":\"PCB test pad\",\"Manufacturer\":\"PCB\",\"Reference\":\"TP2\",\"Value\":\"+3V3\"},\"instance_paths\":[[\"ESP-DubSiren-V2\",\"/2037f81d-e33e-4c09-903b-90b25af374ad\"]],\"instance_references\":[\"TP2\"],\"lib_id\":\"Connector:TestPoint\",\"mirror_x\":false,\"mirror_y\":false,\"rotation\":0.0,\"unit\":1,\"uuid\":\"65339695-26bc-410e-89da-ec4679801a3a\",\"x\":160.02,\"y\":127.0}],\"uuid\":\"65339695-26bc-410e-89da-ec4679801a3a\",\"value\":\"+3V3\",\"x\":160.02,\"y\":127.0}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "edit_schematic_component",
+    "args": {
+      "schematic": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_sch",
+      "reference": "TP3",
+      "fields": {
+        "MPN": "PCB test pad",
+        "Manufacturer": "PCB",
+        "DesignStatus": "INTERIM - incomplete controls and USB power qualification"
+      },
+      "field_placements": {
+        "MPN": {
+          "hide": true
+        },
+        "Manufacturer": {
+          "hide": true
+        },
+        "DesignStatus": {
+          "hide": true
+        }
+      }
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"changes\":[\"DesignStatus \u2192 INTERIM - incomplete controls and USB power qualification (0 updated, 1 added)\",\"MPN \u2192 PCB test pad (0 updated, 1 added)\",\"Manufacturer \u2192 PCB (0 updated, 1 added)\",\"DesignStatus placement (1 unit(s))\",\"MPN placement (1 unit(s))\",\"Manufacturer placement (1 unit(s))\"],\"datasheet\":\"\",\"fields\":{\"Datasheet\":\"\",\"Description\":\"test point\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"TestPoint:TestPoint_Pad_D1.0mm\",\"MPN\":\"PCB test pad\",\"Manufacturer\":\"PCB\",\"Reference\":\"TP3\",\"Value\":\"GND\"},\"footprint\":\"TestPoint:TestPoint_Pad_D1.0mm\",\"lib_id\":\"Connector:TestPoint\",\"mirror_x\":false,\"mirror_y\":false,\"reference\":\"TP3\",\"rotation\":0.0,\"schematic\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\ESP-DubSiren-V2.kicad_sch\",\"unit_count\":1,\"units\":[{\"field_placements\":{\"Datasheet\":{\"hide\":true,\"rotation\":0.0,\"x\":185.42,\"y\":127.0},\"Description\":{\"hide\":true,\"rotation\":0.0,\"x\":185.42,\"y\":127.0},\"DesignStatus\":{\"hide\":true,\"rotation\":0.0,\"x\":185.42,\"y\":127.0},\"Footprint\":{\"hide\":true,\"rotation\":0.0,\"x\":185.42,\"y\":127.0},\"MPN\":{\"hide\":true,\"rotation\":0.0,\"x\":185.42,\"y\":127.0},\"Manufacturer\":{\"hide\":true,\"rotation\":0.0,\"x\":185.42,\"y\":127.0},\"Reference\":{\"hide\":false,\"rotation\":0.0,\"x\":185.42,\"y\":120.142},\"Value\":{\"hide\":false,\"rotation\":0.0,\"x\":185.42,\"y\":121.92}},\"fields\":{\"Datasheet\":\"\",\"Description\":\"test point\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"TestPoint:TestPoint_Pad_D1.0mm\",\"MPN\":\"PCB test pad\",\"Manufacturer\":\"PCB\",\"Reference\":\"TP3\",\"Value\":\"GND\"},\"instance_paths\":[[\"ESP-DubSiren-V2\",\"/2037f81d-e33e-4c09-903b-90b25af374ad\"]],\"instance_references\":[\"TP3\"],\"lib_id\":\"Connector:TestPoint\",\"mirror_x\":false,\"mirror_y\":false,\"rotation\":0.0,\"unit\":1,\"uuid\":\"338042f8-7bbd-4b97-9e9c-e99c32c07bd8\",\"x\":185.42,\"y\":127.0}],\"uuid\":\"338042f8-7bbd-4b97-9e9c-e99c32c07bd8\",\"value\":\"GND\",\"x\":185.42,\"y\":127.0}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "edit_schematic_component",
+    "args": {
+      "schematic": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_sch",
+      "reference": "TP4",
+      "fields": {
+        "MPN": "PCB test pad",
+        "Manufacturer": "PCB",
+        "DesignStatus": "INTERIM - incomplete controls and USB power qualification"
+      },
+      "field_placements": {
+        "MPN": {
+          "hide": true
+        },
+        "Manufacturer": {
+          "hide": true
+        },
+        "DesignStatus": {
+          "hide": true
+        }
+      }
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"changes\":[\"DesignStatus \u2192 INTERIM - incomplete controls and USB power qualification (0 updated, 1 added)\",\"MPN \u2192 PCB test pad (0 updated, 1 added)\",\"Manufacturer \u2192 PCB (0 updated, 1 added)\",\"DesignStatus placement (1 unit(s))\",\"MPN placement (1 unit(s))\",\"Manufacturer placement (1 unit(s))\"],\"datasheet\":\"\",\"fields\":{\"Datasheet\":\"\",\"Description\":\"test point\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"TestPoint:TestPoint_Pad_D1.0mm\",\"MPN\":\"PCB test pad\",\"Manufacturer\":\"PCB\",\"Reference\":\"TP4\",\"Value\":\"ADC_MUX\"},\"footprint\":\"TestPoint:TestPoint_Pad_D1.0mm\",\"lib_id\":\"Connector:TestPoint\",\"mirror_x\":false,\"mirror_y\":false,\"reference\":\"TP4\",\"rotation\":0.0,\"schematic\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\ESP-DubSiren-V2.kicad_sch\",\"unit_count\":1,\"units\":[{\"field_placements\":{\"Datasheet\":{\"hide\":true,\"rotation\":0.0,\"x\":312.42,\"y\":264.16},\"Description\":{\"hide\":true,\"rotation\":0.0,\"x\":312.42,\"y\":264.16},\"DesignStatus\":{\"hide\":true,\"rotation\":0.0,\"x\":312.42,\"y\":264.16},\"Footprint\":{\"hide\":true,\"rotation\":0.0,\"x\":312.42,\"y\":264.16},\"MPN\":{\"hide\":true,\"rotation\":0.0,\"x\":312.42,\"y\":264.16},\"Manufacturer\":{\"hide\":true,\"rotation\":0.0,\"x\":312.42,\"y\":264.16},\"Reference\":{\"hide\":false,\"rotation\":0.0,\"x\":312.42,\"y\":257.302},\"Value\":{\"hide\":false,\"rotation\":0.0,\"x\":312.42,\"y\":259.08}},\"fields\":{\"Datasheet\":\"\",\"Description\":\"test point\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"TestPoint:TestPoint_Pad_D1.0mm\",\"MPN\":\"PCB test pad\",\"Manufacturer\":\"PCB\",\"Reference\":\"TP4\",\"Value\":\"ADC_MUX\"},\"instance_paths\":[[\"ESP-DubSiren-V2\",\"/2037f81d-e33e-4c09-903b-90b25af374ad\"]],\"instance_references\":[\"TP4\"],\"lib_id\":\"Connector:TestPoint\",\"mirror_x\":false,\"mirror_y\":false,\"rotation\":0.0,\"unit\":1,\"uuid\":\"f1aec80b-c573-4d89-a822-c248913fe856\",\"x\":312.42,\"y\":264.16}],\"uuid\":\"f1aec80b-c573-4d89-a822-c248913fe856\",\"value\":\"ADC_MUX\",\"x\":312.42,\"y\":264.16}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "edit_schematic_component",
+    "args": {
+      "schematic": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_sch",
+      "reference": "TP5",
+      "fields": {
+        "MPN": "PCB test pad",
+        "Manufacturer": "PCB",
+        "DesignStatus": "INTERIM - incomplete controls and USB power qualification"
+      },
+      "field_placements": {
+        "MPN": {
+          "hide": true
+        },
+        "Manufacturer": {
+          "hide": true
+        },
+        "DesignStatus": {
+          "hide": true
+        }
+      }
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"changes\":[\"DesignStatus \u2192 INTERIM - incomplete controls and USB power qualification (0 updated, 1 added)\",\"MPN \u2192 PCB test pad (0 updated, 1 added)\",\"Manufacturer \u2192 PCB (0 updated, 1 added)\",\"DesignStatus placement (1 unit(s))\",\"MPN placement (1 unit(s))\",\"Manufacturer placement (1 unit(s))\"],\"datasheet\":\"\",\"fields\":{\"Datasheet\":\"\",\"Description\":\"test point\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"TestPoint:TestPoint_Pad_D1.0mm\",\"MPN\":\"PCB test pad\",\"Manufacturer\":\"PCB\",\"Reference\":\"TP5\",\"Value\":\"AUDIO_MONO\"},\"footprint\":\"TestPoint:TestPoint_Pad_D1.0mm\",\"lib_id\":\"Connector:TestPoint\",\"mirror_x\":false,\"mirror_y\":false,\"reference\":\"TP5\",\"rotation\":0.0,\"schematic\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\ESP-DubSiren-V2.kicad_sch\",\"unit_count\":1,\"units\":[{\"field_placements\":{\"Datasheet\":{\"hide\":true,\"rotation\":0.0,\"x\":533.4,\"y\":152.4},\"Description\":{\"hide\":true,\"rotation\":0.0,\"x\":533.4,\"y\":152.4},\"DesignStatus\":{\"hide\":true,\"rotation\":0.0,\"x\":533.4,\"y\":152.4},\"Footprint\":{\"hide\":true,\"rotation\":0.0,\"x\":533.4,\"y\":152.4},\"MPN\":{\"hide\":true,\"rotation\":0.0,\"x\":533.4,\"y\":152.4},\"Manufacturer\":{\"hide\":true,\"rotation\":0.0,\"x\":533.4,\"y\":152.4},\"Reference\":{\"hide\":false,\"rotation\":0.0,\"x\":533.4,\"y\":145.542},\"Value\":{\"hide\":false,\"rotation\":0.0,\"x\":533.4,\"y\":147.32}},\"fields\":{\"Datasheet\":\"\",\"Description\":\"test point\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"TestPoint:TestPoint_Pad_D1.0mm\",\"MPN\":\"PCB test pad\",\"Manufacturer\":\"PCB\",\"Reference\":\"TP5\",\"Value\":\"AUDIO_MONO\"},\"instance_paths\":[[\"ESP-DubSiren-V2\",\"/2037f81d-e33e-4c09-903b-90b25af374ad\"]],\"instance_references\":[\"TP5\"],\"lib_id\":\"Connector:TestPoint\",\"mirror_x\":false,\"mirror_y\":false,\"rotation\":0.0,\"unit\":1,\"uuid\":\"2cf02d1d-9a02-4651-a3b1-6ecc52405324\",\"x\":533.4,\"y\":152.4}],\"uuid\":\"2cf02d1d-9a02-4651-a3b1-6ecc52405324\",\"value\":\"AUDIO_MONO\",\"x\":533.4,\"y\":152.4}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "edit_schematic_component",
+    "args": {
+      "schematic": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_sch",
+      "reference": "TP6",
+      "fields": {
+        "MPN": "PCB test pad",
+        "Manufacturer": "PCB",
+        "DesignStatus": "INTERIM - incomplete controls and USB power qualification"
+      },
+      "field_placements": {
+        "MPN": {
+          "hide": true
+        },
+        "Manufacturer": {
+          "hide": true
+        },
+        "DesignStatus": {
+          "hide": true
+        }
+      }
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"changes\":[\"DesignStatus \u2192 INTERIM - incomplete controls and USB power qualification (0 updated, 1 added)\",\"MPN \u2192 PCB test pad (0 updated, 1 added)\",\"Manufacturer \u2192 PCB (0 updated, 1 added)\",\"DesignStatus placement (1 unit(s))\",\"MPN placement (1 unit(s))\",\"Manufacturer placement (1 unit(s))\"],\"datasheet\":\"\",\"fields\":{\"Datasheet\":\"\",\"Description\":\"test point\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"TestPoint:TestPoint_Pad_D1.0mm\",\"MPN\":\"PCB test pad\",\"Manufacturer\":\"PCB\",\"Reference\":\"TP6\",\"Value\":\"UART_TX\"},\"footprint\":\"TestPoint:TestPoint_Pad_D1.0mm\",\"lib_id\":\"Connector:TestPoint\",\"mirror_x\":false,\"mirror_y\":false,\"reference\":\"TP6\",\"rotation\":0.0,\"schematic\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\ESP-DubSiren-V2.kicad_sch\",\"unit_count\":1,\"units\":[{\"field_placements\":{\"Datasheet\":{\"hide\":true,\"rotation\":0.0,\"x\":370.84,\"y\":116.84},\"Description\":{\"hide\":true,\"rotation\":0.0,\"x\":370.84,\"y\":116.84},\"DesignStatus\":{\"hide\":true,\"rotation\":0.0,\"x\":370.84,\"y\":116.84},\"Footprint\":{\"hide\":true,\"rotation\":0.0,\"x\":370.84,\"y\":116.84},\"MPN\":{\"hide\":true,\"rotation\":0.0,\"x\":370.84,\"y\":116.84},\"Manufacturer\":{\"hide\":true,\"rotation\":0.0,\"x\":370.84,\"y\":116.84},\"Reference\":{\"hide\":false,\"rotation\":0.0,\"x\":370.84,\"y\":109.982},\"Value\":{\"hide\":false,\"rotation\":0.0,\"x\":370.84,\"y\":111.76}},\"fields\":{\"Datasheet\":\"\",\"Description\":\"test point\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"TestPoint:TestPoint_Pad_D1.0mm\",\"MPN\":\"PCB test pad\",\"Manufacturer\":\"PCB\",\"Reference\":\"TP6\",\"Value\":\"UART_TX\"},\"instance_paths\":[[\"ESP-DubSiren-V2\",\"/2037f81d-e33e-4c09-903b-90b25af374ad\"]],\"instance_references\":[\"TP6\"],\"lib_id\":\"Connector:TestPoint\",\"mirror_x\":false,\"mirror_y\":false,\"rotation\":0.0,\"unit\":1,\"uuid\":\"967955b2-0f6a-49f6-9f00-8eeb37527f35\",\"x\":370.84,\"y\":116.84}],\"uuid\":\"967955b2-0f6a-49f6-9f00-8eeb37527f35\",\"value\":\"UART_TX\",\"x\":370.84,\"y\":116.84}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "edit_schematic_component",
+    "args": {
+      "schematic": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_sch",
+      "reference": "TP7",
+      "fields": {
+        "MPN": "PCB test pad",
+        "Manufacturer": "PCB",
+        "DesignStatus": "INTERIM - incomplete controls and USB power qualification"
+      },
+      "field_placements": {
+        "MPN": {
+          "hide": true
+        },
+        "Manufacturer": {
+          "hide": true
+        },
+        "DesignStatus": {
+          "hide": true
+        }
+      }
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"changes\":[\"DesignStatus \u2192 INTERIM - incomplete controls and USB power qualification (0 updated, 1 added)\",\"MPN \u2192 PCB test pad (0 updated, 1 added)\",\"Manufacturer \u2192 PCB (0 updated, 1 added)\",\"DesignStatus placement (1 unit(s))\",\"MPN placement (1 unit(s))\",\"Manufacturer placement (1 unit(s))\"],\"datasheet\":\"\",\"fields\":{\"Datasheet\":\"\",\"Description\":\"test point\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"TestPoint:TestPoint_Pad_D1.0mm\",\"MPN\":\"PCB test pad\",\"Manufacturer\":\"PCB\",\"Reference\":\"TP7\",\"Value\":\"UART_RX\"},\"footprint\":\"TestPoint:TestPoint_Pad_D1.0mm\",\"lib_id\":\"Connector:TestPoint\",\"mirror_x\":false,\"mirror_y\":false,\"reference\":\"TP7\",\"rotation\":0.0,\"schematic\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\ESP-DubSiren-V2.kicad_sch\",\"unit_count\":1,\"units\":[{\"field_placements\":{\"Datasheet\":{\"hide\":true,\"rotation\":0.0,\"x\":370.84,\"y\":134.62},\"Description\":{\"hide\":true,\"rotation\":0.0,\"x\":370.84,\"y\":134.62},\"DesignStatus\":{\"hide\":true,\"rotation\":0.0,\"x\":370.84,\"y\":134.62},\"Footprint\":{\"hide\":true,\"rotation\":0.0,\"x\":370.84,\"y\":134.62},\"MPN\":{\"hide\":true,\"rotation\":0.0,\"x\":370.84,\"y\":134.62},\"Manufacturer\":{\"hide\":true,\"rotation\":0.0,\"x\":370.84,\"y\":134.62},\"Reference\":{\"hide\":false,\"rotation\":0.0,\"x\":370.84,\"y\":127.762},\"Value\":{\"hide\":false,\"rotation\":0.0,\"x\":370.84,\"y\":129.54}},\"fields\":{\"Datasheet\":\"\",\"Description\":\"test point\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"TestPoint:TestPoint_Pad_D1.0mm\",\"MPN\":\"PCB test pad\",\"Manufacturer\":\"PCB\",\"Reference\":\"TP7\",\"Value\":\"UART_RX\"},\"instance_paths\":[[\"ESP-DubSiren-V2\",\"/2037f81d-e33e-4c09-903b-90b25af374ad\"]],\"instance_references\":[\"TP7\"],\"lib_id\":\"Connector:TestPoint\",\"mirror_x\":false,\"mirror_y\":false,\"rotation\":0.0,\"unit\":1,\"uuid\":\"55892c47-af5f-4c16-ac95-d5085aeb3cca\",\"x\":370.84,\"y\":134.62}],\"uuid\":\"55892c47-af5f-4c16-ac95-d5085aeb3cca\",\"value\":\"UART_RX\",\"x\":370.84,\"y\":134.62}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "edit_schematic_component",
+    "args": {
+      "schematic": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_sch",
+      "reference": "J1",
+      "fields": {
+        "MPN": "USB4085-GF-A",
+        "Manufacturer": "GCT",
+        "DesignStatus": "INTERIM - incomplete controls and USB power qualification"
+      },
+      "field_placements": {
+        "MPN": {
+          "hide": true
+        },
+        "Manufacturer": {
+          "hide": true
+        },
+        "DesignStatus": {
+          "hide": true
+        }
+      }
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"changes\":[\"DesignStatus \u2192 INTERIM - incomplete controls and USB power qualification (0 updated, 1 added)\",\"MPN \u2192 USB4085-GF-A (0 updated, 1 added)\",\"Manufacturer \u2192 GCT (0 updated, 1 added)\",\"DesignStatus placement (1 unit(s))\",\"MPN placement (1 unit(s))\",\"Manufacturer placement (1 unit(s))\"],\"datasheet\":\"https://www.usb.org/sites/default/files/documents/usb_type-c.zip\",\"fields\":{\"Datasheet\":\"https://www.usb.org/sites/default/files/documents/usb_type-c.zip\",\"Description\":\"USB 2.0-only 16P Type-C Receptacle connector\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"Connector_USB:USB_C_Receptacle_GCT_USB4085\",\"MPN\":\"USB4085-GF-A\",\"Manufacturer\":\"GCT\",\"Reference\":\"J1\",\"Value\":\"USB4085-GF-A\"},\"footprint\":\"Connector_USB:USB_C_Receptacle_GCT_USB4085\",\"lib_id\":\"Connector:USB_C_Receptacle_USB2.0_16P\",\"mirror_x\":false,\"mirror_y\":false,\"reference\":\"J1\",\"rotation\":0.0,\"schematic\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\ESP-DubSiren-V2.kicad_sch\",\"unit_count\":1,\"units\":[{\"field_placements\":{\"Datasheet\":{\"hide\":true,\"rotation\":0.0,\"x\":30.48,\"y\":55.88},\"Description\":{\"hide\":true,\"rotation\":0.0,\"x\":30.48,\"y\":55.88},\"DesignStatus\":{\"hide\":true,\"rotation\":0.0,\"x\":30.48,\"y\":55.88},\"Footprint\":{\"hide\":true,\"rotation\":0.0,\"x\":30.48,\"y\":55.88},\"MPN\":{\"hide\":true,\"rotation\":0.0,\"x\":30.48,\"y\":55.88},\"Manufacturer\":{\"hide\":true,\"rotation\":0.0,\"x\":30.48,\"y\":55.88},\"Reference\":{\"hide\":false,\"rotation\":0.0,\"x\":30.48,\"y\":33.655},\"Value\":{\"hide\":false,\"rotation\":0.0,\"x\":30.48,\"y\":36.195}},\"fields\":{\"Datasheet\":\"https://www.usb.org/sites/default/files/documents/usb_type-c.zip\",\"Description\":\"USB 2.0-only 16P Type-C Receptacle connector\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"Connector_USB:USB_C_Receptacle_GCT_USB4085\",\"MPN\":\"USB4085-GF-A\",\"Manufacturer\":\"GCT\",\"Reference\":\"J1\",\"Value\":\"USB4085-GF-A\"},\"instance_paths\":[[\"ESP-DubSiren-V2\",\"/2037f81d-e33e-4c09-903b-90b25af374ad\"]],\"instance_references\":[\"J1\"],\"lib_id\":\"Connector:USB_C_Receptacle_USB2.0_16P\",\"mirror_x\":false,\"mirror_y\":false,\"rotation\":0.0,\"unit\":1,\"uuid\":\"295ca065-6f6a-47c1-840d-982c05701a2b\",\"x\":30.48,\"y\":55.88}],\"uuid\":\"295ca065-6f6a-47c1-840d-982c05701a2b\",\"value\":\"USB4085-GF-A\",\"x\":30.48,\"y\":55.88}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "edit_schematic_component",
+    "args": {
+      "schematic": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_sch",
+      "reference": "J2",
+      "fields": {
+        "MPN": "RCJ-2123",
+        "Manufacturer": "Same Sky",
+        "DesignStatus": "INTERIM - incomplete controls and USB power qualification"
+      },
+      "field_placements": {
+        "MPN": {
+          "hide": true
+        },
+        "Manufacturer": {
+          "hide": true
+        },
+        "DesignStatus": {
+          "hide": true
+        }
+      }
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"changes\":[\"DesignStatus \u2192 INTERIM - incomplete controls and USB power qualification (0 updated, 1 added)\",\"MPN \u2192 RCJ-2123 (0 updated, 1 added)\",\"Manufacturer \u2192 Same Sky (0 updated, 1 added)\",\"DesignStatus placement (1 unit(s))\",\"MPN placement (1 unit(s))\",\"Manufacturer placement (1 unit(s))\"],\"datasheet\":\"https://www.sameskydevices.com/product/resource/rcj-21.pdf\",\"fields\":{\"Datasheet\":\"https://www.sameskydevices.com/product/resource/rcj-21.pdf\",\"Description\":\"\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"ESP-DubSiren-V2-Mechanical:SameSky_RCJ-2123\",\"MPN\":\"RCJ-2123\",\"Manufacturer\":\"Same Sky\",\"Reference\":\"J2\",\"Value\":\"RCJ-2123\"},\"footprint\":\"ESP-DubSiren-V2-Mechanical:SameSky_RCJ-2123\",\"lib_id\":\"ESP-DubSiren-V2:RCJ-2123\",\"mirror_x\":false,\"mirror_y\":false,\"reference\":\"J2\",\"rotation\":0.0,\"schematic\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\ESP-DubSiren-V2.kicad_sch\",\"unit_count\":1,\"units\":[{\"field_placements\":{\"Datasheet\":{\"hide\":true,\"rotation\":0.0,\"x\":566.42,\"y\":127.0},\"Description\":{\"hide\":true,\"rotation\":0.0,\"x\":566.42,\"y\":127.0},\"DesignStatus\":{\"hide\":true,\"rotation\":0.0,\"x\":566.42,\"y\":127.0},\"Footprint\":{\"hide\":true,\"rotation\":0.0,\"x\":566.42,\"y\":127.0},\"MPN\":{\"hide\":true,\"rotation\":0.0,\"x\":566.42,\"y\":127.0},\"Manufacturer\":{\"hide\":true,\"rotation\":0.0,\"x\":566.42,\"y\":127.0},\"Reference\":{\"hide\":false,\"rotation\":0.0,\"x\":554.99,\"y\":111.76},\"Value\":{\"hide\":false,\"rotation\":0.0,\"x\":554.99,\"y\":144.78}},\"fields\":{\"Datasheet\":\"https://www.sameskydevices.com/product/resource/rcj-21.pdf\",\"Description\":\"\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"ESP-DubSiren-V2-Mechanical:SameSky_RCJ-2123\",\"MPN\":\"RCJ-2123\",\"Manufacturer\":\"Same Sky\",\"Reference\":\"J2\",\"Value\":\"RCJ-2123\"},\"instance_paths\":[[\"ESP-DubSiren-V2\",\"/2037f81d-e33e-4c09-903b-90b25af374ad\"]],\"instance_references\":[\"J2\"],\"lib_id\":\"ESP-DubSiren-V2:RCJ-2123\",\"mirror_x\":false,\"mirror_y\":false,\"rotation\":0.0,\"unit\":1,\"uuid\":\"f727f866-3400-412d-b500-80456e99ba10\",\"x\":566.42,\"y\":127.0}],\"uuid\":\"f727f866-3400-412d-b500-80456e99ba10\",\"value\":\"RCJ-2123\",\"x\":566.42,\"y\":127.0}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "edit_schematic_component",
+    "args": {
+      "schematic": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_sch",
+      "reference": "SW5",
+      "fields": {
+        "MPN": "PTS636SM43SMTR LFS",
+        "Manufacturer": "C&K/Littelfuse",
+        "DesignStatus": "INTERIM - incomplete controls and USB power qualification"
+      },
+      "field_placements": {
+        "MPN": {
+          "hide": true
+        },
+        "Manufacturer": {
+          "hide": true
+        },
+        "DesignStatus": {
+          "hide": true
+        }
+      }
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"changes\":[\"DesignStatus \u2192 INTERIM - incomplete controls and USB power qualification (0 updated, 1 added)\",\"MPN \u2192 PTS636SM43SMTR LFS (0 updated, 1 added)\",\"Manufacturer \u2192 C&K/Littelfuse (0 updated, 1 added)\",\"DesignStatus placement (1 unit(s))\",\"MPN placement (1 unit(s))\",\"Manufacturer placement (1 unit(s))\"],\"datasheet\":\"\",\"fields\":{\"Datasheet\":\"\",\"Description\":\"Push button switch, generic, two pins\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"ESP-DubSiren-V2-Electrical:CK_PTS636SM43SMTR_LFS\",\"MPN\":\"PTS636SM43SMTR LFS\",\"Manufacturer\":\"C&K/Littelfuse\",\"Reference\":\"SW5\",\"Value\":\"RESET\"},\"footprint\":\"ESP-DubSiren-V2-Electrical:CK_PTS636SM43SMTR_LFS\",\"lib_id\":\"Switch:SW_Push\",\"mirror_x\":false,\"mirror_y\":false,\"reference\":\"SW5\",\"rotation\":0.0,\"schematic\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\ESP-DubSiren-V2.kicad_sch\",\"unit_count\":1,\"units\":[{\"field_placements\":{\"Datasheet\":{\"hide\":true,\"rotation\":0.0,\"x\":246.38,\"y\":109.22},\"Description\":{\"hide\":true,\"rotation\":0.0,\"x\":246.38,\"y\":109.22},\"DesignStatus\":{\"hide\":true,\"rotation\":0.0,\"x\":246.38,\"y\":109.22},\"Footprint\":{\"hide\":true,\"rotation\":0.0,\"x\":246.38,\"y\":109.22},\"MPN\":{\"hide\":true,\"rotation\":0.0,\"x\":246.38,\"y\":109.22},\"Manufacturer\":{\"hide\":true,\"rotation\":0.0,\"x\":246.38,\"y\":109.22},\"Reference\":{\"hide\":false,\"rotation\":0.0,\"x\":247.65,\"y\":106.68},\"Value\":{\"hide\":false,\"rotation\":0.0,\"x\":246.38,\"y\":110.744}},\"fields\":{\"Datasheet\":\"\",\"Description\":\"Push button switch, generic, two pins\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"ESP-DubSiren-V2-Electrical:CK_PTS636SM43SMTR_LFS\",\"MPN\":\"PTS636SM43SMTR LFS\",\"Manufacturer\":\"C&K/Littelfuse\",\"Reference\":\"SW5\",\"Value\":\"RESET\"},\"instance_paths\":[[\"ESP-DubSiren-V2\",\"/2037f81d-e33e-4c09-903b-90b25af374ad\"]],\"instance_references\":[\"SW5\"],\"lib_id\":\"Switch:SW_Push\",\"mirror_x\":false,\"mirror_y\":false,\"rotation\":0.0,\"unit\":1,\"uuid\":\"efd8de97-635f-4f7e-a712-67e4b8c76a7b\",\"x\":246.38,\"y\":109.22}],\"uuid\":\"efd8de97-635f-4f7e-a712-67e4b8c76a7b\",\"value\":\"RESET\",\"x\":246.38,\"y\":109.22}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "edit_schematic_component",
+    "args": {
+      "schematic": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_sch",
+      "reference": "SW6",
+      "fields": {
+        "MPN": "PTS636SM43SMTR LFS",
+        "Manufacturer": "C&K/Littelfuse",
+        "DesignStatus": "INTERIM - incomplete controls and USB power qualification"
+      },
+      "field_placements": {
+        "MPN": {
+          "hide": true
+        },
+        "Manufacturer": {
+          "hide": true
+        },
+        "DesignStatus": {
+          "hide": true
+        }
+      }
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"changes\":[\"DesignStatus \u2192 INTERIM - incomplete controls and USB power qualification (0 updated, 1 added)\",\"MPN \u2192 PTS636SM43SMTR LFS (0 updated, 1 added)\",\"Manufacturer \u2192 C&K/Littelfuse (0 updated, 1 added)\",\"DesignStatus placement (1 unit(s))\",\"MPN placement (1 unit(s))\",\"Manufacturer placement (1 unit(s))\"],\"datasheet\":\"\",\"fields\":{\"Datasheet\":\"\",\"Description\":\"Push button switch, generic, two pins\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"ESP-DubSiren-V2-Electrical:CK_PTS636SM43SMTR_LFS\",\"MPN\":\"PTS636SM43SMTR LFS\",\"Manufacturer\":\"C&K/Littelfuse\",\"Reference\":\"SW6\",\"Value\":\"BOOT\"},\"footprint\":\"ESP-DubSiren-V2-Electrical:CK_PTS636SM43SMTR_LFS\",\"lib_id\":\"Switch:SW_Push\",\"mirror_x\":false,\"mirror_y\":false,\"reference\":\"SW6\",\"rotation\":0.0,\"schematic\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\ESP-DubSiren-V2.kicad_sch\",\"unit_count\":1,\"units\":[{\"field_placements\":{\"Datasheet\":{\"hide\":true,\"rotation\":0.0,\"x\":307.34,\"y\":119.38},\"Description\":{\"hide\":true,\"rotation\":0.0,\"x\":307.34,\"y\":119.38},\"DesignStatus\":{\"hide\":true,\"rotation\":0.0,\"x\":307.34,\"y\":119.38},\"Footprint\":{\"hide\":true,\"rotation\":0.0,\"x\":307.34,\"y\":119.38},\"MPN\":{\"hide\":true,\"rotation\":0.0,\"x\":307.34,\"y\":119.38},\"Manufacturer\":{\"hide\":true,\"rotation\":0.0,\"x\":307.34,\"y\":119.38},\"Reference\":{\"hide\":false,\"rotation\":0.0,\"x\":308.61,\"y\":116.84},\"Value\":{\"hide\":false,\"rotation\":0.0,\"x\":307.34,\"y\":120.904}},\"fields\":{\"Datasheet\":\"\",\"Description\":\"Push button switch, generic, two pins\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"ESP-DubSiren-V2-Electrical:CK_PTS636SM43SMTR_LFS\",\"MPN\":\"PTS636SM43SMTR LFS\",\"Manufacturer\":\"C&K/Littelfuse\",\"Reference\":\"SW6\",\"Value\":\"BOOT\"},\"instance_paths\":[[\"ESP-DubSiren-V2\",\"/2037f81d-e33e-4c09-903b-90b25af374ad\"]],\"instance_references\":[\"SW6\"],\"lib_id\":\"Switch:SW_Push\",\"mirror_x\":false,\"mirror_y\":false,\"rotation\":0.0,\"unit\":1,\"uuid\":\"bf67916a-f1a8-4723-85f4-52aa0240028b\",\"x\":307.34,\"y\":119.38}],\"uuid\":\"bf67916a-f1a8-4723-85f4-52aa0240028b\",\"value\":\"BOOT\",\"x\":307.34,\"y\":119.38}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "edit_schematic_component",
+    "args": {
+      "schematic": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_sch",
+      "reference": "TP1",
+      "field_placements": {
+        "Value": {
+          "hide": true
+        }
+      }
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"changes\":[\"Value placement (1 unit(s))\"],\"datasheet\":\"\",\"fields\":{\"Datasheet\":\"\",\"Description\":\"test point\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"TestPoint:TestPoint_Pad_D1.0mm\",\"MPN\":\"PCB test pad\",\"Manufacturer\":\"PCB\",\"Reference\":\"TP1\",\"Value\":\"+5V\"},\"footprint\":\"TestPoint:TestPoint_Pad_D1.0mm\",\"lib_id\":\"Connector:TestPoint\",\"mirror_x\":false,\"mirror_y\":false,\"reference\":\"TP1\",\"rotation\":0.0,\"schematic\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\ESP-DubSiren-V2.kicad_sch\",\"unit_count\":1,\"units\":[{\"field_placements\":{\"Datasheet\":{\"hide\":true,\"rotation\":0.0,\"x\":134.62,\"y\":127.0},\"Description\":{\"hide\":true,\"rotation\":0.0,\"x\":134.62,\"y\":127.0},\"DesignStatus\":{\"hide\":true,\"rotation\":0.0,\"x\":134.62,\"y\":127.0},\"Footprint\":{\"hide\":true,\"rotation\":0.0,\"x\":134.62,\"y\":127.0},\"MPN\":{\"hide\":true,\"rotation\":0.0,\"x\":134.62,\"y\":127.0},\"Manufacturer\":{\"hide\":true,\"rotation\":0.0,\"x\":134.62,\"y\":127.0},\"Reference\":{\"hide\":false,\"rotation\":0.0,\"x\":134.62,\"y\":120.142},\"Value\":{\"hide\":true,\"rotation\":0.0,\"x\":134.62,\"y\":121.92}},\"fields\":{\"Datasheet\":\"\",\"Description\":\"test point\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"TestPoint:TestPoint_Pad_D1.0mm\",\"MPN\":\"PCB test pad\",\"Manufacturer\":\"PCB\",\"Reference\":\"TP1\",\"Value\":\"+5V\"},\"instance_paths\":[[\"ESP-DubSiren-V2\",\"/2037f81d-e33e-4c09-903b-90b25af374ad\"]],\"instance_references\":[\"TP1\"],\"lib_id\":\"Connector:TestPoint\",\"mirror_x\":false,\"mirror_y\":false,\"rotation\":0.0,\"unit\":1,\"uuid\":\"acb7e464-59c5-4929-9ae7-ba5f3fa5da3c\",\"x\":134.62,\"y\":127.0}],\"uuid\":\"acb7e464-59c5-4929-9ae7-ba5f3fa5da3c\",\"value\":\"+5V\",\"x\":134.62,\"y\":127.0}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "edit_schematic_component",
+    "args": {
+      "schematic": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_sch",
+      "reference": "TP2",
+      "field_placements": {
+        "Value": {
+          "hide": true
+        }
+      }
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"changes\":[\"Value placement (1 unit(s))\"],\"datasheet\":\"\",\"fields\":{\"Datasheet\":\"\",\"Description\":\"test point\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"TestPoint:TestPoint_Pad_D1.0mm\",\"MPN\":\"PCB test pad\",\"Manufacturer\":\"PCB\",\"Reference\":\"TP2\",\"Value\":\"+3V3\"},\"footprint\":\"TestPoint:TestPoint_Pad_D1.0mm\",\"lib_id\":\"Connector:TestPoint\",\"mirror_x\":false,\"mirror_y\":false,\"reference\":\"TP2\",\"rotation\":0.0,\"schematic\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\ESP-DubSiren-V2.kicad_sch\",\"unit_count\":1,\"units\":[{\"field_placements\":{\"Datasheet\":{\"hide\":true,\"rotation\":0.0,\"x\":160.02,\"y\":127.0},\"Description\":{\"hide\":true,\"rotation\":0.0,\"x\":160.02,\"y\":127.0},\"DesignStatus\":{\"hide\":true,\"rotation\":0.0,\"x\":160.02,\"y\":127.0},\"Footprint\":{\"hide\":true,\"rotation\":0.0,\"x\":160.02,\"y\":127.0},\"MPN\":{\"hide\":true,\"rotation\":0.0,\"x\":160.02,\"y\":127.0},\"Manufacturer\":{\"hide\":true,\"rotation\":0.0,\"x\":160.02,\"y\":127.0},\"Reference\":{\"hide\":false,\"rotation\":0.0,\"x\":160.02,\"y\":120.142},\"Value\":{\"hide\":true,\"rotation\":0.0,\"x\":160.02,\"y\":121.92}},\"fields\":{\"Datasheet\":\"\",\"Description\":\"test point\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"TestPoint:TestPoint_Pad_D1.0mm\",\"MPN\":\"PCB test pad\",\"Manufacturer\":\"PCB\",\"Reference\":\"TP2\",\"Value\":\"+3V3\"},\"instance_paths\":[[\"ESP-DubSiren-V2\",\"/2037f81d-e33e-4c09-903b-90b25af374ad\"]],\"instance_references\":[\"TP2\"],\"lib_id\":\"Connector:TestPoint\",\"mirror_x\":false,\"mirror_y\":false,\"rotation\":0.0,\"unit\":1,\"uuid\":\"65339695-26bc-410e-89da-ec4679801a3a\",\"x\":160.02,\"y\":127.0}],\"uuid\":\"65339695-26bc-410e-89da-ec4679801a3a\",\"value\":\"+3V3\",\"x\":160.02,\"y\":127.0}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "edit_schematic_component",
+    "args": {
+      "schematic": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_sch",
+      "reference": "TP3",
+      "field_placements": {
+        "Value": {
+          "hide": true
+        }
+      }
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"changes\":[\"Value placement (1 unit(s))\"],\"datasheet\":\"\",\"fields\":{\"Datasheet\":\"\",\"Description\":\"test point\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"TestPoint:TestPoint_Pad_D1.0mm\",\"MPN\":\"PCB test pad\",\"Manufacturer\":\"PCB\",\"Reference\":\"TP3\",\"Value\":\"GND\"},\"footprint\":\"TestPoint:TestPoint_Pad_D1.0mm\",\"lib_id\":\"Connector:TestPoint\",\"mirror_x\":false,\"mirror_y\":false,\"reference\":\"TP3\",\"rotation\":0.0,\"schematic\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\ESP-DubSiren-V2.kicad_sch\",\"unit_count\":1,\"units\":[{\"field_placements\":{\"Datasheet\":{\"hide\":true,\"rotation\":0.0,\"x\":185.42,\"y\":127.0},\"Description\":{\"hide\":true,\"rotation\":0.0,\"x\":185.42,\"y\":127.0},\"DesignStatus\":{\"hide\":true,\"rotation\":0.0,\"x\":185.42,\"y\":127.0},\"Footprint\":{\"hide\":true,\"rotation\":0.0,\"x\":185.42,\"y\":127.0},\"MPN\":{\"hide\":true,\"rotation\":0.0,\"x\":185.42,\"y\":127.0},\"Manufacturer\":{\"hide\":true,\"rotation\":0.0,\"x\":185.42,\"y\":127.0},\"Reference\":{\"hide\":false,\"rotation\":0.0,\"x\":185.42,\"y\":120.142},\"Value\":{\"hide\":true,\"rotation\":0.0,\"x\":185.42,\"y\":121.92}},\"fields\":{\"Datasheet\":\"\",\"Description\":\"test point\",\"DesignStatus\":\"INTERIM - incomplete controls and USB power qualification\",\"Footprint\":\"TestPoint:TestPoint_Pad_D1.0mm\",\"MPN\":\"PCB test pad\",\"Manufacturer\":\"PCB\",\"Reference\":\"TP3\",\"Value\":\"GND\"},\"instance_paths\":[[\"ESP-DubSiren-V2\",\"/2037f81d-e33e-4c09-903b-90b25af374ad\"]],\"instance_references\":[\"TP3\"],\"lib_id\":\"Connector:TestPoint\",\"mirror_x\":false,\"mirror_y\":false,\"rotation\":0.0,\"unit\":1,\"uuid\":\"338042f8-7bbd-4b97-9e9c-e99c32c07bd8\",\"x\":185.42,\"y\":127.0}],\"uuid\":\"338042f8-7bbd-4b97-9e9c-e99c32c07bd8\",\"value\":\"GND\",\"x\":185.42,\"y\":127.0}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "edit_schematic_component",
+    "args": {
+      "schematic": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_sch",
+      "reference": "#FLG01",
+      "field_placements": {
+        "Value": {
+          "hide": true
+        }
+      }
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"changes\":[\"Value placement (1 unit(s))\"],\"datasheet\":\"\",\"fields\":{\"Datasheet\":\"\",\"Description\":\"Special symbol for telling ERC where power comes from\",\"Footprint\":\"\",\"Reference\":\"#FLG01\",\"Value\":\"PWR_FLAG\"},\"footprint\":\"\",\"lib_id\":\"power:PWR_FLAG\",\"mirror_x\":false,\"mirror_y\":false,\"reference\":\"#FLG01\",\"rotation\":0.0,\"schematic\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\ESP-DubSiren-V2.kicad_sch\",\"unit_count\":1,\"units\":[{\"field_placements\":{\"Datasheet\":{\"hide\":true,\"rotation\":0.0,\"x\":93.98,\"y\":127.0},\"Description\":{\"hide\":true,\"rotation\":0.0,\"x\":93.98,\"y\":127.0},\"Footprint\":{\"hide\":true,\"rotation\":0.0,\"x\":93.98,\"y\":127.0},\"Reference\":{\"hide\":true,\"rotation\":0.0,\"x\":93.98,\"y\":125.095},\"Value\":{\"hide\":true,\"rotation\":0.0,\"x\":93.98,\"y\":123.19}},\"fields\":{\"Datasheet\":\"\",\"Description\":\"Special symbol for telling ERC where power comes from\",\"Footprint\":\"\",\"Reference\":\"#FLG01\",\"Value\":\"PWR_FLAG\"},\"instance_paths\":[[\"ESP-DubSiren-V2\",\"/2037f81d-e33e-4c09-903b-90b25af374ad\"]],\"instance_references\":[\"#FLG01\"],\"lib_id\":\"power:PWR_FLAG\",\"mirror_x\":false,\"mirror_y\":false,\"rotation\":0.0,\"unit\":1,\"uuid\":\"8d0d4837-de0a-47cd-a79c-8e0b7db53aca\",\"x\":93.98,\"y\":127.0}],\"uuid\":\"8d0d4837-de0a-47cd-a79c-8e0b7db53aca\",\"value\":\"PWR_FLAG\",\"x\":93.98,\"y\":127.0}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "edit_schematic_component",
+    "args": {
+      "schematic": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_sch",
+      "reference": "#FLG02",
+      "field_placements": {
+        "Value": {
+          "hide": true
+        }
+      }
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"changes\":[\"Value placement (1 unit(s))\"],\"datasheet\":\"\",\"fields\":{\"Datasheet\":\"\",\"Description\":\"Special symbol for telling ERC where power comes from\",\"Footprint\":\"\",\"Reference\":\"#FLG02\",\"Value\":\"PWR_FLAG\"},\"footprint\":\"\",\"lib_id\":\"power:PWR_FLAG\",\"mirror_x\":false,\"mirror_y\":false,\"reference\":\"#FLG02\",\"rotation\":0.0,\"schematic\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\ESP-DubSiren-V2.kicad_sch\",\"unit_count\":1,\"units\":[{\"field_placements\":{\"Datasheet\":{\"hide\":true,\"rotation\":0.0,\"x\":111.76,\"y\":127.0},\"Description\":{\"hide\":true,\"rotation\":0.0,\"x\":111.76,\"y\":127.0},\"Footprint\":{\"hide\":true,\"rotation\":0.0,\"x\":111.76,\"y\":127.0},\"Reference\":{\"hide\":true,\"rotation\":0.0,\"x\":111.76,\"y\":125.095},\"Value\":{\"hide\":true,\"rotation\":0.0,\"x\":111.76,\"y\":123.19}},\"fields\":{\"Datasheet\":\"\",\"Description\":\"Special symbol for telling ERC where power comes from\",\"Footprint\":\"\",\"Reference\":\"#FLG02\",\"Value\":\"PWR_FLAG\"},\"instance_paths\":[[\"ESP-DubSiren-V2\",\"/2037f81d-e33e-4c09-903b-90b25af374ad\"]],\"instance_references\":[\"#FLG02\"],\"lib_id\":\"power:PWR_FLAG\",\"mirror_x\":false,\"mirror_y\":false,\"rotation\":0.0,\"unit\":1,\"uuid\":\"fb5f3997-e8d1-49f0-b79c-d12e0e5ebc44\",\"x\":111.76,\"y\":127.0}],\"uuid\":\"fb5f3997-e8d1-49f0-b79c-d12e0e5ebc44\",\"value\":\"PWR_FLAG\",\"x\":111.76,\"y\":127.0}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "export_bom",
+    "args": {
+      "schematic": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_sch",
+      "output": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\reports\\BOM-V2-INTERIM.csv",
+      "fields": "Reference,Value,Footprint,MPN,Manufacturer,${QUANTITY},DNP,DesignStatus",
+      "labels": "Reference,Value,Footprint,MPN,Manufacturer,Quantity,DNP,DesignStatus"
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"exclude_dnp\":true,\"fields\":\"Reference,Value,Footprint,MPN,Manufacturer,${QUANTITY},DNP,DesignStatus\",\"format\":\"csv\",\"output\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\reports\\\\BOM-V2-INTERIM.csv\",\"success\":true}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "generate_netlist",
+    "args": {
+      "schematic": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_sch",
+      "output": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\reports\\netlist-v2-progress.net"
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"exported\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\reports\\\\netlist-v2-progress.net\",\"format\":\"kicad\"}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "run_erc",
+    "args": {
+      "schematic": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_sch",
+      "output": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\reports\\erc-v2-progress.json"
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"errors\":0,\"total\":14,\"violations\":[{\"description\":\"Label connected to only one pin: Etichetta \\\"POT1_TOP\\\"\",\"items\":[{\"description\":\"Etichetta \\\"POT1_TOP\\\"\",\"uuid\":\"62e80255-e75c-42c6-b79e-9ef1b29cdef5\",\"x\":0.4064,\"y\":1.7907}],\"rule\":\"isolated_pin_label\",\"severity\":\"warning\",\"sheet\":\"/\",\"x\":0.4064,\"y\":1.7907},{\"description\":\"Label connected to only one pin: Etichetta \\\"POT4_TOP\\\"\",\"items\":[{\"description\":\"Etichetta \\\"POT4_TOP\\\"\",\"uuid\":\"c2847c29-fbad-41e4-b7b6-66e3ce2d3f1e\",\"x\":0.4064,\"y\":2.4765}],\"rule\":\"isolated_pin_label\",\"severity\":\"warning\",\"sheet\":\"/\",\"x\":0.4064,\"y\":2.4765},{\"description\":\"Label connected to only one pin: Etichetta \\\"POT2_TOP\\\"\",\"items\":[{\"description\":\"Etichetta \\\"POT2_TOP\\\"\",\"uuid\":\"bbf39bd9-1223-4430-bedb-04dc83faff8c\",\"x\":0.9144,\"y\":1.7907}],\"rule\":\"isolated_pin_label\",\"severity\":\"warning\",\"sheet\":\"/\",\"x\":0.9144,\"y\":1.7907},{\"description\":\"Label connected to only one pin: Etichetta \\\"POT5_TOP\\\"\",\"items\":[{\"description\":\"Etichetta \\\"POT5_TOP\\\"\",\"uuid\":\"511b2e68-5456-459d-826d-f23a593c2497\",\"x\":0.9144,\"y\":2.4765}],\"rule\":\"isolated_pin_label\",\"severity\":\"warning\",\"sheet\":\"/\",\"x\":0.9144,\"y\":2.4765},{\"description\":\"Label connected to only one pin: Etichetta \\\"POT3_TOP\\\"\",\"items\":[{\"description\":\"Etichetta \\\"POT3_TOP\\\"\",\"uuid\":\"5c1aa0d0-476d-4c74-89dd-30afa59f9663\",\"x\":1.4224,\"y\":1.7907}],\"rule\":\"isolated_pin_label\",\"severity\":\"warning\",\"sheet\":\"/\",\"x\":1.4224,\"y\":1.7907},{\"description\":\"Label connected to only one pin: Etichetta \\\"POT6_TOP\\\"\",\"items\":[{\"description\":\"Etichetta \\\"POT6_TOP\\\"\",\"uuid\":\"4514c40e-dd36-4e12-b844-fd6394cbbcbd\",\"x\":1.4224,\"y\":2.4765}],\"rule\":\"isolated_pin_label\",\"severity\":\"warning\",\"sheet\":\"/\",\"x\":1.4224,\"y\":2.4765},{\"description\":\"Label connected to only one pin: Etichetta \\\"POT7_TOP\\\"\",\"items\":[{\"description\":\"Etichetta \\\"POT7_TOP\\\"\",\"uuid\":\"a6c56009-9295-4091-9b95-87b279ac9f8a\",\"x\":1.9304,\"y\":1.7907}],\"rule\":\"isolated_pin_label\",\"severity\":\"warning\",\"sheet\":\"/\",\"x\":1.9304,\"y\":1.7907},{\"description\":\"Label connected to only one pin: Etichetta \\\"POT1\\\"\",\"items\":[{\"description\":\"Etichetta \\\"POT1\\\"\",\"uuid\":\"2f587843-9c0e-42a3-9d6f-db5912288fce\",\"x\":3.0734,\"y\":2.159}],\"rule\":\"isolated_pin_label\",\"severity\":\"warning\",\"sheet\":\"/\",\"x\":3.0734,\"y\":2.159},{\"description\":\"Label connected to only one pin: Etichetta \\\"POT2\\\"\",\"items\":[{\"description\":\"Etichetta \\\"POT2\\\"\",\"uuid\":\"7f9a63c7-fbf5-4e0e-b473-988c132d22b1\",\"x\":3.0734,\"y\":2.1844}],\"rule\":\"isolated_pin_label\",\"severity\":\"warning\",\"sheet\":\"/\",\"x\":3.0734,\"y\":2.1844},{\"description\":\"Label connected to only one pin: Etichetta \\\"POT3\\\"\",\"items\":[{\"description\":\"Etichetta \\\"POT3\\\"\",\"uuid\":\"1be493a5-4476-48b3-9c3b-0e6dc79f4b44\",\"x\":3.0734,\"y\":2.2098}],\"rule\":\"isolated_pin_label\",\"severity\":\"warning\",\"sheet\":\"/\",\"x\":3.0734,\"y\":2.2098},{\"description\":\"Label connected to only one pin: Etichetta \\\"POT4\\\"\",\"items\":[{\"description\":\"Etichetta \\\"POT4\\\"\",\"uuid\":\"e21bac88-71d7-4f43-b71c-6b2932c1f706\",\"x\":3.0734,\"y\":2.2352}],\"rule\":\"isolated_pin_label\",\"severity\":\"warning\",\"sheet\":\"/\",\"x\":3.0734,\"y\":2.2352},{\"description\":\"Label connected to only one pin: Etichetta \\\"POT5\\\"\",\"items\":[{\"description\":\"Etichetta \\\"POT5\\\"\",\"uuid\":\"08f91066-78d8-4085-8b4a-49d1c39bb5b4\",\"x\":3.0734,\"y\":2.2606}],\"rule\":\"isolated_pin_label\",\"severity\":\"warning\",\"sheet\":\"/\",\"x\":3.0734,\"y\":2.2606},{\"description\":\"Label connected to only one pin: Etichetta \\\"POT6\\\"\",\"items\":[{\"description\":\"Etichetta \\\"POT6\\\"\",\"uuid\":\"48ec741e-c05f-4a54-ac2a-74ea3b809b69\",\"x\":3.0734,\"y\":2.286}],\"rule\":\"isolated_pin_label\",\"severity\":\"warning\",\"sheet\":\"/\",\"x\":3.0734,\"y\":2.286},{\"description\":\"Label connected to only one pin: Etichetta \\\"MASTER\\\"\",\"items\":[{\"description\":\"Etichetta \\\"MASTER\\\"\",\"uuid\":\"36fbc4af-68d5-4cca-b820-8b5055895700\",\"x\":3.0734,\"y\":2.3114}],\"rule\":\"isolated_pin_label\",\"severity\":\"warning\",\"sheet\":\"/\",\"x\":3.0734,\"y\":2.3114}],\"warnings\":14}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "render_schematic_png",
+    "args": {
+      "schematic": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_sch",
+      "output": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\reports\\schematic-v2-progress.png",
+      "width_px": 4096
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"height_px\":2896,\"monochrome\":false,\"png_bytes\":470383,\"rendered\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\reports\\\\schematic-v2-progress.png\",\"width_px\":4096}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  }
+]

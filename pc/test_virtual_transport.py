@@ -140,7 +140,7 @@ class VirtualTransportTests(unittest.TestCase):
     def test_display_state_and_shared_encoder_menu(self):
         self.transport.send("SET PROFILE EXTENDED")
         display = self.statuses[-1]["panel"]["display"]
-        self.assertEqual((display["width"], display["height"]), (320, 170))
+        self.assertEqual((display["width"], display["height"]), (320, 172))
         self.assertEqual(display["mode"], "HOME")
 
         self.transport.send("ENCODER_ROTATE NEXT")
