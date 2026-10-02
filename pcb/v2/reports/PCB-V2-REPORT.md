@@ -1,145 +1,190 @@
-﻿# ESP-DubSiren V2 implementation status
+# ESP-DubSiren PCB V2: saved implementation and evidence
 
-Status: **INCOMPLETE; not ready for fabrication**, 2026-10-02. The schematic
-contains verified circuitry, but several controls are unaccepted, the main PCB
-is blank, and no complete mechanical assembly exists. This is not a final
-ERC/DRC or zero-unconnected report.
+Status: **INCOMPLETE; not ready for fabrication**, 2026-10-02. Seven pots and
+the encoder are now populated, the original 14 ERC warnings are resolved, and
+a controlled USB input ramp is implemented. Four CHERRY switches still lack
+the exact manufacturer drill-pattern evidence required by the task. The main
+PCB remains empty; no routed-board, complete assembly or fabrication acceptance
+is claimed. ERC alone cannot detect the missing intended switches.
 
-## Repository and input
+## Repository preservation
 
-Starting branch `main`, HEAD `036959192e2c5176d95e0679953c89dac3a07640`.
-Working branch `pcb-v2-redesign`; no commit created. V1 source and historical
-outputs are unchanged. The now-available root `2026-10-02T050640.csv` has been
-reviewed completely; all 26 rows are in `PURCHASING-AUDIT.md`. It already names
-Adafruit 5393. The original CSV is preserved and purchased quantities are not
-used as fitted quantities.
+Branch: `pcb-v2-redesign`. Starting repository HEAD was
+`036959192e2c5176d95e0679953c89dac3a07640`. The previously saved work was preserved
+before continuation in `a4303b1` (`pcb-v2: checkpoint schematic and 5393 migration`).
+The Hammond test and replacement study were committed as `4f13d12`
+(`pcb-v2: quantify Hammond depth conflict and save enclosure study`). Controls,
+their footprints and the input slew stage are saved in `a9136fa`
+(`pcb-v2: add validated Bourns controls and USB input slew stage`). The independent
+review/source report checkpoint is listed by `git log` on this branch.
+V1 is unchanged. Purchasing quantities from `2026-10-02T050640.csv` are not
+substituted for fitted quantities.
 
-## Electrical implementation
+## Schematic and footprints
 
-The new project and schematic are `../ESP-DubSiren-V2.kicad_pro` and
-`../ESP-DubSiren-V2.kicad_sch`. The main PCB file exists but has no footprints,
-outline, tracks or zones. Two copper layers and 1.6 mm thickness are project
-defaults, not a validated fabrication stackup.
+The saved schematic BOM export has **60 instances: 53 purchased components and
+7 bare PCB test pads**. It includes one ESP32-S3-WROOM-1U-N16R8, one 74HC4051D,
+one MPM3612GLQ-33-Z, Adafruit 5393 and 6250, the complete RCJ-2123 block, seven
+pots, encoder, service switches, protection, passives and the input slew switch.
+This is not the final complete-unit fitted count. The four MX switches and
+mechanical assembly parts must not be inferred present from this export.
 
-The interim schematic contains ESP32-S3-WROOM-1U-N16R8, one Toshiba 74HC4051D,
-MPM3612GLQ-33-Z, purchased protection parts, USB4085-GF-A, two PTS636 service
-switches, Adafruit 5393, Adafruit 6250 and the complete RCJ-2123 block.
-`BOM-V2-INTERIM.csv` is exported from actual schematic instances: 42 purchased
-component instances plus seven bare PCB test pads. It is not the complete-unit
-BOM. Seven pots, encoder, four MX switches, knobs and mechanical hardware are
-not included yet.
+| Control | Exact footprint | Source and result |
+|---|---|---|
+| RV1-RV6, PTV111-3420A-B203 | `ESP-DubSiren-V2-Mechanical:Bourns_PTV111-3` | Bourns PTV/PTT Rev 09/23 pp2,5; current 13.6 mm stake pitch |
+| RV7, PTV111-1420A-B103 | `ESP-DubSiren-V2-Mechanical:Bourns_PTV111-1` | Same source; separate 10.2 mm stake pitch / 3.3 mm row pattern |
+| SW7, PEC11R-4120F-S0018 | `ESP-DubSiren-V2-Mechanical:Bourns_PEC11R-4120F-S0018` | Exact Bourns push-switch and A/C/B pattern |
+| SW1-SW4, MX2A-11NW | Not accepted or instantiated | Native `Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB` inspected, but current CHERRY drilling drawing remains unavailable |
 
-The MPM network actually drawn consists of C1/C3 (22 uF each), C2/C4 (100 nF
-each) and R1 (10 ohm) from VOUT to VOUT_S. EN is tied to VIN; PG is NC and the
-optional VCC capacitor omitted. There is no external inductor, switching
-MOSFET, diode, feedback divider or replacement regulator. C5/C6 are additional
-MCU local decoupling. The MPM NC metal region still needs an enforced PCB
-copper keepout; a footprint drawing alone is insufficient.
+`CONTROLS-POWER-PHYSICAL-PIN-MAPS.md` records every physical lead, symbol pin,
+footprint pad and coordinate. The Bourns dummy fourth lead has an isolated
+unnumbered land. Mechanical stake apertures are closed routed Edge.Cuts with
+0.4 mm internal radius, not electrical pins. They must survive board outline
+export. The router radius is an explicit manufacturing choice: stake-corner fit
+and finished-route tolerance still need acceptance. Library readback, disposable live placement and rendered inspection
+were performed. These checks establish component acceptance, not final DRC.
 
-One mux serves six front pots and MASTER, with its eighth input grounded.
-Seven 4.7 kohm high-end resistors limit the intended pot outputs to the ADC
-calibrated range; a common 100 nF filter is fitted. Settling uses an estimated
-3.3 V mux resistance and needs prototype verification. The pots themselves
-remain absent pending physical pin-map acceptance.
+Pot pin 1 is GND, pin 2 the wiper/mux input and pin 3 the respective 4.7 kohm-fed
+top terminal, giving increasing voltage clockwise. Mux channel 7 is grounded;
+ADC1 GPIO4 has the common 100 nF filter. Settling and the firmware acquisition
+sequence remain documented implementation/measurement work. No external ADC or
+I/O expander was added. Encoder GPIO1/2/42 and USB GPIO19 D-/GPIO20 D+ are retained.
 
-USB has two separate 5.1 kohm CC pull-downs, SLKOR ESD protection, two 22 ohm
-series resistors, Bel PTC and unidirectional PANJIT TVS. Input current and USB
-attach/inrush remain unresolved. The PTC does not provide controlled soft-start.
+The MPM circuit retains its integrated inductor, C1/C3 = 22 uF, C2/C4 = 100 nF,
+and 10 ohm VOUT-to-VOUT_S connection. EN is tied to VIN; unused PG is NC, optional
+VCC bypass omitted. No external power inductor, MOSFET, feedback divider,
+Schottky diode or replacement regulator was added. Its NC copper region still
+needs an enforced board keepout when layout is undertaken.
 
-Display VIN is 3.3 V: the onboard CS/reset pull-ups use VIN, so 5 V VIN would
-expose high-impedance MCU pins to 5 V. DAC VIN is protected 5 V with 3.3 V I2S.
-DAC Lout connects to the red RCA center; the white center is NC and both barrels
-are grounded. RCJ-2123 remains one physical dual-socket block. The two DAC
-outputs are never shorted or summed.
+Display VIN remains 3.3 V to avoid exposing MCU pins to the breakout's VIN
+pull-ups. DAC VIN is switched 5 V. DAC Lout feeds one RCA center; the second
+center is NC and both barrels are grounded. The outputs are not summed.
 
-The preliminary 3.3 V allocation is 500 mA MCU + 100 mA display + 5 mA logic =
-605 mA, leaving 395 mA regulator capacity. Display current and the 60 mA DAC
-allowance are provisional, not measured manufacturer maxima. At 4.5 V and 85%
-efficiency the estimated input is 582 mA. This does not establish compatibility
-with a 500 mA USB host. See `ELECTRICAL-DESIGN-EVIDENCE.md` for calculations,
-DC-bias data, GPIO allocation and electrical limitations.
+## CHERRY source gap
 
-## Footprints, models and tools
+`MX2A-SOURCE-SEARCH.md` records the current exact 16-page manufacturer datasheet,
+older MX2A paper, distributor redirects, catalogs, compatibility searches and
+the user-supplied `sszczep/kicad-libraries` revision. The latter traces to an older
+MX1A drawing. Its pin coordinates match native KiCad after shifting origins,
+but fixation drills are 1.75 mm versus native 1.70 mm. The current CHERRY sheet
+gives a 15.63 mm body; native Fab/courtyard geometry is smaller.
 
-Konnect 0.12.1 and KiCad 10.0.6 were used. Tool exposure was resolved using the
-installed server's stdio MCP interface. Live scratch-board IPC was isolated
-from the user's existing KiCad manager. FreeCAD 1.1 loaded, rigidly transformed
-and validated the manufacturer's RCA STEP.
+Missing exact evidence: terminal and fixation-post X/Y coordinates relative to
+the center axis, finished-hole sizes/tolerances, center-post hole, viewing
+direction and seating datum for MX2A-11NW. A manufacturer mounting-equivalence
+statement tied to the older dimensioned drawing would also close the gap.
+No arbitrary custom footprint or silent generic substitution was made.
 
-Custom footprint acceptance includes ESP32-S3-WROOM-1U, MPM3612, Bel PTC, exact
-PTS636, both Adafruit carrier patterns and RCJ-2123. Library queries, disposable
-placement, rendering and instance readback provide the evidence. Standard
-footprints are documented in the physical pin maps. USB4085 has 16 signal lands
-and four shared-SH slots. Its 0.70 mm lands add 0.025 mm annular width compared
-with the manufacturer's recommended 0.65 mm lands.
+The user's sections 7 and 37 permit an intermediate stop only for this genuine
+manufacturer-dimension gap after official-document searches. Bourns orientation,
+knob bore fit and unselected antenna/keycap MPNs are not used as stopping reasons.
 
-RCA oval NPTH drills required native KiCad API fallback because MCP exposes
-only scalar drill-diameter editing. The footprint was reopened and revalidated
-through MCP/readback/rendering afterward. The original and aligned manufacturer
-STEP are retained. Component acceptance is not full-board DRC or assembly fit.
+## USB input and current decision
 
-## Electrical checks
+See `USB-POWER-DECISION.md` for source equations, MLCC bias, alternatives,
+startup charge, tolerance limits and qualification requirements.
 
-Latest intermediate ERC: **0 errors, 14 warnings**. The warnings are isolated
-labels at POT1_TOP through POT7_TOP, POT1 through POT6, and MASTER. Every warning
-is retained in `erc-v2-progress.json`; none was globally suppressed. These are
-unfinished connections, not final justified exceptions. Missing encoder/MX
-parts cannot be inferred complete merely because ERC does not flag them.
-Connectivity checks found no wire/component orphans or shorts in the current
-partial schematic.
+The passive small-CIN option was evaluated first: 4.7 uF nominal with a
+hypothetical 1.36 uF effective corner gives about 73 mV ideal ripple at 0.5 A
+output, 5 V input and 1.125 MHz. Thus 22 uF is not an absolute MPS minimum.
+However, the purchased DAC itself has 10 uF directly on VIN. With a 4.7 uF buck
+capacitor and 100 nF bypass the nominal direct total would be 14.8 uF, or
+17.76 uF at +20%, before parasitics. Reducing only buck CIN cannot close attach
+capacitance. DAC operation from 3.3 V was evaluated but not accepted at the
+conservative AP2127 dropout / PCM5102 minimum-supply corner.
 
-No populated V2 PCB DRC has been accepted. The main PCB is empty; a zero count
-from it would be meaningless. Whole-design unconnected count is **not
-established**, not zero.
+Implemented path: USB VBUS -> PTC -> **TPS22918DBVR** -> buck and DAC.
+The PTC is overcurrent protection, not inrush control. The slew switch is not
+a current limiter or reverse-blocking device.
 
-## Display software and validation
+| Quantity | Saved design / calculated value |
+|---|---|
+| Buck CIN | Purchased 22 uF + 100 nF, behind slew switch |
+| 22 uF typical effective capacitance at 5 V | 6.957 uF from exact Samsung bias curve |
+| C10 directly visible at input | 1 uF CL10B105MO8NNWC |
+| Estimated attach-capacitance ceiling | 1.40 uF including positive tolerance/temperature and 0.02 uF parasitic allowance; allowance is not measured |
+| C11 ramp capacitor | 10 nF C0G 50 V, GRM1885C1H103JA01D |
+| Ramp at 5 V | 26.55 ms typical table value; no guaranteed minimum rise time supplied |
+| Direct downstream 5 V bulk | 32.1 uF nominal; about 4.84 mA nominal charging contribution |
+| Steady 3.3 V / DAC allocations | 205 mA / 30 mA |
+| Upper operating 3.3 V / DAC allocations | 485 mA / 50 mA |
+| Estimated steady VBUS at 5 V, 85% efficiency | 189 mA |
+| Upper operating input corner | 487 mA at 4.5 V receptacle, 0.15 V path loss, 3.333 V rail and 85% efficiency |
+| Margin to configured USB2 500 mA | 13 mA, about 2.6%; limited |
 
-Firmware now uses `tft_.init(172, 320)` and rotation 1 for 320 x 172 landscape,
-as shown by the [official Adafruit initialization guide](https://learn.adafruit.com/adafruit-1-47-round-rectangle-tft-display/arduino-wiring-test).
-The installed Adafruit library 1.11.0 computes the native 34 px column offset.
-Shared dimensions, desktop preview, existing tests and current docs were
-updated minimally. No new assets, animation or microSD functionality was added.
-Physical GPIO/mux acquisition is not implemented by this display change.
+The upper operating allocation is **not a guaranteed unrestricted worst-case
+current**. It includes 400 mA for MCU/memory, 80 mA for display/backlight and
+5 mA for other 3.3 V loads. Display maximum and simultaneous activity are not
+fully bounded by the retrieved specifications. A 500 mA MCU transient would
+raise the modeled USB input to about 577 mA. Firmware currently enables no RF;
+future RF operation needs a tested current policy. No CC controller or PD was
+added based on an assumed high-current source.
+
+The 500 mA budget applies after USB configuration; pre-configuration and suspend
+limits require firmware policy. The current firmware has not implemented or
+verified that full policy. Regulator startup and downstream rail capacitances
+must be included in attach-waveform testing. A nominal slew calculation does
+not establish USB compliance. New purchase MPNs are TPS22918DBVR and the 10 nF
+Murata CT capacitor; the 1 uF input capacitor reuses the purchasing BOM.
+
+## Validation results and limits
 
 | Check | Result |
 |---|---|
-| PlatformIO firmware esp32-s3-devkitc-1-n16r8 | Passed; RAM 119092 bytes, flash 340009 bytes |
-| Native parser/DSP suite | Passed |
-| Desktop and VirtualESP | 36 tests passed in isolated current-source copy |
-| Tracked-change git diff --check | Passed |
-| Physical hardware | Not tested |
+| Saved schematic ERC | **0 errors, 0 warnings**; original 14 warnings resolved by wiring the pots |
+| Direct short / orphan checks | 0 candidates in the saved partial schematic |
+| Independent ERC | 0 errors, 0 warnings; see independent review evidence |
+| Main-board DRC | Empty-board check: 1 invalid-outline error and 60 missing-footprint parity warnings; no populated-board acceptance |
+| Whole-design unconnected count | Not established; not zero |
+| Final USB 90 ohm geometry | Not selected; requires actual fabricator stackup |
+| Layer decision | Two copper layers / 1.6 mm remain defaults; no claim of routing feasibility |
+| Complete mechanical collision check | Not performed; feasibility studies only |
 
-The first desktop run had 32 passes and four DLL replacement setup errors while
-a user app held `virtual_esp.dll`. Rebuilding in a fresh source copy passed all
-36 tests; no user app was terminated. Software tests are not hardware checks.
+No global ERC or DRC suppression was introduced. `INDEPENDENT-V2-REVIEW.md`
+records the fresh audit and any outstanding findings. It is not a fabrication
+approval. Existing display software validation from the checkpoint remains:
+PlatformIO build passed, native parser/DSP passed, desktop/VirtualESP 36 tests
+passed in an isolated source copy. These were not rerun for hardware-only
+changes and do not validate physical controls, USB power or audio hardware.
 
-## Mechanical and fabrication status
+## Mechanics and deliverables
 
-`../MECHANICAL-V2.md` records accepted geometry and exact blockers. The Bourns
-pot PCB viewing direction and lateral datum remain unresolved; the PEC11R
-pattern view is not explicit; retrieved CHERRY MX2A sheets lack a dimensioned
-hole pattern. Cliff CL170805B's 5 mm flat does not establish secure fit on the
-MASTER pot's 4.5 mm flat. Uncertain footprints have not been promoted to the
-main PCB.
+`../MECHANICAL-V2.md` contains exact mechanical sources and reproduction scripts.
+The original Hammond STEP was imported into FreeCAD. Its **29.70 mm** cavity
+cannot accommodate the necessary **30.60 mm** opposite-face RCA / PCB / pot-body
+stack with 0.5 mm clearance at each enclosure face. This already excludes pot
+stand-off, solder and display hardware. Hammond 29830PSLA is rejected for the
+single planar board; the shortfall is at least **0.90 mm**.
 
-| Requested result | Actual status |
+The portrait control-envelope trial retains the required topology, with gaps of
+5.91 mm between adjacent knobs, 4.64 mm from lower knob to display-board envelope,
+6.34 mm from encoder knob to display board and 4.65 mm from lower knobs to keycaps.
+These are XY feasibility figures, not all-component assembly clearances.
+
+| Requested result | Actual saved status |
 |---|---|
-| PCB dimensions / origin | Not selected |
-| Layer count | Two-layer default; routing feasibility not evaluated |
-| Final fitted component count | Unknown; interim 42 purchased parts + 7 PCB test pads |
-| Actual 74HC4051 count in schematic | 1 |
-| Control arrangement | Required 3 pots / display + right encoder / 3 pots / 4 MX retained as requirement; no validated placement |
-| Enclosure dimensions / mounting | Not designed |
-| Hammond 29830PSLA | Neither retained nor rejected; fit test pending |
-| Full PCB STEP / FreeCAD assembly | Not generated; RCA component STEP only |
-| Complete interference / Z-stack check | Not performed |
-| Top/rear 1:1 DXF/SVG/PDF | Not generated |
-| Overlay / bezel | Pending verified panel and assembly geometry |
-| Final unit BOM | Not generated; interim actual schematic BOM available |
-| Gerbers / drills / fabrication ZIP | Not generated |
+| Final PCB size / placement / routing | Not established; main PCB empty |
+| Replacement enclosure | Editable **125 x 140 x 42 mm study** with body, base and bored bosses |
+| Study PCB | 113 x 128 x 1.6 mm at (6,6), lower Z 29 mm; not applied to KiCad |
+| Study support centers | (12,12), (113,12), (12,128), (113,128) mm; 8 mm bosses, 2.5 mm pilots |
+| Study front pots | X 27.5 / 62.5 / 97.5; Y 26 / 94 mm |
+| Study display / encoder centers | (62.5,60) / (97.5,60) mm |
+| Study keycap centers | X 27.5 / 50.8 / 74.2 / 97.5; Y 122 mm |
+| Full PCB STEP and 3D assembly | Not generated; component STEP plus feasibility FCStd documents exist |
+| Body/base geometry check | Valid solids; zero body/base intersection in saved study |
+| Top/rear 1:1 DXF/SVG/PDF templates | Not generated |
+| Overlay / bezel | Not generated; final panel and mounting geometry pending |
+| Schematic PDF | Intermediate controls/power PDF generated; not final fabrication schematic |
+| BOM-V2 | One-unit selection/status BOM; actual schematic export retained separately |
+| Gerbers / Excellon / positions / fabrication ZIP | Not generated; validation gates not satisfied |
 
-Remaining physical checks include shaft/knob retention, keycaps, nuts/washers,
-display cover pressure, USB/RCA mating, enclosure closure, antenna/pigtail
-routing, power transients, EMI, USB signal quality, mux latency/noise and audio
-quality. These follow the outstanding schematic, layout and CAD work; they do
-not substitute for completing it. Antenna and keycap MPNs were not invented.
+Generated evidence includes the physical pin-map report, library and scratch
+readbacks/renders, current schematic PNG/PDF/netlist/BOM, power analysis and
+source PDFs, CHERRY comparison, Hammond FCStd/JSON and replacement FCStd/JSON
+with SVG/PNG illustration. The preview SVG is not a machining template.
+
+Physical prototype checks remain Davies 1100 clamping/concentricity on 6.0 mm
+Bourns shafts, shaft/nut/washer stacks, keycaps and travel, display retention
+pressure, antenna/pigtail access and routing, real USB/RCA plugs, enclosure
+tolerances, USB signal quality, power startup/RF peaks, mux settling and audio
+noise. They do not replace the unfinished schematic, PCB and assembly work.
