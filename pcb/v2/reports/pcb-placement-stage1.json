@@ -1,0 +1,926 @@
+[
+  {
+    "name": "load_toolset",
+    "arguments": {
+      "name": [
+        "pcb_board",
+        "pcb_components",
+        "pcb_export"
+      ]
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"errors\":[],\"loaded\":[\"pcb_board\",\"pcb_components\",\"pcb_export\"],\"tools\":[{\"description\":\"Add a rectangular board outline of the given dimensions on the Edge.Cuts layer. This appends: on a board that already has an outline it leaves two overlapping rectangles and a DRC failure, so resizing means calling delete_graphics(layer='Edge.Cuts') first.\",\"name\":\"set_board_size\"},{\"description\":\"Return metadata about the PCB: title, revision, company, layer count, paper size, and the number of distinct nets (excluding the unconnected pseudo-net). Reads the board open in KiCad when it is reachable, else the file \u2014 'source' says which. Paper size always comes from the file, and is null when the file cannot be read. A custom (User) size also reports its dimensions in millimetres under 'paper_size_mm' on both paths.\",\"name\":\"get_board_info\"},{\"description\":\"Return the bounding box of all objects on the board (tries KiCAD IPC, falls back to file parse).\",\"name\":\"get_board_extents\"},{\"description\":\"Return all layers defined in the board with their names and types.\",\"name\":\"get_layer_list\"},{\"description\":\"Add a new inner copper or technical layer to the board layer stack.\",\"name\":\"add_layer\"},{\"description\":\"Request an editor active-layer change. The bundled stable KiCad IPC protocol does not expose this editor-session operation, so this tool currently returns unsupported_capability without modifying the board file. It never writes an (active_layer ...) token because KiCad 10 board files do not support one.\",\"name\":\"set_active_layer\"},{\"description\":\"Add a rectangular board outline on Edge.Cuts, optionally using circular rounded corners. This appends: on a board that already has an outline it leaves two overlapping rectangles and a DRC failure, so replacing one means calling delete_graphics(layer='Edge.Cuts') first.\",\"name\":\"add_board_outline\"},{\"description\":\"Delete board graphics \u2014 lines, rectangles, arcs, circles, polygons, curves, text, text boxes, and dimensions \u2014 that match every filter given. At least one of 'uuids', 'layer', or 'types' is required; 'dry_run' lists what would go without deleting anything, and the UUIDs it reports can be passed straight back as 'uuids'. Footprints, zones, tracks, vias, and graphics belonging to a footprint are never touched, and neither are reference images (KiCad's API cannot identify one). This is how a board outline is resized: add_board_outline and set_board_size append, so calling one twice without deleting the old Edge.Cuts graphics first leaves two overlapping outlines. Acts on the board open in KiCad when it is reachable, else on the file \u2014 'source' says which.\",\"name\":\"delete_graphics\"},{\"description\":\"Add an NPTH mounting hole footprint at the specified position, under the MountingHole library name stock KiCad 10 ships for that drill (3.2 \u2192 MountingHole_3.2mm_M3, 3 \u2192 MountingHole_3mm). A drill KiCad ships no footprint for is refused. Places KiCad's own library footprint when the library resolves; otherwise an equivalent unplated hole under the same name.\",\"name\":\"add_mounting_hole\"},{\"description\":\"Add a silkscreen or fabrication text string to the board.\",\"name\":\"add_board_text\"},{\"description\":\"Add a copper fill zone polygon on a specified layer and net. Tries KiCAD IPC first \u2014 with KiCAD live on this board the zone is created through the API and refilled, so it shows up at once and is undoable there. Only when no live KiCAD answers does it fall back to inserting the (zone \u2026) S-expression into the file, and that result carries a warning, because a file-only edit is invisible to an open pcbnew and is lost on its next save. Refuses a net the board does not declare rather than binding copper to net 0.\",\"name\":\"add_zone\"},{\"description\":\"Import an SVG file as filled silkscreen or copper artwork (a logo, icon, or other graphic). Curved paths are flattened into polygon outlines since KiCAD's board format doesn't support Bezier curves in filled shapes. Tries KiCAD IPC first, falls back to a direct file edit if KiCAD isn't running.\",\"name\":\"import_svg_logo\"},{\"description\":\"Place a footprint on the PCB. Uses live KiCAD IPC when reachable; otherwise safely edits a closed board file with revision checks.\",\"name\":\"place_component\"},{\"description\":\"Move a placed footprint to a new X/Y position. Uses live KiCAD IPC when reachable; otherwise safely edits a closed board file with revision checks.\",\"name\":\"move_component\"},{\"description\":\"Set the rotation angle of a placed footprint. Uses live KiCAD IPC when reachable; otherwise safely edits a closed board file with revision checks.\",\"name\":\"rotate_component\"},{\"description\":\"Set X/Y positions and rotations for multiple existing footprints atomically. Uses one live KiCAD IPC update and one undo step when reachable; otherwise safely edits a closed board file once with revision checks.\",\"name\":\"set_component_placements\"},{\"description\":\"Set a placed footprint to F.Cu or B.Cu. When the board is open in KiCad 10.0.6 or newer, this uses KiCad's own native FlipItems IPC command \u2014 the same transform the GUI's F key performs, including 3D-model offset/rotation \u2014 inside one KiCad undo step. Older or unsupported KiCad reachable over IPC returns an explicit unsupported_capability error rather than falling back to the file. Only when no live KiCad holds this board does it fall back to a guarded closed-board file edit, which flips supported geometry with revision checks and refuses any footprint whose 3D model would need a transform the file path cannot perform.\",\"name\":\"flip_component\"},{\"description\":\"Remove a footprint from the board via KiCAD IPC.\",\"name\":\"delete_component\"},{\"description\":\"Update the value or other properties of a placed footprint via KiCAD IPC.\",\"name\":\"edit_component\"},{\"description\":\"Repair the exact legacy corruption from Konnect issue #244: footprint drawing shapes rewritten as anonymous pads with empty layer sets. Resolves each affected footprint from its library, restores its pads and drawing shapes while preserving placement, identity and pad nets, and applies every requested repair in one KiCad undo commit. Defaults to a non-mutating dry run; apply requires the exact returned plan revision. Requires KiCAD running with the requested board open.\",\"name\":\"repair_corrupted_footprints\"},{\"description\":\"Find a footprint on the board by reference designator and return its position.\",\"name\":\"find_component\"},{\"description\":\"Plan or atomically apply KiCad's Update Footprints from Library operation to placed footprints on the live board. Defaults to a non-mutating dry run; apply requires its exact plan revision. Preserves placed-instance state and pad nets while refreshing supported library-owned content.\",\"name\":\"update_footprints_from_library\"},{\"description\":\"List the graphic items inside a footprint placed on the board \u2014 silkscreen, fabrication, and courtyard artwork \u2014 with the UUID needed to edit one. Points are footprint-local millimetres, as the .kicad_mod shows them. Each item reports 'editable', plus 'outlines' and 'holes' for polygons: 'points' covers the first outline only, so an item with more than one outline or any holes is reported but cannot be edited here. Requires KiCAD running with the board open.\",\"name\":\"list_board_footprint_graphics\"},{\"description\":\"Replace the vertices of a polygon inside a footprint placed on the board, selected by UUID. Points are footprint-local millimetres, as the .kicad_mod shows them. Use this to bring one placed instance in line with a library change without re-placing the part. Only a single-outline polygon with no holes can be replaced; anything else is refused by name rather than flattened. Requires KiCAD running with the board open.\",\"name\":\"edit_board_footprint_graphic\"},{\"description\":\"Return live board-space pad positions, effective rotations, physical geometry, drills, copper-layer shapes, layers and net assignments for a footprint. Reads the board open in KiCad when it is reachable and falls back to the file only when no live KiCad holds this board \u2014 IPC unreachable, or that board not open \u2014 'source' says which, so unsaved placements are visible without a save. A pad's 'net' is its net name, \\\"\\\" if the pad carries no net (unconnected), or \u2014 reading the file \u2014 null if the net node is present but unreadable; treat null as an error, not as an unconnected pad.\",\"name\":\"get_component_pads\"},{\"description\":\"Return the live board-space position, effective rotation, physical geometry, drill, layers and net of a specific pad number on a footprint.\",\"name\":\"get_pad_position\"},{\"description\":\"List all footprints on the board with their positions, layers, and values.\",\"name\":\"get_component_list\"},{\"description\":\"Place multiple copies of a footprint in a grid or line array via KiCAD IPC.\",\"name\":\"place_component_array\"},{\"description\":\"Align multiple footprints along a common X or Y axis via KiCAD IPC.\",\"name\":\"align_components\"},{\"description\":\"Duplicate an existing footprint at a new position via KiCAD IPC.\",\"name\":\"duplicate_component\"},{\"description\":\"Render the board with kicad-cli and return it as a base64 PNG. Note this is              kicad-cli's 3-D board render viewed from the top, not a layer plot -- there is              no layer selection. Use export_svg for layer-aware 2-D output.\",\"name\":\"get_board_2d_view\"},{\"description\":\"Export Gerber production files using kicad-cli. By default Konnect selects all enabled copper layers, masks, silkscreens, and Edge.Cuts while excluding documentation-only layers.\",\"name\":\"export_gerber\"},{\"description\":\"Export the PCB layout to a PDF file using kicad-cli.\",\"name\":\"export_pdf\"},{\"description\":\"Export the PCB layout to an SVG file using kicad-cli.\",\"name\":\"export_svg\"},{\"description\":\"Export the PCB as a 3D model (STEP or VRML) using kicad-cli.\",\"name\":\"export_3d\"},{\"description\":\"Generate a Bill of Materials (BOM) CSV from the schematic's component data.\",\"name\":\"export_bom\"},{\"description\":\"Export the PCB netlist to a file in KiCAD or IPC-D-356 format.\",\"name\":\"export_netlist\"},{\"description\":\"Export a deterministic Specctra DSN routing job from the exact live KiCad PCB editor revision. Requires the named board to be open with IPC enabled. On KiCad 10, an enabled authenticated ActionPlugin bridge supplies KiCad's native DSN while the IPC snapshot and reverse manifest remain authoritative; otherwise the Rust exporter is used. The first supported profile is deliberately narrow: two copper layers, front-side SMD or through-hole footprints, circle/rectangle pads, one straight-line closed outline, and no existing tracks, vias, or zones. Konnect refuses unsupported geometry or custom DRC rules, or incomplete effective routing rules instead of approximating them, and writes a revision-bound reverse manifest beside the DSN for later SES import.\",\"name\":\"export_specctra_dsn\"},{\"description\":\"Generate a component placement (pick-and-place) position file for SMT assembly. KiCad automatically omits footprints marked exclude_from_pos_files.\",\"name\":\"export_position_file\"},{\"description\":\"Export the PCB to DXF using kicad-cli, one file per requested layer. Useful for mechanical CAD interchange (enclosures, panelization, laser cutting).\",\"name\":\"export_dxf\"},{\"description\":\"Export the PCB in GenCAD format using kicad-cli. GenCAD is accepted by some CAM and test-fixture tooling as an alternative to a raw Gerber bundle.\",\"name\":\"export_gencad\"},{\"description\":\"Export the PCB in IPC-2581 format using kicad-cli. IPC-2581 is a unified fabrication/assembly/test data format accepted by many contract manufacturers as an alternative to a Gerber + drill + BOM + pick-and-place bundle.\",\"name\":\"export_ipc2581\"},{\"description\":\"Export the PCB in ODB++ format using kicad-cli. ODB++ is a unified fabrication data format accepted by many fab houses as an alternative to a Gerber + drill bundle.\",\"name\":\"export_odb\"},{\"description\":\"Refill all copper pour zones on the board. KiCad IPC refills the complete board; per-zone selection is not available. Requires a running KiCad instance with IPC enabled.\",\"name\":\"refill_zones\"},{\"description\":\"Run the Design Rule Check (DRC) on the PCB and return a list of violations. Provided in `pcb_export` because the output is handy to bundle alongside Gerbers when preparing a build package. For interactive / iterative DRC work, prefer `run_drc` (verification toolset) \u2014 same kicad-cli check, cleaner summary with error/warning counts.\",\"name\":\"get_drc_violations\"}],\"tools_added\":45}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "set_board_size",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "width": 113,
+      "height": 128,
+      "origin_x": 6,
+      "origin_y": 6
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"height\":128.0,\"replaced_segments\":0,\"source\":\"ipc\",\"width\":113.0,\"x1\":6.0,\"x2\":119.0,\"y1\":6.0,\"y2\":134.0}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "move_component",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "reference": "RV1",
+      "x": 27.5,
+      "y": 26
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"moved\":\"RV1\",\"source\":\"ipc\",\"x\":27.5,\"y\":26.0}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "move_component",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "reference": "RV2",
+      "x": 62.5,
+      "y": 26
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"moved\":\"RV2\",\"source\":\"ipc\",\"x\":62.5,\"y\":26.0}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "move_component",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "reference": "RV3",
+      "x": 97.5,
+      "y": 26
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"moved\":\"RV3\",\"source\":\"ipc\",\"x\":97.5,\"y\":26.0}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "move_component",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "reference": "RV4",
+      "x": 27.5,
+      "y": 94
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"moved\":\"RV4\",\"source\":\"ipc\",\"x\":27.5,\"y\":94.0}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "move_component",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "reference": "RV5",
+      "x": 62.5,
+      "y": 94
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"moved\":\"RV5\",\"source\":\"ipc\",\"x\":62.5,\"y\":94.0}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "move_component",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "reference": "RV6",
+      "x": 97.5,
+      "y": 94
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"moved\":\"RV6\",\"source\":\"ipc\",\"x\":97.5,\"y\":94.0}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "move_component",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "reference": "U5",
+      "x": 63.516,
+      "y": 60
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"moved\":\"U5\",\"source\":\"ipc\",\"x\":63.516,\"y\":60.0}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "move_component",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "reference": "SW7",
+      "x": 97.5,
+      "y": 60
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"moved\":\"SW7\",\"source\":\"ipc\",\"x\":97.5,\"y\":60.0}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "move_component",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "reference": "SW1",
+      "x": 30.04,
+      "y": 116.92
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"moved\":\"SW1\",\"source\":\"ipc\",\"x\":30.04,\"y\":116.92}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "move_component",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "reference": "SW2",
+      "x": 53.34,
+      "y": 116.92
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"moved\":\"SW2\",\"source\":\"ipc\",\"x\":53.34,\"y\":116.92}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "move_component",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "reference": "SW3",
+      "x": 76.74,
+      "y": 116.92
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"moved\":\"SW3\",\"source\":\"ipc\",\"x\":76.74,\"y\":116.92}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "move_component",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "reference": "SW4",
+      "x": 100.04,
+      "y": 116.92
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"moved\":\"SW4\",\"source\":\"ipc\",\"x\":100.04,\"y\":116.92}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "flip_component",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "reference": "RV7",
+      "layer": "B.Cu"
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"already_on_layer\":false,\"flipped\":\"RV7\",\"kiid\":\"7b231f0c-82f0-4f44-958c-800814fb8363\",\"layer\":\"B.Cu\",\"models\":[],\"previous_layer\":\"F.Cu\",\"source\":\"ipc\",\"undo\":\"One KiCad undo step reverses the flip.\"}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "move_component",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "reference": "RV7",
+      "x": 20,
+      "y": 12
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"moved\":\"RV7\",\"source\":\"ipc\",\"x\":20.0,\"y\":12.0}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "flip_component",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "reference": "J1",
+      "layer": "B.Cu"
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"already_on_layer\":false,\"flipped\":\"J1\",\"kiid\":\"5944bd56-c3a3-4c37-ae99-d4d17ca3841e\",\"layer\":\"B.Cu\",\"models\":[],\"previous_layer\":\"F.Cu\",\"source\":\"ipc\",\"undo\":\"One KiCad undo step reverses the flip.\"}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "rotate_component",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "reference": "J1",
+      "rotation": 180
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"rotated\":\"J1\",\"rotation\":180.0,\"source\":\"ipc\"}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "move_component",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "reference": "J1",
+      "x": 42.025,
+      "y": 10
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"moved\":\"J1\",\"source\":\"ipc\",\"x\":42.025,\"y\":10.0}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "flip_component",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "reference": "J2",
+      "layer": "B.Cu"
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"already_on_layer\":false,\"flipped\":\"J2\",\"kiid\":\"13de6848-031c-4498-8f63-04a45d891fc7\",\"layer\":\"B.Cu\",\"models\":[],\"previous_layer\":\"F.Cu\",\"source\":\"ipc\",\"undo\":\"One KiCad undo step reverses the flip.\"}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "move_component",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "reference": "J2",
+      "x": 92.5,
+      "y": 14.5
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"moved\":\"J2\",\"source\":\"ipc\",\"x\":92.5,\"y\":14.5}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "flip_component",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "reference": "U1",
+      "layer": "B.Cu"
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"already_on_layer\":false,\"flipped\":\"U1\",\"kiid\":\"1e1dcf90-8467-4f4e-bd7e-bfc44e6837aa\",\"layer\":\"B.Cu\",\"models\":[],\"previous_layer\":\"F.Cu\",\"source\":\"ipc\",\"undo\":\"One KiCad undo step reverses the flip.\"}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "rotate_component",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "reference": "U1",
+      "rotation": 180
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"rotated\":\"U1\",\"rotation\":180.0,\"source\":\"ipc\"}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "move_component",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "reference": "U1",
+      "x": 43.5,
+      "y": 48
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"moved\":\"U1\",\"source\":\"ipc\",\"x\":43.5,\"y\":48.0}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "flip_component",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "reference": "U6",
+      "layer": "B.Cu"
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"already_on_layer\":false,\"flipped\":\"U6\",\"kiid\":\"766e68e0-29b3-4a21-b5e3-21053d4ec34b\",\"layer\":\"B.Cu\",\"models\":[],\"previous_layer\":\"F.Cu\",\"source\":\"ipc\",\"undo\":\"One KiCad undo step reverses the flip.\"}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "move_component",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "reference": "U6",
+      "x": 92.5,
+      "y": 44
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"moved\":\"U6\",\"source\":\"ipc\",\"x\":92.5,\"y\":44.0}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "flip_component",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "reference": "U2",
+      "layer": "B.Cu"
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"already_on_layer\":false,\"flipped\":\"U2\",\"kiid\":\"9336bf3c-9ea2-4e8f-a46a-d5408b147343\",\"layer\":\"B.Cu\",\"models\":[],\"previous_layer\":\"F.Cu\",\"source\":\"ipc\",\"undo\":\"One KiCad undo step reverses the flip.\"}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "move_component",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "reference": "U2",
+      "x": 25,
+      "y": 45
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"moved\":\"U2\",\"source\":\"ipc\",\"x\":25.0,\"y\":45.0}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "flip_component",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "reference": "U7",
+      "layer": "B.Cu"
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"already_on_layer\":false,\"flipped\":\"U7\",\"kiid\":\"918c267c-47c4-44e1-b737-43bf9c412d2c\",\"layer\":\"B.Cu\",\"models\":[],\"previous_layer\":\"F.Cu\",\"source\":\"ipc\",\"undo\":\"One KiCad undo step reverses the flip.\"}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "move_component",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "reference": "U7",
+      "x": 26,
+      "y": 26
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"moved\":\"U7\",\"source\":\"ipc\",\"x\":26.0,\"y\":26.0}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "flip_component",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "reference": "U4",
+      "layer": "B.Cu"
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"already_on_layer\":false,\"flipped\":\"U4\",\"kiid\":\"f09110e3-0b02-4729-97c6-ee9f681c7f80\",\"layer\":\"B.Cu\",\"models\":[],\"previous_layer\":\"F.Cu\",\"source\":\"ipc\",\"undo\":\"One KiCad undo step reverses the flip.\"}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "move_component",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "reference": "U4",
+      "x": 44,
+      "y": 15
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"moved\":\"U4\",\"source\":\"ipc\",\"x\":44.0,\"y\":15.0}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "flip_component",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "reference": "U3",
+      "layer": "B.Cu"
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"already_on_layer\":false,\"flipped\":\"U3\",\"kiid\":\"3505012e-1099-4c8c-bdad-cff04a3fbeb5\",\"layer\":\"B.Cu\",\"models\":[],\"previous_layer\":\"F.Cu\",\"source\":\"ipc\",\"undo\":\"One KiCad undo step reverses the flip.\"}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "move_component",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "reference": "U3",
+      "x": 26,
+      "y": 69
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"moved\":\"U3\",\"source\":\"ipc\",\"x\":26.0,\"y\":69.0}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "flip_component",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "reference": "SW5",
+      "layer": "B.Cu"
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"already_on_layer\":false,\"flipped\":\"SW5\",\"kiid\":\"daa30062-e652-4b4c-93b4-af7a2b954ff7\",\"layer\":\"B.Cu\",\"models\":[],\"previous_layer\":\"F.Cu\",\"source\":\"ipc\",\"undo\":\"One KiCad undo step reverses the flip.\"}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "rotate_component",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "reference": "SW5",
+      "rotation": 90
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"rotated\":\"SW5\",\"rotation\":90.0,\"source\":\"ipc\"}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "move_component",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "reference": "SW5",
+      "x": 12,
+      "y": 58
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"moved\":\"SW5\",\"source\":\"ipc\",\"x\":12.0,\"y\":58.0}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "flip_component",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "reference": "SW6",
+      "layer": "B.Cu"
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"already_on_layer\":false,\"flipped\":\"SW6\",\"kiid\":\"51409fc0-a079-4a36-94e0-30e8eff8ebcc\",\"layer\":\"B.Cu\",\"models\":[],\"previous_layer\":\"F.Cu\",\"source\":\"ipc\",\"undo\":\"One KiCad undo step reverses the flip.\"}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "rotate_component",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "reference": "SW6",
+      "rotation": 90
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"rotated\":\"SW6\",\"rotation\":90.0,\"source\":\"ipc\"}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "move_component",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "reference": "SW6",
+      "x": 12,
+      "y": 73
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"moved\":\"SW6\",\"source\":\"ipc\",\"x\":12.0,\"y\":73.0}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "add_mounting_hole",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "reference": "H1",
+      "x": 12,
+      "y": 12,
+      "drill_diameter": 3.2
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"drill_diameter\":3.2,\"footprint\":\"MountingHole:MountingHole_3.2mm_M3\",\"geometry\":\"library\",\"geometry_note\":null,\"reference\":\"H1\",\"source\":\"ipc\",\"x\":12.0,\"y\":12.0}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "add_mounting_hole",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "reference": "H2",
+      "x": 113,
+      "y": 12,
+      "drill_diameter": 3.2
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"drill_diameter\":3.2,\"footprint\":\"MountingHole:MountingHole_3.2mm_M3\",\"geometry\":\"library\",\"geometry_note\":null,\"reference\":\"H2\",\"source\":\"ipc\",\"x\":113.0,\"y\":12.0}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "add_mounting_hole",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "reference": "H3",
+      "x": 12,
+      "y": 128,
+      "drill_diameter": 3.2
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"drill_diameter\":3.2,\"footprint\":\"MountingHole:MountingHole_3.2mm_M3\",\"geometry\":\"library\",\"geometry_note\":null,\"reference\":\"H3\",\"source\":\"ipc\",\"x\":12.0,\"y\":128.0}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "add_mounting_hole",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "reference": "H4",
+      "x": 113,
+      "y": 128,
+      "drill_diameter": 3.2
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"drill_diameter\":3.2,\"footprint\":\"MountingHole:MountingHole_3.2mm_M3\",\"geometry\":\"library\",\"geometry_note\":null,\"reference\":\"H4\",\"source\":\"ipc\",\"x\":113.0,\"y\":128.0}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "save_project",
+    "arguments": {},
+    "result": {
+      "content": [
+        {
+          "text": "Board saved successfully.",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "get_component_pads",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "reference": "J1"
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"pad_count\":20,\"pads\":[{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"circle\",\"size\":{\"x\":0.7,\"y\":0.7}}],\"drill\":{\"end_layer\":\"F.Cu\",\"shape\":\"circle\",\"size\":{\"x\":0.4,\"y\":0.4},\"start_layer\":\"B.Cu\"},\"layers\":[\"F.Cu\",\"F.Mask\",\"B.Cu\",\"B.Mask\",\"In1.Cu\",\"In2.Cu\",\"In3.Cu\",\"In4.Cu\",\"In5.Cu\",\"In6.Cu\",\"In7.Cu\",\"In8.Cu\",\"In9.Cu\",\"In10.Cu\",\"In11.Cu\",\"In12.Cu\",\"In13.Cu\",\"In14.Cu\",\"In15.Cu\",\"In16.Cu\",\"In17.Cu\",\"In18.Cu\",\"In19.Cu\",\"In20.Cu\",\"In21.Cu\",\"In22.Cu\",\"In23.Cu\",\"In24.Cu\",\"In25.Cu\",\"In26.Cu\",\"In27.Cu\",\"In28.Cu\",\"In29.Cu\",\"In30.Cu\"],\"net\":\"GND\",\"number\":\"A1\",\"pad_type\":\"thru_hole\",\"rotation_deg\":180.0,\"shape\":\"circle\",\"size\":{\"x\":0.7,\"y\":0.7},\"uuid\":\"ed328a9e-4340-4705-9c5a-7e4da19647e9\",\"x\":42.025,\"y\":10.0},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"circle\",\"size\":{\"x\":0.7,\"y\":0.7}}],\"drill\":{\"end_layer\":\"F.Cu\",\"shape\":\"circle\",\"size\":{\"x\":0.4,\"y\":0.4},\"start_layer\":\"B.Cu\"},\"layers\":[\"F.Cu\",\"F.Mask\",\"B.Cu\",\"B.Mask\",\"In1.Cu\",\"In2.Cu\",\"In3.Cu\",\"In4.Cu\",\"In5.Cu\",\"In6.Cu\",\"In7.Cu\",\"In8.Cu\",\"In9.Cu\",\"In10.Cu\",\"In11.Cu\",\"In12.Cu\",\"In13.Cu\",\"In14.Cu\",\"In15.Cu\",\"In16.Cu\",\"In17.Cu\",\"In18.Cu\",\"In19.Cu\",\"In20.Cu\",\"In21.Cu\",\"In22.Cu\",\"In23.Cu\",\"In24.Cu\",\"In25.Cu\",\"In26.Cu\",\"In27.Cu\",\"In28.Cu\",\"In29.Cu\",\"In30.Cu\"],\"net\":\"/VBUS_RAW\",\"number\":\"A4\",\"pad_type\":\"thru_hole\",\"rotation_deg\":180.0,\"shape\":\"circle\",\"size\":{\"x\":0.7,\"y\":0.7},\"uuid\":\"ea312f1f-e944-4d5f-a41f-54b6a1bb3e13\",\"x\":41.175,\"y\":10.0},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"circle\",\"size\":{\"x\":0.7,\"y\":0.7}}],\"drill\":{\"end_layer\":\"F.Cu\",\"shape\":\"circle\",\"size\":{\"x\":0.4,\"y\":0.4},\"start_layer\":\"B.Cu\"},\"layers\":[\"F.Cu\",\"F.Mask\",\"B.Cu\",\"B.Mask\",\"In1.Cu\",\"In2.Cu\",\"In3.Cu\",\"In4.Cu\",\"In5.Cu\",\"In6.Cu\",\"In7.Cu\",\"In8.Cu\",\"In9.Cu\",\"In10.Cu\",\"In11.Cu\",\"In12.Cu\",\"In13.Cu\",\"In14.Cu\",\"In15.Cu\",\"In16.Cu\",\"In17.Cu\",\"In18.Cu\",\"In19.Cu\",\"In20.Cu\",\"In21.Cu\",\"In22.Cu\",\"In23.Cu\",\"In24.Cu\",\"In25.Cu\",\"In26.Cu\",\"In27.Cu\",\"In28.Cu\",\"In29.Cu\",\"In30.Cu\"],\"net\":\"/USB_CC1\",\"number\":\"A5\",\"pad_type\":\"thru_hole\",\"rotation_deg\":180.0,\"shape\":\"circle\",\"size\":{\"x\":0.7,\"y\":0.7},\"uuid\":\"fab8461e-2bc5-44b9-9a97-6065c1808563\",\"x\":40.325,\"y\":10.0},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"circle\",\"size\":{\"x\":0.7,\"y\":0.7}}],\"drill\":{\"end_layer\":\"F.Cu\",\"shape\":\"circle\",\"size\":{\"x\":0.4,\"y\":0.4},\"start_layer\":\"B.Cu\"},\"layers\":[\"F.Cu\",\"F.Mask\",\"B.Cu\",\"B.Mask\",\"In1.Cu\",\"In2.Cu\",\"In3.Cu\",\"In4.Cu\",\"In5.Cu\",\"In6.Cu\",\"In7.Cu\",\"In8.Cu\",\"In9.Cu\",\"In10.Cu\",\"In11.Cu\",\"In12.Cu\",\"In13.Cu\",\"In14.Cu\",\"In15.Cu\",\"In16.Cu\",\"In17.Cu\",\"In18.Cu\",\"In19.Cu\",\"In20.Cu\",\"In21.Cu\",\"In22.Cu\",\"In23.Cu\",\"In24.Cu\",\"In25.Cu\",\"In26.Cu\",\"In27.Cu\",\"In28.Cu\",\"In29.Cu\",\"In30.Cu\"],\"net\":\"/USB_DP_CONN\",\"number\":\"A6\",\"pad_type\":\"thru_hole\",\"rotation_deg\":180.0,\"shape\":\"circle\",\"size\":{\"x\":0.7,\"y\":0.7},\"uuid\":\"4f19d69f-0b8d-4a69-8b8c-1555b3e99af1\",\"x\":39.475,\"y\":10.0},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"circle\",\"size\":{\"x\":0.7,\"y\":0.7}}],\"drill\":{\"end_layer\":\"F.Cu\",\"shape\":\"circle\",\"size\":{\"x\":0.4,\"y\":0.4},\"start_layer\":\"B.Cu\"},\"layers\":[\"F.Cu\",\"F.Mask\",\"B.Cu\",\"B.Mask\",\"In1.Cu\",\"In2.Cu\",\"In3.Cu\",\"In4.Cu\",\"In5.Cu\",\"In6.Cu\",\"In7.Cu\",\"In8.Cu\",\"In9.Cu\",\"In10.Cu\",\"In11.Cu\",\"In12.Cu\",\"In13.Cu\",\"In14.Cu\",\"In15.Cu\",\"In16.Cu\",\"In17.Cu\",\"In18.Cu\",\"In19.Cu\",\"In20.Cu\",\"In21.Cu\",\"In22.Cu\",\"In23.Cu\",\"In24.Cu\",\"In25.Cu\",\"In26.Cu\",\"In27.Cu\",\"In28.Cu\",\"In29.Cu\",\"In30.Cu\"],\"net\":\"/USB_DM_CONN\",\"number\":\"A7\",\"pad_type\":\"thru_hole\",\"rotation_deg\":180.0,\"shape\":\"circle\",\"size\":{\"x\":0.7,\"y\":0.7},\"uuid\":\"b797ac65-f0ec-413a-90b5-53ba05c9cae7\",\"x\":38.625,\"y\":10.0},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"circle\",\"size\":{\"x\":0.7,\"y\":0.7}}],\"drill\":{\"end_layer\":\"F.Cu\",\"shape\":\"circle\",\"size\":{\"x\":0.4,\"y\":0.4},\"start_layer\":\"B.Cu\"},\"layers\":[\"F.Cu\",\"F.Mask\",\"B.Cu\",\"B.Mask\",\"In1.Cu\",\"In2.Cu\",\"In3.Cu\",\"In4.Cu\",\"In5.Cu\",\"In6.Cu\",\"In7.Cu\",\"In8.Cu\",\"In9.Cu\",\"In10.Cu\",\"In11.Cu\",\"In12.Cu\",\"In13.Cu\",\"In14.Cu\",\"In15.Cu\",\"In16.Cu\",\"In17.Cu\",\"In18.Cu\",\"In19.Cu\",\"In20.Cu\",\"In21.Cu\",\"In22.Cu\",\"In23.Cu\",\"In24.Cu\",\"In25.Cu\",\"In26.Cu\",\"In27.Cu\",\"In28.Cu\",\"In29.Cu\",\"In30.Cu\"],\"net\":\"unconnected-(J1-SBU1-PadA8)\",\"number\":\"A8\",\"pad_type\":\"thru_hole\",\"rotation_deg\":180.0,\"shape\":\"circle\",\"size\":{\"x\":0.7,\"y\":0.7},\"uuid\":\"357b9749-8573-4869-8ac3-206dda60efc0\",\"x\":37.775,\"y\":10.0},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"circle\",\"size\":{\"x\":0.7,\"y\":0.7}}],\"drill\":{\"end_layer\":\"F.Cu\",\"shape\":\"circle\",\"size\":{\"x\":0.4,\"y\":0.4},\"start_layer\":\"B.Cu\"},\"layers\":[\"F.Cu\",\"F.Mask\",\"B.Cu\",\"B.Mask\",\"In1.Cu\",\"In2.Cu\",\"In3.Cu\",\"In4.Cu\",\"In5.Cu\",\"In6.Cu\",\"In7.Cu\",\"In8.Cu\",\"In9.Cu\",\"In10.Cu\",\"In11.Cu\",\"In12.Cu\",\"In13.Cu\",\"In14.Cu\",\"In15.Cu\",\"In16.Cu\",\"In17.Cu\",\"In18.Cu\",\"In19.Cu\",\"In20.Cu\",\"In21.Cu\",\"In22.Cu\",\"In23.Cu\",\"In24.Cu\",\"In25.Cu\",\"In26.Cu\",\"In27.Cu\",\"In28.Cu\",\"In29.Cu\",\"In30.Cu\"],\"net\":\"/VBUS_RAW\",\"number\":\"A9\",\"pad_type\":\"thru_hole\",\"rotation_deg\":180.0,\"shape\":\"circle\",\"size\":{\"x\":0.7,\"y\":0.7},\"uuid\":\"5d7b5182-605a-44ec-959b-6a276b127966\",\"x\":36.925,\"y\":10.0},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"circle\",\"size\":{\"x\":0.7,\"y\":0.7}}],\"drill\":{\"end_layer\":\"F.Cu\",\"shape\":\"circle\",\"size\":{\"x\":0.4,\"y\":0.4},\"start_layer\":\"B.Cu\"},\"layers\":[\"F.Cu\",\"F.Mask\",\"B.Cu\",\"B.Mask\",\"In1.Cu\",\"In2.Cu\",\"In3.Cu\",\"In4.Cu\",\"In5.Cu\",\"In6.Cu\",\"In7.Cu\",\"In8.Cu\",\"In9.Cu\",\"In10.Cu\",\"In11.Cu\",\"In12.Cu\",\"In13.Cu\",\"In14.Cu\",\"In15.Cu\",\"In16.Cu\",\"In17.Cu\",\"In18.Cu\",\"In19.Cu\",\"In20.Cu\",\"In21.Cu\",\"In22.Cu\",\"In23.Cu\",\"In24.Cu\",\"In25.Cu\",\"In26.Cu\",\"In27.Cu\",\"In28.Cu\",\"In29.Cu\",\"In30.Cu\"],\"net\":\"GND\",\"number\":\"A12\",\"pad_type\":\"thru_hole\",\"rotation_deg\":180.0,\"shape\":\"circle\",\"size\":{\"x\":0.7,\"y\":0.7},\"uuid\":\"f05b415b-6ae7-4875-8c5a-21517ee36601\",\"x\":36.075,\"y\":10.0},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"circle\",\"size\":{\"x\":0.7,\"y\":0.7}}],\"drill\":{\"end_layer\":\"F.Cu\",\"shape\":\"circle\",\"size\":{\"x\":0.4,\"y\":0.4},\"start_layer\":\"B.Cu\"},\"layers\":[\"F.Cu\",\"F.Mask\",\"B.Cu\",\"B.Mask\",\"In1.Cu\",\"In2.Cu\",\"In3.Cu\",\"In4.Cu\",\"In5.Cu\",\"In6.Cu\",\"In7.Cu\",\"In8.Cu\",\"In9.Cu\",\"In10.Cu\",\"In11.Cu\",\"In12.Cu\",\"In13.Cu\",\"In14.Cu\",\"In15.Cu\",\"In16.Cu\",\"In17.Cu\",\"In18.Cu\",\"In19.Cu\",\"In20.Cu\",\"In21.Cu\",\"In22.Cu\",\"In23.Cu\",\"In24.Cu\",\"In25.Cu\",\"In26.Cu\",\"In27.Cu\",\"In28.Cu\",\"In29.Cu\",\"In30.Cu\"],\"net\":\"GND\",\"number\":\"B1\",\"pad_type\":\"thru_hole\",\"rotation_deg\":180.0,\"shape\":\"circle\",\"size\":{\"x\":0.7,\"y\":0.7},\"uuid\":\"0e632a02-3e11-4a20-8d29-6c2c5714dcf1\",\"x\":36.075,\"y\":11.35},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"circle\",\"size\":{\"x\":0.7,\"y\":0.7}}],\"drill\":{\"end_layer\":\"F.Cu\",\"shape\":\"circle\",\"size\":{\"x\":0.4,\"y\":0.4},\"start_layer\":\"B.Cu\"},\"layers\":[\"F.Cu\",\"F.Mask\",\"B.Cu\",\"B.Mask\",\"In1.Cu\",\"In2.Cu\",\"In3.Cu\",\"In4.Cu\",\"In5.Cu\",\"In6.Cu\",\"In7.Cu\",\"In8.Cu\",\"In9.Cu\",\"In10.Cu\",\"In11.Cu\",\"In12.Cu\",\"In13.Cu\",\"In14.Cu\",\"In15.Cu\",\"In16.Cu\",\"In17.Cu\",\"In18.Cu\",\"In19.Cu\",\"In20.Cu\",\"In21.Cu\",\"In22.Cu\",\"In23.Cu\",\"In24.Cu\",\"In25.Cu\",\"In26.Cu\",\"In27.Cu\",\"In28.Cu\",\"In29.Cu\",\"In30.Cu\"],\"net\":\"/VBUS_RAW\",\"number\":\"B4\",\"pad_type\":\"thru_hole\",\"rotation_deg\":180.0,\"shape\":\"circle\",\"size\":{\"x\":0.7,\"y\":0.7},\"uuid\":\"032dcf1b-bb02-4157-97d2-8d1367f8e2e8\",\"x\":36.925,\"y\":11.35},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"circle\",\"size\":{\"x\":0.7,\"y\":0.7}}],\"drill\":{\"end_layer\":\"F.Cu\",\"shape\":\"circle\",\"size\":{\"x\":0.4,\"y\":0.4},\"start_layer\":\"B.Cu\"},\"layers\":[\"F.Cu\",\"F.Mask\",\"B.Cu\",\"B.Mask\",\"In1.Cu\",\"In2.Cu\",\"In3.Cu\",\"In4.Cu\",\"In5.Cu\",\"In6.Cu\",\"In7.Cu\",\"In8.Cu\",\"In9.Cu\",\"In10.Cu\",\"In11.Cu\",\"In12.Cu\",\"In13.Cu\",\"In14.Cu\",\"In15.Cu\",\"In16.Cu\",\"In17.Cu\",\"In18.Cu\",\"In19.Cu\",\"In20.Cu\",\"In21.Cu\",\"In22.Cu\",\"In23.Cu\",\"In24.Cu\",\"In25.Cu\",\"In26.Cu\",\"In27.Cu\",\"In28.Cu\",\"In29.Cu\",\"In30.Cu\"],\"net\":\"/USB_CC2\",\"number\":\"B5\",\"pad_type\":\"thru_hole\",\"rotation_deg\":180.0,\"shape\":\"circle\",\"size\":{\"x\":0.7,\"y\":0.7},\"uuid\":\"c5837afd-4878-40cb-9d64-1ff3bd39b0f2\",\"x\":37.775,\"y\":11.35},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"circle\",\"size\":{\"x\":0.7,\"y\":0.7}}],\"drill\":{\"end_layer\":\"F.Cu\",\"shape\":\"circle\",\"size\":{\"x\":0.4,\"y\":0.4},\"start_layer\":\"B.Cu\"},\"layers\":[\"F.Cu\",\"F.Mask\",\"B.Cu\",\"B.Mask\",\"In1.Cu\",\"In2.Cu\",\"In3.Cu\",\"In4.Cu\",\"In5.Cu\",\"In6.Cu\",\"In7.Cu\",\"In8.Cu\",\"In9.Cu\",\"In10.Cu\",\"In11.Cu\",\"In12.Cu\",\"In13.Cu\",\"In14.Cu\",\"In15.Cu\",\"In16.Cu\",\"In17.Cu\",\"In18.Cu\",\"In19.Cu\",\"In20.Cu\",\"In21.Cu\",\"In22.Cu\",\"In23.Cu\",\"In24.Cu\",\"In25.Cu\",\"In26.Cu\",\"In27.Cu\",\"In28.Cu\",\"In29.Cu\",\"In30.Cu\"],\"net\":\"/USB_DP_CONN\",\"number\":\"B6\",\"pad_type\":\"thru_hole\",\"rotation_deg\":180.0,\"shape\":\"circle\",\"size\":{\"x\":0.7,\"y\":0.7},\"uuid\":\"44c9ac70-71c8-4edd-b17c-ffe1931077a8\",\"x\":38.625,\"y\":11.35},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"circle\",\"size\":{\"x\":0.7,\"y\":0.7}}],\"drill\":{\"end_layer\":\"F.Cu\",\"shape\":\"circle\",\"size\":{\"x\":0.4,\"y\":0.4},\"start_layer\":\"B.Cu\"},\"layers\":[\"F.Cu\",\"F.Mask\",\"B.Cu\",\"B.Mask\",\"In1.Cu\",\"In2.Cu\",\"In3.Cu\",\"In4.Cu\",\"In5.Cu\",\"In6.Cu\",\"In7.Cu\",\"In8.Cu\",\"In9.Cu\",\"In10.Cu\",\"In11.Cu\",\"In12.Cu\",\"In13.Cu\",\"In14.Cu\",\"In15.Cu\",\"In16.Cu\",\"In17.Cu\",\"In18.Cu\",\"In19.Cu\",\"In20.Cu\",\"In21.Cu\",\"In22.Cu\",\"In23.Cu\",\"In24.Cu\",\"In25.Cu\",\"In26.Cu\",\"In27.Cu\",\"In28.Cu\",\"In29.Cu\",\"In30.Cu\"],\"net\":\"/USB_DM_CONN\",\"number\":\"B7\",\"pad_type\":\"thru_hole\",\"rotation_deg\":180.0,\"shape\":\"circle\",\"size\":{\"x\":0.7,\"y\":0.7},\"uuid\":\"d59f9374-7da0-48de-98fd-fec008a83b01\",\"x\":39.475,\"y\":11.35},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"circle\",\"size\":{\"x\":0.7,\"y\":0.7}}],\"drill\":{\"end_layer\":\"F.Cu\",\"shape\":\"circle\",\"size\":{\"x\":0.4,\"y\":0.4},\"start_layer\":\"B.Cu\"},\"layers\":[\"F.Cu\",\"F.Mask\",\"B.Cu\",\"B.Mask\",\"In1.Cu\",\"In2.Cu\",\"In3.Cu\",\"In4.Cu\",\"In5.Cu\",\"In6.Cu\",\"In7.Cu\",\"In8.Cu\",\"In9.Cu\",\"In10.Cu\",\"In11.Cu\",\"In12.Cu\",\"In13.Cu\",\"In14.Cu\",\"In15.Cu\",\"In16.Cu\",\"In17.Cu\",\"In18.Cu\",\"In19.Cu\",\"In20.Cu\",\"In21.Cu\",\"In22.Cu\",\"In23.Cu\",\"In24.Cu\",\"In25.Cu\",\"In26.Cu\",\"In27.Cu\",\"In28.Cu\",\"In29.Cu\",\"In30.Cu\"],\"net\":\"unconnected-(J1-SBU2-PadB8)\",\"number\":\"B8\",\"pad_type\":\"thru_hole\",\"rotation_deg\":180.0,\"shape\":\"circle\",\"size\":{\"x\":0.7,\"y\":0.7},\"uuid\":\"cbfc4619-2ed8-49f7-8c34-fbfe05fb1b13\",\"x\":40.325,\"y\":11.35},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"circle\",\"size\":{\"x\":0.7,\"y\":0.7}}],\"drill\":{\"end_layer\":\"F.Cu\",\"shape\":\"circle\",\"size\":{\"x\":0.4,\"y\":0.4},\"start_layer\":\"B.Cu\"},\"layers\":[\"F.Cu\",\"F.Mask\",\"B.Cu\",\"B.Mask\",\"In1.Cu\",\"In2.Cu\",\"In3.Cu\",\"In4.Cu\",\"In5.Cu\",\"In6.Cu\",\"In7.Cu\",\"In8.Cu\",\"In9.Cu\",\"In10.Cu\",\"In11.Cu\",\"In12.Cu\",\"In13.Cu\",\"In14.Cu\",\"In15.Cu\",\"In16.Cu\",\"In17.Cu\",\"In18.Cu\",\"In19.Cu\",\"In20.Cu\",\"In21.Cu\",\"In22.Cu\",\"In23.Cu\",\"In24.Cu\",\"In25.Cu\",\"In26.Cu\",\"In27.Cu\",\"In28.Cu\",\"In29.Cu\",\"In30.Cu\"],\"net\":\"/VBUS_RAW\",\"number\":\"B9\",\"pad_type\":\"thru_hole\",\"rotation_deg\":180.0,\"shape\":\"circle\",\"size\":{\"x\":0.7,\"y\":0.7},\"uuid\":\"03cd5090-e2dc-4a34-851d-05af4d0f3de0\",\"x\":41.175,\"y\":11.35},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"circle\",\"size\":{\"x\":0.7,\"y\":0.7}}],\"drill\":{\"end_layer\":\"F.Cu\",\"shape\":\"circle\",\"size\":{\"x\":0.4,\"y\":0.4},\"start_layer\":\"B.Cu\"},\"layers\":[\"F.Cu\",\"F.Mask\",\"B.Cu\",\"B.Mask\",\"In1.Cu\",\"In2.Cu\",\"In3.Cu\",\"In4.Cu\",\"In5.Cu\",\"In6.Cu\",\"In7.Cu\",\"In8.Cu\",\"In9.Cu\",\"In10.Cu\",\"In11.Cu\",\"In12.Cu\",\"In13.Cu\",\"In14.Cu\",\"In15.Cu\",\"In16.Cu\",\"In17.Cu\",\"In18.Cu\",\"In19.Cu\",\"In20.Cu\",\"In21.Cu\",\"In22.Cu\",\"In23.Cu\",\"In24.Cu\",\"In25.Cu\",\"In26.Cu\",\"In27.Cu\",\"In28.Cu\",\"In29.Cu\",\"In30.Cu\"],\"net\":\"GND\",\"number\":\"B12\",\"pad_type\":\"thru_hole\",\"rotation_deg\":180.0,\"shape\":\"circle\",\"size\":{\"x\":0.7,\"y\":0.7},\"uuid\":\"b8cf51b3-137b-42ce-aa2e-0d084a1347b5\",\"x\":42.025,\"y\":11.35},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"oval\",\"size\":{\"x\":0.9,\"y\":2.4}}],\"drill\":{\"end_layer\":\"F.Cu\",\"shape\":\"oval\",\"size\":{\"x\":0.6,\"y\":2.1},\"start_layer\":\"B.Cu\"},\"layers\":[\"F.Cu\",\"F.Mask\",\"B.Cu\",\"B.Mask\",\"In1.Cu\",\"In2.Cu\",\"In3.Cu\",\"In4.Cu\",\"In5.Cu\",\"In6.Cu\",\"In7.Cu\",\"In8.Cu\",\"In9.Cu\",\"In10.Cu\",\"In11.Cu\",\"In12.Cu\",\"In13.Cu\",\"In14.Cu\",\"In15.Cu\",\"In16.Cu\",\"In17.Cu\",\"In18.Cu\",\"In19.Cu\",\"In20.Cu\",\"In21.Cu\",\"In22.Cu\",\"In23.Cu\",\"In24.Cu\",\"In25.Cu\",\"In26.Cu\",\"In27.Cu\",\"In28.Cu\",\"In29.Cu\",\"In30.Cu\"],\"net\":\"GND\",\"number\":\"SH\",\"pad_type\":\"thru_hole\",\"rotation_deg\":180.0,\"shape\":\"oval\",\"size\":{\"x\":0.9,\"y\":2.4},\"uuid\":\"8148a733-9bcd-4048-b40d-0475d6aec180\",\"x\":43.375,\"y\":10.98},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"oval\",\"size\":{\"x\":0.9,\"y\":1.7}}],\"drill\":{\"end_layer\":\"F.Cu\",\"shape\":\"oval\",\"size\":{\"x\":0.6,\"y\":1.4},\"start_layer\":\"B.Cu\"},\"layers\":[\"F.Cu\",\"F.Mask\",\"B.Cu\",\"B.Mask\",\"In1.Cu\",\"In2.Cu\",\"In3.Cu\",\"In4.Cu\",\"In5.Cu\",\"In6.Cu\",\"In7.Cu\",\"In8.Cu\",\"In9.Cu\",\"In10.Cu\",\"In11.Cu\",\"In12.Cu\",\"In13.Cu\",\"In14.Cu\",\"In15.Cu\",\"In16.Cu\",\"In17.Cu\",\"In18.Cu\",\"In19.Cu\",\"In20.Cu\",\"In21.Cu\",\"In22.Cu\",\"In23.Cu\",\"In24.Cu\",\"In25.Cu\",\"In26.Cu\",\"In27.Cu\",\"In28.Cu\",\"In29.Cu\",\"In30.Cu\"],\"net\":\"GND\",\"number\":\"SH\",\"pad_type\":\"thru_hole\",\"rotation_deg\":180.0,\"shape\":\"oval\",\"size\":{\"x\":0.9,\"y\":1.7},\"uuid\":\"66ac512d-2ca7-4556-a6b4-f918b102b997\",\"x\":43.375,\"y\":14.36},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"oval\",\"size\":{\"x\":0.9,\"y\":2.4}}],\"drill\":{\"end_layer\":\"F.Cu\",\"shape\":\"oval\",\"size\":{\"x\":0.6,\"y\":2.1},\"start_layer\":\"B.Cu\"},\"layers\":[\"F.Cu\",\"F.Mask\",\"B.Cu\",\"B.Mask\",\"In1.Cu\",\"In2.Cu\",\"In3.Cu\",\"In4.Cu\",\"In5.Cu\",\"In6.Cu\",\"In7.Cu\",\"In8.Cu\",\"In9.Cu\",\"In10.Cu\",\"In11.Cu\",\"In12.Cu\",\"In13.Cu\",\"In14.Cu\",\"In15.Cu\",\"In16.Cu\",\"In17.Cu\",\"In18.Cu\",\"In19.Cu\",\"In20.Cu\",\"In21.Cu\",\"In22.Cu\",\"In23.Cu\",\"In24.Cu\",\"In25.Cu\",\"In26.Cu\",\"In27.Cu\",\"In28.Cu\",\"In29.Cu\",\"In30.Cu\"],\"net\":\"GND\",\"number\":\"SH\",\"pad_type\":\"thru_hole\",\"rotation_deg\":180.0,\"shape\":\"oval\",\"size\":{\"x\":0.9,\"y\":2.4},\"uuid\":\"f8b9f420-ca21-4417-a655-696156497cc4\",\"x\":34.725,\"y\":10.98},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"oval\",\"size\":{\"x\":0.9,\"y\":1.7}}],\"drill\":{\"end_layer\":\"F.Cu\",\"shape\":\"oval\",\"size\":{\"x\":0.6,\"y\":1.4},\"start_layer\":\"B.Cu\"},\"layers\":[\"F.Cu\",\"F.Mask\",\"B.Cu\",\"B.Mask\",\"In1.Cu\",\"In2.Cu\",\"In3.Cu\",\"In4.Cu\",\"In5.Cu\",\"In6.Cu\",\"In7.Cu\",\"In8.Cu\",\"In9.Cu\",\"In10.Cu\",\"In11.Cu\",\"In12.Cu\",\"In13.Cu\",\"In14.Cu\",\"In15.Cu\",\"In16.Cu\",\"In17.Cu\",\"In18.Cu\",\"In19.Cu\",\"In20.Cu\",\"In21.Cu\",\"In22.Cu\",\"In23.Cu\",\"In24.Cu\",\"In25.Cu\",\"In26.Cu\",\"In27.Cu\",\"In28.Cu\",\"In29.Cu\",\"In30.Cu\"],\"net\":\"GND\",\"number\":\"SH\",\"pad_type\":\"thru_hole\",\"rotation_deg\":180.0,\"shape\":\"oval\",\"size\":{\"x\":0.9,\"y\":1.7},\"uuid\":\"715b0d00-0b6a-461e-8ac8-da4a4855f44c\",\"x\":34.725,\"y\":14.36}],\"reference\":\"J1\",\"source\":\"ipc\"}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "get_component_pads",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "reference": "J2"
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"pad_count\":6,\"pads\":[{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"oval\",\"size\":{\"x\":2.5,\"y\":4.2}}],\"drill\":{\"end_layer\":\"F.Cu\",\"shape\":\"oval\",\"size\":{\"x\":2.5,\"y\":4.2},\"start_layer\":\"B.Cu\"},\"layers\":[\"F.Cu\",\"F.Mask\",\"B.Cu\",\"B.Mask\",\"In1.Cu\",\"In2.Cu\",\"In3.Cu\",\"In4.Cu\",\"In5.Cu\",\"In6.Cu\",\"In7.Cu\",\"In8.Cu\",\"In9.Cu\",\"In10.Cu\",\"In11.Cu\",\"In12.Cu\",\"In13.Cu\",\"In14.Cu\",\"In15.Cu\",\"In16.Cu\",\"In17.Cu\",\"In18.Cu\",\"In19.Cu\",\"In20.Cu\",\"In21.Cu\",\"In22.Cu\",\"In23.Cu\",\"In24.Cu\",\"In25.Cu\",\"In26.Cu\",\"In27.Cu\",\"In28.Cu\",\"In29.Cu\",\"In30.Cu\"],\"net\":\"\",\"number\":\"\",\"pad_type\":\"np_thru_hole\",\"rotation_deg\":0.0,\"shape\":\"oval\",\"size\":{\"x\":2.5,\"y\":4.2},\"uuid\":\"d42b7808-4611-41ed-bf16-27f4cd5f3c43\",\"x\":80.35,\"y\":14.5},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"oval\",\"size\":{\"x\":2.5,\"y\":4.2}}],\"drill\":{\"end_layer\":\"F.Cu\",\"shape\":\"oval\",\"size\":{\"x\":2.5,\"y\":4.2},\"start_layer\":\"B.Cu\"},\"layers\":[\"F.Cu\",\"F.Mask\",\"B.Cu\",\"B.Mask\",\"In1.Cu\",\"In2.Cu\",\"In3.Cu\",\"In4.Cu\",\"In5.Cu\",\"In6.Cu\",\"In7.Cu\",\"In8.Cu\",\"In9.Cu\",\"In10.Cu\",\"In11.Cu\",\"In12.Cu\",\"In13.Cu\",\"In14.Cu\",\"In15.Cu\",\"In16.Cu\",\"In17.Cu\",\"In18.Cu\",\"In19.Cu\",\"In20.Cu\",\"In21.Cu\",\"In22.Cu\",\"In23.Cu\",\"In24.Cu\",\"In25.Cu\",\"In26.Cu\",\"In27.Cu\",\"In28.Cu\",\"In29.Cu\",\"In30.Cu\"],\"net\":\"\",\"number\":\"\",\"pad_type\":\"np_thru_hole\",\"rotation_deg\":0.0,\"shape\":\"oval\",\"size\":{\"x\":2.5,\"y\":4.2},\"uuid\":\"be895ebe-bd86-4525-a99b-1455a6d09e14\",\"x\":104.65,\"y\":14.5},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"rect\",\"size\":{\"x\":3.5,\"y\":3.5}}],\"drill\":{\"end_layer\":\"F.Cu\",\"shape\":\"circle\",\"size\":{\"x\":2.5,\"y\":2.5},\"start_layer\":\"B.Cu\"},\"layers\":[\"F.Cu\",\"F.Mask\",\"B.Cu\",\"B.Mask\",\"In1.Cu\",\"In2.Cu\",\"In3.Cu\",\"In4.Cu\",\"In5.Cu\",\"In6.Cu\",\"In7.Cu\",\"In8.Cu\",\"In9.Cu\",\"In10.Cu\",\"In11.Cu\",\"In12.Cu\",\"In13.Cu\",\"In14.Cu\",\"In15.Cu\",\"In16.Cu\",\"In17.Cu\",\"In18.Cu\",\"In19.Cu\",\"In20.Cu\",\"In21.Cu\",\"In22.Cu\",\"In23.Cu\",\"In24.Cu\",\"In25.Cu\",\"In26.Cu\",\"In27.Cu\",\"In28.Cu\",\"In29.Cu\",\"In30.Cu\"],\"net\":\"GND\",\"number\":\"1\",\"pad_type\":\"thru_hole\",\"rotation_deg\":0.0,\"shape\":\"rect\",\"size\":{\"x\":3.5,\"y\":3.5},\"uuid\":\"46b85fe2-1c48-4aba-9d2f-bd7d4442a563\",\"x\":99.5,\"y\":14.5},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"circle\",\"size\":{\"x\":2.2,\"y\":2.2}}],\"drill\":{\"end_layer\":\"F.Cu\",\"shape\":\"circle\",\"size\":{\"x\":1.2,\"y\":1.2},\"start_layer\":\"B.Cu\"},\"layers\":[\"F.Cu\",\"F.Mask\",\"B.Cu\",\"B.Mask\",\"In1.Cu\",\"In2.Cu\",\"In3.Cu\",\"In4.Cu\",\"In5.Cu\",\"In6.Cu\",\"In7.Cu\",\"In8.Cu\",\"In9.Cu\",\"In10.Cu\",\"In11.Cu\",\"In12.Cu\",\"In13.Cu\",\"In14.Cu\",\"In15.Cu\",\"In16.Cu\",\"In17.Cu\",\"In18.Cu\",\"In19.Cu\",\"In20.Cu\",\"In21.Cu\",\"In22.Cu\",\"In23.Cu\",\"In24.Cu\",\"In25.Cu\",\"In26.Cu\",\"In27.Cu\",\"In28.Cu\",\"In29.Cu\",\"In30.Cu\"],\"net\":\"/AUDIO_MONO\",\"number\":\"2\",\"pad_type\":\"thru_hole\",\"rotation_deg\":0.0,\"shape\":\"circle\",\"size\":{\"x\":2.2,\"y\":2.2},\"uuid\":\"04b80370-8799-4357-8e17-a688b39232d5\",\"x\":95.5,\"y\":9.75},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"circle\",\"size\":{\"x\":3.5,\"y\":3.5}}],\"drill\":{\"end_layer\":\"F.Cu\",\"shape\":\"circle\",\"size\":{\"x\":2.5,\"y\":2.5},\"start_layer\":\"B.Cu\"},\"layers\":[\"F.Cu\",\"F.Mask\",\"B.Cu\",\"B.Mask\",\"In1.Cu\",\"In2.Cu\",\"In3.Cu\",\"In4.Cu\",\"In5.Cu\",\"In6.Cu\",\"In7.Cu\",\"In8.Cu\",\"In9.Cu\",\"In10.Cu\",\"In11.Cu\",\"In12.Cu\",\"In13.Cu\",\"In14.Cu\",\"In15.Cu\",\"In16.Cu\",\"In17.Cu\",\"In18.Cu\",\"In19.Cu\",\"In20.Cu\",\"In21.Cu\",\"In22.Cu\",\"In23.Cu\",\"In24.Cu\",\"In25.Cu\",\"In26.Cu\",\"In27.Cu\",\"In28.Cu\",\"In29.Cu\",\"In30.Cu\"],\"net\":\"GND\",\"number\":\"3\",\"pad_type\":\"thru_hole\",\"rotation_deg\":0.0,\"shape\":\"circle\",\"size\":{\"x\":3.5,\"y\":3.5},\"uuid\":\"6638d0b1-5699-4f51-aa9b-f9b173b4134d\",\"x\":85.5,\"y\":14.5},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"circle\",\"size\":{\"x\":2.2,\"y\":2.2}}],\"drill\":{\"end_layer\":\"F.Cu\",\"shape\":\"circle\",\"size\":{\"x\":1.2,\"y\":1.2},\"start_layer\":\"B.Cu\"},\"layers\":[\"F.Cu\",\"F.Mask\",\"B.Cu\",\"B.Mask\",\"In1.Cu\",\"In2.Cu\",\"In3.Cu\",\"In4.Cu\",\"In5.Cu\",\"In6.Cu\",\"In7.Cu\",\"In8.Cu\",\"In9.Cu\",\"In10.Cu\",\"In11.Cu\",\"In12.Cu\",\"In13.Cu\",\"In14.Cu\",\"In15.Cu\",\"In16.Cu\",\"In17.Cu\",\"In18.Cu\",\"In19.Cu\",\"In20.Cu\",\"In21.Cu\",\"In22.Cu\",\"In23.Cu\",\"In24.Cu\",\"In25.Cu\",\"In26.Cu\",\"In27.Cu\",\"In28.Cu\",\"In29.Cu\",\"In30.Cu\"],\"net\":\"unconnected-(J2-X2_CENTER-Pad4)\",\"number\":\"4\",\"pad_type\":\"thru_hole\",\"rotation_deg\":0.0,\"shape\":\"circle\",\"size\":{\"x\":2.2,\"y\":2.2},\"uuid\":\"b4dbdff0-1684-48a3-8481-b384ae9f6a1c\",\"x\":81.5,\"y\":9.75}],\"reference\":\"J2\",\"source\":\"ipc\"}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "get_component_pads",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "reference": "RV7"
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"pad_count\":4,\"pads\":[{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"rect\",\"size\":{\"x\":1.9,\"y\":1.9}}],\"drill\":{\"end_layer\":\"F.Cu\",\"shape\":\"circle\",\"size\":{\"x\":1.1,\"y\":1.1},\"start_layer\":\"B.Cu\"},\"layers\":[\"F.Cu\",\"F.Mask\",\"B.Cu\",\"B.Mask\",\"In1.Cu\",\"In2.Cu\",\"In3.Cu\",\"In4.Cu\",\"In5.Cu\",\"In6.Cu\",\"In7.Cu\",\"In8.Cu\",\"In9.Cu\",\"In10.Cu\",\"In11.Cu\",\"In12.Cu\",\"In13.Cu\",\"In14.Cu\",\"In15.Cu\",\"In16.Cu\",\"In17.Cu\",\"In18.Cu\",\"In19.Cu\",\"In20.Cu\",\"In21.Cu\",\"In22.Cu\",\"In23.Cu\",\"In24.Cu\",\"In25.Cu\",\"In26.Cu\",\"In27.Cu\",\"In28.Cu\",\"In29.Cu\",\"In30.Cu\"],\"net\":\"GND\",\"number\":\"1\",\"pad_type\":\"thru_hole\",\"rotation_deg\":0.0,\"shape\":\"rect\",\"size\":{\"x\":1.9,\"y\":1.9},\"uuid\":\"7cb7fe91-c176-4f66-80dd-e88ba598372e\",\"x\":16.25,\"y\":8.7},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"circle\",\"size\":{\"x\":1.9,\"y\":1.9}}],\"drill\":{\"end_layer\":\"F.Cu\",\"shape\":\"circle\",\"size\":{\"x\":1.1,\"y\":1.1},\"start_layer\":\"B.Cu\"},\"layers\":[\"F.Cu\",\"F.Mask\",\"B.Cu\",\"B.Mask\",\"In1.Cu\",\"In2.Cu\",\"In3.Cu\",\"In4.Cu\",\"In5.Cu\",\"In6.Cu\",\"In7.Cu\",\"In8.Cu\",\"In9.Cu\",\"In10.Cu\",\"In11.Cu\",\"In12.Cu\",\"In13.Cu\",\"In14.Cu\",\"In15.Cu\",\"In16.Cu\",\"In17.Cu\",\"In18.Cu\",\"In19.Cu\",\"In20.Cu\",\"In21.Cu\",\"In22.Cu\",\"In23.Cu\",\"In24.Cu\",\"In25.Cu\",\"In26.Cu\",\"In27.Cu\",\"In28.Cu\",\"In29.Cu\",\"In30.Cu\"],\"net\":\"/MASTER\",\"number\":\"2\",\"pad_type\":\"thru_hole\",\"rotation_deg\":0.0,\"shape\":\"circle\",\"size\":{\"x\":1.9,\"y\":1.9},\"uuid\":\"cf874502-0b5c-4aea-a85f-847a8a9639ea\",\"x\":18.75,\"y\":8.7},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"circle\",\"size\":{\"x\":1.9,\"y\":1.9}}],\"drill\":{\"end_layer\":\"F.Cu\",\"shape\":\"circle\",\"size\":{\"x\":1.1,\"y\":1.1},\"start_layer\":\"B.Cu\"},\"layers\":[\"F.Cu\",\"F.Mask\",\"B.Cu\",\"B.Mask\",\"In1.Cu\",\"In2.Cu\",\"In3.Cu\",\"In4.Cu\",\"In5.Cu\",\"In6.Cu\",\"In7.Cu\",\"In8.Cu\",\"In9.Cu\",\"In10.Cu\",\"In11.Cu\",\"In12.Cu\",\"In13.Cu\",\"In14.Cu\",\"In15.Cu\",\"In16.Cu\",\"In17.Cu\",\"In18.Cu\",\"In19.Cu\",\"In20.Cu\",\"In21.Cu\",\"In22.Cu\",\"In23.Cu\",\"In24.Cu\",\"In25.Cu\",\"In26.Cu\",\"In27.Cu\",\"In28.Cu\",\"In29.Cu\",\"In30.Cu\"],\"net\":\"/POT7_TOP\",\"number\":\"3\",\"pad_type\":\"thru_hole\",\"rotation_deg\":0.0,\"shape\":\"circle\",\"size\":{\"x\":1.9,\"y\":1.9},\"uuid\":\"11baaf41-34c8-4551-b3c8-bfb06633045c\",\"x\":21.25,\"y\":8.7},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"circle\",\"size\":{\"x\":1.9,\"y\":1.9}}],\"drill\":{\"end_layer\":\"F.Cu\",\"shape\":\"circle\",\"size\":{\"x\":1.1,\"y\":1.1},\"start_layer\":\"B.Cu\"},\"layers\":[\"F.Cu\",\"F.Mask\",\"B.Cu\",\"B.Mask\",\"In1.Cu\",\"In2.Cu\",\"In3.Cu\",\"In4.Cu\",\"In5.Cu\",\"In6.Cu\",\"In7.Cu\",\"In8.Cu\",\"In9.Cu\",\"In10.Cu\",\"In11.Cu\",\"In12.Cu\",\"In13.Cu\",\"In14.Cu\",\"In15.Cu\",\"In16.Cu\",\"In17.Cu\",\"In18.Cu\",\"In19.Cu\",\"In20.Cu\",\"In21.Cu\",\"In22.Cu\",\"In23.Cu\",\"In24.Cu\",\"In25.Cu\",\"In26.Cu\",\"In27.Cu\",\"In28.Cu\",\"In29.Cu\",\"In30.Cu\"],\"net\":\"\",\"number\":\"\",\"pad_type\":\"thru_hole\",\"rotation_deg\":0.0,\"shape\":\"circle\",\"size\":{\"x\":1.9,\"y\":1.9},\"uuid\":\"bea990ed-9404-46e9-be57-a2b44397123c\",\"x\":23.75,\"y\":8.7}],\"reference\":\"RV7\",\"source\":\"ipc\"}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "get_component_pads",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "reference": "U1"
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"pad_count\":50,\"pads\":[{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"rect\",\"size\":{\"x\":1.5,\"y\":0.9}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"GND\",\"number\":\"1\",\"pad_type\":\"smd\",\"rotation_deg\":180.0,\"shape\":\"rect\",\"size\":{\"x\":1.5,\"y\":0.9},\"uuid\":\"0787ab58-48e9-48b2-ae10-e7b9a804f51d\",\"x\":52.25,\"y\":39.59},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"rect\",\"size\":{\"x\":1.5,\"y\":0.9}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"+3V3\",\"number\":\"2\",\"pad_type\":\"smd\",\"rotation_deg\":180.0,\"shape\":\"rect\",\"size\":{\"x\":1.5,\"y\":0.9},\"uuid\":\"81d50fd9-6647-4085-9233-93c64fdd84e4\",\"x\":52.25,\"y\":40.86},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"rect\",\"size\":{\"x\":1.5,\"y\":0.9}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"/ESP_EN\",\"number\":\"3\",\"pad_type\":\"smd\",\"rotation_deg\":180.0,\"shape\":\"rect\",\"size\":{\"x\":1.5,\"y\":0.9},\"uuid\":\"8af50532-64a2-423b-aae1-715a256c5b42\",\"x\":52.25,\"y\":42.13},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"rect\",\"size\":{\"x\":1.5,\"y\":0.9}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"/ADC_MUX\",\"number\":\"4\",\"pad_type\":\"smd\",\"rotation_deg\":180.0,\"shape\":\"rect\",\"size\":{\"x\":1.5,\"y\":0.9},\"uuid\":\"25ffb46e-a148-47b3-83b9-5ab9a6136a77\",\"x\":52.25,\"y\":43.4},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"rect\",\"size\":{\"x\":1.5,\"y\":0.9}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"/MUX_S0\",\"number\":\"5\",\"pad_type\":\"smd\",\"rotation_deg\":180.0,\"shape\":\"rect\",\"size\":{\"x\":1.5,\"y\":0.9},\"uuid\":\"c62a0918-1392-4990-bfc5-80985c0c7f7f\",\"x\":52.25,\"y\":44.67},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"rect\",\"size\":{\"x\":1.5,\"y\":0.9}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"/MUX_S1\",\"number\":\"6\",\"pad_type\":\"smd\",\"rotation_deg\":180.0,\"shape\":\"rect\",\"size\":{\"x\":1.5,\"y\":0.9},\"uuid\":\"098850cf-b263-48ee-b15a-256907968e79\",\"x\":52.25,\"y\":45.94},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"rect\",\"size\":{\"x\":1.5,\"y\":0.9}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"/TFT_RST\",\"number\":\"7\",\"pad_type\":\"smd\",\"rotation_deg\":180.0,\"shape\":\"rect\",\"size\":{\"x\":1.5,\"y\":0.9},\"uuid\":\"1f216aab-5818-49c2-9599-0a84afe31211\",\"x\":52.25,\"y\":47.21},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"rect\",\"size\":{\"x\":1.5,\"y\":0.9}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"unconnected-(U1-IO15-Pad8)\",\"number\":\"8\",\"pad_type\":\"smd\",\"rotation_deg\":180.0,\"shape\":\"rect\",\"size\":{\"x\":1.5,\"y\":0.9},\"uuid\":\"6c90c6ca-5c24-4a96-9acd-90174813b83d\",\"x\":52.25,\"y\":48.48},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"rect\",\"size\":{\"x\":1.5,\"y\":0.9}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"/I2S_BCLK\",\"number\":\"9\",\"pad_type\":\"smd\",\"rotation_deg\":180.0,\"shape\":\"rect\",\"size\":{\"x\":1.5,\"y\":0.9},\"uuid\":\"968073fe-8ca0-43e4-b54a-3377df6d31af\",\"x\":52.25,\"y\":49.75},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"rect\",\"size\":{\"x\":1.5,\"y\":0.9}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"/I2S_LRCK\",\"number\":\"10\",\"pad_type\":\"smd\",\"rotation_deg\":180.0,\"shape\":\"rect\",\"size\":{\"x\":1.5,\"y\":0.9},\"uuid\":\"0e1d2768-5047-4a89-8b2e-c35102ffd210\",\"x\":52.25,\"y\":51.02},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"rect\",\"size\":{\"x\":1.5,\"y\":0.9}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"/I2S_DIN\",\"number\":\"11\",\"pad_type\":\"smd\",\"rotation_deg\":180.0,\"shape\":\"rect\",\"size\":{\"x\":1.5,\"y\":0.9},\"uuid\":\"4afc7303-e5ca-456a-9f3c-9bb05c12b4b2\",\"x\":52.25,\"y\":52.29},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"rect\",\"size\":{\"x\":1.5,\"y\":0.9}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"/TFT_DC\",\"number\":\"12\",\"pad_type\":\"smd\",\"rotation_deg\":180.0,\"shape\":\"rect\",\"size\":{\"x\":1.5,\"y\":0.9},\"uuid\":\"79df9d05-a607-43a8-a010-51204cd72c67\",\"x\":52.25,\"y\":53.56},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"rect\",\"size\":{\"x\":1.5,\"y\":0.9}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"/USB_DM_MCU\",\"number\":\"13\",\"pad_type\":\"smd\",\"rotation_deg\":180.0,\"shape\":\"rect\",\"size\":{\"x\":1.5,\"y\":0.9},\"uuid\":\"abd48d41-7f60-4062-b8ee-422bcb7dbe8f\",\"x\":52.25,\"y\":54.83},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"rect\",\"size\":{\"x\":1.5,\"y\":0.9}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"/USB_DP_MCU\",\"number\":\"14\",\"pad_type\":\"smd\",\"rotation_deg\":0.0,\"shape\":\"rect\",\"size\":{\"x\":1.5,\"y\":0.9},\"uuid\":\"7d5bb3f8-cf1b-4bb4-ad6b-9855ae02aeca\",\"x\":52.25,\"y\":56.1},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"rect\",\"size\":{\"x\":1.5,\"y\":0.9}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"unconnected-(U1-IO3-Pad15)\",\"number\":\"15\",\"pad_type\":\"smd\",\"rotation_deg\":270.0,\"shape\":\"rect\",\"size\":{\"x\":1.5,\"y\":0.9},\"uuid\":\"771423c9-3df7-45a6-a9dd-0538dfa981b6\",\"x\":50.485,\"y\":57.35},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"rect\",\"size\":{\"x\":1.5,\"y\":0.9}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"unconnected-(U1-IO46-Pad16)\",\"number\":\"16\",\"pad_type\":\"smd\",\"rotation_deg\":270.0,\"shape\":\"rect\",\"size\":{\"x\":1.5,\"y\":0.9},\"uuid\":\"247d0fc5-fae2-4e8f-a5b6-6bbf37062954\",\"x\":49.215,\"y\":57.35},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"rect\",\"size\":{\"x\":1.5,\"y\":0.9}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"/TFT_CS\",\"number\":\"17\",\"pad_type\":\"smd\",\"rotation_deg\":270.0,\"shape\":\"rect\",\"size\":{\"x\":1.5,\"y\":0.9},\"uuid\":\"3481a8f2-610b-4ce4-b078-a4599f354794\",\"x\":47.945,\"y\":57.35},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"rect\",\"size\":{\"x\":1.5,\"y\":0.9}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"/MUX_S2\",\"number\":\"18\",\"pad_type\":\"smd\",\"rotation_deg\":270.0,\"shape\":\"rect\",\"size\":{\"x\":1.5,\"y\":0.9},\"uuid\":\"89029bcd-b782-4667-a965-6baaf18e54b8\",\"x\":46.675,\"y\":57.35},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"rect\",\"size\":{\"x\":1.5,\"y\":0.9}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"/SPI_MOSI\",\"number\":\"19\",\"pad_type\":\"smd\",\"rotation_deg\":270.0,\"shape\":\"rect\",\"size\":{\"x\":1.5,\"y\":0.9},\"uuid\":\"6ab62dad-af8a-4f9b-be29-0ccbae8096d6\",\"x\":45.405,\"y\":57.35},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"rect\",\"size\":{\"x\":1.5,\"y\":0.9}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"/SPI_SCK\",\"number\":\"20\",\"pad_type\":\"smd\",\"rotation_deg\":270.0,\"shape\":\"rect\",\"size\":{\"x\":1.5,\"y\":0.9},\"uuid\":\"598a0f95-fae5-4f37-95da-0b9ed1358f57\",\"x\":44.135,\"y\":57.35},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"rect\",\"size\":{\"x\":1.5,\"y\":0.9}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"unconnected-(U1-IO13-Pad21)\",\"number\":\"21\",\"pad_type\":\"smd\",\"rotation_deg\":270.0,\"shape\":\"rect\",\"size\":{\"x\":1.5,\"y\":0.9},\"uuid\":\"062eedfd-153c-47ed-9f1c-5d66d9b1b248\",\"x\":42.865,\"y\":57.35},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"rect\",\"size\":{\"x\":1.5,\"y\":0.9}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"/TFT_LITE\",\"number\":\"22\",\"pad_type\":\"smd\",\"rotation_deg\":270.0,\"shape\":\"rect\",\"size\":{\"x\":1.5,\"y\":0.9},\"uuid\":\"f4d02862-c91e-4f33-b23c-09b2884482de\",\"x\":41.595,\"y\":57.35},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"rect\",\"size\":{\"x\":1.5,\"y\":0.9}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"unconnected-(U1-IO21-Pad23)\",\"number\":\"23\",\"pad_type\":\"smd\",\"rotation_deg\":270.0,\"shape\":\"rect\",\"size\":{\"x\":1.5,\"y\":0.9},\"uuid\":\"4acc3347-4f93-4f71-bc51-a991793778dd\",\"x\":40.325,\"y\":57.35},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"rect\",\"size\":{\"x\":1.5,\"y\":0.9}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"unconnected-(U1-IO47-Pad24)\",\"number\":\"24\",\"pad_type\":\"smd\",\"rotation_deg\":270.0,\"shape\":\"rect\",\"size\":{\"x\":1.5,\"y\":0.9},\"uuid\":\"0184872e-d7ae-4f30-b938-d7a4e66eefc8\",\"x\":39.055,\"y\":57.35},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"rect\",\"size\":{\"x\":1.5,\"y\":0.9}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"unconnected-(U1-IO48-Pad25)\",\"number\":\"25\",\"pad_type\":\"smd\",\"rotation_deg\":270.0,\"shape\":\"rect\",\"size\":{\"x\":1.5,\"y\":0.9},\"uuid\":\"d1b4187b-0462-4464-bf36-1af81449a493\",\"x\":37.785,\"y\":57.35},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"rect\",\"size\":{\"x\":1.5,\"y\":0.9}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"unconnected-(U1-IO45-Pad26)\",\"number\":\"26\",\"pad_type\":\"smd\",\"rotation_deg\":270.0,\"shape\":\"rect\",\"size\":{\"x\":1.5,\"y\":0.9},\"uuid\":\"1c402f10-c880-4b91-8c18-b31dcee794b9\",\"x\":36.515,\"y\":57.35},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"rect\",\"size\":{\"x\":1.5,\"y\":0.9}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"/BOOT\",\"number\":\"27\",\"pad_type\":\"smd\",\"rotation_deg\":180.0,\"shape\":\"rect\",\"size\":{\"x\":1.5,\"y\":0.9},\"uuid\":\"c6be9a87-6332-4cb2-97a5-0f26aec70956\",\"x\":34.75,\"y\":56.1},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"rect\",\"size\":{\"x\":1.5,\"y\":0.9}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"unconnected-(U1-RESERVED_IO35-Pad28)\",\"number\":\"28\",\"pad_type\":\"smd\",\"rotation_deg\":180.0,\"shape\":\"rect\",\"size\":{\"x\":1.5,\"y\":0.9},\"uuid\":\"5cfa554b-83db-491f-9f4e-0d5f52150755\",\"x\":34.75,\"y\":54.83},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"rect\",\"size\":{\"x\":1.5,\"y\":0.9}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"unconnected-(U1-RESERVED_IO36-Pad29)\",\"number\":\"29\",\"pad_type\":\"smd\",\"rotation_deg\":180.0,\"shape\":\"rect\",\"size\":{\"x\":1.5,\"y\":0.9},\"uuid\":\"4d5ee469-0fe9-4fd1-8553-9414c6fb471a\",\"x\":34.75,\"y\":53.56},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"rect\",\"size\":{\"x\":1.5,\"y\":0.9}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"unconnected-(U1-RESERVED_IO37-Pad30)\",\"number\":\"30\",\"pad_type\":\"smd\",\"rotation_deg\":180.0,\"shape\":\"rect\",\"size\":{\"x\":1.5,\"y\":0.9},\"uuid\":\"687c02b5-a8a3-4547-a5ea-cdf17d1a50f3\",\"x\":34.75,\"y\":52.29},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"rect\",\"size\":{\"x\":1.5,\"y\":0.9}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"/BTN1\",\"number\":\"31\",\"pad_type\":\"smd\",\"rotation_deg\":180.0,\"shape\":\"rect\",\"size\":{\"x\":1.5,\"y\":0.9},\"uuid\":\"bcaeeb86-b52f-441a-943b-d4c047c5d24f\",\"x\":34.75,\"y\":51.02},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"rect\",\"size\":{\"x\":1.5,\"y\":0.9}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"/BTN2\",\"number\":\"32\",\"pad_type\":\"smd\",\"rotation_deg\":180.0,\"shape\":\"rect\",\"size\":{\"x\":1.5,\"y\":0.9},\"uuid\":\"56c2bdcb-a5a7-419e-bc86-1b165567f27d\",\"x\":34.75,\"y\":49.75},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"rect\",\"size\":{\"x\":1.5,\"y\":0.9}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"/BTN3\",\"number\":\"33\",\"pad_type\":\"smd\",\"rotation_deg\":180.0,\"shape\":\"rect\",\"size\":{\"x\":1.5,\"y\":0.9},\"uuid\":\"b0ade221-348b-4cc5-ac47-dc71276aa173\",\"x\":34.75,\"y\":48.48},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"rect\",\"size\":{\"x\":1.5,\"y\":0.9}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"/BTN4\",\"number\":\"34\",\"pad_type\":\"smd\",\"rotation_deg\":180.0,\"shape\":\"rect\",\"size\":{\"x\":1.5,\"y\":0.9},\"uuid\":\"d67ecf97-cfaa-4c1d-b6bc-42551bd985d4\",\"x\":34.75,\"y\":47.21},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"rect\",\"size\":{\"x\":1.5,\"y\":0.9}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"/ENC_SW\",\"number\":\"35\",\"pad_type\":\"smd\",\"rotation_deg\":180.0,\"shape\":\"rect\",\"size\":{\"x\":1.5,\"y\":0.9},\"uuid\":\"cf80c19b-77f8-4f30-8125-25ec07fc4903\",\"x\":34.75,\"y\":45.94},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"rect\",\"size\":{\"x\":1.5,\"y\":0.9}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"/UART_RX\",\"number\":\"36\",\"pad_type\":\"smd\",\"rotation_deg\":180.0,\"shape\":\"rect\",\"size\":{\"x\":1.5,\"y\":0.9},\"uuid\":\"b8c8dabe-ec34-4047-aa51-1145a4a683c0\",\"x\":34.75,\"y\":44.67},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"rect\",\"size\":{\"x\":1.5,\"y\":0.9}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"/UART_TX\",\"number\":\"37\",\"pad_type\":\"smd\",\"rotation_deg\":180.0,\"shape\":\"rect\",\"size\":{\"x\":1.5,\"y\":0.9},\"uuid\":\"89e78b81-91e1-40cd-aa61-3ffaed16a45d\",\"x\":34.75,\"y\":43.4},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"rect\",\"size\":{\"x\":1.5,\"y\":0.9}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"/ENC_B\",\"number\":\"38\",\"pad_type\":\"smd\",\"rotation_deg\":180.0,\"shape\":\"rect\",\"size\":{\"x\":1.5,\"y\":0.9},\"uuid\":\"f5de34de-9e37-423e-90ca-a7f10ada6a6c\",\"x\":34.75,\"y\":42.13},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"rect\",\"size\":{\"x\":1.5,\"y\":0.9}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"/ENC_A\",\"number\":\"39\",\"pad_type\":\"smd\",\"rotation_deg\":180.0,\"shape\":\"rect\",\"size\":{\"x\":1.5,\"y\":0.9},\"uuid\":\"db06e88f-d089-494e-b208-565f70db928b\",\"x\":34.75,\"y\":40.86},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"rect\",\"size\":{\"x\":1.5,\"y\":0.9}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"GND\",\"number\":\"40\",\"pad_type\":\"smd\",\"rotation_deg\":180.0,\"shape\":\"rect\",\"size\":{\"x\":1.5,\"y\":0.9},\"uuid\":\"b0f90504-1189-4632-aa13-26ffb8a631c0\",\"x\":34.75,\"y\":39.59},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"rect\",\"size\":{\"x\":3.7,\"y\":3.7}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Cu\",\"B.Mask\"],\"net\":\"GND\",\"number\":\"41\",\"pad_type\":\"smd\",\"rotation_deg\":180.0,\"shape\":\"rect\",\"size\":{\"x\":3.7,\"y\":3.7},\"uuid\":\"b4587f01-8357-4f56-b11e-c157e9594800\",\"x\":45.0,\"y\":47.31},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"rect\",\"size\":{\"x\":0.9,\"y\":0.9}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Paste\"],\"net\":\"\",\"number\":\"\",\"pad_type\":\"smd\",\"rotation_deg\":180.0,\"shape\":\"rect\",\"size\":{\"x\":0.9,\"y\":0.9},\"uuid\":\"ff2c94b0-2961-4af2-ab47-0952bdd17c64\",\"x\":46.4,\"y\":45.91},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"rect\",\"size\":{\"x\":0.9,\"y\":0.9}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Paste\"],\"net\":\"\",\"number\":\"\",\"pad_type\":\"smd\",\"rotation_deg\":180.0,\"shape\":\"rect\",\"size\":{\"x\":0.9,\"y\":0.9},\"uuid\":\"dac281cf-1894-49c9-a125-b55f8832e7da\",\"x\":46.4,\"y\":47.31},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"rect\",\"size\":{\"x\":0.9,\"y\":0.9}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Paste\"],\"net\":\"\",\"number\":\"\",\"pad_type\":\"smd\",\"rotation_deg\":180.0,\"shape\":\"rect\",\"size\":{\"x\":0.9,\"y\":0.9},\"uuid\":\"3f277a35-e7a7-48df-bb08-679bdb91b6a8\",\"x\":46.4,\"y\":48.71},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"rect\",\"size\":{\"x\":0.9,\"y\":0.9}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Paste\"],\"net\":\"\",\"number\":\"\",\"pad_type\":\"smd\",\"rotation_deg\":180.0,\"shape\":\"rect\",\"size\":{\"x\":0.9,\"y\":0.9},\"uuid\":\"7435c837-b6bd-4e36-a299-6a00654daa39\",\"x\":45.0,\"y\":45.91},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"rect\",\"size\":{\"x\":0.9,\"y\":0.9}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Paste\"],\"net\":\"\",\"number\":\"\",\"pad_type\":\"smd\",\"rotation_deg\":180.0,\"shape\":\"rect\",\"size\":{\"x\":0.9,\"y\":0.9},\"uuid\":\"0771f9a0-5359-4f7b-b7e4-e45ad6a49d8f\",\"x\":45.0,\"y\":47.31},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"rect\",\"size\":{\"x\":0.9,\"y\":0.9}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Paste\"],\"net\":\"\",\"number\":\"\",\"pad_type\":\"smd\",\"rotation_deg\":180.0,\"shape\":\"rect\",\"size\":{\"x\":0.9,\"y\":0.9},\"uuid\":\"b69dd6f2-07c4-45d9-80b5-cc682f655298\",\"x\":45.0,\"y\":48.71},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"rect\",\"size\":{\"x\":0.9,\"y\":0.9}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Paste\"],\"net\":\"\",\"number\":\"\",\"pad_type\":\"smd\",\"rotation_deg\":180.0,\"shape\":\"rect\",\"size\":{\"x\":0.9,\"y\":0.9},\"uuid\":\"7711108c-1388-42fc-9595-f2b7807a09c1\",\"x\":43.6,\"y\":45.91},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"rect\",\"size\":{\"x\":0.9,\"y\":0.9}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Paste\"],\"net\":\"\",\"number\":\"\",\"pad_type\":\"smd\",\"rotation_deg\":180.0,\"shape\":\"rect\",\"size\":{\"x\":0.9,\"y\":0.9},\"uuid\":\"a245ab55-9906-4cb8-bc38-29ddcd7dc350\",\"x\":43.6,\"y\":47.31},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"rect\",\"size\":{\"x\":0.9,\"y\":0.9}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Paste\"],\"net\":\"\",\"number\":\"\",\"pad_type\":\"smd\",\"rotation_deg\":180.0,\"shape\":\"rect\",\"size\":{\"x\":0.9,\"y\":0.9},\"uuid\":\"8314b133-dd13-4372-90a8-78287163cea4\",\"x\":43.6,\"y\":48.71}],\"reference\":\"U1\",\"source\":\"ipc\"}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "get_component_pads",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "reference": "U2"
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"pad_count\":9,\"pads\":[{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"rect\",\"size\":{\"x\":0.625,\"y\":0.4}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"+5V\",\"number\":\"1\",\"pad_type\":\"smd\",\"rotation_deg\":0.0,\"shape\":\"rect\",\"size\":{\"x\":0.625,\"y\":0.4},\"uuid\":\"8d20c14a-e0af-4933-99d4-501f792444bf\",\"x\":23.8875,\"y\":45.975},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"rect\",\"size\":{\"x\":0.625,\"y\":0.4}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"+5V\",\"number\":\"2\",\"pad_type\":\"smd\",\"rotation_deg\":0.0,\"shape\":\"rect\",\"size\":{\"x\":0.625,\"y\":0.4},\"uuid\":\"e9980d6a-229a-4c62-8d07-aad94d1a15d6\",\"x\":23.8875,\"y\":45.325},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"rect\",\"size\":{\"x\":0.625,\"y\":0.4}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"GND\",\"number\":\"3\",\"pad_type\":\"smd\",\"rotation_deg\":0.0,\"shape\":\"rect\",\"size\":{\"x\":0.625,\"y\":0.4},\"uuid\":\"6b7f1081-6ab4-44ab-887a-08e706d7458d\",\"x\":23.8875,\"y\":44.675},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"rect\",\"size\":{\"x\":0.625,\"y\":0.4}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"+3V3\",\"number\":\"4\",\"pad_type\":\"smd\",\"rotation_deg\":0.0,\"shape\":\"rect\",\"size\":{\"x\":0.625,\"y\":0.4},\"uuid\":\"50401acc-0aab-477b-b40b-925768813e27\",\"x\":23.8875,\"y\":44.025},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"rect\",\"size\":{\"x\":0.625,\"y\":0.4}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"+3V3\",\"number\":\"5\",\"pad_type\":\"smd\",\"rotation_deg\":0.0,\"shape\":\"rect\",\"size\":{\"x\":0.625,\"y\":0.4},\"uuid\":\"416c5999-214d-4f46-a438-057cf8aba438\",\"x\":26.1125,\"y\":44.025},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"rect\",\"size\":{\"x\":0.625,\"y\":0.4}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"/VOUT_S\",\"number\":\"6\",\"pad_type\":\"smd\",\"rotation_deg\":0.0,\"shape\":\"rect\",\"size\":{\"x\":0.625,\"y\":0.4},\"uuid\":\"c0524ad1-1e71-405e-b76b-57f38ff19592\",\"x\":26.1125,\"y\":44.675},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"rect\",\"size\":{\"x\":0.625,\"y\":0.4}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"unconnected-(U2-PG-Pad7)\",\"number\":\"7\",\"pad_type\":\"smd\",\"rotation_deg\":0.0,\"shape\":\"rect\",\"size\":{\"x\":0.625,\"y\":0.4},\"uuid\":\"1b5fe881-c079-43b7-8bce-3961139de683\",\"x\":26.1125,\"y\":45.325},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"rect\",\"size\":{\"x\":0.625,\"y\":0.4}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"unconnected-(U2-VCC-Pad8)\",\"number\":\"8\",\"pad_type\":\"smd\",\"rotation_deg\":0.0,\"shape\":\"rect\",\"size\":{\"x\":0.625,\"y\":0.4},\"uuid\":\"f864caac-a62f-44d5-8c9e-ed9d9589b99c\",\"x\":26.1125,\"y\":45.975},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"rect\",\"size\":{\"x\":1.1,\"y\":1.9}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"GND\",\"number\":\"EP\",\"pad_type\":\"smd\",\"rotation_deg\":0.0,\"shape\":\"rect\",\"size\":{\"x\":1.1,\"y\":1.9},\"uuid\":\"fa46761c-8b7f-4be2-b728-6b74adfb787a\",\"x\":25.0,\"y\":45.0}],\"reference\":\"U2\",\"source\":\"ipc\"}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "get_component_pads",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "reference": "U3"
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"pad_count\":16,\"pads\":[{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":0.25,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"roundrect\",\"size\":{\"x\":1.95,\"y\":0.6}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"/POT5\",\"number\":\"1\",\"pad_type\":\"smd\",\"rotation_deg\":0.0,\"shape\":\"roundrect\",\"size\":{\"x\":1.95,\"y\":0.6},\"uuid\":\"0acc4d86-3532-4c87-93e2-eda8652b64a5\",\"x\":23.525,\"y\":73.445},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":0.25,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"roundrect\",\"size\":{\"x\":1.95,\"y\":0.6}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"/MASTER\",\"number\":\"2\",\"pad_type\":\"smd\",\"rotation_deg\":0.0,\"shape\":\"roundrect\",\"size\":{\"x\":1.95,\"y\":0.6},\"uuid\":\"40f3c1b0-e84c-4852-9a1a-ea283d5b01aa\",\"x\":23.525,\"y\":72.175},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":0.25,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"roundrect\",\"size\":{\"x\":1.95,\"y\":0.6}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"/ADC_MUX\",\"number\":\"3\",\"pad_type\":\"smd\",\"rotation_deg\":0.0,\"shape\":\"roundrect\",\"size\":{\"x\":1.95,\"y\":0.6},\"uuid\":\"3f707843-2b01-4a4d-8e9c-c24c62290c11\",\"x\":23.525,\"y\":70.905},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":0.25,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"roundrect\",\"size\":{\"x\":1.95,\"y\":0.6}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"GND\",\"number\":\"4\",\"pad_type\":\"smd\",\"rotation_deg\":0.0,\"shape\":\"roundrect\",\"size\":{\"x\":1.95,\"y\":0.6},\"uuid\":\"6b30e26e-50fb-4564-bd9c-0cefbf40a22d\",\"x\":23.525,\"y\":69.635},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":0.25,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"roundrect\",\"size\":{\"x\":1.95,\"y\":0.6}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"/POT6\",\"number\":\"5\",\"pad_type\":\"smd\",\"rotation_deg\":0.0,\"shape\":\"roundrect\",\"size\":{\"x\":1.95,\"y\":0.6},\"uuid\":\"f56cb776-7faf-4230-9752-58dbf16db629\",\"x\":23.525,\"y\":68.365},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":0.25,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"roundrect\",\"size\":{\"x\":1.95,\"y\":0.6}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"GND\",\"number\":\"6\",\"pad_type\":\"smd\",\"rotation_deg\":0.0,\"shape\":\"roundrect\",\"size\":{\"x\":1.95,\"y\":0.6},\"uuid\":\"8a0c0b52-e030-4457-be8a-028f5c844bfa\",\"x\":23.525,\"y\":67.095},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":0.25,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"roundrect\",\"size\":{\"x\":1.95,\"y\":0.6}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"GND\",\"number\":\"7\",\"pad_type\":\"smd\",\"rotation_deg\":0.0,\"shape\":\"roundrect\",\"size\":{\"x\":1.95,\"y\":0.6},\"uuid\":\"b772efc2-d13f-4da4-9e2d-a19e41ea134e\",\"x\":23.525,\"y\":65.825},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":0.25,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"roundrect\",\"size\":{\"x\":1.95,\"y\":0.6}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"GND\",\"number\":\"8\",\"pad_type\":\"smd\",\"rotation_deg\":0.0,\"shape\":\"roundrect\",\"size\":{\"x\":1.95,\"y\":0.6},\"uuid\":\"3825a035-8c5a-4fa5-80b9-73c989e0ca82\",\"x\":23.525,\"y\":64.555},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":0.25,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"roundrect\",\"size\":{\"x\":1.95,\"y\":0.6}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"/MUX_S2\",\"number\":\"9\",\"pad_type\":\"smd\",\"rotation_deg\":0.0,\"shape\":\"roundrect\",\"size\":{\"x\":1.95,\"y\":0.6},\"uuid\":\"5c12c218-743e-4724-bf3e-01d83927de7d\",\"x\":28.474999,\"y\":64.555},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":0.25,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"roundrect\",\"size\":{\"x\":1.95,\"y\":0.6}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"/MUX_S1\",\"number\":\"10\",\"pad_type\":\"smd\",\"rotation_deg\":0.0,\"shape\":\"roundrect\",\"size\":{\"x\":1.95,\"y\":0.6},\"uuid\":\"e7977d1d-969d-4a10-bd10-80c622cb8815\",\"x\":28.474999,\"y\":65.825},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":0.25,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"roundrect\",\"size\":{\"x\":1.95,\"y\":0.6}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"/MUX_S0\",\"number\":\"11\",\"pad_type\":\"smd\",\"rotation_deg\":0.0,\"shape\":\"roundrect\",\"size\":{\"x\":1.95,\"y\":0.6},\"uuid\":\"8cd61e8e-75f9-4d88-a320-a09b7eb47806\",\"x\":28.474999,\"y\":67.095},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":0.25,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"roundrect\",\"size\":{\"x\":1.95,\"y\":0.6}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"/POT4\",\"number\":\"12\",\"pad_type\":\"smd\",\"rotation_deg\":0.0,\"shape\":\"roundrect\",\"size\":{\"x\":1.95,\"y\":0.6},\"uuid\":\"1f2d4d6a-3ae5-4612-8bcb-10b269c32391\",\"x\":28.474999,\"y\":68.365},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":0.25,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"roundrect\",\"size\":{\"x\":1.95,\"y\":0.6}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"/POT1\",\"number\":\"13\",\"pad_type\":\"smd\",\"rotation_deg\":0.0,\"shape\":\"roundrect\",\"size\":{\"x\":1.95,\"y\":0.6},\"uuid\":\"cd1ebcb5-baa9-44f0-ae3a-d05bce9bbed2\",\"x\":28.474999,\"y\":69.635},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":0.25,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"roundrect\",\"size\":{\"x\":1.95,\"y\":0.6}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"/POT2\",\"number\":\"14\",\"pad_type\":\"smd\",\"rotation_deg\":0.0,\"shape\":\"roundrect\",\"size\":{\"x\":1.95,\"y\":0.6},\"uuid\":\"91e79efe-75aa-4531-a5f0-df79a02ae5c6\",\"x\":28.474999,\"y\":70.905},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":0.25,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"roundrect\",\"size\":{\"x\":1.95,\"y\":0.6}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"/POT3\",\"number\":\"15\",\"pad_type\":\"smd\",\"rotation_deg\":0.0,\"shape\":\"roundrect\",\"size\":{\"x\":1.95,\"y\":0.6},\"uuid\":\"f30ece1d-1b20-4e38-9153-a271e622b053\",\"x\":28.474999,\"y\":72.175},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":0.25,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"roundrect\",\"size\":{\"x\":1.95,\"y\":0.6}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"+3V3\",\"number\":\"16\",\"pad_type\":\"smd\",\"rotation_deg\":0.0,\"shape\":\"roundrect\",\"size\":{\"x\":1.95,\"y\":0.6},\"uuid\":\"7cd03ba7-3ad4-4e8a-b902-ab7e5b2d0c0d\",\"x\":28.474999,\"y\":73.445}],\"reference\":\"U3\",\"source\":\"ipc\"}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "get_component_pads",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "reference": "U4"
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"pad_count\":6,\"pads\":[{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":0.25,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"roundrect\",\"size\":{\"x\":1.325,\"y\":0.6}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"/USB_DM_CONN\",\"number\":\"1\",\"pad_type\":\"smd\",\"rotation_deg\":0.0,\"shape\":\"roundrect\",\"size\":{\"x\":1.325,\"y\":0.6},\"uuid\":\"6343d132-1aaf-4691-9cfc-5f07e8f31627\",\"x\":42.8625,\"y\":15.95},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":0.25,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"roundrect\",\"size\":{\"x\":1.325,\"y\":0.6}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"GND\",\"number\":\"2\",\"pad_type\":\"smd\",\"rotation_deg\":0.0,\"shape\":\"roundrect\",\"size\":{\"x\":1.325,\"y\":0.6},\"uuid\":\"a868bf98-be2d-4bd2-b67a-ca928b28174e\",\"x\":42.8625,\"y\":15.0},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":0.25,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"roundrect\",\"size\":{\"x\":1.325,\"y\":0.6}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"/USB_DP_CONN\",\"number\":\"3\",\"pad_type\":\"smd\",\"rotation_deg\":0.0,\"shape\":\"roundrect\",\"size\":{\"x\":1.325,\"y\":0.6},\"uuid\":\"eee7e2bd-2de8-49ae-80d9-c75f847e72bc\",\"x\":42.8625,\"y\":14.05},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":0.25,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"roundrect\",\"size\":{\"x\":1.325,\"y\":0.6}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"/USB_DP_CONN\",\"number\":\"4\",\"pad_type\":\"smd\",\"rotation_deg\":0.0,\"shape\":\"roundrect\",\"size\":{\"x\":1.325,\"y\":0.6},\"uuid\":\"72cdca2d-3238-4c9c-8363-68f2396351ff\",\"x\":45.1375,\"y\":14.05},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":0.25,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"roundrect\",\"size\":{\"x\":1.325,\"y\":0.6}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"/VBUS_RAW\",\"number\":\"5\",\"pad_type\":\"smd\",\"rotation_deg\":0.0,\"shape\":\"roundrect\",\"size\":{\"x\":1.325,\"y\":0.6},\"uuid\":\"ac782b0b-74b8-46d3-9d98-26efadfe0838\",\"x\":45.1375,\"y\":15.0},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":0.25,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"roundrect\",\"size\":{\"x\":1.325,\"y\":0.6}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"/USB_DM_CONN\",\"number\":\"6\",\"pad_type\":\"smd\",\"rotation_deg\":0.0,\"shape\":\"roundrect\",\"size\":{\"x\":1.325,\"y\":0.6},\"uuid\":\"b35e9236-0231-4722-a011-5d15a47ce5dd\",\"x\":45.1375,\"y\":15.95}],\"reference\":\"U4\",\"source\":\"ipc\"}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "get_component_pads",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "reference": "U7"
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"pad_count\":6,\"pads\":[{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":0.25,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"roundrect\",\"size\":{\"x\":1.325,\"y\":0.6}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"/VBUS_PROTECTED\",\"number\":\"1\",\"pad_type\":\"smd\",\"rotation_deg\":0.0,\"shape\":\"roundrect\",\"size\":{\"x\":1.325,\"y\":0.6},\"uuid\":\"4fdc5d68-8369-4c9b-ae6a-ba4ae6c823b5\",\"x\":24.8625,\"y\":26.95},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":0.25,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"roundrect\",\"size\":{\"x\":1.325,\"y\":0.6}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"GND\",\"number\":\"2\",\"pad_type\":\"smd\",\"rotation_deg\":0.0,\"shape\":\"roundrect\",\"size\":{\"x\":1.325,\"y\":0.6},\"uuid\":\"b27a4d32-15e6-4083-82f5-d677da4c1c3a\",\"x\":24.8625,\"y\":26.0},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":0.25,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"roundrect\",\"size\":{\"x\":1.325,\"y\":0.6}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"/VBUS_PROTECTED\",\"number\":\"3\",\"pad_type\":\"smd\",\"rotation_deg\":0.0,\"shape\":\"roundrect\",\"size\":{\"x\":1.325,\"y\":0.6},\"uuid\":\"5bf68852-88b9-4d3f-a12b-737c1fd7481b\",\"x\":24.8625,\"y\":25.05},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":0.25,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"roundrect\",\"size\":{\"x\":1.325,\"y\":0.6}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"/VBUS_SLEW_CT\",\"number\":\"4\",\"pad_type\":\"smd\",\"rotation_deg\":0.0,\"shape\":\"roundrect\",\"size\":{\"x\":1.325,\"y\":0.6},\"uuid\":\"cb817004-ea97-4ed2-bc65-9081436b1b60\",\"x\":27.1375,\"y\":25.05},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":0.25,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"roundrect\",\"size\":{\"x\":1.325,\"y\":0.6}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"unconnected-(U7-QOD-Pad5)\",\"number\":\"5\",\"pad_type\":\"smd\",\"rotation_deg\":0.0,\"shape\":\"roundrect\",\"size\":{\"x\":1.325,\"y\":0.6},\"uuid\":\"b4faa0ec-6cb4-4b60-903c-3e3950a40943\",\"x\":27.1375,\"y\":26.0},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":0.25,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"roundrect\",\"size\":{\"x\":1.325,\"y\":0.6}}],\"drill\":{\"end_layer\":\"Unknown\",\"shape\":null,\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"Unknown\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"+5V\",\"number\":\"6\",\"pad_type\":\"smd\",\"rotation_deg\":0.0,\"shape\":\"roundrect\",\"size\":{\"x\":1.325,\"y\":0.6},\"uuid\":\"4cf0afd3-1b4b-41ed-841a-246c96a952fb\",\"x\":27.1375,\"y\":26.95}],\"reference\":\"U7\",\"source\":\"ipc\"}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  }
+]

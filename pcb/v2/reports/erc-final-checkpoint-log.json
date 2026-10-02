@@ -1,0 +1,35 @@
+[
+  {
+    "name": "load_toolset",
+    "arguments": {
+      "name": [
+        "sch_export"
+      ]
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"errors\":[],\"loaded\":[\"sch_export\"],\"tools\":[{\"description\":\"Export a schematic sheet to an SVG file using kicad-cli. The result doubles as a              machine-readable geometry source: kicad-cli writes every string twice \u2014 visibly as              stroke paths, and again as an invisible <text opacity=\\\"0\\\"> element carrying x, y,              textLength, font-size and text-anchor \u2014 so text content, position and width are              checkable without rendering a pixel.\",\"name\":\"export_schematic_svg\"},{\"description\":\"Render a schematic sheet to PNG: kicad-cli SVG export rasterized in-process (deterministic stroke-font rendering, no system fonts consulted). Returns the PNG path and its actual pixel dimensions; with 'inline' true the response also carries the image as base64 so the caller can inspect its own output. Width is capped at 4096 px.\",\"name\":\"render_schematic_png\"},{\"description\":\"Capture the current render of a schematic sheet as its visual baseline, stored under the project's .konnect/baselines/ keyed by sheet name, with the source file's hash and the renderer identity recorded so a later compare can tell design drift from a stale renderer.\",\"name\":\"set_visual_baseline\"},{\"description\":\"Re-render a sheet at its stored baseline's width and report pixel drift: changed-pixel percentage against a 2% threshold, the changed region's pixel bounding box, and whether the source file changed since the baseline. 'No baseline stored' is an explicit result, not an error; a baseline made by a different renderer version is flagged, never silently trusted.\",\"name\":\"compare_visual_baseline\"},{\"description\":\"Export a schematic sheet to a PDF file using kicad-cli.\",\"name\":\"export_schematic_pdf\"},{\"description\":\"Generate a KiCAD netlist file from the schematic using kicad-cli.\",\"name\":\"generate_netlist\"},{\"description\":\"Return a human-readable JSON summary of the schematic netlist: all components, their nets, pin counts. Nets come from labels and from power symbols. Does not require kicad-cli.\",\"name\":\"export_netlist_summary\"},{\"description\":\"Run the Electrical Rules Check (ERC) on the schematic via kicad-cli and return a list of violations filtered by severity.\",\"name\":\"run_erc\"},{\"description\":\"Scan the schematic for near-miss wire endpoints (within snap_tolerance of a pin or label but not exactly on it) and snap them into place. Use dry_run to preview fixes without writing.\",\"name\":\"fix_connectivity\"},{\"description\":\"Plan or atomically apply saved schematic hierarchy changes to the live KiCad PCB. Defaults to a non-mutating dry run; apply requires its exact plan revision. Preserves placement, routing, board-only footprints, and footprint artwork. A symbol with no footprint assigned is reported under `unassigned_footprints` and the sync proceeds for every other component.\",\"name\":\"update_pcb_from_schematic\"}],\"tools_added\":10}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "run_erc",
+    "arguments": {
+      "schematic": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_sch",
+      "output": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\reports\\erc-checkpoint.json"
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"errors\":0,\"total\":0,\"violations\":[],\"warnings\":0}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  }
+]

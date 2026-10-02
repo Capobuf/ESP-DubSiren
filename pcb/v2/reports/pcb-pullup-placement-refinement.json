@@ -1,0 +1,454 @@
+[
+  {
+    "name": "load_toolset",
+    "arguments": {
+      "name": [
+        "pcb_components",
+        "pcb_board",
+        "placement"
+      ]
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"errors\":[],\"loaded\":[\"pcb_components\",\"pcb_board\",\"placement\"],\"tools\":[{\"description\":\"Place a footprint on the PCB. Uses live KiCAD IPC when reachable; otherwise safely edits a closed board file with revision checks.\",\"name\":\"place_component\"},{\"description\":\"Move a placed footprint to a new X/Y position. Uses live KiCAD IPC when reachable; otherwise safely edits a closed board file with revision checks.\",\"name\":\"move_component\"},{\"description\":\"Set the rotation angle of a placed footprint. Uses live KiCAD IPC when reachable; otherwise safely edits a closed board file with revision checks.\",\"name\":\"rotate_component\"},{\"description\":\"Set X/Y positions and rotations for multiple existing footprints atomically. Uses one live KiCAD IPC update and one undo step when reachable; otherwise safely edits a closed board file once with revision checks.\",\"name\":\"set_component_placements\"},{\"description\":\"Set a placed footprint to F.Cu or B.Cu. When the board is open in KiCad 10.0.6 or newer, this uses KiCad's own native FlipItems IPC command \u2014 the same transform the GUI's F key performs, including 3D-model offset/rotation \u2014 inside one KiCad undo step. Older or unsupported KiCad reachable over IPC returns an explicit unsupported_capability error rather than falling back to the file. Only when no live KiCad holds this board does it fall back to a guarded closed-board file edit, which flips supported geometry with revision checks and refuses any footprint whose 3D model would need a transform the file path cannot perform.\",\"name\":\"flip_component\"},{\"description\":\"Remove a footprint from the board via KiCAD IPC.\",\"name\":\"delete_component\"},{\"description\":\"Update the value or other properties of a placed footprint via KiCAD IPC.\",\"name\":\"edit_component\"},{\"description\":\"Repair the exact legacy corruption from Konnect issue #244: footprint drawing shapes rewritten as anonymous pads with empty layer sets. Resolves each affected footprint from its library, restores its pads and drawing shapes while preserving placement, identity and pad nets, and applies every requested repair in one KiCad undo commit. Defaults to a non-mutating dry run; apply requires the exact returned plan revision. Requires KiCAD running with the requested board open.\",\"name\":\"repair_corrupted_footprints\"},{\"description\":\"Find a footprint on the board by reference designator and return its position.\",\"name\":\"find_component\"},{\"description\":\"Plan or atomically apply KiCad's Update Footprints from Library operation to placed footprints on the live board. Defaults to a non-mutating dry run; apply requires its exact plan revision. Preserves placed-instance state and pad nets while refreshing supported library-owned content.\",\"name\":\"update_footprints_from_library\"},{\"description\":\"List the graphic items inside a footprint placed on the board \u2014 silkscreen, fabrication, and courtyard artwork \u2014 with the UUID needed to edit one. Points are footprint-local millimetres, as the .kicad_mod shows them. Each item reports 'editable', plus 'outlines' and 'holes' for polygons: 'points' covers the first outline only, so an item with more than one outline or any holes is reported but cannot be edited here. Requires KiCAD running with the board open.\",\"name\":\"list_board_footprint_graphics\"},{\"description\":\"Replace the vertices of a polygon inside a footprint placed on the board, selected by UUID. Points are footprint-local millimetres, as the .kicad_mod shows them. Use this to bring one placed instance in line with a library change without re-placing the part. Only a single-outline polygon with no holes can be replaced; anything else is refused by name rather than flattened. Requires KiCAD running with the board open.\",\"name\":\"edit_board_footprint_graphic\"},{\"description\":\"Return live board-space pad positions, effective rotations, physical geometry, drills, copper-layer shapes, layers and net assignments for a footprint. Reads the board open in KiCad when it is reachable and falls back to the file only when no live KiCad holds this board \u2014 IPC unreachable, or that board not open \u2014 'source' says which, so unsaved placements are visible without a save. A pad's 'net' is its net name, \\\"\\\" if the pad carries no net (unconnected), or \u2014 reading the file \u2014 null if the net node is present but unreadable; treat null as an error, not as an unconnected pad.\",\"name\":\"get_component_pads\"},{\"description\":\"Return the live board-space position, effective rotation, physical geometry, drill, layers and net of a specific pad number on a footprint.\",\"name\":\"get_pad_position\"},{\"description\":\"List all footprints on the board with their positions, layers, and values.\",\"name\":\"get_component_list\"},{\"description\":\"Place multiple copies of a footprint in a grid or line array via KiCAD IPC.\",\"name\":\"place_component_array\"},{\"description\":\"Align multiple footprints along a common X or Y axis via KiCAD IPC.\",\"name\":\"align_components\"},{\"description\":\"Duplicate an existing footprint at a new position via KiCAD IPC.\",\"name\":\"duplicate_component\"},{\"description\":\"Render the board with kicad-cli and return it as a base64 PNG. Note this is              kicad-cli's 3-D board render viewed from the top, not a layer plot -- there is              no layer selection. Use export_svg for layer-aware 2-D output.\",\"name\":\"get_board_2d_view\"},{\"description\":\"Add a rectangular board outline of the given dimensions on the Edge.Cuts layer. This appends: on a board that already has an outline it leaves two overlapping rectangles and a DRC failure, so resizing means calling delete_graphics(layer='Edge.Cuts') first.\",\"name\":\"set_board_size\"},{\"description\":\"Return metadata about the PCB: title, revision, company, layer count, paper size, and the number of distinct nets (excluding the unconnected pseudo-net). Reads the board open in KiCad when it is reachable, else the file \u2014 'source' says which. Paper size always comes from the file, and is null when the file cannot be read. A custom (User) size also reports its dimensions in millimetres under 'paper_size_mm' on both paths.\",\"name\":\"get_board_info\"},{\"description\":\"Return the bounding box of all objects on the board (tries KiCAD IPC, falls back to file parse).\",\"name\":\"get_board_extents\"},{\"description\":\"Return all layers defined in the board with their names and types.\",\"name\":\"get_layer_list\"},{\"description\":\"Add a new inner copper or technical layer to the board layer stack.\",\"name\":\"add_layer\"},{\"description\":\"Request an editor active-layer change. The bundled stable KiCad IPC protocol does not expose this editor-session operation, so this tool currently returns unsupported_capability without modifying the board file. It never writes an (active_layer ...) token because KiCad 10 board files do not support one.\",\"name\":\"set_active_layer\"},{\"description\":\"Add a rectangular board outline on Edge.Cuts, optionally using circular rounded corners. This appends: on a board that already has an outline it leaves two overlapping rectangles and a DRC failure, so replacing one means calling delete_graphics(layer='Edge.Cuts') first.\",\"name\":\"add_board_outline\"},{\"description\":\"Delete board graphics \u2014 lines, rectangles, arcs, circles, polygons, curves, text, text boxes, and dimensions \u2014 that match every filter given. At least one of 'uuids', 'layer', or 'types' is required; 'dry_run' lists what would go without deleting anything, and the UUIDs it reports can be passed straight back as 'uuids'. Footprints, zones, tracks, vias, and graphics belonging to a footprint are never touched, and neither are reference images (KiCad's API cannot identify one). This is how a board outline is resized: add_board_outline and set_board_size append, so calling one twice without deleting the old Edge.Cuts graphics first leaves two overlapping outlines. Acts on the board open in KiCad when it is reachable, else on the file \u2014 'source' says which.\",\"name\":\"delete_graphics\"},{\"description\":\"Add an NPTH mounting hole footprint at the specified position, under the MountingHole library name stock KiCad 10 ships for that drill (3.2 \u2192 MountingHole_3.2mm_M3, 3 \u2192 MountingHole_3mm). A drill KiCad ships no footprint for is refused. Places KiCad's own library footprint when the library resolves; otherwise an equivalent unplated hole under the same name.\",\"name\":\"add_mounting_hole\"},{\"description\":\"Add a silkscreen or fabrication text string to the board.\",\"name\":\"add_board_text\"},{\"description\":\"Add a copper fill zone polygon on a specified layer and net. Tries KiCAD IPC first \u2014 with KiCAD live on this board the zone is created through the API and refilled, so it shows up at once and is undoable there. Only when no live KiCAD answers does it fall back to inserting the (zone \u2026) S-expression into the file, and that result carries a warning, because a file-only edit is invisible to an open pcbnew and is lost on its next save. Refuses a net the board does not declare rather than binding copper to net 0.\",\"name\":\"add_zone\"},{\"description\":\"Import an SVG file as filled silkscreen or copper artwork (a logo, icon, or other graphic). Curved paths are flattened into polygon outlines since KiCAD's board format doesn't support Bezier curves in filled shapes. Tries KiCAD IPC first, falls back to a direct file edit if KiCAD isn't running.\",\"name\":\"import_svg_logo\"},{\"description\":\"Score a board's footprint placement: scores 0-100 and explains every deduction, naming the components behind each one. Hard failures (courtyard overlaps, parts outside the outline) decide the verdict regardless of the numeric score, and a board without an Edge.Cuts outline can never pass \u2014 its verdict is 'outline_missing'.\",\"name\":\"score_placement\"},{\"description\":\"Plan (and optionally apply) a row of decoupling capacitors beside an IC, from capacitor references YOU supply \u2014 this tool never infers which caps decouple which IC (a shared net, GND above all, is not evidence of that pairing). Every reference must already name a footprint on the board with usable courtyard geometry; an unknown or unplaceable reference is refused before anything is planned. The response's plan_status is 'applicable' only when every planned target lands inside the board outline AND the plan actually improves score_placement's score \u2014 otherwise it is 'blocked' with blocking_reasons naming why, and apply refuses before the first mutation. Dry-run by default. Apply refuses while KiCad holds the board open live.\",\"name\":\"place_decoupling_caps\"},{\"description\":\"Plan a BGA fanout: outer-ring pads escape directly; each inner pad gets a via (dogbone: diagonal offset by quadrant; inline: a full pitch outward) and a stub trace. The pitch is DETECTED from the pad grid and reported, never assumed. 'apply' executes the whole plan as one KiCad undo commit over live IPC and requires the board open in KiCad; the default returns the plan for review.\",\"name\":\"plan_bga_fanout\"},{\"description\":\"Deterministic first placement: cluster footprints by shared nets (union-find), lay clusters out as tight grids inside the board outline, courtyards non-overlapping. Footprints locked in KiCad are never moved and act as obstacles; add more with 'locked'. A starting point for refinement, not a final layout \u2014 the response says so, and carries the board's score before and after the plan. Dry-run by default.\",\"name\":\"auto_place_from_schematic\"},{\"description\":\"DEPRECATED: diagnose an existing deterministic spring-embedder plan; do not use this as a recommended bulk-placement workflow. Shared nets pull connected parts together (power nets weighted 3x, differential pairs 5x), courtyards repel, the board edge constrains. No randomness, no clocks: the same input always yields the same plan, converging when the grid-snapped layout stops changing. A plan is blocked when it does not converge or improve, has a hard failure or off-board target, exceeds max_displacement_mm, or has no displacement limit. Blocked plans can be inspected in dry-run but cannot apply. Locked references exert force but never move. Dry-run by default.\",\"name\":\"refine_placement_force_directed\"}],\"tools_added\":36}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "rotate_component",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "reference": "R15",
+      "rotation": 180
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"rotated\":\"R15\",\"rotation\":180.0,\"source\":\"ipc\"}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "move_component",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "reference": "R15",
+      "x": 49.5,
+      "y": 45
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"moved\":\"R15\",\"source\":\"ipc\",\"x\":49.5,\"y\":45.0}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "rotate_component",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "reference": "R16",
+      "rotation": 180
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"rotated\":\"R16\",\"rotation\":180.0,\"source\":\"ipc\"}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "move_component",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "reference": "R16",
+      "x": 49.5,
+      "y": 47
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"moved\":\"R16\",\"source\":\"ipc\",\"x\":49.5,\"y\":47.0}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "rotate_component",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "reference": "R17",
+      "rotation": 180
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"rotated\":\"R17\",\"rotation\":180.0,\"source\":\"ipc\"}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "move_component",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "reference": "R17",
+      "x": 49.5,
+      "y": 49
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"moved\":\"R17\",\"source\":\"ipc\",\"x\":49.5,\"y\":49.0}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "rotate_component",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "reference": "R18",
+      "rotation": 180
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"rotated\":\"R18\",\"rotation\":180.0,\"source\":\"ipc\"}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "move_component",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "reference": "R18",
+      "x": 49.5,
+      "y": 51
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"moved\":\"R18\",\"source\":\"ipc\",\"x\":49.5,\"y\":51.0}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "rotate_component",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "reference": "R21",
+      "rotation": 180
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"rotated\":\"R21\",\"rotation\":180.0,\"source\":\"ipc\"}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "move_component",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "reference": "R21",
+      "x": 49.5,
+      "y": 53
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"moved\":\"R21\",\"source\":\"ipc\",\"x\":49.5,\"y\":53.0}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "rotate_component",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "reference": "R20",
+      "rotation": 180
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"rotated\":\"R20\",\"rotation\":180.0,\"source\":\"ipc\"}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "move_component",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "reference": "R20",
+      "x": 49.5,
+      "y": 55
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"moved\":\"R20\",\"source\":\"ipc\",\"x\":49.5,\"y\":55.0}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "rotate_component",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "reference": "R19",
+      "rotation": 180
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"rotated\":\"R19\",\"rotation\":180.0,\"source\":\"ipc\"}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "move_component",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "reference": "R19",
+      "x": 49.5,
+      "y": 57
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"moved\":\"R19\",\"source\":\"ipc\",\"x\":49.5,\"y\":57.0}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "rotate_component",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "reference": "R7",
+      "rotation": 180
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"rotated\":\"R7\",\"rotation\":180.0,\"source\":\"ipc\"}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "save_project",
+    "arguments": {},
+    "result": {
+      "content": [
+        {
+          "text": "Board saved successfully.",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "score_placement",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb"
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"connector_edges\":[{\"edge_distance_mm\":4.175,\"reference\":\"J2\"},{\"edge_distance_mm\":2.475,\"reference\":\"J1\"}],\"deductions\":[{\"detail\":\"2 part(s) not fully inside the board outline \u2014 also a hard failure\",\"kind\":\"outside_outline\",\"points\":40,\"references\":[\"J2\",\"J1\"]},{\"detail\":\"C4 (100n, limit 2.5 mm) is 3.875 mm from nearest shared-net IC U2\",\"kind\":\"decoupling\",\"points\":15,\"references\":[\"C4\"]}],\"footprints_scored\":68,\"footprints_skipped\":0,\"hard_failures\":[{\"detail\":\"J2 courtyard bbox (78.25, -3)..(106.75, 18.35) is not fully inside the board outline (6, 3.5)..(119, 134)\",\"kind\":\"outside_outline\",\"references\":[\"J2\"]},{\"detail\":\"J1 courtyard bbox (39.725, 0.89)..(50.275, 11.06) is not fully inside the board outline (6, 3.5)..(119, 134)\",\"kind\":\"outside_outline\",\"references\":[\"J1\"]}],\"interface_filter_caps\":[],\"outline_missing\":false,\"score\":45,\"source\":\"ipc\",\"uncoupled_caps\":[],\"verdict\":\"hard_fail\"}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "get_component_list",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb"
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"components\":[{\"footprint\":\"Resistor_SMD:R_0603_1608Metric\",\"layer\":\"B.Cu\",\"reference\":\"R7\",\"rotation\":180.0,\"value\":\"10k\",\"x\":49.0,\"y\":39.0},{\"footprint\":\"Resistor_SMD:R_0603_1608Metric\",\"layer\":\"B.Cu\",\"reference\":\"R19\",\"rotation\":180.0,\"value\":\"10k\",\"x\":49.5,\"y\":57.0},{\"footprint\":\"Resistor_SMD:R_0603_1608Metric\",\"layer\":\"B.Cu\",\"reference\":\"R20\",\"rotation\":180.0,\"value\":\"10k\",\"x\":49.5,\"y\":55.0},{\"footprint\":\"Resistor_SMD:R_0603_1608Metric\",\"layer\":\"B.Cu\",\"reference\":\"R21\",\"rotation\":180.0,\"value\":\"10k\",\"x\":49.5,\"y\":53.0},{\"footprint\":\"Resistor_SMD:R_0603_1608Metric\",\"layer\":\"B.Cu\",\"reference\":\"R18\",\"rotation\":180.0,\"value\":\"10k\",\"x\":49.5,\"y\":51.0},{\"footprint\":\"Resistor_SMD:R_0603_1608Metric\",\"layer\":\"B.Cu\",\"reference\":\"R17\",\"rotation\":180.0,\"value\":\"10k\",\"x\":49.5,\"y\":49.0},{\"footprint\":\"Resistor_SMD:R_0603_1608Metric\",\"layer\":\"B.Cu\",\"reference\":\"R16\",\"rotation\":180.0,\"value\":\"10k\",\"x\":49.5,\"y\":47.0},{\"footprint\":\"Resistor_SMD:R_0603_1608Metric\",\"layer\":\"B.Cu\",\"reference\":\"R15\",\"rotation\":180.0,\"value\":\"10k\",\"x\":49.5,\"y\":45.0},{\"footprint\":\"Resistor_SMD:R_0603_1608Metric\",\"layer\":\"B.Cu\",\"reference\":\"R1\",\"rotation\":0.0,\"value\":\"10\",\"x\":21.5,\"y\":28.2},{\"footprint\":\"Capacitor_SMD:C_0603_1608Metric\",\"layer\":\"B.Cu\",\"reference\":\"C4\",\"rotation\":0.0,\"value\":\"100n\",\"x\":17.0,\"y\":24.7},{\"footprint\":\"TestPoint:TestPoint_Pad_D1.0mm\",\"layer\":\"B.Cu\",\"reference\":\"TP2\",\"rotation\":0.0,\"value\":\"+3V3\",\"x\":13.0,\"y\":37.0},{\"footprint\":\"Capacitor_SMD:C_0603_1608Metric\",\"layer\":\"B.Cu\",\"reference\":\"C2\",\"rotation\":180.0,\"value\":\"100n\",\"x\":15.5,\"y\":33.2},{\"footprint\":\"ESP-DubSiren-V2-Electrical:Bel_0ZCG0110CF2B_1812\",\"layer\":\"B.Cu\",\"reference\":\"F1\",\"rotation\":180.0,\"value\":\"1.1A PTC\",\"x\":34.5,\"y\":18.0},{\"footprint\":\"Capacitor_SMD:C_0805_2012Metric\",\"layer\":\"B.Cu\",\"reference\":\"C3\",\"rotation\":0.0,\"value\":\"22u\",\"x\":17.0,\"y\":27.0},{\"footprint\":\"ESP-DubSiren-V2-Mechanical:Adafruit_6250_ComponentFace\",\"layer\":\"B.Cu\",\"reference\":\"U6\",\"rotation\":0.0,\"value\":\"Adafruit 6250\",\"x\":76.0,\"y\":47.5},{\"footprint\":\"ESP-DubSiren-V2-Mechanical:Bourns_PTV111-3\",\"layer\":\"F.Cu\",\"reference\":\"RV6\",\"rotation\":0.0,\"value\":\"20k PTV111-3420A-B203\",\"x\":97.5,\"y\":94.0},{\"footprint\":\"ESP-DubSiren-V2-Mechanical:Bourns_PTV111-3\",\"layer\":\"F.Cu\",\"reference\":\"RV2\",\"rotation\":0.0,\"value\":\"20k PTV111-3420A-B203\",\"x\":62.5,\"y\":26.0},{\"footprint\":\"MountingHole:MountingHole_3.2mm_M3\",\"layer\":\"F.Cu\",\"reference\":\"H1\",\"rotation\":0.0,\"value\":\"MountingHole_3.2mm_M3\",\"x\":12.0,\"y\":12.0},{\"footprint\":\"ESP-DubSiren-V2-Mechanical:Bourns_PTV111-3\",\"layer\":\"F.Cu\",\"reference\":\"RV5\",\"rotation\":0.0,\"value\":\"20k PTV111-3420A-B203\",\"x\":62.5,\"y\":94.0},{\"footprint\":\"ESP-DubSiren-V2-Mechanical:Bourns_PTV111-3\",\"layer\":\"F.Cu\",\"reference\":\"RV3\",\"rotation\":0.0,\"value\":\"20k PTV111-3420A-B203\",\"x\":97.5,\"y\":26.0},{\"footprint\":\"ESP-DubSiren-V2-Mechanical:Bourns_PEC11R-4120F-S0018\",\"layer\":\"F.Cu\",\"reference\":\"SW7\",\"rotation\":0.0,\"value\":\"PEC11R-4120F-S0018\",\"x\":97.5,\"y\":60.0},{\"footprint\":\"ESP-DubSiren-V2-Mechanical:Bourns_PTV111-3\",\"layer\":\"F.Cu\",\"reference\":\"RV1\",\"rotation\":0.0,\"value\":\"20k PTV111-3420A-B203\",\"x\":27.5,\"y\":26.0},{\"footprint\":\"Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB\",\"layer\":\"F.Cu\",\"reference\":\"SW4\",\"rotation\":0.0,\"value\":\"MX2A-11NW\",\"x\":100.04,\"y\":116.92},{\"footprint\":\"MountingHole:MountingHole_3.2mm_M3\",\"layer\":\"F.Cu\",\"reference\":\"H3\",\"rotation\":0.0,\"value\":\"MountingHole_3.2mm_M3\",\"x\":12.0,\"y\":128.0},{\"footprint\":\"Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB\",\"layer\":\"F.Cu\",\"reference\":\"SW2\",\"rotation\":0.0,\"value\":\"MX2A-11NW\",\"x\":53.34,\"y\":116.92},{\"footprint\":\"ESP-DubSiren-V2-Mechanical:Bourns_PTV111-3\",\"layer\":\"F.Cu\",\"reference\":\"RV4\",\"rotation\":0.0,\"value\":\"20k PTV111-3420A-B203\",\"x\":27.5,\"y\":94.0},{\"footprint\":\"MountingHole:MountingHole_3.2mm_M3\",\"layer\":\"F.Cu\",\"reference\":\"H4\",\"rotation\":0.0,\"value\":\"MountingHole_3.2mm_M3\",\"x\":113.0,\"y\":128.0},{\"footprint\":\"ESP-DubSiren-V2-Mechanical:Adafruit_5393_DisplayFace\",\"layer\":\"F.Cu\",\"reference\":\"U5\",\"rotation\":0.0,\"value\":\"Adafruit 5393\",\"x\":63.516,\"y\":60.0},{\"footprint\":\"Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB\",\"layer\":\"F.Cu\",\"reference\":\"SW1\",\"rotation\":0.0,\"value\":\"MX2A-11NW\",\"x\":30.04,\"y\":116.92},{\"footprint\":\"Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB\",\"layer\":\"F.Cu\",\"reference\":\"SW3\",\"rotation\":0.0,\"value\":\"MX2A-11NW\",\"x\":76.74,\"y\":116.92},{\"footprint\":\"MountingHole:MountingHole_3.2mm_M3\",\"layer\":\"F.Cu\",\"reference\":\"H2\",\"rotation\":0.0,\"value\":\"MountingHole_3.2mm_M3\",\"x\":113.0,\"y\":12.0},{\"footprint\":\"Resistor_SMD:R_0603_1608Metric\",\"layer\":\"B.Cu\",\"reference\":\"R2\",\"rotation\":0.0,\"value\":\"22\",\"x\":24.0,\"y\":42.4},{\"footprint\":\"Resistor_SMD:R_0603_1608Metric\",\"layer\":\"B.Cu\",\"reference\":\"R10\",\"rotation\":0.0,\"value\":\"4.7k\",\"x\":98.75,\"y\":33.0},{\"footprint\":\"Capacitor_SMD:C_0805_2012Metric\",\"layer\":\"B.Cu\",\"reference\":\"C1\",\"rotation\":180.0,\"value\":\"22u\",\"x\":14.5,\"y\":31.1},{\"footprint\":\"ESP-DubSiren-V2-Mechanical:SameSky_RCJ-2123\",\"layer\":\"B.Cu\",\"reference\":\"J2\",\"rotation\":180.0,\"value\":\"RCJ-2123\",\"x\":92.5,\"y\":12.0},{\"footprint\":\"Resistor_SMD:R_0603_1608Metric\",\"layer\":\"B.Cu\",\"reference\":\"R13\",\"rotation\":0.0,\"value\":\"4.7k\",\"x\":98.75,\"y\":108.0},{\"footprint\":\"ESP-DubSiren-V2-Electrical:Espressif_ESP32-S3-WROOM-1U\",\"layer\":\"B.Cu\",\"reference\":\"U1\",\"rotation\":0.0,\"value\":\"ESP32-S3-WROOM-1U-N16R8\",\"x\":36.0,\"y\":49.0},{\"footprint\":\"Resistor_SMD:R_0603_1608Metric\",\"layer\":\"B.Cu\",\"reference\":\"R5\",\"rotation\":0.0,\"value\":\"5.1k\",\"x\":52.0,\"y\":14.5},{\"footprint\":\"Package_SO:SOIC-16_3.9x9.9mm_P1.27mm\",\"layer\":\"B.Cu\",\"reference\":\"U3\",\"rotation\":0.0,\"value\":\"74HC4051D\",\"x\":26.0,\"y\":69.0},{\"footprint\":\"Diode_SMD:D_SOD-123F\",\"layer\":\"B.Cu\",\"reference\":\"D1\",\"rotation\":0.0,\"value\":\"SMF5.0A\",\"x\":34.0,\"y\":22.5},{\"footprint\":\"TestPoint:TestPoint_Pad_D1.0mm\",\"layer\":\"B.Cu\",\"reference\":\"TP5\",\"rotation\":0.0,\"value\":\"AUDIO_MONO\",\"x\":92.5,\"y\":30.0},{\"footprint\":\"Resistor_SMD:R_0603_1608Metric\",\"layer\":\"B.Cu\",\"reference\":\"R8\",\"rotation\":0.0,\"value\":\"4.7k\",\"x\":30.5,\"y\":35.0},{\"footprint\":\"TestPoint:TestPoint_Pad_D1.0mm\",\"layer\":\"B.Cu\",\"reference\":\"TP7\",\"rotation\":0.0,\"value\":\"UART_RX\",\"x\":50.0,\"y\":60.0},{\"footprint\":\"ESP-DubSiren-V2-Electrical:CK_PTS636SM43SMTR_LFS\",\"layer\":\"B.Cu\",\"reference\":\"SW6\",\"rotation\":90.0,\"value\":\"BOOT\",\"x\":12.0,\"y\":73.0},{\"footprint\":\"Connector_USB:USB_C_Receptacle_GCT_USB4085\",\"layer\":\"B.Cu\",\"reference\":\"J1\",\"rotation\":0.0,\"value\":\"USB4085-GF-A\",\"x\":42.025,\"y\":10.0},{\"footprint\":\"TestPoint:TestPoint_Pad_D1.0mm\",\"layer\":\"B.Cu\",\"reference\":\"TP6\",\"rotation\":0.0,\"value\":\"UART_TX\",\"x\":47.0,\"y\":60.0},{\"footprint\":\"TestPoint:TestPoint_Pad_D1.0mm\",\"layer\":\"B.Cu\",\"reference\":\"TP3\",\"rotation\":0.0,\"value\":\"GND\",\"x\":12.0,\"y\":84.0},{\"footprint\":\"Capacitor_SMD:C_0603_1608Metric\",\"layer\":\"B.Cu\",\"reference\":\"C7\",\"rotation\":180.0,\"value\":\"1u\",\"x\":23.5,\"y\":50.5},{\"footprint\":\"Capacitor_SMD:C_0805_2012Metric\",\"layer\":\"B.Cu\",\"reference\":\"C5\",\"rotation\":180.0,\"value\":\"22u\",\"x\":20.5,\"y\":59.0},{\"footprint\":\"Resistor_SMD:R_0603_1608Metric\",\"layer\":\"B.Cu\",\"reference\":\"R9\",\"rotation\":0.0,\"value\":\"4.7k\",\"x\":65.5,\"y\":32.0},{\"footprint\":\"Capacitor_SMD:C_0603_1608Metric\",\"layer\":\"B.Cu\",\"reference\":\"C11\",\"rotation\":0.0,\"value\":\"10n C0G 50V\",\"x\":28.0,\"y\":21.05},{\"footprint\":\"ESP-DubSiren-V2-Mechanical:Bourns_PTV111-1\",\"layer\":\"B.Cu\",\"reference\":\"RV7\",\"rotation\":180.0,\"value\":\"10k PTV111-1420A-B103\",\"x\":23.0,\"y\":12.0},{\"footprint\":\"Capacitor_SMD:C_0603_1608Metric\",\"layer\":\"B.Cu\",\"reference\":\"C10\",\"rotation\":180.0,\"value\":\"1u\",\"x\":19.5,\"y\":22.9},{\"footprint\":\"Package_TO_SOT_SMD:SOT-23-6\",\"layer\":\"B.Cu\",\"reference\":\"U7\",\"rotation\":0.0,\"value\":\"TPS22918DBVR\",\"x\":24.0,\"y\":22.0},{\"footprint\":\"ESP-DubSiren-V2-Electrical:MPS_MPM3612GLQ-33_LGA-8-1EP_3x3mm\",\"layer\":\"B.Cu\",\"reference\":\"U2\",\"rotation\":0.0,\"value\":\"MPM3612GLQ-33-Z\",\"x\":18.0,\"y\":30.0},{\"footprint\":\"Resistor_SMD:R_0603_1608Metric\",\"layer\":\"B.Cu\",\"reference\":\"R3\",\"rotation\":0.0,\"value\":\"22\",\"x\":24.0,\"y\":40.6},{\"footprint\":\"Capacitor_SMD:C_0603_1608Metric\",\"layer\":\"B.Cu\",\"reference\":\"C6\",\"rotation\":180.0,\"value\":\"100n\",\"x\":24.0,\"y\":56.14},{\"footprint\":\"Resistor_SMD:R_0603_1608Metric\",\"layer\":\"B.Cu\",\"reference\":\"R4\",\"rotation\":0.0,\"value\":\"5.1k\",\"x\":52.0,\"y\":10.5},{\"footprint\":\"TestPoint:TestPoint_Pad_D1.0mm\",\"layer\":\"B.Cu\",\"reference\":\"TP4\",\"rotation\":0.0,\"value\":\"ADC_MUX\",\"x\":24.5,\"y\":60.0},{\"footprint\":\"Resistor_SMD:R_0603_1608Metric\",\"layer\":\"B.Cu\",\"reference\":\"R6\",\"rotation\":0.0,\"value\":\"10k\",\"x\":20.5,\"y\":48.5},{\"footprint\":\"Capacitor_SMD:C_0603_1608Metric\",\"layer\":\"B.Cu\",\"reference\":\"C8\",\"rotation\":0.0,\"value\":\"100n\",\"x\":31.5,\"y\":73.445},{\"footprint\":\"Resistor_SMD:R_0603_1608Metric\",\"layer\":\"B.Cu\",\"reference\":\"R11\",\"rotation\":0.0,\"value\":\"4.7k\",\"x\":28.75,\"y\":108.0},{\"footprint\":\"Resistor_SMD:R_0603_1608Metric\",\"layer\":\"B.Cu\",\"reference\":\"R14\",\"rotation\":0.0,\"value\":\"4.7k\",\"x\":17.0,\"y\":20.0},{\"footprint\":\"Capacitor_SMD:C_0603_1608Metric\",\"layer\":\"B.Cu\",\"reference\":\"C9\",\"rotation\":180.0,\"value\":\"100n\",\"x\":24.0,\"y\":53.6},{\"footprint\":\"ESP-DubSiren-V2-Electrical:CK_PTS636SM43SMTR_LFS\",\"layer\":\"B.Cu\",\"reference\":\"SW5\",\"rotation\":90.0,\"value\":\"RESET\",\"x\":12.0,\"y\":58.0},{\"footprint\":\"Package_TO_SOT_SMD:SOT-23-6\",\"layer\":\"B.Cu\",\"reference\":\"U4\",\"rotation\":-90.0,\"value\":\"USBLC6-2SC6\",\"x\":45.0,\"y\":15.0},{\"footprint\":\"TestPoint:TestPoint_Pad_D1.0mm\",\"layer\":\"B.Cu\",\"reference\":\"TP1\",\"rotation\":0.0,\"value\":\"+5V\",\"x\":32.0,\"y\":25.0},{\"footprint\":\"Resistor_SMD:R_0603_1608Metric\",\"layer\":\"B.Cu\",\"reference\":\"R12\",\"rotation\":0.0,\"value\":\"4.7k\",\"x\":63.75,\"y\":108.0}],\"count\":68}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "get_component_pads",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "reference": "R7"
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"pad_count\":2,\"pads\":[{\"copper_layers\":[{\"chamfer_ratio\":0.2,\"corner_rounding_ratio\":0.25,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"roundrect\",\"size\":{\"x\":0.8,\"y\":0.95}}],\"drill\":{\"end_layer\":\"B.Cu\",\"shape\":\"circle\",\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"F.Cu\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"+3V3\",\"number\":\"1\",\"pad_type\":\"smd\",\"rotation_deg\":180.0,\"shape\":\"roundrect\",\"size\":{\"x\":0.8,\"y\":0.95},\"uuid\":\"f1ff183e-8471-42bd-a2ed-e7c889bb27be\",\"x\":49.825,\"y\":39.0},{\"copper_layers\":[{\"chamfer_ratio\":0.2,\"corner_rounding_ratio\":0.25,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"roundrect\",\"size\":{\"x\":0.8,\"y\":0.95}}],\"drill\":{\"end_layer\":\"B.Cu\",\"shape\":\"circle\",\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"F.Cu\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"/BOOT\",\"number\":\"2\",\"pad_type\":\"smd\",\"rotation_deg\":180.0,\"shape\":\"roundrect\",\"size\":{\"x\":0.8,\"y\":0.95},\"uuid\":\"386332ed-abc3-482d-8fcd-3f45636ecbb0\",\"x\":48.175,\"y\":39.0}],\"reference\":\"R7\",\"source\":\"ipc\"}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "get_component_pads",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "reference": "R15"
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"pad_count\":2,\"pads\":[{\"copper_layers\":[{\"chamfer_ratio\":0.2,\"corner_rounding_ratio\":0.25,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"roundrect\",\"size\":{\"x\":0.8,\"y\":0.95}}],\"drill\":{\"end_layer\":\"B.Cu\",\"shape\":\"circle\",\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"F.Cu\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"+3V3\",\"number\":\"1\",\"pad_type\":\"smd\",\"rotation_deg\":180.0,\"shape\":\"roundrect\",\"size\":{\"x\":0.8,\"y\":0.95},\"uuid\":\"f1eb0214-a894-407b-b450-1bd501e3af5f\",\"x\":50.325,\"y\":45.0},{\"copper_layers\":[{\"chamfer_ratio\":0.2,\"corner_rounding_ratio\":0.25,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"roundrect\",\"size\":{\"x\":0.8,\"y\":0.95}}],\"drill\":{\"end_layer\":\"B.Cu\",\"shape\":\"circle\",\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"F.Cu\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"/BTN1\",\"number\":\"2\",\"pad_type\":\"smd\",\"rotation_deg\":180.0,\"shape\":\"roundrect\",\"size\":{\"x\":0.8,\"y\":0.95},\"uuid\":\"9a5cc9b3-0ea2-4d4f-97d5-4eb98ab262be\",\"x\":48.675,\"y\":45.0}],\"reference\":\"R15\",\"source\":\"ipc\"}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "get_component_pads",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "reference": "R16"
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"pad_count\":2,\"pads\":[{\"copper_layers\":[{\"chamfer_ratio\":0.2,\"corner_rounding_ratio\":0.25,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"roundrect\",\"size\":{\"x\":0.8,\"y\":0.95}}],\"drill\":{\"end_layer\":\"B.Cu\",\"shape\":\"circle\",\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"F.Cu\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"+3V3\",\"number\":\"1\",\"pad_type\":\"smd\",\"rotation_deg\":180.0,\"shape\":\"roundrect\",\"size\":{\"x\":0.8,\"y\":0.95},\"uuid\":\"44c6728e-e9c5-4a45-9095-db32f15060f9\",\"x\":50.325,\"y\":47.0},{\"copper_layers\":[{\"chamfer_ratio\":0.2,\"corner_rounding_ratio\":0.25,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"roundrect\",\"size\":{\"x\":0.8,\"y\":0.95}}],\"drill\":{\"end_layer\":\"B.Cu\",\"shape\":\"circle\",\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"F.Cu\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"/BTN2\",\"number\":\"2\",\"pad_type\":\"smd\",\"rotation_deg\":180.0,\"shape\":\"roundrect\",\"size\":{\"x\":0.8,\"y\":0.95},\"uuid\":\"b7d2d13b-7d9b-46e4-949c-6159fe2549e6\",\"x\":48.675,\"y\":47.0}],\"reference\":\"R16\",\"source\":\"ipc\"}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "get_component_pads",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "reference": "R17"
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"pad_count\":2,\"pads\":[{\"copper_layers\":[{\"chamfer_ratio\":0.2,\"corner_rounding_ratio\":0.25,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"roundrect\",\"size\":{\"x\":0.8,\"y\":0.95}}],\"drill\":{\"end_layer\":\"B.Cu\",\"shape\":\"circle\",\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"F.Cu\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"+3V3\",\"number\":\"1\",\"pad_type\":\"smd\",\"rotation_deg\":180.0,\"shape\":\"roundrect\",\"size\":{\"x\":0.8,\"y\":0.95},\"uuid\":\"96203259-fdee-494b-bb89-13c76f90e426\",\"x\":50.325,\"y\":49.0},{\"copper_layers\":[{\"chamfer_ratio\":0.2,\"corner_rounding_ratio\":0.25,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"roundrect\",\"size\":{\"x\":0.8,\"y\":0.95}}],\"drill\":{\"end_layer\":\"B.Cu\",\"shape\":\"circle\",\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"F.Cu\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"/BTN3\",\"number\":\"2\",\"pad_type\":\"smd\",\"rotation_deg\":180.0,\"shape\":\"roundrect\",\"size\":{\"x\":0.8,\"y\":0.95},\"uuid\":\"248b604a-bfdc-47a5-94a7-b54fa936b512\",\"x\":48.675,\"y\":49.0}],\"reference\":\"R17\",\"source\":\"ipc\"}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "get_component_pads",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "reference": "R18"
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"pad_count\":2,\"pads\":[{\"copper_layers\":[{\"chamfer_ratio\":0.2,\"corner_rounding_ratio\":0.25,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"roundrect\",\"size\":{\"x\":0.8,\"y\":0.95}}],\"drill\":{\"end_layer\":\"B.Cu\",\"shape\":\"circle\",\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"F.Cu\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"+3V3\",\"number\":\"1\",\"pad_type\":\"smd\",\"rotation_deg\":180.0,\"shape\":\"roundrect\",\"size\":{\"x\":0.8,\"y\":0.95},\"uuid\":\"4daa7ea3-7924-4a32-96de-7f171a4fa45b\",\"x\":50.325,\"y\":51.0},{\"copper_layers\":[{\"chamfer_ratio\":0.2,\"corner_rounding_ratio\":0.25,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"roundrect\",\"size\":{\"x\":0.8,\"y\":0.95}}],\"drill\":{\"end_layer\":\"B.Cu\",\"shape\":\"circle\",\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"F.Cu\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"/BTN4\",\"number\":\"2\",\"pad_type\":\"smd\",\"rotation_deg\":180.0,\"shape\":\"roundrect\",\"size\":{\"x\":0.8,\"y\":0.95},\"uuid\":\"6a0a5db7-0723-4e76-be18-0a0ef7d08adb\",\"x\":48.675,\"y\":51.0}],\"reference\":\"R18\",\"source\":\"ipc\"}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "get_component_pads",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "reference": "R19"
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"pad_count\":2,\"pads\":[{\"copper_layers\":[{\"chamfer_ratio\":0.2,\"corner_rounding_ratio\":0.25,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"roundrect\",\"size\":{\"x\":0.8,\"y\":0.95}}],\"drill\":{\"end_layer\":\"B.Cu\",\"shape\":\"circle\",\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"F.Cu\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"+3V3\",\"number\":\"1\",\"pad_type\":\"smd\",\"rotation_deg\":180.0,\"shape\":\"roundrect\",\"size\":{\"x\":0.8,\"y\":0.95},\"uuid\":\"36953045-46d7-4fef-8b5a-4ef177b549e2\",\"x\":50.325,\"y\":57.0},{\"copper_layers\":[{\"chamfer_ratio\":0.2,\"corner_rounding_ratio\":0.25,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"roundrect\",\"size\":{\"x\":0.8,\"y\":0.95}}],\"drill\":{\"end_layer\":\"B.Cu\",\"shape\":\"circle\",\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"F.Cu\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"/ENC_A\",\"number\":\"2\",\"pad_type\":\"smd\",\"rotation_deg\":180.0,\"shape\":\"roundrect\",\"size\":{\"x\":0.8,\"y\":0.95},\"uuid\":\"d5187687-85b7-4159-9fe7-abb43b8b00f0\",\"x\":48.675,\"y\":57.0}],\"reference\":\"R19\",\"source\":\"ipc\"}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "get_component_pads",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "reference": "R20"
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"pad_count\":2,\"pads\":[{\"copper_layers\":[{\"chamfer_ratio\":0.2,\"corner_rounding_ratio\":0.25,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"roundrect\",\"size\":{\"x\":0.8,\"y\":0.95}}],\"drill\":{\"end_layer\":\"B.Cu\",\"shape\":\"circle\",\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"F.Cu\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"+3V3\",\"number\":\"1\",\"pad_type\":\"smd\",\"rotation_deg\":180.0,\"shape\":\"roundrect\",\"size\":{\"x\":0.8,\"y\":0.95},\"uuid\":\"a947843d-5459-4028-8877-cfb628080570\",\"x\":50.325,\"y\":55.0},{\"copper_layers\":[{\"chamfer_ratio\":0.2,\"corner_rounding_ratio\":0.25,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"roundrect\",\"size\":{\"x\":0.8,\"y\":0.95}}],\"drill\":{\"end_layer\":\"B.Cu\",\"shape\":\"circle\",\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"F.Cu\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"/ENC_B\",\"number\":\"2\",\"pad_type\":\"smd\",\"rotation_deg\":180.0,\"shape\":\"roundrect\",\"size\":{\"x\":0.8,\"y\":0.95},\"uuid\":\"37a7a9dc-4ec4-40ca-a24b-b813c0927266\",\"x\":48.675,\"y\":55.0}],\"reference\":\"R20\",\"source\":\"ipc\"}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "get_component_pads",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "reference": "R21"
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"pad_count\":2,\"pads\":[{\"copper_layers\":[{\"chamfer_ratio\":0.2,\"corner_rounding_ratio\":0.25,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"roundrect\",\"size\":{\"x\":0.8,\"y\":0.95}}],\"drill\":{\"end_layer\":\"B.Cu\",\"shape\":\"circle\",\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"F.Cu\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"+3V3\",\"number\":\"1\",\"pad_type\":\"smd\",\"rotation_deg\":180.0,\"shape\":\"roundrect\",\"size\":{\"x\":0.8,\"y\":0.95},\"uuid\":\"e05d3c31-f9a0-440a-8a2c-f8e302b33a03\",\"x\":50.325,\"y\":53.0},{\"copper_layers\":[{\"chamfer_ratio\":0.2,\"corner_rounding_ratio\":0.25,\"layer\":\"F.Cu\",\"offset\":{\"x\":0.0,\"y\":0.0},\"shape\":\"roundrect\",\"size\":{\"x\":0.8,\"y\":0.95}}],\"drill\":{\"end_layer\":\"B.Cu\",\"shape\":\"circle\",\"size\":{\"x\":0.0,\"y\":0.0},\"start_layer\":\"F.Cu\"},\"layers\":[\"B.Cu\",\"B.Mask\",\"B.Paste\"],\"net\":\"/ENC_SW\",\"number\":\"2\",\"pad_type\":\"smd\",\"rotation_deg\":180.0,\"shape\":\"roundrect\",\"size\":{\"x\":0.8,\"y\":0.95},\"uuid\":\"f11ade51-b924-4350-83f0-edd5bb02ac5f\",\"x\":48.675,\"y\":53.0}],\"reference\":\"R21\",\"source\":\"ipc\"}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  }
+]

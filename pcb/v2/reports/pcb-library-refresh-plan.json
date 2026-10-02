@@ -1,0 +1,9 @@
+{
+  "content": [
+    {
+      "text": "{\"changes\":[],\"coverage\":{\"atomicity\":\"single_kicad_undo_commit\",\"changed\":{\"applied\":0,\"planned\":0},\"conflicts\":{\"applied\":0,\"planned\":1},\"selected\":{\"applied\":0,\"planned\":2},\"skipped_unlinked\":{\"applied\":0,\"planned\":0},\"transport\":\"live_kicad_ipc\",\"unchanged\":{\"applied\":0,\"planned\":0}},\"diagnostics\":[{\"code\":\"unsupported_library_footprint\",\"message\":\"property 'Datasheet' clause 'unlocked' is not supported losslessly\",\"reference\":\"SW1\"}],\"plan_revision\":\"acf97c3e1ab7f880ebec0e2197415777c47e4175c39c74fc04723fc852b8a6f0\",\"status\":\"conflict\",\"undo\":null}",
+      "type": "text"
+    }
+  ],
+  "isError": false
+}

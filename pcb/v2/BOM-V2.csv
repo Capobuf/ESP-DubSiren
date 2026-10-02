@@ -66,3 +66,33 @@ U7,TPS22918DBVR,Package_TO_SOT_SMD:SOT-23-6,TPS22918DBVR,Texas Instruments,1,,ht
 KN1-KN6,Front pot knob,,1100,Davies Molding,6,,,Purchased mechanical item; verify clamping/concentricity on 6 mm shaft
 KN7,Master knob,,SAK-023,Same Sky,1,,,Purchased mechanical item
 KN8,Encoder knob,,CL170805B,CLIFF,1,,,Purchased mechanical item; enclosure fit pending
+ASM-HDR-TFT,11-pin soldered display header,,TSW-111-07-T-S,Samtec,1,,https://suddendocs.samtec.com/catalog_english/tsw_th.pdf,Required for 4.5 mm module spacing; post5.84 tail2.54 body2.54
+ASM-HDR-DAC,8-pin soldered DAC header,,TSW-108-14-T-S,Samtec,1,,https://suddendocs.samtec.com/catalog_english/tsw_th.pdf,Required for 8 mm module spacing; post8.13 tail2.79 body2.54
+ASM-M9-KIT,M9x0.75 nut and washer set,,RKZ00023UA,Alps Alpine,7,,https://docs.rs-online.com/a2bd/A700000012851535.pdf,One set per pot; nut11AF x2; washer9.1ID/14OD x0.5; measured Bourns supplied hardware may substitute
+ASM-M7-KIT,Encoder M7 nut and washer,,Supplied with PEC11R,Bourns,1,,,Verify supplied nut10AF x2 and washer12OD x0.5 maximum against modeled allocation
+ASM-KEYCAP,1u MX keycap,,Selection pending,Unselected,4,,,19.05 square x8 mm allowance; purchased set must pass full4mm travel check
+ASM-PCB,113x130.5x1.6 mm 2-layer PCB,,Custom PCB V2,Fabricated,1,,,Prototype; fabricate only after final DRC gate
+ASM-BODY,125x140x42 mm open top/rear frame,,Custom CAD,Fabricated,1,,,enclosure-body-v2.step; PCB entry reliefs and tapped bosses per MECHANICAL-V2.md
+ASM-BASE,3 mm enclosure base with supports,,Custom CAD,Fabricated,1,,,enclosure-base-v2.step
+ASM-TOP,Removable 3 mm top,,Custom CAD,Fabricated,1,,,enclosure-top-v2.step
+ASM-REAR,125x36x1.5 mm aluminium rear panel,,Custom CAD,Fabricated,1,,,enclosure-rear-panel-v2.step; removable for axial connector engagement
+ASM-BEZEL,Display cover retainer,,Custom CAD,Fabricated,1,,,panel-bezel-v2.step
+ASM-COVER,41x34x1 mm clear polycarbonate,,Cut to size,Fabricated,1,,,Edge retained; do not hard-preload TFT
+ASM-FOAM,30x0.5 mm soft foam strip,,Cut to fit,Fabricated,2,,,Nominal2mm free/1.75 compressed; set measured gap and low compression at glass border
+ASM-M3-MB,M3x8 socket screw,,ISO 4762 M3x8,Generic,4,,,Head diameter<=5.5 height<=3; board to bosses
+ASM-M3-CL,M3x8 low-profile closure screw,,M3x8 head <=2mm high,Generic,4,,,Head diameter<=5.5; countersunk into diameter6 x2mm base recess
+ASM-M3-TOP,M3x8 top cover screw,,ISO 4762 M3x8,Generic,4,,,Head diameter<=5.5 height<=3; 4.5mm modeled engagement in 5mm boss
+ASM-M3-W,M3 washer,,3.2ID x7OD x0.5,Generic,8,,,4motherboard +4top cover
+ASM-M2-TFT,M2x12 screw,,ISO 4762 M2x12,Generic,4,,,Display stack; head diameter<=3.8 height<=2
+ASM-M2-DAC,M2x16 screw,,ISO 4762 M2x16,Generic,2,,,Upper two DAC mounting holes only; lower two use base pegs
+ASM-M2-BEZ,M2x10 screw,,ISO 4762 M2x10,Generic,4,,,Bezel to enclosure
+ASM-M2-REAR,M2x8 rear panel screw,,ISO 4762 M2x8,Generic,2,,,Diameter3.8 x2mm head; tapped frame boss6.5mm engagement
+ASM-M2-N,M2 nut,,M2 4AF x1.6,Generic,10,,,4display +2DAC +4bezel
+ASM-M2-W,M2 washer,,2.2ID x5OD x0.5,Generic,12,,,4display top +4DAC +4bezel
+ASM-M2-SMALL-W,Small insulating M2 washer,,2.2ID x4OD x0.5,Custom,4,,,Display underside; reducedOD avoids first/last header solder joints
+ASM-SP-TFT,4.5 mm insulating spacer,,3.5OD x2.2ID x4.5,Custom,4,,,Clears display header plastic; no substitute larger OD without fit check
+ASM-SP-DAC,8 mm insulating spacer,,4OD x2.2ID x8,Custom,2,,,Upper DAC mounting pair
+ASM-SHIM-MB,1 mm motherboard shim,,8OD x3.2ID x1,Custom,4,,,Select actual thickness after incoming hardware stack measurement
+ASM-COL-POT,Front pot reaction collar,,12OD x9.2ID x0.65,Custom,6,,,Fills panel-to-bushing-base gap; no PCB bending when nuts tighten
+ASM-COL-MASTER,Master reaction collar,,12OD x9.2ID x0.5,Custom,1,,,Fills rear wall support gap
+ASM-COL-ENC,Encoder reaction collar,,10OD x7.2ID x1.65,Custom,1,,,Fills encoder-to-local-roof gap

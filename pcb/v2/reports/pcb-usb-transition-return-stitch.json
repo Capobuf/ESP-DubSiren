@@ -1,0 +1,69 @@
+[
+  {
+    "name": "load_toolset",
+    "arguments": {
+      "name": [
+        "pcb_routing",
+        "project",
+        "pcb_export"
+      ]
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"errors\":[],\"loaded\":[\"pcb_routing\",\"project\",\"pcb_export\"],\"tools\":[{\"description\":\"Idempotently add a net to the top-level net table of a pre-KiCad-10 board (S-expression insert, no KiCAD IPC required). An existing name returns its observed ID without writing. Fails on a KiCad 10 board, which has no net table \u2014 there, name the net on copper (route_trace, add_via, add_copper_pour) instead.\",\"name\":\"add_net\"},{\"description\":\"Route a trace segment between two points on a copper layer via KiCAD IPC.\",\"name\":\"route_trace\"},{\"description\":\"Route a direct trace between two pads of named components (L-bend routing) via KiCAD IPC.\",\"name\":\"route_pad_to_pad\"},{\"description\":\"Add a through-hole via at a given position and assign it to a net via KiCAD IPC.\",\"name\":\"add_via\"},{\"description\":\"Validate a Freerouting Specctra SES against its revision-bound Konnect manifest and the exact live KiCad board. Returns every track and via that would be created; never mutates or saves the board.\",\"name\":\"plan_specctra_ses_import\"},{\"description\":\"Apply a fully validated Freerouting SES to the exact live KiCad board as one undo transaction, without saving over the source. Creates a new candidate .kicad_pcb, proves IPC read-back counts, and runs KiCad DRC before committing.\",\"name\":\"apply_specctra_ses\"},{\"description\":\"Alias of pcb_board's add_zone, kept for compatibility: identical arguments, defaults and behaviour. Adds a copper fill zone polygon on a layer/net, trying KiCAD IPC first and falling back to an S-expression file insert (with a warning) only when no live KiCAD answers.\",\"name\":\"add_copper_pour\"},{\"description\":\"Delete a trace segment identified by its UUID via KiCAD IPC. Refuses UUIDs that are not observed trace segments on the requested board, then verifies the segment is absent before reporting success. Returns the observed preimage and postcondition.\",\"name\":\"delete_trace\"},{\"description\":\"List trace segments on the board, optionally filtered by net and/or layer. Each result includes the track's UUID, which delete_trace takes.\",\"name\":\"query_traces\"},{\"description\":\"Return all nets defined on the PCB via KiCAD IPC.\",\"name\":\"get_nets_list\"},{\"description\":\"Modify a trace segment by deleting and re-adding it with new parameters.\",\"name\":\"modify_trace\"},{\"description\":\"Create or update a netclass in the project's design rules. Writes net_settings in the sibling .kicad_pro (where KiCad keeps netclasses since v7); the board file is never touched. Requires the project file to exist. An update changes only the settings you name. To see what a class holds, call get_netclasses rather than this tool: naming a class that does not exist here creates it with the defaults, so a call meant as a look writes one instead \u2014 and its result is nearly indistinguishable from a read of an existing class. The class named 'Default' is special: it is written complete, because KiCad replaces its own default with it and backfills every other class from it. Calling this on an existing, incomplete 'Default' repairs it in place without touching values already set.\",\"name\":\"create_netclass\"},{\"description\":\"Read every netclass in the project's design rules, with its settings, its netclass_patterns and the board nets those patterns match. Reads the sibling .kicad_pro and the board file; KiCad need not be running. Call before create_netclass to see what a class holds \u2014 an update changes only the values you name, and this is the only way to see the rest. A net can match several classes: KiCad takes each property from the highest-priority class that sets it (lower number = higher priority) and falls back to Default. Settings are reported resolved, with 'inherits' naming the ones a class takes from the Default rather than setting itself; 'missing_fields' on the Default names settings nothing can resolve.\",\"name\":\"get_netclasses\"},{\"description\":\"Assign a net to an existing netclass, as a netclass_patterns entry in the sibling .kicad_pro. The class must already exist (create_netclass). Reassigning moves the net's entry to the new class.\",\"name\":\"assign_net_to_class\"},{\"description\":\"Route a differential pair (two parallel traces with a specified gap).\",\"name\":\"route_differential_pair\"},{\"description\":\"Create a new KiCAD project at the given path. Creates the directory, a blank .kicad_pro file, an empty .kicad_sch schematic, and a blank .kicad_pcb board file. Refuses to replace any existing project file.\",\"name\":\"create_project\"},{\"description\":\"List PCB documents open in the running KiCad UI and optionally check whether one specific KiCad project or board is open over IPC.\",\"name\":\"open_project\"},{\"description\":\"Save the currently open PCB board file via KiCAD IPC. Requires KiCAD to be running with IPC enabled.\",\"name\":\"save_project\"},{\"description\":\"Rename a KiCAD project: renames the .kicad_pro/.kicad_sch/.kicad_pcb/.kicad_prl files and rewrites the internal references that carry the old name. Renaming the files alone is NOT enough \u2014 every symbol instance stores (project \\\"name\\\"), and a mismatch there makes KiCAD treat the design as unannotated, losing every reference designator. Equivalent to eeschema's File > Save As. Use dry_run first.\",\"name\":\"rename_project\"},{\"description\":\"Read project metadata from a .kicad_pro file. Returns the project name, schematic and PCB paths, last modified time, project-file format version, and the generator versions recorded by the sibling design files. The compatibility kicad_version is null when those siblings disagree.\",\"name\":\"get_project_info\"},{\"description\":\"Export the schematic and PCB to PDF as a timestamped snapshot/checkpoint. Useful for saving progress before major edits.\",\"name\":\"snapshot_project\"},{\"description\":\"Launch the live schematic viewer. The viewer shows the schematic as SVG and auto-refreshes when the file changes. Use this after placing components so the user can see the schematic in real-time as you edit it. For hierarchical designs, pass the root schematic \u2014 the viewer discovers every sheet reachable from it and shows a sheet selector.\",\"name\":\"open_schematic_viewer\"},{\"description\":\"Export Gerber production files using kicad-cli. By default Konnect selects all enabled copper layers, masks, silkscreens, and Edge.Cuts while excluding documentation-only layers.\",\"name\":\"export_gerber\"},{\"description\":\"Export the PCB layout to a PDF file using kicad-cli.\",\"name\":\"export_pdf\"},{\"description\":\"Export the PCB layout to an SVG file using kicad-cli.\",\"name\":\"export_svg\"},{\"description\":\"Export the PCB as a 3D model (STEP or VRML) using kicad-cli.\",\"name\":\"export_3d\"},{\"description\":\"Generate a Bill of Materials (BOM) CSV from the schematic's component data.\",\"name\":\"export_bom\"},{\"description\":\"Export the PCB netlist to a file in KiCAD or IPC-D-356 format.\",\"name\":\"export_netlist\"},{\"description\":\"Export a deterministic Specctra DSN routing job from the exact live KiCad PCB editor revision. Requires the named board to be open with IPC enabled. On KiCad 10, an enabled authenticated ActionPlugin bridge supplies KiCad's native DSN while the IPC snapshot and reverse manifest remain authoritative; otherwise the Rust exporter is used. The first supported profile is deliberately narrow: two copper layers, front-side SMD or through-hole footprints, circle/rectangle pads, one straight-line closed outline, and no existing tracks, vias, or zones. Konnect refuses unsupported geometry or custom DRC rules, or incomplete effective routing rules instead of approximating them, and writes a revision-bound reverse manifest beside the DSN for later SES import.\",\"name\":\"export_specctra_dsn\"},{\"description\":\"Generate a component placement (pick-and-place) position file for SMT assembly. KiCad automatically omits footprints marked exclude_from_pos_files.\",\"name\":\"export_position_file\"},{\"description\":\"Export the PCB to DXF using kicad-cli, one file per requested layer. Useful for mechanical CAD interchange (enclosures, panelization, laser cutting).\",\"name\":\"export_dxf\"},{\"description\":\"Export the PCB in GenCAD format using kicad-cli. GenCAD is accepted by some CAM and test-fixture tooling as an alternative to a raw Gerber bundle.\",\"name\":\"export_gencad\"},{\"description\":\"Export the PCB in IPC-2581 format using kicad-cli. IPC-2581 is a unified fabrication/assembly/test data format accepted by many contract manufacturers as an alternative to a Gerber + drill + BOM + pick-and-place bundle.\",\"name\":\"export_ipc2581\"},{\"description\":\"Export the PCB in ODB++ format using kicad-cli. ODB++ is a unified fabrication data format accepted by many fab houses as an alternative to a Gerber + drill bundle.\",\"name\":\"export_odb\"},{\"description\":\"Refill all copper pour zones on the board. KiCad IPC refills the complete board; per-zone selection is not available. Requires a running KiCad instance with IPC enabled.\",\"name\":\"refill_zones\"},{\"description\":\"Run the Design Rule Check (DRC) on the PCB and return a list of violations. Provided in `pcb_export` because the output is handy to bundle alongside Gerbers when preparing a build package. For interactive / iterative DRC work, prefer `run_drc` (verification toolset) \u2014 same kicad-cli check, cleaner summary with error/warning counts.\",\"name\":\"get_drc_violations\"}],\"tools_added\":36}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "add_via",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "net_name": "GND",
+      "x": 47.4,
+      "y": 13.225,
+      "pad_size": 0.6,
+      "drill": 0.3
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"drill\":0.3,\"net\":\"GND\",\"pad_size\":0.6,\"x\":47.4,\"y\":13.225}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "save_project",
+    "arguments": {},
+    "result": {
+      "content": [
+        {
+          "text": "Board saved successfully.",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "refill_zones",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb"
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"board\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\ESP-DubSiren-V2.kicad_pcb\",\"method\":\"ipc\",\"saved\":false,\"success\":true,\"zones_refilled\":true}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  }
+]

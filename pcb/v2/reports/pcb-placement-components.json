@@ -1,0 +1,617 @@
+{
+  "components": [
+    {
+      "footprint": "ESP-DubSiren-V2-Mechanical:Bourns_PTV111-1",
+      "layer": "B.Cu",
+      "reference": "RV7",
+      "rotation": 0.0,
+      "value": "10k PTV111-1420A-B103",
+      "x": 23.0,
+      "y": 9.5
+    },
+    {
+      "footprint": "ESP-DubSiren-V2-Mechanical:Adafruit_6250_ComponentFace",
+      "layer": "B.Cu",
+      "reference": "U6",
+      "rotation": 0.0,
+      "value": "Adafruit 6250",
+      "x": 76.0,
+      "y": 48.5
+    },
+    {
+      "footprint": "Resistor_SMD:R_0603_1608Metric",
+      "layer": "B.Cu",
+      "reference": "R19",
+      "rotation": 180.0,
+      "value": "10k",
+      "x": 52.0,
+      "y": 58.0
+    },
+    {
+      "footprint": "Resistor_SMD:R_0603_1608Metric",
+      "layer": "B.Cu",
+      "reference": "R20",
+      "rotation": 180.0,
+      "value": "10k",
+      "x": 52.0,
+      "y": 56.0
+    },
+    {
+      "footprint": "Resistor_SMD:R_0603_1608Metric",
+      "layer": "B.Cu",
+      "reference": "R21",
+      "rotation": 180.0,
+      "value": "10k",
+      "x": 52.0,
+      "y": 54.0
+    },
+    {
+      "footprint": "Resistor_SMD:R_0603_1608Metric",
+      "layer": "B.Cu",
+      "reference": "R18",
+      "rotation": 180.0,
+      "value": "10k",
+      "x": 52.0,
+      "y": 52.0
+    },
+    {
+      "footprint": "Resistor_SMD:R_0603_1608Metric",
+      "layer": "B.Cu",
+      "reference": "R17",
+      "rotation": 180.0,
+      "value": "10k",
+      "x": 52.0,
+      "y": 50.0
+    },
+    {
+      "footprint": "Resistor_SMD:R_0603_1608Metric",
+      "layer": "B.Cu",
+      "reference": "R16",
+      "rotation": 180.0,
+      "value": "10k",
+      "x": 52.0,
+      "y": 46.0
+    },
+    {
+      "footprint": "Resistor_SMD:R_0603_1608Metric",
+      "layer": "B.Cu",
+      "reference": "R15",
+      "rotation": 180.0,
+      "value": "10k",
+      "x": 52.0,
+      "y": 44.0
+    },
+    {
+      "footprint": "Resistor_SMD:R_0603_1608Metric",
+      "layer": "B.Cu",
+      "reference": "R7",
+      "rotation": 180.0,
+      "value": "10k",
+      "x": 49.0,
+      "y": 39.0
+    },
+    {
+      "footprint": "Resistor_SMD:R_0603_1608Metric",
+      "layer": "B.Cu",
+      "reference": "R1",
+      "rotation": 0.0,
+      "value": "10",
+      "x": 21.5,
+      "y": 28.2
+    },
+    {
+      "footprint": "Capacitor_SMD:C_0603_1608Metric",
+      "layer": "B.Cu",
+      "reference": "C4",
+      "rotation": 0.0,
+      "value": "100n",
+      "x": 17.0,
+      "y": 24.7
+    },
+    {
+      "footprint": "TestPoint:TestPoint_Pad_D1.0mm",
+      "layer": "B.Cu",
+      "reference": "TP2",
+      "rotation": 0.0,
+      "value": "+3V3",
+      "x": 13.0,
+      "y": 37.0
+    },
+    {
+      "footprint": "Capacitor_SMD:C_0603_1608Metric",
+      "layer": "B.Cu",
+      "reference": "C2",
+      "rotation": 180.0,
+      "value": "100n",
+      "x": 15.5,
+      "y": 33.2
+    },
+    {
+      "footprint": "ESP-DubSiren-V2-Electrical:Bel_0ZCG0110CF2B_1812",
+      "layer": "B.Cu",
+      "reference": "F1",
+      "rotation": 180.0,
+      "value": "1.1A PTC",
+      "x": 34.5,
+      "y": 18.0
+    },
+    {
+      "footprint": "Capacitor_SMD:C_0805_2012Metric",
+      "layer": "B.Cu",
+      "reference": "C3",
+      "rotation": 0.0,
+      "value": "22u",
+      "x": 17.0,
+      "y": 27.0
+    },
+    {
+      "footprint": "ESP-DubSiren-V2-Mechanical:Bourns_PTV111-3",
+      "layer": "F.Cu",
+      "reference": "RV6",
+      "rotation": 0.0,
+      "value": "20k PTV111-3420A-B203",
+      "x": 97.5,
+      "y": 94.0
+    },
+    {
+      "footprint": "ESP-DubSiren-V2-Mechanical:Bourns_PTV111-3",
+      "layer": "F.Cu",
+      "reference": "RV2",
+      "rotation": 0.0,
+      "value": "20k PTV111-3420A-B203",
+      "x": 62.5,
+      "y": 26.0
+    },
+    {
+      "footprint": "MountingHole:MountingHole_3.2mm_M3",
+      "layer": "F.Cu",
+      "reference": "H1",
+      "rotation": 0.0,
+      "value": "MountingHole_3.2mm_M3",
+      "x": 12.0,
+      "y": 12.0
+    },
+    {
+      "footprint": "ESP-DubSiren-V2-Mechanical:Bourns_PTV111-3",
+      "layer": "F.Cu",
+      "reference": "RV5",
+      "rotation": 0.0,
+      "value": "20k PTV111-3420A-B203",
+      "x": 62.5,
+      "y": 94.0
+    },
+    {
+      "footprint": "ESP-DubSiren-V2-Mechanical:Bourns_PTV111-3",
+      "layer": "F.Cu",
+      "reference": "RV3",
+      "rotation": 0.0,
+      "value": "20k PTV111-3420A-B203",
+      "x": 97.5,
+      "y": 26.0
+    },
+    {
+      "footprint": "ESP-DubSiren-V2-Mechanical:Bourns_PEC11R-4120F-S0018",
+      "layer": "F.Cu",
+      "reference": "SW7",
+      "rotation": 0.0,
+      "value": "PEC11R-4120F-S0018",
+      "x": 97.5,
+      "y": 60.0
+    },
+    {
+      "footprint": "ESP-DubSiren-V2-Mechanical:Bourns_PTV111-3",
+      "layer": "F.Cu",
+      "reference": "RV1",
+      "rotation": 0.0,
+      "value": "20k PTV111-3420A-B203",
+      "x": 27.5,
+      "y": 26.0
+    },
+    {
+      "footprint": "Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB",
+      "layer": "F.Cu",
+      "reference": "SW4",
+      "rotation": 0.0,
+      "value": "MX2A-11NW",
+      "x": 100.04,
+      "y": 116.92
+    },
+    {
+      "footprint": "MountingHole:MountingHole_3.2mm_M3",
+      "layer": "F.Cu",
+      "reference": "H3",
+      "rotation": 0.0,
+      "value": "MountingHole_3.2mm_M3",
+      "x": 12.0,
+      "y": 128.0
+    },
+    {
+      "footprint": "Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB",
+      "layer": "F.Cu",
+      "reference": "SW2",
+      "rotation": 0.0,
+      "value": "MX2A-11NW",
+      "x": 53.34,
+      "y": 116.92
+    },
+    {
+      "footprint": "ESP-DubSiren-V2-Mechanical:Bourns_PTV111-3",
+      "layer": "F.Cu",
+      "reference": "RV4",
+      "rotation": 0.0,
+      "value": "20k PTV111-3420A-B203",
+      "x": 27.5,
+      "y": 94.0
+    },
+    {
+      "footprint": "MountingHole:MountingHole_3.2mm_M3",
+      "layer": "F.Cu",
+      "reference": "H4",
+      "rotation": 0.0,
+      "value": "MountingHole_3.2mm_M3",
+      "x": 113.0,
+      "y": 128.0
+    },
+    {
+      "footprint": "ESP-DubSiren-V2-Mechanical:Adafruit_5393_DisplayFace",
+      "layer": "F.Cu",
+      "reference": "U5",
+      "rotation": 0.0,
+      "value": "Adafruit 5393",
+      "x": 63.516,
+      "y": 60.0
+    },
+    {
+      "footprint": "Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB",
+      "layer": "F.Cu",
+      "reference": "SW1",
+      "rotation": 0.0,
+      "value": "MX2A-11NW",
+      "x": 30.04,
+      "y": 116.92
+    },
+    {
+      "footprint": "Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB",
+      "layer": "F.Cu",
+      "reference": "SW3",
+      "rotation": 0.0,
+      "value": "MX2A-11NW",
+      "x": 76.74,
+      "y": 116.92
+    },
+    {
+      "footprint": "MountingHole:MountingHole_3.2mm_M3",
+      "layer": "F.Cu",
+      "reference": "H2",
+      "rotation": 0.0,
+      "value": "MountingHole_3.2mm_M3",
+      "x": 113.0,
+      "y": 12.0
+    },
+    {
+      "footprint": "Resistor_SMD:R_0603_1608Metric",
+      "layer": "B.Cu",
+      "reference": "R2",
+      "rotation": 0.0,
+      "value": "22",
+      "x": 24.0,
+      "y": 42.4
+    },
+    {
+      "footprint": "Resistor_SMD:R_0603_1608Metric",
+      "layer": "B.Cu",
+      "reference": "R10",
+      "rotation": 0.0,
+      "value": "4.7k",
+      "x": 98.75,
+      "y": 33.0
+    },
+    {
+      "footprint": "Capacitor_SMD:C_0805_2012Metric",
+      "layer": "B.Cu",
+      "reference": "C1",
+      "rotation": 180.0,
+      "value": "22u",
+      "x": 14.5,
+      "y": 31.1
+    },
+    {
+      "footprint": "ESP-DubSiren-V2-Mechanical:SameSky_RCJ-2123",
+      "layer": "B.Cu",
+      "reference": "J2",
+      "rotation": 180.0,
+      "value": "RCJ-2123",
+      "x": 92.5,
+      "y": 12.0
+    },
+    {
+      "footprint": "Resistor_SMD:R_0603_1608Metric",
+      "layer": "B.Cu",
+      "reference": "R13",
+      "rotation": 0.0,
+      "value": "4.7k",
+      "x": 98.75,
+      "y": 108.0
+    },
+    {
+      "footprint": "ESP-DubSiren-V2-Electrical:Espressif_ESP32-S3-WROOM-1U",
+      "layer": "B.Cu",
+      "reference": "U1",
+      "rotation": 0.0,
+      "value": "ESP32-S3-WROOM-1U-N16R8",
+      "x": 36.0,
+      "y": 49.0
+    },
+    {
+      "footprint": "Resistor_SMD:R_0603_1608Metric",
+      "layer": "B.Cu",
+      "reference": "R5",
+      "rotation": 0.0,
+      "value": "5.1k",
+      "x": 52.0,
+      "y": 14.5
+    },
+    {
+      "footprint": "Package_SO:SOIC-16_3.9x9.9mm_P1.27mm",
+      "layer": "B.Cu",
+      "reference": "U3",
+      "rotation": 0.0,
+      "value": "74HC4051D",
+      "x": 26.0,
+      "y": 69.0
+    },
+    {
+      "footprint": "Diode_SMD:D_SOD-123F",
+      "layer": "B.Cu",
+      "reference": "D1",
+      "rotation": 0.0,
+      "value": "SMF5.0A",
+      "x": 34.0,
+      "y": 22.5
+    },
+    {
+      "footprint": "TestPoint:TestPoint_Pad_D1.0mm",
+      "layer": "B.Cu",
+      "reference": "TP5",
+      "rotation": 0.0,
+      "value": "AUDIO_MONO",
+      "x": 92.5,
+      "y": 30.0
+    },
+    {
+      "footprint": "Resistor_SMD:R_0603_1608Metric",
+      "layer": "B.Cu",
+      "reference": "R8",
+      "rotation": 0.0,
+      "value": "4.7k",
+      "x": 30.5,
+      "y": 35.0
+    },
+    {
+      "footprint": "TestPoint:TestPoint_Pad_D1.0mm",
+      "layer": "B.Cu",
+      "reference": "TP7",
+      "rotation": 0.0,
+      "value": "UART_RX",
+      "x": 50.0,
+      "y": 60.0
+    },
+    {
+      "footprint": "ESP-DubSiren-V2-Electrical:CK_PTS636SM43SMTR_LFS",
+      "layer": "B.Cu",
+      "reference": "SW6",
+      "rotation": 90.0,
+      "value": "BOOT",
+      "x": 12.0,
+      "y": 73.0
+    },
+    {
+      "footprint": "Connector_USB:USB_C_Receptacle_GCT_USB4085",
+      "layer": "B.Cu",
+      "reference": "J1",
+      "rotation": 0.0,
+      "value": "USB4085-GF-A",
+      "x": 42.025,
+      "y": 10.0
+    },
+    {
+      "footprint": "TestPoint:TestPoint_Pad_D1.0mm",
+      "layer": "B.Cu",
+      "reference": "TP6",
+      "rotation": 0.0,
+      "value": "UART_TX",
+      "x": 47.0,
+      "y": 60.0
+    },
+    {
+      "footprint": "TestPoint:TestPoint_Pad_D1.0mm",
+      "layer": "B.Cu",
+      "reference": "TP3",
+      "rotation": 0.0,
+      "value": "GND",
+      "x": 12.0,
+      "y": 84.0
+    },
+    {
+      "footprint": "Capacitor_SMD:C_0603_1608Metric",
+      "layer": "B.Cu",
+      "reference": "C7",
+      "rotation": 180.0,
+      "value": "1u",
+      "x": 23.5,
+      "y": 50.5
+    },
+    {
+      "footprint": "Capacitor_SMD:C_0805_2012Metric",
+      "layer": "B.Cu",
+      "reference": "C5",
+      "rotation": 180.0,
+      "value": "22u",
+      "x": 20.5,
+      "y": 59.0
+    },
+    {
+      "footprint": "Resistor_SMD:R_0603_1608Metric",
+      "layer": "B.Cu",
+      "reference": "R9",
+      "rotation": 0.0,
+      "value": "4.7k",
+      "x": 65.5,
+      "y": 32.0
+    },
+    {
+      "footprint": "Capacitor_SMD:C_0603_1608Metric",
+      "layer": "B.Cu",
+      "reference": "C11",
+      "rotation": 0.0,
+      "value": "10n C0G 50V",
+      "x": 28.0,
+      "y": 21.05
+    },
+    {
+      "footprint": "Capacitor_SMD:C_0603_1608Metric",
+      "layer": "B.Cu",
+      "reference": "C10",
+      "rotation": 180.0,
+      "value": "1u",
+      "x": 19.5,
+      "y": 22.9
+    },
+    {
+      "footprint": "Package_TO_SOT_SMD:SOT-23-6",
+      "layer": "B.Cu",
+      "reference": "U7",
+      "rotation": 0.0,
+      "value": "TPS22918DBVR",
+      "x": 24.0,
+      "y": 22.0
+    },
+    {
+      "footprint": "ESP-DubSiren-V2-Electrical:MPS_MPM3612GLQ-33_LGA-8-1EP_3x3mm",
+      "layer": "B.Cu",
+      "reference": "U2",
+      "rotation": 0.0,
+      "value": "MPM3612GLQ-33-Z",
+      "x": 18.0,
+      "y": 30.0
+    },
+    {
+      "footprint": "Resistor_SMD:R_0603_1608Metric",
+      "layer": "B.Cu",
+      "reference": "R3",
+      "rotation": 0.0,
+      "value": "22",
+      "x": 24.0,
+      "y": 40.6
+    },
+    {
+      "footprint": "Capacitor_SMD:C_0603_1608Metric",
+      "layer": "B.Cu",
+      "reference": "C6",
+      "rotation": 180.0,
+      "value": "100n",
+      "x": 24.0,
+      "y": 56.14
+    },
+    {
+      "footprint": "Resistor_SMD:R_0603_1608Metric",
+      "layer": "B.Cu",
+      "reference": "R4",
+      "rotation": 0.0,
+      "value": "5.1k",
+      "x": 52.0,
+      "y": 10.5
+    },
+    {
+      "footprint": "TestPoint:TestPoint_Pad_D1.0mm",
+      "layer": "B.Cu",
+      "reference": "TP4",
+      "rotation": 0.0,
+      "value": "ADC_MUX",
+      "x": 24.5,
+      "y": 60.0
+    },
+    {
+      "footprint": "Resistor_SMD:R_0603_1608Metric",
+      "layer": "B.Cu",
+      "reference": "R6",
+      "rotation": 0.0,
+      "value": "10k",
+      "x": 20.5,
+      "y": 48.5
+    },
+    {
+      "footprint": "Capacitor_SMD:C_0603_1608Metric",
+      "layer": "B.Cu",
+      "reference": "C8",
+      "rotation": 0.0,
+      "value": "100n",
+      "x": 31.5,
+      "y": 73.445
+    },
+    {
+      "footprint": "Resistor_SMD:R_0603_1608Metric",
+      "layer": "B.Cu",
+      "reference": "R11",
+      "rotation": 0.0,
+      "value": "4.7k",
+      "x": 28.75,
+      "y": 108.0
+    },
+    {
+      "footprint": "Resistor_SMD:R_0603_1608Metric",
+      "layer": "B.Cu",
+      "reference": "R14",
+      "rotation": 0.0,
+      "value": "4.7k",
+      "x": 17.0,
+      "y": 20.0
+    },
+    {
+      "footprint": "Capacitor_SMD:C_0603_1608Metric",
+      "layer": "B.Cu",
+      "reference": "C9",
+      "rotation": 180.0,
+      "value": "100n",
+      "x": 24.0,
+      "y": 53.6
+    },
+    {
+      "footprint": "ESP-DubSiren-V2-Electrical:CK_PTS636SM43SMTR_LFS",
+      "layer": "B.Cu",
+      "reference": "SW5",
+      "rotation": 90.0,
+      "value": "RESET",
+      "x": 12.0,
+      "y": 58.0
+    },
+    {
+      "footprint": "Package_TO_SOT_SMD:SOT-23-6",
+      "layer": "B.Cu",
+      "reference": "U4",
+      "rotation": -90.0,
+      "value": "USBLC6-2SC6",
+      "x": 45.0,
+      "y": 15.0
+    },
+    {
+      "footprint": "TestPoint:TestPoint_Pad_D1.0mm",
+      "layer": "B.Cu",
+      "reference": "TP1",
+      "rotation": 0.0,
+      "value": "+5V",
+      "x": 32.0,
+      "y": 25.0
+    },
+    {
+      "footprint": "Resistor_SMD:R_0603_1608Metric",
+      "layer": "B.Cu",
+      "reference": "R12",
+      "rotation": 0.0,
+      "value": "4.7k",
+      "x": 63.75,
+      "y": 108.0
+    }
+  ],
+  "count": 68
+}

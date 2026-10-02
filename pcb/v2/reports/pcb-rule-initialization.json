@@ -1,0 +1,62 @@
+[
+  {
+    "name": "set_design_rules",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "min_clearance": 0.127,
+      "min_trace_width": 0.127,
+      "min_hole_to_hole": 0.25,
+      "min_via_drill": 0.3,
+      "min_via_size": 0.6
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"changed\":[\"min_clearance = 0.127\",\"min_track_width = 0.127\",\"min_through_hole_diameter = 0.3\",\"min_via_diameter = 0.6\",\"min_hole_to_hole = 0.25\"],\"project\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\ESP-DubSiren-V2.kicad_pro\",\"success\":true}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "create_netclass",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "name": "Default",
+      "trace_width": 0.2,
+      "clearance": 0.15,
+      "via_diameter": 0.6,
+      "via_drill": 0.3
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"clearance\":0.15,\"created_netclass\":\"Default\",\"file\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\ESP-DubSiren-V2.kicad_pro\",\"is_default\":true,\"note\":\"Netclasses live in the project file; assign nets with assign_net_to_class. KiCad reads the change on next project open.\",\"trace_width\":0.2,\"updated_existing\":true,\"via_diameter\":0.6,\"via_drill\":0.3}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "create_netclass",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "name": "Power",
+      "trace_width": 0.8,
+      "clearance": 0.2,
+      "via_diameter": 0.7,
+      "via_drill": 0.3
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"clearance\":0.2,\"created_netclass\":\"Power\",\"file\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\ESP-DubSiren-V2.kicad_pro\",\"is_default\":false,\"note\":\"Netclasses live in the project file; assign nets with assign_net_to_class. KiCad reads the change on next project open.\",\"trace_width\":0.8,\"updated_existing\":false,\"via_diameter\":0.7,\"via_drill\":0.3}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  }
+]

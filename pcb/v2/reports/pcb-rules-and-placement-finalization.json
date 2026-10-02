@@ -1,0 +1,237 @@
+[
+  {
+    "name": "create_netclass",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "name": "Power",
+      "trace_width": 0.8,
+      "clearance": 0.15,
+      "via_diameter": 0.7,
+      "via_drill": 0.3
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"clearance\":0.15,\"created_netclass\":\"Power\",\"file\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\ESP-DubSiren-V2.kicad_pro\",\"is_default\":false,\"note\":\"Netclasses live in the project file; assign nets with assign_net_to_class. KiCad reads the change on next project open.\",\"trace_width\":0.8,\"updated_existing\":true,\"via_diameter\":0.7,\"via_drill\":0.3}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "create_netclass",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "name": "USB",
+      "trace_width": 0.6,
+      "clearance": 0.15,
+      "via_diameter": 0.6,
+      "via_drill": 0.3
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"clearance\":0.15,\"created_netclass\":\"USB\",\"file\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\ESP-DubSiren-V2.kicad_pro\",\"is_default\":false,\"note\":\"Netclasses live in the project file; assign nets with assign_net_to_class. KiCad reads the change on next project open.\",\"trace_width\":0.6,\"updated_existing\":false,\"via_diameter\":0.6,\"via_drill\":0.3}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "rotate_component",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "reference": "U4",
+      "rotation": 270
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"rotated\":\"U4\",\"rotation\":270.0,\"source\":\"ipc\"}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "move_component",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "reference": "TP2",
+      "x": 16,
+      "y": 35
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"moved\":\"TP2\",\"source\":\"ipc\",\"x\":16.0,\"y\":35.0}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "assign_net_to_class",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "net_name": "+3V3",
+      "netclass": "Power"
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"assigned\":true,\"file\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\ESP-DubSiren-V2.kicad_pro\",\"net_name\":\"+3V3\",\"netclass\":\"Power\",\"previous_class\":null}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "assign_net_to_class",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "net_name": "+5V",
+      "netclass": "Power"
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"assigned\":true,\"file\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\ESP-DubSiren-V2.kicad_pro\",\"net_name\":\"+5V\",\"netclass\":\"Power\",\"previous_class\":null}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "assign_net_to_class",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "net_name": "/VBUS_RAW",
+      "netclass": "Power"
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"assigned\":true,\"file\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\ESP-DubSiren-V2.kicad_pro\",\"net_name\":\"/VBUS_RAW\",\"netclass\":\"Power\",\"previous_class\":null}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "assign_net_to_class",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "net_name": "/VBUS_PROTECTED",
+      "netclass": "Power"
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"assigned\":true,\"file\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\ESP-DubSiren-V2.kicad_pro\",\"net_name\":\"/VBUS_PROTECTED\",\"netclass\":\"Power\",\"previous_class\":null}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "assign_net_to_class",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "net_name": "/USB_DM_CONN",
+      "netclass": "USB"
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"assigned\":true,\"file\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\ESP-DubSiren-V2.kicad_pro\",\"net_name\":\"/USB_DM_CONN\",\"netclass\":\"USB\",\"previous_class\":null}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "assign_net_to_class",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "net_name": "/USB_DP_CONN",
+      "netclass": "USB"
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"assigned\":true,\"file\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\ESP-DubSiren-V2.kicad_pro\",\"net_name\":\"/USB_DP_CONN\",\"netclass\":\"USB\",\"previous_class\":null}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "assign_net_to_class",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "net_name": "/USB_DM_MCU",
+      "netclass": "USB"
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"assigned\":true,\"file\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\ESP-DubSiren-V2.kicad_pro\",\"net_name\":\"/USB_DM_MCU\",\"netclass\":\"USB\",\"previous_class\":null}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "assign_net_to_class",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "net_name": "/USB_DP_MCU",
+      "netclass": "USB"
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"assigned\":true,\"file\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\ESP-DubSiren-V2.kicad_pro\",\"net_name\":\"/USB_DP_MCU\",\"netclass\":\"USB\",\"previous_class\":null}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "score_placement",
+    "result": {
+      "content": [
+        {
+          "text": "{\"connector_edges\":[{\"edge_distance_mm\":4.175,\"reference\":\"J2\"},{\"edge_distance_mm\":2.475,\"reference\":\"J1\"}],\"deductions\":[{\"detail\":\"2 same-side courtyard overlap pair(s) \u2014 also a hard failure\",\"kind\":\"courtyard_overlap\",\"points\":40,\"references\":[\"C4\",\"R9\",\"U2\",\"U6\"]},{\"detail\":\"2 part(s) not fully inside the board outline \u2014 also a hard failure\",\"kind\":\"outside_outline\",\"points\":40,\"references\":[\"J2\",\"J1\"]}],\"footprints_scored\":68,\"footprints_skipped\":0,\"hard_failures\":[{\"detail\":\"R9 and U6 courtyard bboxes overlap by 4.322 mm\u00b2 on the back side\",\"kind\":\"courtyard_overlap\",\"references\":[\"R9\",\"U6\"]},{\"detail\":\"U2 and C4 courtyard bboxes overlap by 0.102 mm\u00b2 on the back side\",\"kind\":\"courtyard_overlap\",\"references\":[\"U2\",\"C4\"]},{\"detail\":\"J2 courtyard bbox (78.25, -3)..(106.75, 18.35) is not fully inside the board outline (6, 3.5)..(119, 134)\",\"kind\":\"outside_outline\",\"references\":[\"J2\"]},{\"detail\":\"J1 courtyard bbox (39.725, 0.89)..(50.275, 11.06) is not fully inside the board outline (6, 3.5)..(119, 134)\",\"kind\":\"outside_outline\",\"references\":[\"J1\"]}],\"interface_filter_caps\":[],\"outline_missing\":false,\"score\":20,\"source\":\"ipc\",\"uncoupled_caps\":[],\"verdict\":\"hard_fail\"}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "get_netclasses",
+    "result": {
+      "content": [
+        {
+          "text": "{\"count\":1,\"file\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\ESP-DubSiren-V2.kicad_pro\",\"netclasses\":[{\"clearance\":0.2,\"inherits\":[],\"is_default\":true,\"matched_nets\":[],\"missing_fields\":[],\"name\":\"Default\",\"patterns\":[],\"priority\":2147483647,\"trace_width\":0.2,\"via_diameter\":0.6,\"via_drill\":0.3}],\"nets_on_board\":79,\"nets_source\":\"board file as last saved; unsaved edits in a running KiCad are not visible\",\"note\":\"A net can match several classes; KiCad then takes each property from the highest-priority class that sets it and falls back to Default. Lower priority numbers rank higher.\",\"orphan_patterns\":[]}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  }
+]

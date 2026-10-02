@@ -1,11 +1,8 @@
 # ESP-DubSiren PCB V2: saved implementation and evidence
 
-Status: **INCOMPLETE; not ready for fabrication**, 2026-10-02. Seven pots and
-the encoder are now populated, the original 14 ERC warnings are resolved, and
-a controlled USB input ramp is implemented. Four CHERRY switches still lack
-the exact manufacturer drill-pattern evidence required by the task. The main
-PCB remains empty; no routed-board, complete assembly or fabrication acceptance
-is claimed. ERC alone cannot detect the missing intended switches.
+Status: **checkpoint saved; routing stopped at the user's request**, 2026-10-02.
+The user asked to close quickly and leave tracks/routing as they are. No further
+routing cleanup or fabrication release is attempted. No Gerbers were generated.
 
 ## Repository preservation
 
@@ -22,19 +19,19 @@ substituted for fitted quantities.
 
 ## Schematic and footprints
 
-The saved schematic BOM export has **60 instances: 53 purchased components and
+The saved schematic BOM export has **64 instances: 57 purchased components and
 7 bare PCB test pads**. It includes one ESP32-S3-WROOM-1U-N16R8, one 74HC4051D,
 one MPM3612GLQ-33-Z, Adafruit 5393 and 6250, the complete RCJ-2123 block, seven
-pots, encoder, service switches, protection, passives and the input slew switch.
-This is not the final complete-unit fitted count. The four MX switches and
-mechanical assembly parts must not be inferred present from this export.
+pots, encoder, four MX switches, service switches, protection, passives and the
+input slew switch. Knobs, fasteners and enclosure parts are additional assembly
+items; purchasing quantities are not fitted quantities.
 
 | Control | Exact footprint | Source and result |
 |---|---|---|
 | RV1-RV6, PTV111-3420A-B203 | `ESP-DubSiren-V2-Mechanical:Bourns_PTV111-3` | Bourns PTV/PTT Rev 09/23 pp2,5; current 13.6 mm stake pitch |
 | RV7, PTV111-1420A-B103 | `ESP-DubSiren-V2-Mechanical:Bourns_PTV111-1` | Same source; separate 10.2 mm stake pitch / 3.3 mm row pattern |
 | SW7, PEC11R-4120F-S0018 | `ESP-DubSiren-V2-Mechanical:Bourns_PEC11R-4120F-S0018` | Exact Bourns push-switch and A/C/B pattern |
-| SW1-SW4, MX2A-11NW | Not accepted or instantiated | Native `Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB` inspected, but current CHERRY drilling drawing remains unavailable |
+| SW1-SW4 / BTN1-BTN4, MX2A-11NW | `Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB` | Native footprint unchanged; official CHERRY replacement equivalence plus dimensioned legacy PCB layout |
 
 `CONTROLS-POWER-PHYSICAL-PIN-MAPS.md` records every physical lead, symbol pin,
 footprint pad and coordinate. The Bourns dummy fourth lead has an isolated
@@ -60,24 +57,26 @@ Display VIN remains 3.3 V to avoid exposing MCU pins to the breakout's VIN
 pull-ups. DAC VIN is switched 5 V. DAC Lout feeds one RCA center; the second
 center is NC and both barrels are grounded. The outputs are not summed.
 
-## CHERRY source gap
+## CHERRY mounting validation — resolved
 
-`MX2A-SOURCE-SEARCH.md` records the current exact 16-page manufacturer datasheet,
-older MX2A paper, distributor redirects, catalogs, compatibility searches and
-the user-supplied `sszczep/kicad-libraries` revision. The latter traces to an older
-MX1A drawing. Its pin coordinates match native KiCad after shifting origins,
-but fixation drills are 1.75 mm versus native 1.70 mm. The current CHERRY sheet
-gives a 15.63 mm body; native Fab/courtyard geometry is smaller.
+Validation chain: **MX2A-11NW -> official replacement for MX1A-11NW -> no
+changes to form, fit or function -> legacy CHERRY MX1A PCB layout -> native
+KiCad SW_Cherry_MX_1.00u_PCB**. The official [CHERRY notice dated 2025-10-24](https://www.mouser.com/PCN/CHERRY_MX1A_11NW_EOL.pdf)
+states: “Optimized internal components. No changes to form, fit, or function.”
+The legacy manufacturer “Keyswitch with fixation pins” drawing is retained in
+`sources/Cherry-MX-Legacy-Layout.pdf` relative to the V2 directory.
 
-Missing exact evidence: terminal and fixation-post X/Y coordinates relative to
-the center axis, finished-hole sizes/tolerances, center-post hole, viewing
-direction and seating datum for MX2A-11NW. A manufacturer mounting-equivalence
-statement tied to the older dimensioned drawing would also close the gap.
-No arbitrary custom footprint or silent generic substitution was made.
+The installed native footprint matches the manufacturer grid and hole bands:
+1.50 mm electrical drills, 4.00 mm center NPTH and two 1.70 mm fixation NPTHs.
+`CHERRY-NATIVE-FOOTPRINT-AUDIT.md` records all coordinates, origin conversion,
+hole tolerances, pin mapping and rendered/readback acceptance. SW1-SW4 use this
+footprint directly. No custom CHERRY footprint was created. Dedicated MX2A CAD
+research is closed. The associated native MX mechanical model is acceptable by
+the same form/fit equivalence; its installed path currently has no STEP file,
+so the assembly must obtain that legacy model or use verified envelope solids.
 
-The user's sections 7 and 37 permit an intermediate stop only for this genuine
-manufacturer-dimension gap after official-document searches. Bourns orientation,
-knob bore fit and unselected antenna/keycap MPNs are not used as stopping reasons.
+Dry-fit one purchased MX2A-11NW into the fabricated PCB before considering the
+hardware production-validated. This prototype check does not block routing.
 
 ## USB input and current decision
 
@@ -127,64 +126,81 @@ must be included in attach-waveform testing. A nominal slew calculation does
 not establish USB compliance. New purchase MPNs are TPS22918DBVR and the 10 nF
 Murata CT capacitor; the 1 uF input capacitor reuses the purchasing BOM.
 
-## Validation results and limits
+## Final checkpoint results
 
 | Check | Result |
 |---|---|
-| Saved schematic ERC | **0 errors, 0 warnings**; original 14 warnings resolved by wiring the pots |
-| Direct short / orphan checks | 0 candidates in the saved partial schematic |
-| Independent ERC | 0 errors, 0 warnings; see independent review evidence |
-| Main-board DRC | Empty-board check: 1 invalid-outline error and 60 missing-footprint parity warnings; no populated-board acceptance |
-| Whole-design unconnected count | Not established; not zero |
-| Final USB 90 ohm geometry | Not selected; requires actual fabricator stackup |
-| Layer decision | Two copper layers / 1.6 mm remain defaults; no claim of routing feasibility |
-| Complete mechanical collision check | Not performed; feasibility studies only |
+| Fresh ERC | **0 errors / 0 warnings** |
+| PCB | **113 x 130.5 x 1.6 mm, 2 layers** |
+| Footprints / trace segments | 68 / 670 |
+| Unconnected items | **0** |
+| DRC including parity | **11 errors / 184 warnings** |
+| Shorts / copper-clearance violations | **0 / 0** |
+| Drill-spacing warnings | 5 findings caused by 3 redundant vias |
+| Dangling via | 1 redundant I2S_LRCK via |
+| Complete assembly | **184 valid fitted solids**, 33 clearance reserves |
+| Enclosure | **125 x 140 x 42 mm**, removable top, rear and base |
+| Templates | Top/rear/base/overlay DXF, SVG and PDF, 1:1 |
+| Gerbers / Excellon / positions / fabrication ZIP | **Not generated** |
 
-No global ERC or DRC suppression was introduced. `INDEPENDENT-V2-REVIEW.md`
-records the fresh audit and any outstanding findings. It is not a fabrication
-approval. Existing display software validation from the checkpoint remains:
-PlatformIO build passed, native parser/DSP passed, desktop/VirtualESP 36 tests
-passed in an isolated source copy. These were not rerun for hardware-only
-changes and do not validate physical controls, USB power or audio hardware.
+Authoritative checks are `pcb-checkpoint-drc.json`, `pcb-checkpoint-validation.json`
+and `erc-checkpoint.json`. Routing remains as saved after the user's stop.
+The redundant vias still requiring cleanup are VBUS_RAW at (42.9,9.6), VBUS_RAW
+at (45,15.1), and I2S_LRCK at (71.8,41.3). The last one reports dangling after
+the clock trace was connected directly to the DAC plated pad. Native cleanup
+was not performed. Zero unconnected items is not fabrication acceptance.
 
-## Mechanics and deliverables
+The 11 errors comprise 9 courtyard/through-hole findings and 2 thermal-relief
+findings. Opposite-face module stacks and mounting hardware were independently
+checked in 3D. U6 lower holes have no front screw heads, and pads9..14 stay
+unpopulated/unsoldered. U5 pin3 and J1 SH have explicit ground traces in addition
+to the remaining thermal connections. No global DRC classes were suppressed.
+Warnings comprise 64 library-footprint mismatches (physical pads independently
+compared; importer graphics/metadata differ), 64 schematic-field mismatches,
+4 expected extra mounting footprints, 46 silkscreen findings, 5 drill-spacing
+findings and 1 dangling via. DRC release remains open.
 
-`../MECHANICAL-V2.md` contains exact mechanical sources and reproduction scripts.
-The original Hammond STEP was imported into FreeCAD. Its **29.70 mm** cavity
-cannot accommodate the necessary **30.60 mm** opposite-face RCA / PCB / pot-body
-stack with 0.5 mm clearance at each enclosure face. This already excludes pot
-stand-off, solder and display hardware. Hammond 29830PSLA is rejected for the
-single planar board; the shortfall is at least **0.90 mm**.
+The USB pair is 0.60 mm wide with 0.15 mm gap. The tested quasi-TEM grids estimate
+86-90 ohms, without a demonstrated convergence or fabrication tolerance contract.
+The main pair has continuous opposite-layer ground; local launch/escape crossings
+are documented in `INDEPENDENT-USB-ROUTING-REVIEW.md`. Skew conventions give
+0.919 or 2.519 mm, below TI's 3.81 mm USB2 guideline. The added second ground
+return via is 0.825 mm from the DP transition. Actual signal quality remains a
+prototype check. The 487 mA budget above is an allocation, not a guaranteed
+worst case; the original 0.15 V path-loss assumption is slightly optimistic
+against the independent resistance estimate. See the review for qualifications.
 
-The portrait control-envelope trial retains the required topology, with gaps of
-5.91 mm between adjacent knobs, 4.64 mm from lower knob to display-board envelope,
-6.34 mm from encoder knob to display board and 4.65 mm from lower knobs to keycaps.
-These are XY feasibility figures, not all-component assembly clearances.
+## Mechanical deliverables
 
-| Requested result | Actual saved status |
-|---|---|
-| Final PCB size / placement / routing | Not established; main PCB empty |
-| Replacement enclosure | Editable **125 x 140 x 42 mm study** with body, base and bored bosses |
-| Study PCB | 113 x 128 x 1.6 mm at (6,6), lower Z 29 mm; not applied to KiCad |
-| Study support centers | (12,12), (113,12), (12,128), (113,128) mm; 8 mm bosses, 2.5 mm pilots |
-| Study front pots | X 27.5 / 62.5 / 97.5; Y 26 / 94 mm |
-| Study display / encoder centers | (62.5,60) / (97.5,60) mm |
-| Study keycap centers | X 27.5 / 50.8 / 74.2 / 97.5; Y 122 mm |
-| Full PCB STEP and 3D assembly | Not generated; component STEP plus feasibility FCStd documents exist |
-| Body/base geometry check | Valid solids; zero body/base intersection in saved study |
-| Top/rear 1:1 DXF/SVG/PDF templates | Not generated |
-| Overlay / bezel | Not generated; final panel and mounting geometry pending |
-| Schematic PDF | Intermediate controls/power PDF generated; not final fabrication schematic |
-| BOM-V2 | One-unit selection/status BOM; actual schematic export retained separately |
-| Gerbers / Excellon / positions / fabrication ZIP | Not generated; validation gates not satisfied |
+Hammond29830PSLA is rejected: 29.70 mm cavity versus 30.60 mm minimum required
+stack, a 0.90 mm deficit. The final PCB underside is Z30.75, top Z32.35, with
+outline (6,3.5)..(119,134). Front pots are X27.5/62.5/97.5 at Y26/94; TFT active
+center (62.5,60), carrier (63.516,60), encoder (97.5,60); keys are
+X27.5/50.8/74.2/97.5 at Y122. Supports are (12,12),(113,12),(12,128),(113,128).
 
-Generated evidence includes the physical pin-map report, library and scratch
-readbacks/renders, current schematic PNG/PDF/netlist/BOM, power analysis and
-source PDFs, CHERRY comparison, Hammond FCStd/JSON and replacement FCStd/JSON
-with SVG/PNG illustration. The preview SVG is not a machining template.
+The saved complete assembly is `../mechanical/assembly-v2.FCStd` and `.step`.
+Separate STEP files exist for the PCB, frame, base, top, rear panel and bezel.
+`panel-top-v2`, `panel-rear-v2`, `panel-base-v2` and `panel-overlay-v2` each have
+DXF/SVG/PDF outputs under `mechanical`. They derive from the same CAD cutting
+tools, use millimetres at 1:1 and include a 100 mm print check.
+The schematic PDF is `schematic-v2-complete.pdf`.
 
-Physical prototype checks remain Davies 1100 clamping/concentricity on 6.0 mm
-Bourns shafts, shaft/nut/washer stacks, keycaps and travel, display retention
-pressure, antenna/pigtail access and routing, real USB/RCA plugs, enclosure
-tolerances, USB signal quality, power startup/RF peaks, mux settling and audio
-noise. They do not replace the unfinished schematic, PCB and assembly work.
+The numerical assembly check has 15 cross-group positive intersections:
+14 intended screw/pilot engagements and 0.517991 mm3 at the original RCA model's
+formed leads. Retain manufacturer holes and check real insertion. All 130 rear
+insertion envelopes clear the actual frame reliefs; base insertion, panel motion
+samples and driver access pass. Display nut1 needs a thin/open-ended 4 mm-AF tool.
+Full dimensions, shaft/hardware stacks and clearances are in `../MECHANICAL-V2.md`
+and `MECHANICAL-CLEARANCE-AUDIT.md`.
+
+The one-unit BOM contains 57 electronic components, 7 PCB test pads and 8 knobs,
+plus 30 assembly rows with 99 item/kit quantities. Added MPNs are Samtec
+TSW-111-07-T-S and TSW-108-14-T-S for the module heights, and Alps RKZ00023UA as
+dimensioned M9 hardware. Generic fasteners and custom parts have explicit
+specifications. Keycaps and antenna/pigtail remain explicitly unselected.
+
+Physical checks remain CHERRY dry-fit, RCA insertion, Davies clamping, shaft and
+hardware tolerances, keycap travel, display pressure, antenna/pigtail and actual
+plugs, thread strength, machining, solder trimming, USB/power measurements,
+RF peaks, ADC settling and audio noise. The routing stop does not constitute
+fabrication approval or production validation.

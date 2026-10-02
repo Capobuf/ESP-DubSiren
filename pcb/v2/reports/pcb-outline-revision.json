@@ -1,0 +1,58 @@
+[
+  {
+    "name": "delete_graphics",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "uuids": [
+        "d2dee97e-0e8d-4901-858e-2c431e886d51",
+        "b275996d-7820-4bcd-b77a-b8e4191d55c4",
+        "a1d48e12-bdc9-4b23-a064-7264441fd783",
+        "0f47754d-cea6-4cae-872b-05b305025e43"
+      ],
+      "dry_run": false
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"count\":4,\"deleted\":4,\"dry_run\":false,\"fallback_reason\":null,\"graphics\":[{\"layer\":\"Edge.Cuts\",\"type\":\"line\",\"uuid\":\"d2dee97e-0e8d-4901-858e-2c431e886d51\",\"x\":6.0,\"y\":134.0},{\"layer\":\"Edge.Cuts\",\"type\":\"line\",\"uuid\":\"b275996d-7820-4bcd-b77a-b8e4191d55c4\",\"x\":119.0,\"y\":134.0},{\"layer\":\"Edge.Cuts\",\"type\":\"line\",\"uuid\":\"a1d48e12-bdc9-4b23-a064-7264441fd783\",\"x\":119.0,\"y\":6.0},{\"layer\":\"Edge.Cuts\",\"type\":\"line\",\"uuid\":\"0f47754d-cea6-4cae-872b-05b305025e43\",\"x\":6.0,\"y\":6.0}],\"source\":\"ipc\",\"warning\":null}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "set_board_size",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "width": 113,
+      "height": 130.5,
+      "origin_x": 6,
+      "origin_y": 3.5
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"height\":130.5,\"replaced_segments\":0,\"source\":\"ipc\",\"width\":113.0,\"x1\":6.0,\"x2\":119.0,\"y1\":3.5,\"y2\":134.0}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "get_netclasses",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb"
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"count\":1,\"file\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\ESP-DubSiren-V2.kicad_pro\",\"netclasses\":[{\"clearance\":0.2,\"inherits\":[],\"is_default\":true,\"matched_nets\":[],\"missing_fields\":[],\"name\":\"Default\",\"patterns\":[],\"priority\":2147483647,\"trace_width\":0.2,\"via_diameter\":0.6,\"via_drill\":0.3}],\"nets_on_board\":79,\"nets_source\":\"board file as last saved; unsaved edits in a running KiCad are not visible\",\"note\":\"A net can match several classes; KiCad then takes each property from the highest-priority class that sets it and falls back to Default. Lower priority numbers rank higher.\",\"orphan_patterns\":[]}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  }
+]

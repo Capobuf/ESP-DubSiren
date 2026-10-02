@@ -63,9 +63,9 @@ fit or breakout stack heights.
 | USB inrush | [USB-IF electrical test material](https://compliance.usb.org/index.asp?UpdateFile=Electrical) | `reports/USB-POWER-DECISION.md`; controlled ramp calculation does not replace complete startup-waveform measurement or firmware power policy |
 | Hammond 29830PSLA | [Hammond drawing](https://www.hammfg.com/files/parts/pdf/29830PSLA.pdf) and original `../3dmodels/Hammond_29830PSLA.stp` | `reports/hammond-stack-feasibility.json` and `mechanical/hammond-stack-feasibility.FCStd`; 29.70 mm internal depth, 30.60 mm minimum required stack |
 
-The Hammond is rejected for a direct single planar PCB. The 125 x 140 x 42 mm
-parametric replacement is a study, not an accepted complete assembly. Its sources
-and reproducible generators are recorded in `MECHANICAL-V2.md`.
+The Hammond is rejected for a direct single planar PCB. The adopted 125 x 140 x 42 mm replacement now has a complete saved parametric
+assembly with removable top/rear/base, mounting hardware and CAD-derived templates.
+Its sources, limits and reproducible generators are recorded in `MECHANICAL-V2.md`.
 
 The previous CHERRY source gap is **closed** by the official replacement notice
 identified by the user and retrieved in this continuation. It states:
@@ -82,3 +82,28 @@ the historical MX1A paper hosted by SparkFun. The current source-search and
 native-footprint audit record its matching pin positions and 1.75 mm fixation
 drills (native KiCad: 1.70 mm). It is comparison evidence only; the official
 replacement notice plus legacy manufacturer drawing is the accepted authority.
+
+
+## Routed-board and assembly completion evidence
+
+| Subject | Primary source | Use |
+|---|---|---|
+| Display soldered header | [Samtec TSW-111-07-T-S](https://www.samtec.com/products/tsw-111-07-t-s), [TSW catalog](https://suddendocs.samtec.com/catalog_english/tsw_th.pdf) | 11 pins; post5.84, tail2.54, insulator2.54mm; 4.5mm display spacing |
+| DAC soldered header | [Samtec TSW-108-14-T-S](https://www.samtec.com/products/tsw-108-14-t-s), same catalog | 8 pins; post8.13, tail2.79, insulator2.54mm; 8mm spacing |
+| Defined M9 mounting hardware | [Alps RKZ00023UA manufacturer drawing via RS](https://docs.rs-online.com/a2bd/A700000012851535.pdf) | `sources/Alps-RKZ00023UA-hardware.pdf`; exact alternative to unmeasured supplied Bourns hardware |
+| Nominal PCB stack | [JLCPCB impedance calculator guide](https://jlcpcb.com/help/article/user-guide-to-the-jlcpcb-impedance-calculator) | Nominal2-layer1.6mm stack, published copper/mask data; engineering impedance estimate, not a controlled-impedance fabrication contract |
+| ESP32 routing | [Espressif ESP32-S3 PCB layout guide](https://docs.espressif.com/projects/esp-hardware-design-guidelines/en/latest/esp32s3/pcb-layout-design.html) | Differential USB routing and ground-return guidance |
+| USB2 length mismatch | [TI USB PCB layout training](https://www.ti.com/video/6087491555001) | 150mil/3.81mm guideline; current skew conventions both below this, see independent review |
+
+The new header MPNs are needed to realize the selected module stack heights;
+RKZ00023UA supplies a dimensioned M9 hardware option. Generic screws, custom
+spacers/panels and unselected keycaps are dimensioned explicitly in the one-unit
+BOM without invented supplier MPNs. Antenna/pigtail selection remains open.
+
+`reports/INDEPENDENT-USB-ROUTING-REVIEW.md` distinguishes the continuously
+referenced main pair from local escape/reference crossings. The quasi-TEM
+finite-volume estimates span approximately86-90ohms across the tested grids;
+fabrication tolerances and the complete launch are not certified by that model.
+`reports/MECHANICAL-CLEARANCE-AUDIT.md` checks the saved complete assembly,
+installation paths, solder reserves and tool access. Exact native CAD machining
+tools are projected into the1:1 templates; they are not hand-transcribed drawings.

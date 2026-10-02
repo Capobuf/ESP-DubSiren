@@ -164,3 +164,13 @@ J1 has four physical shield stakes sharing SH. J2 is a dual RCA block: pin 2 is 
 F1 output and D1 cathode are now VBUS_PROTECTED. U7 output retains the +5V net feeding the MPM3612, DAC and TP1. Each pot's clockwise terminal 3 is fed through its own 4.7 kohm resistor; increasing clockwise rotation increases ADC voltage. Firmware endpoint calibration and encoder decoding remain required.
 
 ERC is clean with all intended controls present. The exported netlist confirms each switch reaches its assigned button input and ground. See `reports/CONTROLS-POWER-PHYSICAL-PIN-MAPS.md` and `reports/USB-POWER-DECISION.md` for physical mapping and open power qualification.
+
+
+## Assembly header implementation
+
+Fit Samtec TSW-111-07-T-S on U5 pins1..11 and TSW-108-14-T-S on U6 pins1..8,
+soldered to both boards. U6 pads9..14 remain unpopulated and unsoldered, with no
+front-side pin or solder protrusion under the TFT. The carrier spacing and
+pin projection are specified in MECHANICAL-V2.md. PCB routing now connects every
+intended net; the saved DRC reports zero unconnected items. Final via/annotation
+cleanup remains separate from this electrical pin map.

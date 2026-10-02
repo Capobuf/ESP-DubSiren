@@ -1,0 +1,158 @@
+[
+  {
+    "name": "move_component",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "reference": "U6",
+      "x": 76,
+      "y": 47
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"moved\":\"U6\",\"source\":\"ipc\",\"x\":76.0,\"y\":47.0}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "move_component",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "reference": "RV7",
+      "x": 23,
+      "y": 12
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"moved\":\"RV7\",\"source\":\"ipc\",\"x\":23.0,\"y\":12.0}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "move_component",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "reference": "F1",
+      "x": 34.5,
+      "y": 18
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"moved\":\"F1\",\"source\":\"ipc\",\"x\":34.5,\"y\":18.0}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "move_component",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "reference": "D1",
+      "x": 34,
+      "y": 22.5
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"moved\":\"D1\",\"source\":\"ipc\",\"x\":34.0,\"y\":22.5}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "move_component",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "reference": "J2",
+      "x": 92.5,
+      "y": 12
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"moved\":\"J2\",\"source\":\"ipc\",\"x\":92.5,\"y\":12.0}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "move_component",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "reference": "R6",
+      "x": 20.5,
+      "y": 48.5
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"moved\":\"R6\",\"source\":\"ipc\",\"x\":20.5,\"y\":48.5}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "move_component",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "reference": "TP4",
+      "x": 24.5,
+      "y": 60
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"moved\":\"TP4\",\"source\":\"ipc\",\"x\":24.5,\"y\":60.0}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "move_component",
+    "arguments": {
+      "board": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\ESP-DubSiren-V2.kicad_pcb",
+      "reference": "C4",
+      "x": 21,
+      "y": 31.5
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"moved\":\"C4\",\"source\":\"ipc\",\"x\":21.0,\"y\":31.5}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "delete_graphics_plan",
+    "result": {
+      "content": [
+        {
+          "text": "{\"count\":4,\"deleted\":0,\"dry_run\":true,\"fallback_reason\":null,\"graphics\":[{\"layer\":\"Edge.Cuts\",\"type\":\"line\",\"uuid\":\"d2dee97e-0e8d-4901-858e-2c431e886d51\",\"x\":6.0,\"y\":134.0},{\"layer\":\"Edge.Cuts\",\"type\":\"line\",\"uuid\":\"b275996d-7820-4bcd-b77a-b8e4191d55c4\",\"x\":119.0,\"y\":134.0},{\"layer\":\"Edge.Cuts\",\"type\":\"line\",\"uuid\":\"a1d48e12-bdc9-4b23-a064-7264441fd783\",\"x\":119.0,\"y\":6.0},{\"layer\":\"Edge.Cuts\",\"type\":\"line\",\"uuid\":\"0f47754d-cea6-4cae-872b-05b305025e43\",\"x\":6.0,\"y\":6.0}],\"source\":\"ipc\",\"warning\":null}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  }
+]
