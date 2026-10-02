@@ -55,7 +55,7 @@ one-shot, loop, saturation and transition regressions remain active.
 The actual Tk application was connected to Virtual ESP and PC audio started.
 Its callbacks exercised all four voices, Trigger release, Hold, Manual,
 Pitch/Rate selectors, filter overlay, menu and profile changes. The audio player
-reported no errors. Home, filter and menu frames were inspected at 320x170.
+reported no errors. Home, filter and menu text were inspected at 320x170.
 This was an application/PCM check, not a human listening verdict or a test of
 physical ADCs, the hardware display, I2S or a Benidub unit.
 
@@ -78,7 +78,7 @@ windows are zero. Example SINE1 repeat peaks (int16):
 | 0.50 | 12856 | 9206 | 7077 | 3702 |
 | 0.80 | 12856 | 11908 | 11509 | 11181 |
 
-Generated audio/screenshots are local artifacts excluded from Git; the capture
+Generated audio files are local artifacts excluded from Git; the capture
 script is tracked for reproduction.
 
 ## Remaining listening calibration

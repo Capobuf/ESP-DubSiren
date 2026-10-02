@@ -39,15 +39,10 @@ class VirtualTransport:
         self._sample_rate = 48_000
         self._block_samples = 480
         self._firmware_version = "?"
-        self._audio_peak = 0.0
 
     @property
     def connected(self) -> bool:
         return self._connected
-
-    @property
-    def audio_peak(self) -> float:
-        return self._audio_peak
 
     def connect(self, port: str) -> None:
         if self.connected:
@@ -269,13 +264,6 @@ class VirtualTransport:
             if rendered != 1:
                 self._connected = False
                 return
-
-            block_peak = max(abs(int(sample)) for sample in buffer) / 32768.0
-            self._audio_peak = (
-                block_peak
-                if block_peak > self._audio_peak
-                else self._audio_peak * 0.86
-            )
 
             if streaming:
                 pcm = ctypes.string_at(

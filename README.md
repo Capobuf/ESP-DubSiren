@@ -26,8 +26,8 @@ le verifiche della revisione sono in [baseline validation](docs/baseline-validat
 - Python 3.11 o successivo (verificato con Python 3.13.14)
 - uscita audio Windows
 
-La configurazione usa il profilo PlatformIO base `esp32-s3-devkitc-1`, Hardware
-CDC e USB Serial/JTAG. Non abilita PSRAM né imposta modalità flash specifiche.
+La configurazione usa il profilo PlatformIO `esp32-s3-devkitc-1-n16r8`,
+flash da 16 MB, Hardware CDC e USB Serial/JTAG. Il display non richiede PSRAM.
 
 ## Preparazione
 
@@ -90,7 +90,9 @@ ECHO FEEDBACK ed ECHO FILTER; BTN1 TRIGGER, BTN2 HOLD, BTN3 MANUAL MOD e
 BTN4 ECHO CUT. L'encoder cicla i quattro voicing; premendolo si apre il menu
 con accesso a Extended. Il Master resta separato sul retro. La Home 320x170
 mostra voicing, Pitch/Rate e stato Hold/Echo, con overlay temporanei dei pot.
-Il boot illustrato e la scena rack restano disponibili in Extended.
+Il prodotto finale userà un display piccolo, principalmente testuale, per
+stato, parametri, menu e impostazioni. Classic ed Extended mostrano solo testo;
+il driver ST7789 esistente resta per lo sviluppo, in attesa del nuovo hardware.
 Dettagli: [pannello UI](docs/panel-ui.md).
 
 Per lavorare senza hardware:
@@ -148,8 +150,8 @@ Il test nativo usa Zig C++ (`pip install ziglang`) oppure il compilatore indicat
 da `CXX`; esegue parser e DSP senza scheda. Con hardware collegato, leggere
 `renderUs`, `maxRenderUs`, `cycleUs` e `maxCycleUs` da STATUS durante gli scenari
 di sweep e verificare che restino sotto 10.000 µs per blocco.
-`displayRenderUs` e `maxDisplayRenderUs` misurano separatamente il frame ST7789
-e devono restare sotto il budget display di 100.000 µs.
+`displayRenderUs` e `maxDisplayRenderUs` misurano separatamente il ridisegno
+del testo ST7789 e devono restare sotto il budget display di 100.000 µs.
 
 ## Hardware PCB V1
 

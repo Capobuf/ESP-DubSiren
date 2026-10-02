@@ -159,7 +159,7 @@ most recent 480-sample render time and `maxRenderUs` is the
 maximum observed since boot. `cycleUs` and `maxCycleUs` include selected output
 writes. `maxUsbWriteUs` and `maxI2sWriteUs` isolate the maximum time spent in
 each output write. `displayRenderUs` and `maxDisplayRenderUs` measure complete
-ST7789 scene frames independently from the audio counters. `output` reports the
+ST7789 text redraws independently from the audio counters. `output` reports the
 active routing selection and `i2sReady` reports
 whether I2S initialization succeeded. `panel` reports the controller-owned pad
 state; the example abbreviates the four-entry `pads` array after its first

@@ -7,7 +7,7 @@ from tkinter import ttk
 
 from app import DubSirenApp, OUTPUT_VALUES
 from control_ranges import CONTROL_SPECS, ControlSpec
-from dub_scene import DISPLAY_HEIGHT, DISPLAY_WIDTH, PanelDisplay
+from panel_display import DISPLAY_HEIGHT, DISPLAY_WIDTH, PanelDisplay
 
 ECHO_FILTER_DEADBAND = 0.05
 
@@ -518,16 +518,8 @@ class PhysicalDubSirenApp(DubSirenApp):
             text="DISPLAY",
             anchor="center",
         ).pack(fill="x", pady=(0, 4))
-        self.display = PanelDisplay(
-            display_frame,
-            peak_provider=lambda: getattr(self.transport, "audio_peak", 0.0),
-        )
+        self.display = PanelDisplay(display_frame)
         self.display.pack(fill="both", expand=True)
-        ttk.Button(
-            display_frame,
-            text="Replay boot",
-            command=self.display.replay_boot,
-        ).pack(pady=(4, 0))
 
         self.encoder = EncoderControl(
             panel,
@@ -850,7 +842,7 @@ class PhysicalDubSirenApp(DubSirenApp):
                           ECHO_CUT=display.get("echoCut", False))
             self.display.render_home(1, 1, display.get("voice", "SINE 1"), "DS01E / CLASSIC", "",
                                      bool(display.get("hold")), bool(display.get("echoLoop")),
-                                     self.transport.connected, params, int(self.panel_state.get("activePad", 0)),
+                                     self.transport.connected, params,
                                      format_echo_filter(self.echo_filter_macro))
         elif display.get("mode") == "HOME":
             selected = int(self.panel_state["selectedPad"])
@@ -872,7 +864,6 @@ class PhysicalDubSirenApp(DubSirenApp):
                 bool(display.get("echoLoop")),
                 self.transport.connected,
                 self.parameter_values,
-                int(self.panel_state.get("activePad", 0)),
                 format_echo_filter(self.echo_filter_macro)
                 if self.echo_filter_active else "CUSTOM",
             )

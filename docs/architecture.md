@@ -44,20 +44,16 @@ before USB startup, so a 970-byte audio packet can be queued without waiting
 for the default 256-byte ring to drain. Packet writes complete any partial
 `Serial.write` before another packet starts.
 
-`PanelDisplay` is outside `audioTask`. The main loop takes controller and
-`ControlStore` snapshots and maps them into BootInit/BootRollIn/BootConnect/
-BootPower/Home/Menu scenes. Boot and Home are rendered at 10 fps; Menu is
-event-driven apart from its short scene cut. Source artwork is preprocessed to
-raw RGB565 backgrounds and RGB565/1-bit-mask sprites. The renderer composites
-those bitmaps in a 108,800-byte OPI-PSRAM framebuffer when runtime detection and
-allocation succeed, then falls back to direct ST7789 blits when they do not.
-Adafruit GFX draws only the dynamic rack UI. The audio task is pinned at the
-higher priority and contains no SPI or display calls, so display traffic cannot
-change DSP state or block rendering inside the audio loop. A single-byte peak
-envelope is derived from the already-rendered PCM block and passed to the
-speaker layer and VU; it does not feed back into the DSP. STATUS exposes
-`displayRenderUs` and `maxDisplayRenderUs` separately from the audio timing
-counters.
+`PanelDisplay` is outside `audioTask`. The main loop reads controller and
+`ControlStore` state and renders text for Home or Menu directly through
+Adafruit GFX/ST7789. It redraws on state changes or parameter-overlay expiry,
+at most once every 100 ms. No display buffer is allocated. STATUS exposes
+`displayRenderUs` and `maxDisplayRenderUs` separately from audio timing.
+The audio task contains no SPI or display calls.
+
+The intended product display is a small, primarily text-based interface for
+status, parameters, menus and settings. The existing ST7789 initialization and
+pins remain for development; the smaller physical display is not implemented.
 
 `I2sPcm5102Sink` duplicates each of the 480 mono int16 samples into a stereo
 left/right frame and writes the resulting 960 values to I2S DMA. ESP32-S3 is
@@ -134,9 +130,9 @@ Saved Extended assignments never activate themselves during Classic startup.
 VirtualESP exports the same compact logical display state through its C ABI:
 320×170 dimensions, Home/Menu mode, menu index/edit flag, ordered menu item
 keys, profile/voice, confirmed Pitch/Rate, Hold/Echo Cut, Depth and Echo Loop. `VirtualTransport` adds these values to
-`panel.display`. The desktop and Adafruit renderers share a readable Classic home/overlay
-layout, and retain the illustrated boot and Extended rack scenes. VirtualESP also derives a display-only peak envelope from its PCM
-blocks. No SPI emulation or display framebuffer exists on the host.
+`panel.display`. Both the desktop text widget and the Adafruit renderer show
+Classic and Extended state, temporary parameter values and encoder menus.
+The desktop widget uses Tk text directly and requires no external resources.
 
 An Extended pad activation updates the mode-specific configuration and an eight-entry
 activation ring in one `ControlStore` write. The audio engine transfers unseen

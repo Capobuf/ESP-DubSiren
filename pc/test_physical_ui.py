@@ -1,5 +1,4 @@
 import tempfile
-import time
 import unittest
 from pathlib import Path
 
@@ -179,40 +178,55 @@ class PhysicalUiTests(unittest.TestCase):
         self.assertEqual(app.commands[-1], "ENCODER_ROTATE NEXT")
         self.assertFalse(any(command.startswith("SET MODE") for command in app.commands))
 
-    def test_display_layout_is_native_320_by_170_and_stays_in_bounds(self):
+    def test_text_display_preserves_home_parameters_overlay_and_menu(self):
         self.assertEqual((DISPLAY_WIDTH, DISPLAY_HEIGHT), (320, 170))
         display = object.__new__(PanelDisplay)
         display.canvas = FakeCanvas()
-        display._boot_started = time.monotonic() - 10.0
-        display._peak_provider = None
-        display._focus = None
-        display._focus_value = ""
-        display._focus_until = 0.0
-        display._transition_until = 0.0
-        display._screen = "home"
-        display._menu = ([], 0, False)
+
+        def text():
+            return [kwargs["text"] for kind, _args, kwargs in display.canvas.calls
+                    if kind == "text"]
 
         display.render_home(
-            2, 1, "TWO TONE", "TRIANGLE", "1.00 oct",
-            True, True, True,
+            1, 1, "SINE 2", "DS01E / CLASSIC", "", True, False, True,
+            {"PROFILE": "CLASSIC", "PITCH": "HIGH", "RATE": "MANUAL", "ECHO_CUT": True},
         )
-        home = display.render_image()
-        display.render_overlay("RATE · PING N/A", "20.00 Hz")
-        focused = display.render_image()
+        self.assertIn("SINE 2", text())
+        self.assertIn("PITCH  HIGH", text())
+        self.assertIn("RATE   MANUAL", text())
+        self.assertIn("HOLD / ECHO CUT", text())
+
+        display.canvas.calls.clear()
+        display.render_home(
+            2, 1, "TWO TONE", "TRIANGLE", "1.00 oct", True, True, True,
+            {"TUNE_HZ": 440.0, "LFO_RATE_HZ": 7.5, "DELAY_MS": 1000.0,
+             "FEEDBACK": 0.8, "ECHO_LEVEL": 0.6, "MASTER": 0.5},
+            "LP 80%",
+        )
+        self.assertIn("P2 TWO TONE", text())
+        self.assertIn("TRIANGLE", text())
+        self.assertIn("TUNE 440 Hz  RATE 7.5 Hz", text())
+        self.assertIn("ECHO 1000ms  FB 80%  LV 60%", text())
+        self.assertIn("FILTER LP 80%", text())
+        self.assertIn("PLAY P1 / HOLD / LOOP / LINK", text())
+        display.render_overlay("ECHO FEEDBACK", "80%")
+        self.assertIn("ECHO FEEDBACK", text())
+        self.assertIn("80%", text())
+
+        display.canvas.calls.clear()
         display.render_menu(
             [("CONFIGURE PAD", "2"), ("ASSIGNMENT", "TWO TONE"),
              ("VARIANT", "TRIANGLE"), ("HOLD", "ON"),
-             ("ECHO LOOP", "ON"), ("BACK", "")],
-            4,
-            True,
+             ("ECHO LOOP", "ON"), ("BACK", "")], 4, True,
         )
-
-        menu = display.render_image()
-
-        for image in (home, focused, menu):
-            self.assertEqual(image.size, (DISPLAY_WIDTH, DISPLAY_HEIGHT))
-        self.assertNotEqual(home.tobytes(), focused.tobytes())
-        self.assertNotEqual(focused.tobytes(), menu.tobytes())
+        self.assertIn("> ECHO LOOP", text())
+        self.assertIn("EDIT", text())
+        self.assertIn("TURN CHANGE / PUSH SAVE", text())
+        self.assertNotIn("  CONFIGURE PAD", text())
+        for kind, args, _kwargs in display.canvas.calls:
+            if kind == "text":
+                self.assertTrue(0 <= args[0] < DISPLAY_WIDTH)
+                self.assertTrue(0 <= args[1] < DISPLAY_HEIGHT)
 
     def test_confirmed_selector_labels_and_baseline_buttons(self):
         app = make_app()

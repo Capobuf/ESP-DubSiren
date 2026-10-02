@@ -30,7 +30,6 @@ std::atomic<uint32_t> lastCycleUs{0};
 std::atomic<uint32_t> maximumCycleUs{0};
 std::atomic<uint32_t> maximumUsbWriteUs{0};
 std::atomic<uint32_t> maximumI2sWriteUs{0};
-std::atomic<uint8_t> displayAudioPeak{0};
 bool i2sReady = false;
 bool hostLinked = false;
 String commandBuffer;
@@ -185,21 +184,6 @@ void audioTask(void *) {
         const uint32_t renderUs = micros() - renderStartUs;
         lastRenderUs.store(renderUs, std::memory_order_relaxed);
         updateMaximum(maximumRenderUs, renderUs);
-        uint16_t peak = 0;
-        for (int16_t sample : block) {
-            const int32_t magnitude = sample < 0 ? -static_cast<int32_t>(sample)
-                                                 : sample;
-            if (magnitude > peak) peak = static_cast<uint16_t>(magnitude);
-        }
-        const uint16_t scaledPeak = peak >> 7;
-        const uint8_t targetPeak = static_cast<uint8_t>(
-            scaledPeak > 255 ? 255 : scaledPeak);
-        const uint8_t previousPeak = displayAudioPeak.load(
-            std::memory_order_relaxed);
-        displayAudioPeak.store(targetPeak > previousPeak
-            ? targetPeak : static_cast<uint8_t>(previousPeak * 0.86f),
-            std::memory_order_relaxed);
-
         const bool enabled = streamEnabled.load(std::memory_order_acquire);
         const OutputMode mode = outputMode.load(std::memory_order_acquire);
         const bool pcActive =
@@ -248,7 +232,6 @@ void setup() {
 
 void loop() {
     pollCommands();
-    panelDisplay.update(hostLinked,
-        displayAudioPeak.load(std::memory_order_relaxed));
+    panelDisplay.update(hostLinked);
     delay(1);
 }

@@ -12,8 +12,5 @@ __pycache__/
 # Native VirtualESP build output
 virtual_esp/bin/
 
-# Reproducible baseline audio and GUI captures
+# Reproducible baseline audio captures
 artifacts/baseline/
-
-# Godot editor cache and imported resources
-animation/.godot/
