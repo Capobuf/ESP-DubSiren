@@ -4870,6 +4870,835 @@
 			)
 			(embedded_fonts no)
 		)
+		(symbol "Device:R_Potentiometer"
+			(pin_names
+				(offset 1.016)
+				(hide yes)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property "Reference" "RV"
+				(at -4.445 0 90)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "R_Potentiometer"
+				(at -2.54 0 90)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Description" "Potentiometer"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Sim.Device" "R"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Sim.Type" "POT"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Sim.Pins" "1=r0 2=wiper 3=r1"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_keywords" "resistor variable"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_fp_filters" "Potentiometer*"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol "R_Potentiometer_0_1"
+				(rectangle
+					(start 1.016 2.54)
+					(end -1.016 -2.54)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 1.143 0)
+						(xy 2.286 0.508)
+						(xy 2.286 -0.508)
+						(xy 1.143 0)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type outline)
+					)
+				)
+				(polyline
+					(pts
+						(xy 2.54 0)
+						(xy 1.524 0)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "R_Potentiometer_1_1"
+				(pin passive line
+					(at 0 3.81 270)
+					(length 1.27)
+					(name "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 3.81 0 180)
+					(length 1.27)
+					(name "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 0 -3.81 90)
+					(length 1.27)
+					(name "3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
+		(symbol "Device:RotaryEncoder_Switch"
+			(pin_names
+				(offset 0.254)
+				(hide yes)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property "Reference" "SW"
+				(at 0 6.604 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "RotaryEncoder_Switch"
+				(at 0 -6.604 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at -3.81 4.064 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 6.604 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Description" "Rotary encoder, dual channel, incremental quadrate outputs, with switch"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_keywords" "rotary switch encoder switch push button"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_fp_filters" "RotaryEncoder*Switch*"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol "RotaryEncoder_Switch_0_1"
+				(rectangle
+					(start -5.08 5.08)
+					(end 5.08 -5.08)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+				(polyline
+					(pts
+						(xy -5.08 2.54)
+						(xy -3.81 2.54)
+						(xy -3.81 2.032)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -5.08 0)
+						(xy -3.81 0)
+						(xy -3.81 -1.016)
+						(xy -3.302 -2.032)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -5.08 -2.54)
+						(xy -3.81 -2.54)
+						(xy -3.81 -2.032)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -4.318 0)
+						(xy -3.81 0)
+						(xy -3.81 1.016)
+						(xy -3.302 2.032)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(circle
+					(center -3.81 0)
+					(radius 0.254)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type outline)
+					)
+				)
+				(polyline
+					(pts
+						(xy -0.635 -1.778)
+						(xy -0.635 1.778)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(circle
+					(center -0.381 0)
+					(radius 1.905)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -0.381 -1.778)
+						(xy -0.381 1.778)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start -0.381 -2.794)
+					(mid -3.0988 -0.0635)
+					(end -0.381 2.667)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -0.127 1.778)
+						(xy -0.127 -1.778)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0.254 2.921)
+						(xy -0.508 2.667)
+						(xy 0.127 2.286)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0.254 -3.048)
+						(xy -0.508 -2.794)
+						(xy 0.127 -2.413)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 3.81 1.016)
+						(xy 3.81 -1.016)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 3.81 0)
+						(xy 3.429 0)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(circle
+					(center 4.318 1.016)
+					(radius 0.127)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(circle
+					(center 4.318 -1.016)
+					(radius 0.127)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 5.08 2.54)
+						(xy 4.318 2.54)
+						(xy 4.318 1.016)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 5.08 -2.54)
+						(xy 4.318 -2.54)
+						(xy 4.318 -1.016)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "RotaryEncoder_Switch_1_1"
+				(pin passive line
+					(at -7.62 2.54 0)
+					(length 2.54)
+					(name "A"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "A"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -7.62 -2.54 0)
+					(length 2.54)
+					(name "B"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "B"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -7.62 0 0)
+					(length 2.54)
+					(name "C"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "C"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 7.62 2.54 180)
+					(length 2.54)
+					(name "S1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "S1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 7.62 -2.54 180)
+					(length 2.54)
+					(name "S2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "S2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
+		(symbol "ESP-DubSiren-V2:TPS22918DBVR"
+			(pin_names
+				(offset 1.016)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property "Reference" "U"
+				(at 0 10.1600 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "TPS22918DBVR"
+				(at 0 -10.1600 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Datasheet" "https://www.ti.com/lit/ds/symlink/tps22918.pdf"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Description" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol "TPS22918DBVR_0_1"
+				(rectangle
+					(start -7.6200 -7.6200)
+					(end 7.6200 7.6200)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+				(pin power_in line
+					(at -10.16 5.08 0)
+					(length 2.54)
+					(name "VIN"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin power_in line
+					(at 0 -10.16 90)
+					(length 2.54)
+					(name "GND"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at -10.16 0 0)
+					(length 2.54)
+					(name "ON"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 10.16 -5.08 180)
+					(length 2.54)
+					(name "CT"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "4"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 10.16 0 180)
+					(length 2.54)
+					(name "QOD"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "5"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin power_out line
+					(at 10.16 5.08 180)
+					(length 2.54)
+					(name "VOUT"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "6"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
 	)
 	(no_connect
 		(at 313.69 83.82)
@@ -4974,6 +5803,10 @@
 	(no_connect
 		(at 544.83 132.08)
 		(uuid "2bcfb45d-83b5-44a3-9b84-560f1b43efea")
+	)
+	(no_connect
+		(at 193.04 93.98)
+		(uuid "84a1575d-0731-4863-9bee-e79eae6f4b70")
 	)
 	(wire
 		(pts
@@ -5626,6 +6459,195 @@
 		)
 		(uuid "eeabb684-c2b2-47e2-b016-3a7fceb21b22")
 	)
+	(wire
+		(pts
+			(xy 40.64 191.77)
+			(xy 40.64 189.23)
+		)
+		(uuid "f2353789-5b2d-4a4a-b5ab-37491fe1b785")
+	)
+	(wire
+		(pts
+			(xy 44.45 195.58)
+			(xy 46.99 195.58)
+		)
+		(uuid "ee1a21b3-9d44-4925-bfdd-7e94565b2db2")
+	)
+	(wire
+		(pts
+			(xy 91.44 191.77)
+			(xy 91.44 189.23)
+		)
+		(uuid "dce83722-365b-4947-8965-a6e1ab80323a")
+	)
+	(wire
+		(pts
+			(xy 95.25 195.58)
+			(xy 97.79 195.58)
+		)
+		(uuid "72957d70-77aa-4e77-8beb-9eb59731f4dc")
+	)
+	(wire
+		(pts
+			(xy 142.24 191.77)
+			(xy 142.24 189.23)
+		)
+		(uuid "5276750d-c35c-4ff2-a265-6ecbd6fca59a")
+	)
+	(wire
+		(pts
+			(xy 146.05 195.58)
+			(xy 148.59 195.58)
+		)
+		(uuid "f4a86a0f-bd0d-4467-ab22-27ce5a2ed3e9")
+	)
+	(wire
+		(pts
+			(xy 40.64 260.35)
+			(xy 40.64 257.81)
+		)
+		(uuid "8f518333-af93-4be9-8f2d-5bde32a51168")
+	)
+	(wire
+		(pts
+			(xy 44.45 264.16)
+			(xy 46.99 264.16)
+		)
+		(uuid "55f9cbff-2498-4a5d-9a0b-669607b01d8d")
+	)
+	(wire
+		(pts
+			(xy 91.44 260.35)
+			(xy 91.44 257.81)
+		)
+		(uuid "b14ac205-de18-4501-84d9-124933a82837")
+	)
+	(wire
+		(pts
+			(xy 95.25 264.16)
+			(xy 97.79 264.16)
+		)
+		(uuid "2a1972c0-7a56-4035-a56a-f903df9cbff1")
+	)
+	(wire
+		(pts
+			(xy 142.24 260.35)
+			(xy 142.24 257.81)
+		)
+		(uuid "dbfd05bc-788a-4c16-bf7b-5cf688cbc30f")
+	)
+	(wire
+		(pts
+			(xy 146.05 264.16)
+			(xy 148.59 264.16)
+		)
+		(uuid "d4344602-1811-437c-bb1c-cf4387c56922")
+	)
+	(wire
+		(pts
+			(xy 193.04 191.77)
+			(xy 193.04 189.23)
+		)
+		(uuid "a28b4aa1-43e9-4f67-9e03-5d22136a7325")
+	)
+	(wire
+		(pts
+			(xy 196.85 195.58)
+			(xy 199.39 195.58)
+		)
+		(uuid "8c145731-95e8-48f0-88cb-c8e306ff6070")
+	)
+	(wire
+		(pts
+			(xy 431.8 340.36)
+			(xy 429.26 340.36)
+		)
+		(uuid "f1d83bfd-0b6b-49e8-8738-958e533fd2c3")
+	)
+	(wire
+		(pts
+			(xy 431.8 345.44)
+			(xy 429.26 345.44)
+		)
+		(uuid "4c73bc6b-4766-4b5e-8e6a-dcb7d645f1ca")
+	)
+	(wire
+		(pts
+			(xy 431.8 342.9)
+			(xy 429.26 342.9)
+		)
+		(uuid "6846c113-6fe3-4286-a7f3-dc9678a353c5")
+	)
+	(wire
+		(pts
+			(xy 447.04 340.36)
+			(xy 449.58 340.36)
+		)
+		(uuid "73208706-d6f9-49c3-becc-73723cc00892")
+	)
+	(wire
+		(pts
+			(xy 447.04 345.44)
+			(xy 449.58 345.44)
+		)
+		(uuid "140c055e-9bfc-444d-8ffd-45c9b29b8997")
+	)
+	(wire
+		(pts
+			(xy 80.01 25.4)
+			(xy 82.55 25.4)
+		)
+		(uuid "16654285-b4df-43d0-8e19-ad2f1e5004dc")
+	)
+	(wire
+		(pts
+			(xy 101.6 36.83)
+			(xy 101.6 39.37)
+		)
+		(uuid "38f83b55-058a-4157-bd16-e808a20d2baa")
+	)
+	(wire
+		(pts
+			(xy 93.98 127)
+			(xy 93.98 129.54)
+		)
+		(uuid "bb8f7fbf-95c6-4835-bf91-a80ef69b7bd0")
+	)
+	(wire
+		(pts
+			(xy 172.72 88.9)
+			(xy 170.18 88.9)
+		)
+		(uuid "02719c3b-b3bf-4da1-a5da-3aa77770c1f9")
+	)
+	(wire
+		(pts
+			(xy 172.72 93.98)
+			(xy 170.18 93.98)
+		)
+		(uuid "36356499-4c22-4558-a2cc-384df8b610b0")
+	)
+	(wire
+		(pts
+			(xy 139.7 97.79)
+			(xy 139.7 95.25)
+		)
+		(uuid "5eb95407-18a2-42d2-aa48-088ee4689940")
+	)
+	(wire
+		(pts
+			(xy 193.04 99.06)
+			(xy 195.58 99.06)
+		)
+		(uuid "d685c2ed-1972-4cf1-b368-bf76c06f356a")
+	)
+	(wire
+		(pts
+			(xy 218.44 97.79)
+			(xy 218.44 95.25)
+		)
+		(uuid "bd61f09c-8db2-4a06-a6b6-c87889a83ab0")
+	)
 	(text "USB-C / input protection"
 		(at 20.32 15.24 0)
 		(effects
@@ -5763,6 +6785,16 @@
 			(justify left bottom)
 		)
 		(uuid "d094d099-2314-40a2-9f07-99f1a6526ca9")
+	)
+	(text "X1 = mono out. X2 center unused. Both barrels grounded."
+		(at 492.76 175.26 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "ddc2d740-9cf5-4127-b432-1bb8b0566b57")
 	)
 	(label "ESP_EN"
 		(at 308.61 40.64 180)
@@ -6694,11 +7726,346 @@
 		)
 		(uuid "93f0289f-41ec-4122-952a-005dd9624ce5")
 	)
-  (text "X1 = mono out. X2 center unused. Both barrels grounded."
-    (at 492.76 175.26 0)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid "ddc2d740-9cf5-4127-b432-1bb8b0566b57")
-  )
+	(label "POT1_TOP"
+		(at 40.64 189.23 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "a3664a5a-5f4b-4e0e-9f14-4d405e000b9e")
+	)
+	(label "POT1"
+		(at 46.99 195.58 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "8ef7a224-5895-4fb9-aa7f-427f5c700a77")
+	)
+	(label "GND"
+		(at 40.64 199.39 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "e54f3a05-f2a2-448e-a7c4-7412547c06fc")
+	)
+	(label "POT2_TOP"
+		(at 91.44 189.23 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "72dfeb8e-af10-47b0-9751-ea7c9d692f6a")
+	)
+	(label "POT2"
+		(at 97.79 195.58 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "834f0332-6bfc-4c79-9e88-b4638a6af622")
+	)
+	(label "GND"
+		(at 91.44 199.39 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "f880c26e-2e07-4895-9b8f-09bc7adad817")
+	)
+	(label "POT3_TOP"
+		(at 142.24 189.23 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "b18c0336-2b30-4e7f-8c20-813f141c4e97")
+	)
+	(label "POT3"
+		(at 148.59 195.58 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "21f704eb-ee43-45da-bc4f-eb17df3445a8")
+	)
+	(label "GND"
+		(at 142.24 199.39 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "ec64cad5-7ca9-4528-95e7-d54079aa6523")
+	)
+	(label "POT4_TOP"
+		(at 40.64 257.81 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "20f86f23-6ec7-4f42-9053-7ef1fb9618c8")
+	)
+	(label "POT4"
+		(at 46.99 264.16 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "7662e337-434f-4cad-8b40-a2ef0c173615")
+	)
+	(label "GND"
+		(at 40.64 267.97 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "a048039a-3965-49ae-b2cc-d7dfbc28f41a")
+	)
+	(label "POT5_TOP"
+		(at 91.44 257.81 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "3eff4f34-db66-48f7-a5e5-afc467296737")
+	)
+	(label "POT5"
+		(at 97.79 264.16 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "0366f1d0-44a3-4520-af3d-121c7bdce708")
+	)
+	(label "GND"
+		(at 91.44 267.97 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "71a84f08-d601-4733-ad9e-770d1aec3d17")
+	)
+	(label "POT6_TOP"
+		(at 142.24 257.81 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "b77f2926-8683-478b-860c-a8a1ac1c699f")
+	)
+	(label "POT6"
+		(at 148.59 264.16 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "37710113-e553-4603-875a-f80eda4b2fc7")
+	)
+	(label "GND"
+		(at 142.24 267.97 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "cec1db55-9dea-4d57-84ef-4903c2544501")
+	)
+	(label "POT7_TOP"
+		(at 193.04 189.23 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "14c7bf65-9c6f-4048-9aab-9ca8c79dd15f")
+	)
+	(label "MASTER"
+		(at 199.39 195.58 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "1672cb92-887e-4687-9ff7-000cf945eaec")
+	)
+	(label "GND"
+		(at 193.04 199.39 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "590e9ffb-0d44-45e0-aa65-119a84976522")
+	)
+	(label "ENC_A"
+		(at 429.26 340.36 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "36f569db-91cb-4d0a-96d6-41de470c736b")
+	)
+	(label "ENC_B"
+		(at 429.26 345.44 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "9e82421f-06ef-4d24-bd57-42014a6d49cd")
+	)
+	(label "GND"
+		(at 429.26 342.9 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "1f32dd66-4f99-4779-873e-850a10d0bd21")
+	)
+	(label "ENC_SW"
+		(at 449.58 340.36 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "6cffb396-004a-438e-b517-ad59a1ea039c")
+	)
+	(label "GND"
+		(at 449.58 345.44 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "848c4adb-169c-402f-9c8c-8e0c97917593")
+	)
+	(label "VBUS_PROTECTED"
+		(at 82.55 25.4 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "0216ea60-e16e-4d95-91b4-fffe17b5a406")
+	)
+	(label "VBUS_PROTECTED"
+		(at 101.6 39.37 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "222a1e11-4a03-49ed-b713-51d5002fe06f")
+	)
+	(label "VBUS_PROTECTED"
+		(at 93.98 129.54 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "2d36dd98-496e-431c-b779-490e16179297")
+	)
+	(label "VBUS_PROTECTED"
+		(at 170.18 88.9 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "8aa47a44-f6e7-42e4-81a1-0feaec0d0a7a")
+	)
+	(label "VBUS_PROTECTED"
+		(at 170.18 93.98 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "25ed49cb-5db0-4bd2-847f-c46103413f85")
+	)
+	(label "VBUS_PROTECTED"
+		(at 139.7 95.25 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "cb43c528-d1dd-4f80-aa58-7270258a5d77")
+	)
+	(label "VBUS_SLEW_CT"
+		(at 195.58 99.06 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "50500f09-5aca-4f81-8acc-f108b0afa946")
+	)
+	(label "VBUS_SLEW_CT"
+		(at 218.44 95.25 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "3d0d3af3-1cac-450b-b4fc-b8358dee56a0")
+	)
 	(symbol
 		(lib_id "ESP-DubSiren-V2:ESP32-S3-WROOM-1U-N16R8")
 		(at 330.2 63.5 0)
@@ -6750,15 +8117,6 @@
 				)
 			)
 		)
-		(instances
-			(project "ESP-DubSiren-V2"
-				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
-					(reference "U1")
-					(unit 1)
-				)
-			)
-		)
-	
 		(property "MPN" "ESP32-S3-WROOM-1U-N16R8"
 			(at 330.2 63.5 0)
 			(hide yes)
@@ -6785,7 +8143,16 @@
 					(size 1.27 1.27)
 				)
 			)
-		))
+		)
+		(instances
+			(project "ESP-DubSiren-V2"
+				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
+					(reference "U1")
+					(unit 1)
+				)
+			)
+		)
+	)
 	(symbol
 		(lib_id "ESP-DubSiren-V2:MPM3612GLQ-33")
 		(at 185.42 50.8 0)
@@ -6837,15 +8204,6 @@
 				)
 			)
 		)
-		(instances
-			(project "ESP-DubSiren-V2"
-				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
-					(reference "U2")
-					(unit 1)
-				)
-			)
-		)
-	
 		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
 			(at 185.42 50.8 0)
 			(hide yes)
@@ -6872,7 +8230,16 @@
 					(size 1.27 1.27)
 				)
 			)
-		))
+		)
+		(instances
+			(project "ESP-DubSiren-V2"
+				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
+					(reference "U2")
+					(unit 1)
+				)
+			)
+		)
+	)
 	(symbol
 		(lib_id "74xx:74HC4051")
 		(at 292.1 223.52 0)
@@ -6924,15 +8291,6 @@
 				)
 			)
 		)
-		(instances
-			(project "ESP-DubSiren-V2"
-				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
-					(reference "U3")
-					(unit 1)
-				)
-			)
-		)
-	
 		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
 			(at 292.1 223.52 0)
 			(hide yes)
@@ -6959,7 +8317,16 @@
 					(size 1.27 1.27)
 				)
 			)
-		))
+		)
+		(instances
+			(project "ESP-DubSiren-V2"
+				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
+					(reference "U3")
+					(unit 1)
+				)
+			)
+		)
+	)
 	(symbol
 		(lib_id "Power_Protection:USBLC6-2SC6")
 		(at 86.36 76.2 0)
@@ -7013,15 +8380,6 @@
 				)
 			)
 		)
-		(instances
-			(project "ESP-DubSiren-V2"
-				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
-					(reference "U4")
-					(unit 1)
-				)
-			)
-		)
-	
 		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
 			(at 86.36 76.2 0)
 			(hide yes)
@@ -7048,7 +8406,16 @@
 					(size 1.27 1.27)
 				)
 			)
-		))
+		)
+		(instances
+			(project "ESP-DubSiren-V2"
+				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
+					(reference "U4")
+					(unit 1)
+				)
+			)
+		)
+	)
 	(symbol
 		(lib_id "ESP-DubSiren-V2:Adafruit_5393")
 		(at 474.98 55.88 0)
@@ -7100,15 +8467,6 @@
 				)
 			)
 		)
-		(instances
-			(project "ESP-DubSiren-V2"
-				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
-					(reference "U5")
-					(unit 1)
-				)
-			)
-		)
-	
 		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
 			(at 474.98 55.88 0)
 			(hide yes)
@@ -7135,7 +8493,16 @@
 					(size 1.27 1.27)
 				)
 			)
-		))
+		)
+		(instances
+			(project "ESP-DubSiren-V2"
+				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
+					(reference "U5")
+					(unit 1)
+				)
+			)
+		)
+	)
 	(symbol
 		(lib_id "ESP-DubSiren-V2:Adafruit_6250")
 		(at 474.98 132.08 0)
@@ -7187,15 +8554,6 @@
 				)
 			)
 		)
-		(instances
-			(project "ESP-DubSiren-V2"
-				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
-					(reference "U6")
-					(unit 1)
-				)
-			)
-		)
-	
 		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
 			(at 474.98 132.08 0)
 			(hide yes)
@@ -7222,7 +8580,16 @@
 					(size 1.27 1.27)
 				)
 			)
-		))
+		)
+		(instances
+			(project "ESP-DubSiren-V2"
+				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
+					(reference "U6")
+					(unit 1)
+				)
+			)
+		)
+	)
 	(symbol
 		(lib_id "Device:D_Zener")
 		(at 101.6 33.02 90)
@@ -7274,15 +8641,6 @@
 				)
 			)
 		)
-		(instances
-			(project "ESP-DubSiren-V2"
-				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
-					(reference "D1")
-					(unit 1)
-				)
-			)
-		)
-	
 		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
 			(at 101.6 33.02 0)
 			(hide yes)
@@ -7309,7 +8667,16 @@
 					(size 1.27 1.27)
 				)
 			)
-		))
+		)
+		(instances
+			(project "ESP-DubSiren-V2"
+				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
+					(reference "D1")
+					(unit 1)
+				)
+			)
+		)
+	)
 	(symbol
 		(lib_id "Device:Polyfuse")
 		(at 76.2 25.4 90)
@@ -7361,15 +8728,6 @@
 				)
 			)
 		)
-		(instances
-			(project "ESP-DubSiren-V2"
-				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
-					(reference "F1")
-					(unit 1)
-				)
-			)
-		)
-	
 		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
 			(at 76.2 25.4 0)
 			(hide yes)
@@ -7396,7 +8754,16 @@
 					(size 1.27 1.27)
 				)
 			)
-		))
+		)
+		(instances
+			(project "ESP-DubSiren-V2"
+				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
+					(reference "F1")
+					(unit 1)
+				)
+			)
+		)
+	)
 	(symbol
 		(lib_id "Device:R")
 		(at 223.52 60.96 90)
@@ -7448,15 +8815,6 @@
 				)
 			)
 		)
-		(instances
-			(project "ESP-DubSiren-V2"
-				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
-					(reference "R1")
-					(unit 1)
-				)
-			)
-		)
-	
 		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
 			(at 223.52 60.96 0)
 			(hide yes)
@@ -7483,7 +8841,16 @@
 					(size 1.27 1.27)
 				)
 			)
-		))
+		)
+		(instances
+			(project "ESP-DubSiren-V2"
+				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
+					(reference "R1")
+					(unit 1)
+				)
+			)
+		)
+	)
 	(symbol
 		(lib_id "Device:R")
 		(at 127 66.04 90)
@@ -7535,15 +8902,6 @@
 				)
 			)
 		)
-		(instances
-			(project "ESP-DubSiren-V2"
-				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
-					(reference "R2")
-					(unit 1)
-				)
-			)
-		)
-	
 		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
 			(at 127 66.04 0)
 			(hide yes)
@@ -7570,7 +8928,16 @@
 					(size 1.27 1.27)
 				)
 			)
-		))
+		)
+		(instances
+			(project "ESP-DubSiren-V2"
+				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
+					(reference "R2")
+					(unit 1)
+				)
+			)
+		)
+	)
 	(symbol
 		(lib_id "Device:R")
 		(at 127 83.82 90)
@@ -7622,15 +8989,6 @@
 				)
 			)
 		)
-		(instances
-			(project "ESP-DubSiren-V2"
-				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
-					(reference "R3")
-					(unit 1)
-				)
-			)
-		)
-	
 		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
 			(at 127 83.82 0)
 			(hide yes)
@@ -7657,7 +9015,16 @@
 					(size 1.27 1.27)
 				)
 			)
-		))
+		)
+		(instances
+			(project "ESP-DubSiren-V2"
+				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
+					(reference "R3")
+					(unit 1)
+				)
+			)
+		)
+	)
 	(symbol
 		(lib_id "Device:R")
 		(at 35.56 109.22 0)
@@ -7709,15 +9076,6 @@
 				)
 			)
 		)
-		(instances
-			(project "ESP-DubSiren-V2"
-				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
-					(reference "R4")
-					(unit 1)
-				)
-			)
-		)
-	
 		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
 			(at 35.56 109.22 0)
 			(hide yes)
@@ -7744,7 +9102,16 @@
 					(size 1.27 1.27)
 				)
 			)
-		))
+		)
+		(instances
+			(project "ESP-DubSiren-V2"
+				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
+					(reference "R4")
+					(unit 1)
+				)
+			)
+		)
+	)
 	(symbol
 		(lib_id "Device:R")
 		(at 58.42 109.22 0)
@@ -7796,15 +9163,6 @@
 				)
 			)
 		)
-		(instances
-			(project "ESP-DubSiren-V2"
-				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
-					(reference "R5")
-					(unit 1)
-				)
-			)
-		)
-	
 		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
 			(at 58.42 109.22 0)
 			(hide yes)
@@ -7831,7 +9189,16 @@
 					(size 1.27 1.27)
 				)
 			)
-		))
+		)
+		(instances
+			(project "ESP-DubSiren-V2"
+				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
+					(reference "R5")
+					(unit 1)
+				)
+			)
+		)
+	)
 	(symbol
 		(lib_id "Device:R")
 		(at 266.7 60.96 0)
@@ -7883,15 +9250,6 @@
 				)
 			)
 		)
-		(instances
-			(project "ESP-DubSiren-V2"
-				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
-					(reference "R6")
-					(unit 1)
-				)
-			)
-		)
-	
 		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
 			(at 266.7 60.96 0)
 			(hide yes)
@@ -7918,7 +9276,16 @@
 					(size 1.27 1.27)
 				)
 			)
-		))
+		)
+		(instances
+			(project "ESP-DubSiren-V2"
+				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
+					(reference "R6")
+					(unit 1)
+				)
+			)
+		)
+	)
 	(symbol
 		(lib_id "Device:R")
 		(at 287.02 104.14 0)
@@ -7970,15 +9337,6 @@
 				)
 			)
 		)
-		(instances
-			(project "ESP-DubSiren-V2"
-				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
-					(reference "R7")
-					(unit 1)
-				)
-			)
-		)
-	
 		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
 			(at 287.02 104.14 0)
 			(hide yes)
@@ -8005,7 +9363,16 @@
 					(size 1.27 1.27)
 				)
 			)
-		))
+		)
+		(instances
+			(project "ESP-DubSiren-V2"
+				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
+					(reference "R7")
+					(unit 1)
+				)
+			)
+		)
+	)
 	(symbol
 		(lib_id "Device:R")
 		(at 40.64 170.18 0)
@@ -8057,15 +9424,6 @@
 				)
 			)
 		)
-		(instances
-			(project "ESP-DubSiren-V2"
-				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
-					(reference "R8")
-					(unit 1)
-				)
-			)
-		)
-	
 		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
 			(at 40.64 170.18 0)
 			(hide yes)
@@ -8092,7 +9450,16 @@
 					(size 1.27 1.27)
 				)
 			)
-		))
+		)
+		(instances
+			(project "ESP-DubSiren-V2"
+				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
+					(reference "R8")
+					(unit 1)
+				)
+			)
+		)
+	)
 	(symbol
 		(lib_id "Device:R")
 		(at 91.44 170.18 0)
@@ -8144,15 +9511,6 @@
 				)
 			)
 		)
-		(instances
-			(project "ESP-DubSiren-V2"
-				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
-					(reference "R9")
-					(unit 1)
-				)
-			)
-		)
-	
 		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
 			(at 91.44 170.18 0)
 			(hide yes)
@@ -8179,7 +9537,16 @@
 					(size 1.27 1.27)
 				)
 			)
-		))
+		)
+		(instances
+			(project "ESP-DubSiren-V2"
+				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
+					(reference "R9")
+					(unit 1)
+				)
+			)
+		)
+	)
 	(symbol
 		(lib_id "Device:R")
 		(at 142.24 170.18 0)
@@ -8231,15 +9598,6 @@
 				)
 			)
 		)
-		(instances
-			(project "ESP-DubSiren-V2"
-				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
-					(reference "R10")
-					(unit 1)
-				)
-			)
-		)
-	
 		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
 			(at 142.24 170.18 0)
 			(hide yes)
@@ -8266,7 +9624,16 @@
 					(size 1.27 1.27)
 				)
 			)
-		))
+		)
+		(instances
+			(project "ESP-DubSiren-V2"
+				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
+					(reference "R10")
+					(unit 1)
+				)
+			)
+		)
+	)
 	(symbol
 		(lib_id "Device:R")
 		(at 40.64 238.76 0)
@@ -8318,15 +9685,6 @@
 				)
 			)
 		)
-		(instances
-			(project "ESP-DubSiren-V2"
-				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
-					(reference "R11")
-					(unit 1)
-				)
-			)
-		)
-	
 		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
 			(at 40.64 238.76 0)
 			(hide yes)
@@ -8353,7 +9711,16 @@
 					(size 1.27 1.27)
 				)
 			)
-		))
+		)
+		(instances
+			(project "ESP-DubSiren-V2"
+				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
+					(reference "R11")
+					(unit 1)
+				)
+			)
+		)
+	)
 	(symbol
 		(lib_id "Device:R")
 		(at 91.44 238.76 0)
@@ -8405,15 +9772,6 @@
 				)
 			)
 		)
-		(instances
-			(project "ESP-DubSiren-V2"
-				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
-					(reference "R12")
-					(unit 1)
-				)
-			)
-		)
-	
 		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
 			(at 91.44 238.76 0)
 			(hide yes)
@@ -8440,7 +9798,16 @@
 					(size 1.27 1.27)
 				)
 			)
-		))
+		)
+		(instances
+			(project "ESP-DubSiren-V2"
+				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
+					(reference "R12")
+					(unit 1)
+				)
+			)
+		)
+	)
 	(symbol
 		(lib_id "Device:R")
 		(at 142.24 238.76 0)
@@ -8492,15 +9859,6 @@
 				)
 			)
 		)
-		(instances
-			(project "ESP-DubSiren-V2"
-				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
-					(reference "R13")
-					(unit 1)
-				)
-			)
-		)
-	
 		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
 			(at 142.24 238.76 0)
 			(hide yes)
@@ -8527,7 +9885,16 @@
 					(size 1.27 1.27)
 				)
 			)
-		))
+		)
+		(instances
+			(project "ESP-DubSiren-V2"
+				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
+					(reference "R13")
+					(unit 1)
+				)
+			)
+		)
+	)
 	(symbol
 		(lib_id "Device:R")
 		(at 193.04 170.18 0)
@@ -8579,15 +9946,6 @@
 				)
 			)
 		)
-		(instances
-			(project "ESP-DubSiren-V2"
-				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
-					(reference "R14")
-					(unit 1)
-				)
-			)
-		)
-	
 		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
 			(at 193.04 170.18 0)
 			(hide yes)
@@ -8614,7 +9972,16 @@
 					(size 1.27 1.27)
 				)
 			)
-		))
+		)
+		(instances
+			(project "ESP-DubSiren-V2"
+				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
+					(reference "R14")
+					(unit 1)
+				)
+			)
+		)
+	)
 	(symbol
 		(lib_id "Device:R")
 		(at 401.32 220.98 0)
@@ -8666,15 +10033,6 @@
 				)
 			)
 		)
-		(instances
-			(project "ESP-DubSiren-V2"
-				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
-					(reference "R15")
-					(unit 1)
-				)
-			)
-		)
-	
 		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
 			(at 401.32 220.98 0)
 			(hide yes)
@@ -8701,7 +10059,16 @@
 					(size 1.27 1.27)
 				)
 			)
-		))
+		)
+		(instances
+			(project "ESP-DubSiren-V2"
+				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
+					(reference "R15")
+					(unit 1)
+				)
+			)
+		)
+	)
 	(symbol
 		(lib_id "Device:R")
 		(at 439.42 220.98 0)
@@ -8753,15 +10120,6 @@
 				)
 			)
 		)
-		(instances
-			(project "ESP-DubSiren-V2"
-				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
-					(reference "R16")
-					(unit 1)
-				)
-			)
-		)
-	
 		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
 			(at 439.42 220.98 0)
 			(hide yes)
@@ -8788,7 +10146,16 @@
 					(size 1.27 1.27)
 				)
 			)
-		))
+		)
+		(instances
+			(project "ESP-DubSiren-V2"
+				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
+					(reference "R16")
+					(unit 1)
+				)
+			)
+		)
+	)
 	(symbol
 		(lib_id "Device:R")
 		(at 477.52 220.98 0)
@@ -8840,15 +10207,6 @@
 				)
 			)
 		)
-		(instances
-			(project "ESP-DubSiren-V2"
-				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
-					(reference "R17")
-					(unit 1)
-				)
-			)
-		)
-	
 		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
 			(at 477.52 220.98 0)
 			(hide yes)
@@ -8875,7 +10233,16 @@
 					(size 1.27 1.27)
 				)
 			)
-		))
+		)
+		(instances
+			(project "ESP-DubSiren-V2"
+				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
+					(reference "R17")
+					(unit 1)
+				)
+			)
+		)
+	)
 	(symbol
 		(lib_id "Device:R")
 		(at 515.62 220.98 0)
@@ -8927,15 +10294,6 @@
 				)
 			)
 		)
-		(instances
-			(project "ESP-DubSiren-V2"
-				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
-					(reference "R18")
-					(unit 1)
-				)
-			)
-		)
-	
 		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
 			(at 515.62 220.98 0)
 			(hide yes)
@@ -8962,7 +10320,16 @@
 					(size 1.27 1.27)
 				)
 			)
-		))
+		)
+		(instances
+			(project "ESP-DubSiren-V2"
+				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
+					(reference "R18")
+					(unit 1)
+				)
+			)
+		)
+	)
 	(symbol
 		(lib_id "Device:R")
 		(at 411.48 304.8 0)
@@ -9014,15 +10381,6 @@
 				)
 			)
 		)
-		(instances
-			(project "ESP-DubSiren-V2"
-				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
-					(reference "R19")
-					(unit 1)
-				)
-			)
-		)
-	
 		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
 			(at 411.48 304.8 0)
 			(hide yes)
@@ -9049,7 +10407,16 @@
 					(size 1.27 1.27)
 				)
 			)
-		))
+		)
+		(instances
+			(project "ESP-DubSiren-V2"
+				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
+					(reference "R19")
+					(unit 1)
+				)
+			)
+		)
+	)
 	(symbol
 		(lib_id "Device:R")
 		(at 439.42 304.8 0)
@@ -9101,15 +10468,6 @@
 				)
 			)
 		)
-		(instances
-			(project "ESP-DubSiren-V2"
-				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
-					(reference "R20")
-					(unit 1)
-				)
-			)
-		)
-	
 		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
 			(at 439.42 304.8 0)
 			(hide yes)
@@ -9136,7 +10494,16 @@
 					(size 1.27 1.27)
 				)
 			)
-		))
+		)
+		(instances
+			(project "ESP-DubSiren-V2"
+				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
+					(reference "R20")
+					(unit 1)
+				)
+			)
+		)
+	)
 	(symbol
 		(lib_id "Device:R")
 		(at 467.36 304.8 0)
@@ -9188,15 +10555,6 @@
 				)
 			)
 		)
-		(instances
-			(project "ESP-DubSiren-V2"
-				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
-					(reference "R21")
-					(unit 1)
-				)
-			)
-		)
-	
 		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
 			(at 467.36 304.8 0)
 			(hide yes)
@@ -9223,7 +10581,16 @@
 					(size 1.27 1.27)
 				)
 			)
-		))
+		)
+		(instances
+			(project "ESP-DubSiren-V2"
+				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
+					(reference "R21")
+					(unit 1)
+				)
+			)
+		)
+	)
 	(symbol
 		(lib_id "Device:C")
 		(at 124.46 33.02 0)
@@ -9277,15 +10644,6 @@
 				)
 			)
 		)
-		(instances
-			(project "ESP-DubSiren-V2"
-				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
-					(reference "C1")
-					(unit 1)
-				)
-			)
-		)
-	
 		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
 			(at 124.46 33.02 0)
 			(hide yes)
@@ -9312,7 +10670,16 @@
 					(size 1.27 1.27)
 				)
 			)
-		))
+		)
+		(instances
+			(project "ESP-DubSiren-V2"
+				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
+					(reference "C1")
+					(unit 1)
+				)
+			)
+		)
+	)
 	(symbol
 		(lib_id "Device:C")
 		(at 142.24 33.02 0)
@@ -9366,15 +10733,6 @@
 				)
 			)
 		)
-		(instances
-			(project "ESP-DubSiren-V2"
-				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
-					(reference "C2")
-					(unit 1)
-				)
-			)
-		)
-	
 		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
 			(at 142.24 33.02 0)
 			(hide yes)
@@ -9401,7 +10759,16 @@
 					(size 1.27 1.27)
 				)
 			)
-		))
+		)
+		(instances
+			(project "ESP-DubSiren-V2"
+				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
+					(reference "C2")
+					(unit 1)
+				)
+			)
+		)
+	)
 	(symbol
 		(lib_id "Device:C")
 		(at 220.98 33.02 0)
@@ -9455,15 +10822,6 @@
 				)
 			)
 		)
-		(instances
-			(project "ESP-DubSiren-V2"
-				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
-					(reference "C3")
-					(unit 1)
-				)
-			)
-		)
-	
 		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
 			(at 220.98 33.02 0)
 			(hide yes)
@@ -9490,7 +10848,16 @@
 					(size 1.27 1.27)
 				)
 			)
-		))
+		)
+		(instances
+			(project "ESP-DubSiren-V2"
+				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
+					(reference "C3")
+					(unit 1)
+				)
+			)
+		)
+	)
 	(symbol
 		(lib_id "Device:C")
 		(at 238.76 33.02 0)
@@ -9544,15 +10911,6 @@
 				)
 			)
 		)
-		(instances
-			(project "ESP-DubSiren-V2"
-				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
-					(reference "C4")
-					(unit 1)
-				)
-			)
-		)
-	
 		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
 			(at 238.76 33.02 0)
 			(hide yes)
@@ -9579,7 +10937,16 @@
 					(size 1.27 1.27)
 				)
 			)
-		))
+		)
+		(instances
+			(project "ESP-DubSiren-V2"
+				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
+					(reference "C4")
+					(unit 1)
+				)
+			)
+		)
+	)
 	(symbol
 		(lib_id "Device:C")
 		(at 281.94 33.02 0)
@@ -9633,15 +11000,6 @@
 				)
 			)
 		)
-		(instances
-			(project "ESP-DubSiren-V2"
-				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
-					(reference "C5")
-					(unit 1)
-				)
-			)
-		)
-	
 		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
 			(at 281.94 33.02 0)
 			(hide yes)
@@ -9668,7 +11026,16 @@
 					(size 1.27 1.27)
 				)
 			)
-		))
+		)
+		(instances
+			(project "ESP-DubSiren-V2"
+				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
+					(reference "C5")
+					(unit 1)
+				)
+			)
+		)
+	)
 	(symbol
 		(lib_id "Device:C")
 		(at 299.72 33.02 0)
@@ -9722,15 +11089,6 @@
 				)
 			)
 		)
-		(instances
-			(project "ESP-DubSiren-V2"
-				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
-					(reference "C6")
-					(unit 1)
-				)
-			)
-		)
-	
 		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
 			(at 299.72 33.02 0)
 			(hide yes)
@@ -9757,7 +11115,16 @@
 					(size 1.27 1.27)
 				)
 			)
-		))
+		)
+		(instances
+			(project "ESP-DubSiren-V2"
+				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
+					(reference "C6")
+					(unit 1)
+				)
+			)
+		)
+	)
 	(symbol
 		(lib_id "Device:C")
 		(at 266.7 86.36 0)
@@ -9811,15 +11178,6 @@
 				)
 			)
 		)
-		(instances
-			(project "ESP-DubSiren-V2"
-				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
-					(reference "C7")
-					(unit 1)
-				)
-			)
-		)
-	
 		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
 			(at 266.7 86.36 0)
 			(hide yes)
@@ -9846,7 +11204,16 @@
 					(size 1.27 1.27)
 				)
 			)
-		))
+		)
+		(instances
+			(project "ESP-DubSiren-V2"
+				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
+					(reference "C7")
+					(unit 1)
+				)
+			)
+		)
+	)
 	(symbol
 		(lib_id "Device:C")
 		(at 269.24 195.58 0)
@@ -9900,15 +11267,6 @@
 				)
 			)
 		)
-		(instances
-			(project "ESP-DubSiren-V2"
-				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
-					(reference "C8")
-					(unit 1)
-				)
-			)
-		)
-	
 		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
 			(at 269.24 195.58 0)
 			(hide yes)
@@ -9935,7 +11293,16 @@
 					(size 1.27 1.27)
 				)
 			)
-		))
+		)
+		(instances
+			(project "ESP-DubSiren-V2"
+				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
+					(reference "C8")
+					(unit 1)
+				)
+			)
+		)
+	)
 	(symbol
 		(lib_id "Device:C")
 		(at 340.36 228.6 0)
@@ -9989,15 +11356,6 @@
 				)
 			)
 		)
-		(instances
-			(project "ESP-DubSiren-V2"
-				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
-					(reference "C9")
-					(unit 1)
-				)
-			)
-		)
-	
 		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
 			(at 340.36 228.6 0)
 			(hide yes)
@@ -10024,7 +11382,16 @@
 					(size 1.27 1.27)
 				)
 			)
-		))
+		)
+		(instances
+			(project "ESP-DubSiren-V2"
+				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
+					(reference "C9")
+					(unit 1)
+				)
+			)
+		)
+	)
 	(symbol
 		(lib_id "Connector:TestPoint")
 		(at 134.62 127 0)
@@ -10077,15 +11444,6 @@
 				)
 			)
 		)
-		(instances
-			(project "ESP-DubSiren-V2"
-				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
-					(reference "TP1")
-					(unit 1)
-				)
-			)
-		)
-	
 		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
 			(at 134.62 127 0)
 			(hide yes)
@@ -10112,7 +11470,16 @@
 					(size 1.27 1.27)
 				)
 			)
-		))
+		)
+		(instances
+			(project "ESP-DubSiren-V2"
+				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
+					(reference "TP1")
+					(unit 1)
+				)
+			)
+		)
+	)
 	(symbol
 		(lib_id "Connector:TestPoint")
 		(at 160.02 127 0)
@@ -10165,15 +11532,6 @@
 				)
 			)
 		)
-		(instances
-			(project "ESP-DubSiren-V2"
-				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
-					(reference "TP2")
-					(unit 1)
-				)
-			)
-		)
-	
 		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
 			(at 160.02 127 0)
 			(hide yes)
@@ -10200,7 +11558,16 @@
 					(size 1.27 1.27)
 				)
 			)
-		))
+		)
+		(instances
+			(project "ESP-DubSiren-V2"
+				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
+					(reference "TP2")
+					(unit 1)
+				)
+			)
+		)
+	)
 	(symbol
 		(lib_id "Connector:TestPoint")
 		(at 185.42 127 0)
@@ -10253,15 +11620,6 @@
 				)
 			)
 		)
-		(instances
-			(project "ESP-DubSiren-V2"
-				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
-					(reference "TP3")
-					(unit 1)
-				)
-			)
-		)
-	
 		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
 			(at 185.42 127 0)
 			(hide yes)
@@ -10288,7 +11646,16 @@
 					(size 1.27 1.27)
 				)
 			)
-		))
+		)
+		(instances
+			(project "ESP-DubSiren-V2"
+				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
+					(reference "TP3")
+					(unit 1)
+				)
+			)
+		)
+	)
 	(symbol
 		(lib_id "Connector:TestPoint")
 		(at 312.42 264.16 0)
@@ -10340,15 +11707,6 @@
 				)
 			)
 		)
-		(instances
-			(project "ESP-DubSiren-V2"
-				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
-					(reference "TP4")
-					(unit 1)
-				)
-			)
-		)
-	
 		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
 			(at 312.42 264.16 0)
 			(hide yes)
@@ -10375,7 +11733,16 @@
 					(size 1.27 1.27)
 				)
 			)
-		))
+		)
+		(instances
+			(project "ESP-DubSiren-V2"
+				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
+					(reference "TP4")
+					(unit 1)
+				)
+			)
+		)
+	)
 	(symbol
 		(lib_id "Connector:TestPoint")
 		(at 533.4 152.4 0)
@@ -10427,15 +11794,6 @@
 				)
 			)
 		)
-		(instances
-			(project "ESP-DubSiren-V2"
-				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
-					(reference "TP5")
-					(unit 1)
-				)
-			)
-		)
-	
 		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
 			(at 533.4 152.4 0)
 			(hide yes)
@@ -10462,7 +11820,16 @@
 					(size 1.27 1.27)
 				)
 			)
-		))
+		)
+		(instances
+			(project "ESP-DubSiren-V2"
+				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
+					(reference "TP5")
+					(unit 1)
+				)
+			)
+		)
+	)
 	(symbol
 		(lib_id "Connector:TestPoint")
 		(at 370.84 116.84 0)
@@ -10514,15 +11881,6 @@
 				)
 			)
 		)
-		(instances
-			(project "ESP-DubSiren-V2"
-				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
-					(reference "TP6")
-					(unit 1)
-				)
-			)
-		)
-	
 		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
 			(at 370.84 116.84 0)
 			(hide yes)
@@ -10549,7 +11907,16 @@
 					(size 1.27 1.27)
 				)
 			)
-		))
+		)
+		(instances
+			(project "ESP-DubSiren-V2"
+				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
+					(reference "TP6")
+					(unit 1)
+				)
+			)
+		)
+	)
 	(symbol
 		(lib_id "Connector:TestPoint")
 		(at 370.84 134.62 0)
@@ -10601,15 +11968,6 @@
 				)
 			)
 		)
-		(instances
-			(project "ESP-DubSiren-V2"
-				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
-					(reference "TP7")
-					(unit 1)
-				)
-			)
-		)
-	
 		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
 			(at 370.84 134.62 0)
 			(hide yes)
@@ -10636,7 +11994,16 @@
 					(size 1.27 1.27)
 				)
 			)
-		))
+		)
+		(instances
+			(project "ESP-DubSiren-V2"
+				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
+					(reference "TP7")
+					(unit 1)
+				)
+			)
+		)
+	)
 	(symbol
 		(lib_id "power:PWR_FLAG")
 		(at 93.98 127 0)
@@ -12043,67 +13410,6 @@
 		)
 	)
 	(symbol
-		(lib_id "power:+5V")
-		(at 101.6 36.83 0)
-		(unit 1)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "afc355bb-66e7-48ec-9b34-5a25f4cb81b2")
-		(property "Reference" "#PWR022"
-			(at 101.6 40.64 0)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "+5V"
-			(at 101.6 33.274 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 101.6 36.83 0)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" ""
-			(at 101.6 36.83 0)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Description" "Power symbol creates a global label with name \"+5V\""
-			(at 101.6 36.83 0)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(instances
-			(project "ESP-DubSiren-V2"
-				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
-					(reference "#PWR022")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "power:GND")
 		(at 101.6 29.21 0)
 		(unit 1)
@@ -12159,67 +13465,6 @@
 			(project "ESP-DubSiren-V2"
 				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
 					(reference "#PWR023")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "power:+5V")
-		(at 80.01 25.4 0)
-		(unit 1)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "d9e677cc-8ae0-47b4-8193-af6294e20b63")
-		(property "Reference" "#PWR024"
-			(at 80.01 29.21 0)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "+5V"
-			(at 80.01 21.844 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 80.01 25.4 0)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" ""
-			(at 80.01 25.4 0)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Description" "Power symbol creates a global label with name \"+5V\""
-			(at 80.01 25.4 0)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(instances
-			(project "ESP-DubSiren-V2"
-				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
-					(reference "#PWR024")
 					(unit 1)
 				)
 			)
@@ -14544,67 +15789,6 @@
 		)
 	)
 	(symbol
-		(lib_id "power:+5V")
-		(at 93.98 127 0)
-		(unit 1)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "d92e2588-5463-446b-ba53-c65c04513bee")
-		(property "Reference" "#PWR063"
-			(at 93.98 130.81 0)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "+5V"
-			(at 93.98 123.444 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 93.98 127 0)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" ""
-			(at 93.98 127 0)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Description" "Power symbol creates a global label with name \"+5V\""
-			(at 93.98 127 0)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(instances
-			(project "ESP-DubSiren-V2"
-				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
-					(reference "#PWR063")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "power:GND")
 		(at 111.76 127 0)
 		(unit 1)
@@ -14716,15 +15900,6 @@
 				)
 			)
 		)
-		(instances
-			(project "ESP-DubSiren-V2"
-				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
-					(reference "J1")
-					(unit 1)
-				)
-			)
-		)
-	
 		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
 			(at 30.48 55.88 0)
 			(hide yes)
@@ -14751,7 +15926,16 @@
 					(size 1.27 1.27)
 				)
 			)
-		))
+		)
+		(instances
+			(project "ESP-DubSiren-V2"
+				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
+					(reference "J1")
+					(unit 1)
+				)
+			)
+		)
+	)
 	(symbol
 		(lib_id "ESP-DubSiren-V2:RCJ-2123")
 		(at 566.42 127 0)
@@ -14803,15 +15987,6 @@
 				)
 			)
 		)
-		(instances
-			(project "ESP-DubSiren-V2"
-				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
-					(reference "J2")
-					(unit 1)
-				)
-			)
-		)
-	
 		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
 			(at 566.42 127 0)
 			(hide yes)
@@ -14838,7 +16013,16 @@
 					(size 1.27 1.27)
 				)
 			)
-		))
+		)
+		(instances
+			(project "ESP-DubSiren-V2"
+				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
+					(reference "J2")
+					(unit 1)
+				)
+			)
+		)
+	)
 	(symbol
 		(lib_id "Switch:SW_Push")
 		(at 246.38 109.22 0)
@@ -14891,15 +16075,6 @@
 				)
 			)
 		)
-		(instances
-			(project "ESP-DubSiren-V2"
-				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
-					(reference "SW5")
-					(unit 1)
-				)
-			)
-		)
-	
 		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
 			(at 246.38 109.22 0)
 			(hide yes)
@@ -14926,7 +16101,16 @@
 					(size 1.27 1.27)
 				)
 			)
-		))
+		)
+		(instances
+			(project "ESP-DubSiren-V2"
+				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
+					(reference "SW5")
+					(unit 1)
+				)
+			)
+		)
+	)
 	(symbol
 		(lib_id "Switch:SW_Push")
 		(at 307.34 119.38 0)
@@ -14979,15 +16163,6 @@
 				)
 			)
 		)
-		(instances
-			(project "ESP-DubSiren-V2"
-				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
-					(reference "SW6")
-					(unit 1)
-				)
-			)
-		)
-	
 		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
 			(at 307.34 119.38 0)
 			(hide yes)
@@ -15014,7 +16189,16 @@
 					(size 1.27 1.27)
 				)
 			)
-		))
+		)
+		(instances
+			(project "ESP-DubSiren-V2"
+				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
+					(reference "SW6")
+					(unit 1)
+				)
+			)
+		)
+	)
 	(symbol
 		(lib_id "power:GND")
 		(at 30.48 78.74 0)
@@ -15376,6 +16560,1119 @@
 			(project "ESP-DubSiren-V2"
 				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
 					(reference "#PWR070")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R_Potentiometer")
+		(at 40.64 195.58 0)
+		(mirror x)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "2daacd46-c429-429c-a123-3ca8ef9a8875")
+		(property "Reference" "RV1"
+			(at 36.195 195.58 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "20k PTV111-3420A-B203"
+			(at 38.1 195.58 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "ESP-DubSiren-V2-Mechanical:Bourns_PTV111-3"
+			(at 40.64 195.58 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" "https://bourns.com/docs/product-datasheets/ptvptt.pdf"
+			(at 40.64 195.58 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Potentiometer"
+			(at 40.64 195.58 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "PTV111-3420A-B203"
+			(at 40.64 195.58 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "Bourns"
+			(at 40.64 195.58 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "ESP-DubSiren-V2"
+				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
+					(reference "RV1")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R_Potentiometer")
+		(at 91.44 195.58 0)
+		(mirror x)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "4ae809e6-6c46-478f-a38a-73793732e91a")
+		(property "Reference" "RV2"
+			(at 86.995 195.58 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "20k PTV111-3420A-B203"
+			(at 88.9 195.58 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "ESP-DubSiren-V2-Mechanical:Bourns_PTV111-3"
+			(at 91.44 195.58 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" "https://bourns.com/docs/product-datasheets/ptvptt.pdf"
+			(at 91.44 195.58 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Potentiometer"
+			(at 91.44 195.58 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "PTV111-3420A-B203"
+			(at 91.44 195.58 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "Bourns"
+			(at 91.44 195.58 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "ESP-DubSiren-V2"
+				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
+					(reference "RV2")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R_Potentiometer")
+		(at 142.24 195.58 0)
+		(mirror x)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "c3433abf-eda6-41bd-9f65-24934117e252")
+		(property "Reference" "RV3"
+			(at 137.795 195.58 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "20k PTV111-3420A-B203"
+			(at 139.7 195.58 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "ESP-DubSiren-V2-Mechanical:Bourns_PTV111-3"
+			(at 142.24 195.58 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" "https://bourns.com/docs/product-datasheets/ptvptt.pdf"
+			(at 142.24 195.58 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Potentiometer"
+			(at 142.24 195.58 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "PTV111-3420A-B203"
+			(at 142.24 195.58 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "Bourns"
+			(at 142.24 195.58 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "ESP-DubSiren-V2"
+				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
+					(reference "RV3")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R_Potentiometer")
+		(at 40.64 264.16 0)
+		(mirror x)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "95f0fa21-e38b-4ea2-8c90-a2b3ebc8c97a")
+		(property "Reference" "RV4"
+			(at 36.195 264.16 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "20k PTV111-3420A-B203"
+			(at 38.1 264.16 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "ESP-DubSiren-V2-Mechanical:Bourns_PTV111-3"
+			(at 40.64 264.16 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" "https://bourns.com/docs/product-datasheets/ptvptt.pdf"
+			(at 40.64 264.16 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Potentiometer"
+			(at 40.64 264.16 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "PTV111-3420A-B203"
+			(at 40.64 264.16 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "Bourns"
+			(at 40.64 264.16 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "ESP-DubSiren-V2"
+				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
+					(reference "RV4")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R_Potentiometer")
+		(at 91.44 264.16 0)
+		(mirror x)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "688cd874-36fa-46c1-98eb-aab7fdc435bf")
+		(property "Reference" "RV5"
+			(at 86.995 264.16 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "20k PTV111-3420A-B203"
+			(at 88.9 264.16 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "ESP-DubSiren-V2-Mechanical:Bourns_PTV111-3"
+			(at 91.44 264.16 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" "https://bourns.com/docs/product-datasheets/ptvptt.pdf"
+			(at 91.44 264.16 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Potentiometer"
+			(at 91.44 264.16 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "PTV111-3420A-B203"
+			(at 91.44 264.16 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "Bourns"
+			(at 91.44 264.16 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "ESP-DubSiren-V2"
+				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
+					(reference "RV5")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R_Potentiometer")
+		(at 142.24 264.16 0)
+		(mirror x)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "38d01846-cbd9-4653-92b9-709a649645ec")
+		(property "Reference" "RV6"
+			(at 137.795 264.16 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "20k PTV111-3420A-B203"
+			(at 139.7 264.16 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "ESP-DubSiren-V2-Mechanical:Bourns_PTV111-3"
+			(at 142.24 264.16 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" "https://bourns.com/docs/product-datasheets/ptvptt.pdf"
+			(at 142.24 264.16 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Potentiometer"
+			(at 142.24 264.16 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "PTV111-3420A-B203"
+			(at 142.24 264.16 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "Bourns"
+			(at 142.24 264.16 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "ESP-DubSiren-V2"
+				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
+					(reference "RV6")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R_Potentiometer")
+		(at 193.04 195.58 0)
+		(mirror x)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "cb4d7428-575a-4c1a-b4b9-354b701272a1")
+		(property "Reference" "RV7"
+			(at 188.595 195.58 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "10k PTV111-1420A-B103"
+			(at 190.5 195.58 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "ESP-DubSiren-V2-Mechanical:Bourns_PTV111-1"
+			(at 193.04 195.58 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" "https://bourns.com/docs/product-datasheets/ptvptt.pdf"
+			(at 193.04 195.58 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Potentiometer"
+			(at 193.04 195.58 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "PTV111-1420A-B103"
+			(at 193.04 195.58 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "Bourns"
+			(at 193.04 195.58 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "ESP-DubSiren-V2"
+				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
+					(reference "RV7")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:RotaryEncoder_Switch")
+		(at 439.42 342.9 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "4eb3ef57-4144-4750-8497-0c0db9d296f7")
+		(property "Reference" "SW7"
+			(at 439.42 336.296 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "PEC11R-4120F-S0018"
+			(at 439.42 349.504 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "ESP-DubSiren-V2-Mechanical:Bourns_PEC11R-4120F-S0018"
+			(at 439.42 342.9 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" "https://www.bourns.com/docs/product-datasheets/pec11r.pdf"
+			(at 439.42 342.9 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Rotary encoder, dual channel, incremental quadrate outputs, with switch"
+			(at 439.42 342.9 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "PEC11R-4120F-S0018"
+			(at 439.42 342.9 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "Bourns"
+			(at 439.42 342.9 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "ESP-DubSiren-V2"
+				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
+					(reference "SW7")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "ESP-DubSiren-V2:TPS22918DBVR")
+		(at 182.88 93.98 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "97d41348-e313-4950-a6ef-7d19717f96ab")
+		(property "Reference" "U7"
+			(at 182.88 83.82 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "TPS22918DBVR"
+			(at 182.88 111.76 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Package_TO_SOT_SMD:SOT-23-6"
+			(at 182.88 93.98 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" "https://www.ti.com/lit/ds/symlink/tps22918.pdf"
+			(at 182.88 93.98 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 182.88 93.98 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "ESP-DubSiren-V2"
+				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
+					(reference "U7")
+					(unit 1)
+				)
+			)
+		)
+	
+		(property "MPN" "TPS22918DBVR"
+			(at 182.88 93.98 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "Texas Instruments"
+			(at 182.88 93.98 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		))
+	(symbol
+		(lib_id "Device:C")
+		(at 139.7 101.6 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "4a6069dd-0de4-4705-9e3a-c6a40f05c10f")
+		(property "Reference" "C10"
+			(at 140.335 99.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "1u"
+			(at 140.335 104.14 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0603_1608Metric"
+			(at 139.7 101.6 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" "https://product.samsungsem.com/mlcc/CL10B105MO8NNW.do"
+			(at 139.7 101.6 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Unpolarized capacitor"
+			(at 139.7 101.6 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "ESP-DubSiren-V2"
+				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
+					(reference "C10")
+					(unit 1)
+				)
+			)
+		)
+	
+		(property "MPN" "CL10B105MO8NNWC"
+			(at 139.7 101.6 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "Samsung"
+			(at 139.7 101.6 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		))
+	(symbol
+		(lib_id "Device:C")
+		(at 218.44 101.6 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "2e406d8b-9525-4389-99dd-5cabf33ed1a6")
+		(property "Reference" "C11"
+			(at 219.075 99.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "10n C0G 50V"
+			(at 219.075 104.14 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0603_1608Metric"
+			(at 218.44 101.6 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" "https://search.murata.co.jp/Ceramy/image/img/A01X/G101/ENG/GRM1885C1H103JA01-01A.pdf"
+			(at 218.44 101.6 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Unpolarized capacitor"
+			(at 218.44 101.6 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "ESP-DubSiren-V2"
+				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
+					(reference "C11")
+					(unit 1)
+				)
+			)
+		)
+	
+		(property "MPN" "GRM1885C1H103JA01D"
+			(at 218.44 101.6 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "Murata"
+			(at 218.44 101.6 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		))
+	(symbol
+		(lib_id "power:GND")
+		(at 182.88 104.14 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "4f67b343-a749-4746-ab41-94a4840705c7")
+		(property "Reference" "#PWR022"
+			(at 182.88 110.49 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "GND"
+			(at 182.88 107.95 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 182.88 104.14 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 182.88 104.14 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 182.88 104.14 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "ESP-DubSiren-V2"
+				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
+					(reference "#PWR022")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 139.7 105.41 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "5498796f-048d-4ee7-a5ad-f6673bcb7dba")
+		(property "Reference" "#PWR024"
+			(at 139.7 111.76 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "GND"
+			(at 139.7 109.22 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 139.7 105.41 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 139.7 105.41 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 139.7 105.41 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "ESP-DubSiren-V2"
+				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
+					(reference "#PWR024")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 218.44 105.41 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "e7c65c1a-c81e-4bf3-a552-f854d707db71")
+		(property "Reference" "#PWR063"
+			(at 218.44 111.76 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "GND"
+			(at 218.44 109.22 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 218.44 105.41 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 218.44 105.41 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 218.44 105.41 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "ESP-DubSiren-V2"
+				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
+					(reference "#PWR063")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:+5V")
+		(at 193.04 88.9 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "14a23c82-149d-40c4-ab33-6c9c0e33fe6e")
+		(property "Reference" "#PWR071"
+			(at 193.04 92.71 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "+5V"
+			(at 193.04 85.344 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 193.04 88.9 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 193.04 88.9 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"+5V\""
+			(at 193.04 88.9 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "ESP-DubSiren-V2"
+				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
+					(reference "#PWR071")
 					(unit 1)
 				)
 			)

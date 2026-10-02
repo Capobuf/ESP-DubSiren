@@ -1,0 +1,1283 @@
+[
+  {
+    "name": "load_toolset",
+    "arguments": {
+      "name": [
+        "library"
+      ]
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"errors\":[],\"loaded\":[\"library\"],\"tools\":[{\"description\":\"Create a new footprint (.kicad_mod) file from a pad layout description.\",\"name\":\"create_footprint\"},{\"description\":\"Atomically append, replace, or delete graphical primitives on one layer of an existing .kicad_mod footprint. Replacement and deletion refuse graphics referenced by a group.\",\"name\":\"set_footprint_graphics\"},{\"description\":\"Atomically replace a footprint's description, tags, or supported attributes while preserving pads, graphics, properties, groups, and models.\",\"name\":\"set_footprint_metadata\"},{\"description\":\"Atomically append, replace, or delete top-level 3D model blocks in an existing .kicad_mod footprint while preserving every non-model child.\",\"name\":\"set_footprint_models\"},{\"description\":\"Edit the size, shape, or position of a pad in an existing .kicad_mod footprint file.\",\"name\":\"edit_footprint_pad\"},{\"description\":\"Register a local footprint library directory in the KiCAD global or project library table.\",\"name\":\"register_footprint_library\"},{\"description\":\"List all registered footprint libraries (global and optionally project-level).\",\"name\":\"list_footprint_libraries\"},{\"description\":\"Create a new KiCAD schematic symbol and append it to a .kicad_sym library file. Supports single-unit symbols (via `pins`) and multi-unit parts like dual/quad op-amps or gate banks (via `units` + optional `power_pins`). By default each unit gets a rectangular body sized to its pins; set `glyph` (symbol-level and/or per unit) to draw a conventional op-amp triangle or logic-gate body instead. With a glyph, pins auto-place by their `type` (inputs left in the order listed top-to- bottom, output right, power top/bottom) and their x/y are ignored.\",\"name\":\"create_symbol\"},{\"description\":\"Delete a symbol definition from a .kicad_sym library file.\",\"name\":\"delete_symbol\"},{\"description\":\"List all symbol names defined in a .kicad_sym library file.\",\"name\":\"list_symbols_in_library\"},{\"description\":\"Register a .kicad_sym library file in the KiCAD global or project symbol table. Reports whether the entry was inserted, left unchanged, or updated \u2014 an existing nickname is kept as-is unless replace_existing is set.\",\"name\":\"register_symbol_library\"},{\"description\":\"List all registered symbol libraries (global and optionally project-level).\",\"name\":\"list_symbol_libraries\"},{\"description\":\"Search for symbols across all registered libraries by name or keyword.\",\"name\":\"search_symbols\"},{\"description\":\"List all footprints in a specific registered footprint library (.pretty directory).\",\"name\":\"list_library_footprints\"},{\"description\":\"Return detailed information about a footprint: pad layout, courtyard, description, and optionally its supported graphical primitives.\",\"name\":\"get_footprint_info\"},{\"description\":\"Search for footprints across all registered libraries by name or keyword.\",\"name\":\"search_footprints\"},{\"description\":\"Return detailed information about a schematic symbol: pins, properties, description.\",\"name\":\"get_symbol_info\"}],\"tools_added\":17}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "create_footprint",
+    "arguments": {
+      "name": "Bourns_PTV111-3",
+      "output": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\footprints\\ESP-DubSiren-V2-Mechanical.pretty\\Bourns_PTV111-3.kicad_mod",
+      "pads": [
+        {
+          "number": "1",
+          "x": -3.75,
+          "y": 11,
+          "width": 1.9,
+          "height": 1.9,
+          "type": "thru_hole",
+          "shape": "rect",
+          "drill": 1.1
+        },
+        {
+          "number": "2",
+          "x": -1.25,
+          "y": 11,
+          "width": 1.9,
+          "height": 1.9,
+          "type": "thru_hole",
+          "shape": "circle",
+          "drill": 1.1
+        },
+        {
+          "number": "3",
+          "x": 1.25,
+          "y": 11,
+          "width": 1.9,
+          "height": 1.9,
+          "type": "thru_hole",
+          "shape": "circle",
+          "drill": 1.1
+        },
+        {
+          "number": "",
+          "x": 3.75,
+          "y": 11,
+          "width": 1.9,
+          "height": 1.9,
+          "type": "thru_hole",
+          "shape": "circle",
+          "drill": 1.1
+        }
+      ],
+      "body_width": 12,
+      "body_height": 13.4,
+      "package_type": "through_hole",
+      "description": "Exact PTV111 manufacturer recommended PCB pattern; current PTV/PTT Rev09/23 p2; origin mounting-aperture midpoint. Pin4 dummy plated unnumbered. NPTH routed apertures on Edge.Cuts."
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"courtyard\":true,\"footprint\":\"Bourns_PTV111-3\",\"model\":\"\",\"output\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\footprints\\\\ESP-DubSiren-V2-Mechanical.pretty\\\\Bourns_PTV111-3.kicad_mod\",\"pad_count\":4,\"pin1_marked\":true,\"success\":true}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "set_footprint_graphics",
+    "arguments": {
+      "footprint_path": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\footprints\\ESP-DubSiren-V2-Mechanical.pretty\\Bourns_PTV111-3.kicad_mod",
+      "selector": {
+        "layer": "F.Fab"
+      },
+      "mode": "replace",
+      "graphics": [
+        {
+          "type": "rect",
+          "start": {
+            "x": -6,
+            "y": -6.7
+          },
+          "end": {
+            "x": 6,
+            "y": 6.7
+          },
+          "stroke_width_mm": 0.1,
+          "fill": "none"
+        }
+      ]
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"added_count\":1,\"footprint_path\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\footprints\\\\ESP-DubSiren-V2-Mechanical.pretty\\\\Bourns_PTV111-3.kicad_mod\",\"layer\":\"F.Fab\",\"matched_count\":1,\"mode\":\"replace\",\"success\":true}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "set_footprint_graphics",
+    "arguments": {
+      "footprint_path": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\footprints\\ESP-DubSiren-V2-Mechanical.pretty\\Bourns_PTV111-3.kicad_mod",
+      "selector": {
+        "layer": "F.SilkS"
+      },
+      "mode": "replace",
+      "graphics": [
+        {
+          "type": "rect",
+          "start": {
+            "x": -6.1,
+            "y": -6.8
+          },
+          "end": {
+            "x": 6.1,
+            "y": 6.8
+          },
+          "stroke_width_mm": 0.12,
+          "fill": "none"
+        }
+      ]
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"added_count\":1,\"footprint_path\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\footprints\\\\ESP-DubSiren-V2-Mechanical.pretty\\\\Bourns_PTV111-3.kicad_mod\",\"layer\":\"F.SilkS\",\"matched_count\":2,\"mode\":\"replace\",\"success\":true}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "set_footprint_graphics",
+    "arguments": {
+      "footprint_path": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\footprints\\ESP-DubSiren-V2-Mechanical.pretty\\Bourns_PTV111-3.kicad_mod",
+      "selector": {
+        "layer": "F.CrtYd"
+      },
+      "mode": "replace",
+      "graphics": [
+        {
+          "type": "rect",
+          "start": {
+            "x": -8.3,
+            "y": -7.2
+          },
+          "end": {
+            "x": 8.3,
+            "y": 12.45
+          },
+          "stroke_width_mm": 0.05,
+          "fill": "none"
+        }
+      ]
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"added_count\":1,\"footprint_path\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\footprints\\\\ESP-DubSiren-V2-Mechanical.pretty\\\\Bourns_PTV111-3.kicad_mod\",\"layer\":\"F.CrtYd\",\"matched_count\":1,\"mode\":\"replace\",\"success\":true}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "set_footprint_graphics",
+    "arguments": {
+      "footprint_path": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\footprints\\ESP-DubSiren-V2-Mechanical.pretty\\Bourns_PTV111-3.kicad_mod",
+      "selector": {
+        "layer": "Edge.Cuts"
+      },
+      "mode": "replace",
+      "graphics": [
+        {
+          "type": "line",
+          "start": {
+            "x": -7.3999999999999995,
+            "y": -1.05
+          },
+          "end": {
+            "x": -6.2,
+            "y": -1.05
+          },
+          "stroke_width_mm": 0.05
+        },
+        {
+          "type": "line",
+          "start": {
+            "x": -5.8,
+            "y": -0.65
+          },
+          "end": {
+            "x": -5.8,
+            "y": 0.65
+          },
+          "stroke_width_mm": 0.05
+        },
+        {
+          "type": "line",
+          "start": {
+            "x": -6.2,
+            "y": 1.05
+          },
+          "end": {
+            "x": -7.3999999999999995,
+            "y": 1.05
+          },
+          "stroke_width_mm": 0.05
+        },
+        {
+          "type": "line",
+          "start": {
+            "x": -7.8,
+            "y": 0.65
+          },
+          "end": {
+            "x": -7.8,
+            "y": -0.65
+          },
+          "stroke_width_mm": 0.05
+        },
+        {
+          "type": "arc",
+          "start": {
+            "x": -6.2,
+            "y": -1.05
+          },
+          "mid": {
+            "x": -5.917157287525381,
+            "y": -0.9328427124746193
+          },
+          "end": {
+            "x": -5.8,
+            "y": -0.65
+          },
+          "stroke_width_mm": 0.05
+        },
+        {
+          "type": "arc",
+          "start": {
+            "x": -5.8,
+            "y": 0.65
+          },
+          "mid": {
+            "x": -5.917157287525381,
+            "y": 0.9328427124746193
+          },
+          "end": {
+            "x": -6.2,
+            "y": 1.05
+          },
+          "stroke_width_mm": 0.05
+        },
+        {
+          "type": "arc",
+          "start": {
+            "x": -7.3999999999999995,
+            "y": 1.05
+          },
+          "mid": {
+            "x": -7.682842712474619,
+            "y": 0.9328427124746193
+          },
+          "end": {
+            "x": -7.8,
+            "y": 0.65
+          },
+          "stroke_width_mm": 0.05
+        },
+        {
+          "type": "arc",
+          "start": {
+            "x": -7.8,
+            "y": -0.65
+          },
+          "mid": {
+            "x": -7.682842712474619,
+            "y": -0.9328427124746193
+          },
+          "end": {
+            "x": -7.3999999999999995,
+            "y": -1.05
+          },
+          "stroke_width_mm": 0.05
+        },
+        {
+          "type": "line",
+          "start": {
+            "x": 6.2,
+            "y": -1.05
+          },
+          "end": {
+            "x": 7.3999999999999995,
+            "y": -1.05
+          },
+          "stroke_width_mm": 0.05
+        },
+        {
+          "type": "line",
+          "start": {
+            "x": 7.8,
+            "y": -0.65
+          },
+          "end": {
+            "x": 7.8,
+            "y": 0.65
+          },
+          "stroke_width_mm": 0.05
+        },
+        {
+          "type": "line",
+          "start": {
+            "x": 7.3999999999999995,
+            "y": 1.05
+          },
+          "end": {
+            "x": 6.2,
+            "y": 1.05
+          },
+          "stroke_width_mm": 0.05
+        },
+        {
+          "type": "line",
+          "start": {
+            "x": 5.8,
+            "y": 0.65
+          },
+          "end": {
+            "x": 5.8,
+            "y": -0.65
+          },
+          "stroke_width_mm": 0.05
+        },
+        {
+          "type": "arc",
+          "start": {
+            "x": 7.3999999999999995,
+            "y": -1.05
+          },
+          "mid": {
+            "x": 7.682842712474619,
+            "y": -0.9328427124746193
+          },
+          "end": {
+            "x": 7.8,
+            "y": -0.65
+          },
+          "stroke_width_mm": 0.05
+        },
+        {
+          "type": "arc",
+          "start": {
+            "x": 7.8,
+            "y": 0.65
+          },
+          "mid": {
+            "x": 7.682842712474619,
+            "y": 0.9328427124746193
+          },
+          "end": {
+            "x": 7.3999999999999995,
+            "y": 1.05
+          },
+          "stroke_width_mm": 0.05
+        },
+        {
+          "type": "arc",
+          "start": {
+            "x": 6.2,
+            "y": 1.05
+          },
+          "mid": {
+            "x": 5.917157287525381,
+            "y": 0.9328427124746193
+          },
+          "end": {
+            "x": 5.8,
+            "y": 0.65
+          },
+          "stroke_width_mm": 0.05
+        },
+        {
+          "type": "arc",
+          "start": {
+            "x": 5.8,
+            "y": -0.65
+          },
+          "mid": {
+            "x": 5.917157287525381,
+            "y": -0.9328427124746193
+          },
+          "end": {
+            "x": 6.2,
+            "y": -1.05
+          },
+          "stroke_width_mm": 0.05
+        }
+      ]
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"added_count\":16,\"footprint_path\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\footprints\\\\ESP-DubSiren-V2-Mechanical.pretty\\\\Bourns_PTV111-3.kicad_mod\",\"layer\":\"Edge.Cuts\",\"matched_count\":0,\"mode\":\"replace\",\"success\":true}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "get_footprint_info",
+    "arguments": {
+      "footprint_path": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\footprints\\ESP-DubSiren-V2-Mechanical.pretty\\Bourns_PTV111-3.kicad_mod",
+      "include_pads": true,
+      "include_graphics": true
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"coordinate_space\":\"footprint_local\",\"description\":\"Exact PTV111 manufacturer recommended PCB pattern; current PTV/PTT Rev09/23 p2; origin mounting-aperture midpoint. Pin4 dummy plated unnumbered. NPTH routed apertures on Edge.Cuts.\",\"graphic_count\":19,\"graphics\":[{\"end\":{\"x\":-6.2,\"y\":-1.05},\"item_id\":null,\"layer\":\"Edge.Cuts\",\"start\":{\"x\":-7.4,\"y\":-1.05},\"stroke_width_mm\":0.05,\"type\":\"line\"},{\"end\":{\"x\":-5.8,\"y\":0.65},\"item_id\":null,\"layer\":\"Edge.Cuts\",\"start\":{\"x\":-5.8,\"y\":-0.65},\"stroke_width_mm\":0.05,\"type\":\"line\"},{\"end\":{\"x\":-7.4,\"y\":1.05},\"item_id\":null,\"layer\":\"Edge.Cuts\",\"start\":{\"x\":-6.2,\"y\":1.05},\"stroke_width_mm\":0.05,\"type\":\"line\"},{\"end\":{\"x\":-7.8,\"y\":-0.65},\"item_id\":null,\"layer\":\"Edge.Cuts\",\"start\":{\"x\":-7.8,\"y\":0.65},\"stroke_width_mm\":0.05,\"type\":\"line\"},{\"end\":{\"x\":-5.8,\"y\":-0.65},\"item_id\":null,\"layer\":\"Edge.Cuts\",\"mid\":{\"x\":-5.917157,\"y\":-0.932843},\"start\":{\"x\":-6.2,\"y\":-1.05},\"stroke_width_mm\":0.05,\"type\":\"arc\"},{\"end\":{\"x\":-6.2,\"y\":1.05},\"item_id\":null,\"layer\":\"Edge.Cuts\",\"mid\":{\"x\":-5.917157,\"y\":0.932843},\"start\":{\"x\":-5.8,\"y\":0.65},\"stroke_width_mm\":0.05,\"type\":\"arc\"},{\"end\":{\"x\":-7.8,\"y\":0.65},\"item_id\":null,\"layer\":\"Edge.Cuts\",\"mid\":{\"x\":-7.682843,\"y\":0.932843},\"start\":{\"x\":-7.4,\"y\":1.05},\"stroke_width_mm\":0.05,\"type\":\"arc\"},{\"end\":{\"x\":-7.4,\"y\":-1.05},\"item_id\":null,\"layer\":\"Edge.Cuts\",\"mid\":{\"x\":-7.682843,\"y\":-0.932843},\"start\":{\"x\":-7.8,\"y\":-0.65},\"stroke_width_mm\":0.05,\"type\":\"arc\"},{\"end\":{\"x\":7.4,\"y\":-1.05},\"item_id\":null,\"layer\":\"Edge.Cuts\",\"start\":{\"x\":6.2,\"y\":-1.05},\"stroke_width_mm\":0.05,\"type\":\"line\"},{\"end\":{\"x\":7.8,\"y\":0.65},\"item_id\":null,\"layer\":\"Edge.Cuts\",\"start\":{\"x\":7.8,\"y\":-0.65},\"stroke_width_mm\":0.05,\"type\":\"line\"},{\"end\":{\"x\":6.2,\"y\":1.05},\"item_id\":null,\"layer\":\"Edge.Cuts\",\"start\":{\"x\":7.4,\"y\":1.05},\"stroke_width_mm\":0.05,\"type\":\"line\"},{\"end\":{\"x\":5.8,\"y\":-0.65},\"item_id\":null,\"layer\":\"Edge.Cuts\",\"start\":{\"x\":5.8,\"y\":0.65},\"stroke_width_mm\":0.05,\"type\":\"line\"},{\"end\":{\"x\":7.8,\"y\":-0.65},\"item_id\":null,\"layer\":\"Edge.Cuts\",\"mid\":{\"x\":7.682843,\"y\":-0.932843},\"start\":{\"x\":7.4,\"y\":-1.05},\"stroke_width_mm\":0.05,\"type\":\"arc\"},{\"end\":{\"x\":7.4,\"y\":1.05},\"item_id\":null,\"layer\":\"Edge.Cuts\",\"mid\":{\"x\":7.682843,\"y\":0.932843},\"start\":{\"x\":7.8,\"y\":0.65},\"stroke_width_mm\":0.05,\"type\":\"arc\"},{\"end\":{\"x\":5.8,\"y\":0.65},\"item_id\":null,\"layer\":\"Edge.Cuts\",\"mid\":{\"x\":5.917157,\"y\":0.932843},\"start\":{\"x\":6.2,\"y\":1.05},\"stroke_width_mm\":0.05,\"type\":\"arc\"},{\"end\":{\"x\":6.2,\"y\":-1.05},\"item_id\":null,\"layer\":\"Edge.Cuts\",\"mid\":{\"x\":5.917157,\"y\":-0.932843},\"start\":{\"x\":5.8,\"y\":-0.65},\"stroke_width_mm\":0.05,\"type\":\"arc\"},{\"end\":{\"x\":8.3,\"y\":12.45},\"fill\":\"none\",\"item_id\":null,\"layer\":\"F.CrtYd\",\"start\":{\"x\":-8.3,\"y\":-7.2},\"stroke_width_mm\":0.05,\"type\":\"rect\"},{\"end\":{\"x\":6.1,\"y\":6.8},\"fill\":\"none\",\"item_id\":null,\"layer\":\"F.SilkS\",\"start\":{\"x\":-6.1,\"y\":-6.8},\"stroke_width_mm\":0.12,\"type\":\"rect\"},{\"end\":{\"x\":6.0,\"y\":6.7},\"fill\":\"none\",\"item_id\":null,\"layer\":\"F.Fab\",\"start\":{\"x\":-6.0,\"y\":-6.7},\"stroke_width_mm\":0.1,\"type\":\"rect\"}],\"has_3d_model\":false,\"has_courtyard\":true,\"name\":\"Bourns_PTV111-3\",\"pad_count\":4,\"pads\":[{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"*.Cu\",\"offset\":null,\"shape\":\"rect\",\"size\":{\"x\":1.9,\"y\":1.9}}],\"drill\":{\"end_layer\":null,\"shape\":\"circle\",\"size\":{\"x\":1.1,\"y\":1.1},\"start_layer\":null},\"layers\":[\"*.Cu\",\"*.Mask\"],\"net\":\"\",\"number\":\"1\",\"pad_type\":\"thru_hole\",\"rotation_deg\":0.0,\"shape\":\"rect\",\"size\":{\"x\":1.9,\"y\":1.9},\"uuid\":null,\"x\":-3.75,\"y\":11.0},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"*.Cu\",\"offset\":null,\"shape\":\"circle\",\"size\":{\"x\":1.9,\"y\":1.9}}],\"drill\":{\"end_layer\":null,\"shape\":\"circle\",\"size\":{\"x\":1.1,\"y\":1.1},\"start_layer\":null},\"layers\":[\"*.Cu\",\"*.Mask\"],\"net\":\"\",\"number\":\"2\",\"pad_type\":\"thru_hole\",\"rotation_deg\":0.0,\"shape\":\"circle\",\"size\":{\"x\":1.9,\"y\":1.9},\"uuid\":null,\"x\":-1.25,\"y\":11.0},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"*.Cu\",\"offset\":null,\"shape\":\"circle\",\"size\":{\"x\":1.9,\"y\":1.9}}],\"drill\":{\"end_layer\":null,\"shape\":\"circle\",\"size\":{\"x\":1.1,\"y\":1.1},\"start_layer\":null},\"layers\":[\"*.Cu\",\"*.Mask\"],\"net\":\"\",\"number\":\"3\",\"pad_type\":\"thru_hole\",\"rotation_deg\":0.0,\"shape\":\"circle\",\"size\":{\"x\":1.9,\"y\":1.9},\"uuid\":null,\"x\":1.25,\"y\":11.0},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"*.Cu\",\"offset\":null,\"shape\":\"circle\",\"size\":{\"x\":1.9,\"y\":1.9}}],\"drill\":{\"end_layer\":null,\"shape\":\"circle\",\"size\":{\"x\":1.1,\"y\":1.1},\"start_layer\":null},\"layers\":[\"*.Cu\",\"*.Mask\"],\"net\":\"\",\"number\":\"\",\"pad_type\":\"thru_hole\",\"rotation_deg\":0.0,\"shape\":\"circle\",\"size\":{\"x\":1.9,\"y\":1.9},\"uuid\":null,\"x\":3.75,\"y\":11.0}],\"path\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\footprints\\\\ESP-DubSiren-V2-Mechanical.pretty\\\\Bourns_PTV111-3.kicad_mod\"}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "create_footprint",
+    "arguments": {
+      "name": "Bourns_PTV111-1",
+      "output": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\footprints\\ESP-DubSiren-V2-Mechanical.pretty\\Bourns_PTV111-1.kicad_mod",
+      "pads": [
+        {
+          "number": "1",
+          "x": -3.75,
+          "y": 3.3,
+          "width": 1.9,
+          "height": 1.9,
+          "type": "thru_hole",
+          "shape": "rect",
+          "drill": 1.1
+        },
+        {
+          "number": "2",
+          "x": -1.25,
+          "y": 3.3,
+          "width": 1.9,
+          "height": 1.9,
+          "type": "thru_hole",
+          "shape": "circle",
+          "drill": 1.1
+        },
+        {
+          "number": "3",
+          "x": 1.25,
+          "y": 3.3,
+          "width": 1.9,
+          "height": 1.9,
+          "type": "thru_hole",
+          "shape": "circle",
+          "drill": 1.1
+        },
+        {
+          "number": "",
+          "x": 3.75,
+          "y": 3.3,
+          "width": 1.9,
+          "height": 1.9,
+          "type": "thru_hole",
+          "shape": "circle",
+          "drill": 1.1
+        }
+      ],
+      "body_width": 12,
+      "body_height": 13.4,
+      "package_type": "through_hole",
+      "description": "Exact PTV111 manufacturer recommended PCB pattern; current PTV/PTT Rev09/23 p2; origin mounting-aperture midpoint. Pin4 dummy plated unnumbered. NPTH routed apertures on Edge.Cuts."
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"courtyard\":true,\"footprint\":\"Bourns_PTV111-1\",\"model\":\"\",\"output\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\footprints\\\\ESP-DubSiren-V2-Mechanical.pretty\\\\Bourns_PTV111-1.kicad_mod\",\"pad_count\":4,\"pin1_marked\":true,\"success\":true}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "set_footprint_graphics",
+    "arguments": {
+      "footprint_path": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\footprints\\ESP-DubSiren-V2-Mechanical.pretty\\Bourns_PTV111-1.kicad_mod",
+      "selector": {
+        "layer": "F.Fab"
+      },
+      "mode": "replace",
+      "graphics": [
+        {
+          "type": "rect",
+          "start": {
+            "x": -6,
+            "y": -7.5
+          },
+          "end": {
+            "x": 6,
+            "y": 1
+          },
+          "stroke_width_mm": 0.1,
+          "fill": "none"
+        }
+      ]
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"added_count\":1,\"footprint_path\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\footprints\\\\ESP-DubSiren-V2-Mechanical.pretty\\\\Bourns_PTV111-1.kicad_mod\",\"layer\":\"F.Fab\",\"matched_count\":1,\"mode\":\"replace\",\"success\":true}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "set_footprint_graphics",
+    "arguments": {
+      "footprint_path": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\footprints\\ESP-DubSiren-V2-Mechanical.pretty\\Bourns_PTV111-1.kicad_mod",
+      "selector": {
+        "layer": "F.SilkS"
+      },
+      "mode": "replace",
+      "graphics": [
+        {
+          "type": "rect",
+          "start": {
+            "x": -6.1,
+            "y": -7.6
+          },
+          "end": {
+            "x": 6.1,
+            "y": 1.1
+          },
+          "stroke_width_mm": 0.12,
+          "fill": "none"
+        }
+      ]
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"added_count\":1,\"footprint_path\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\footprints\\\\ESP-DubSiren-V2-Mechanical.pretty\\\\Bourns_PTV111-1.kicad_mod\",\"layer\":\"F.SilkS\",\"matched_count\":2,\"mode\":\"replace\",\"success\":true}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "set_footprint_graphics",
+    "arguments": {
+      "footprint_path": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\footprints\\ESP-DubSiren-V2-Mechanical.pretty\\Bourns_PTV111-1.kicad_mod",
+      "selector": {
+        "layer": "F.CrtYd"
+      },
+      "mode": "replace",
+      "graphics": [
+        {
+          "type": "rect",
+          "start": {
+            "x": -6.6,
+            "y": -8.0
+          },
+          "end": {
+            "x": 6.6,
+            "y": 4.75
+          },
+          "stroke_width_mm": 0.05,
+          "fill": "none"
+        }
+      ]
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"added_count\":1,\"footprint_path\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\footprints\\\\ESP-DubSiren-V2-Mechanical.pretty\\\\Bourns_PTV111-1.kicad_mod\",\"layer\":\"F.CrtYd\",\"matched_count\":1,\"mode\":\"replace\",\"success\":true}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "set_footprint_graphics",
+    "arguments": {
+      "footprint_path": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\footprints\\ESP-DubSiren-V2-Mechanical.pretty\\Bourns_PTV111-1.kicad_mod",
+      "selector": {
+        "layer": "Edge.Cuts"
+      },
+      "mode": "replace",
+      "graphics": [
+        {
+          "type": "line",
+          "start": {
+            "x": -5.699999999999999,
+            "y": -1.05
+          },
+          "end": {
+            "x": -4.5,
+            "y": -1.05
+          },
+          "stroke_width_mm": 0.05
+        },
+        {
+          "type": "line",
+          "start": {
+            "x": -4.1,
+            "y": -0.65
+          },
+          "end": {
+            "x": -4.1,
+            "y": 0.65
+          },
+          "stroke_width_mm": 0.05
+        },
+        {
+          "type": "line",
+          "start": {
+            "x": -4.5,
+            "y": 1.05
+          },
+          "end": {
+            "x": -5.699999999999999,
+            "y": 1.05
+          },
+          "stroke_width_mm": 0.05
+        },
+        {
+          "type": "line",
+          "start": {
+            "x": -6.1,
+            "y": 0.65
+          },
+          "end": {
+            "x": -6.1,
+            "y": -0.65
+          },
+          "stroke_width_mm": 0.05
+        },
+        {
+          "type": "arc",
+          "start": {
+            "x": -4.5,
+            "y": -1.05
+          },
+          "mid": {
+            "x": -4.217157287525381,
+            "y": -0.9328427124746193
+          },
+          "end": {
+            "x": -4.1,
+            "y": -0.65
+          },
+          "stroke_width_mm": 0.05
+        },
+        {
+          "type": "arc",
+          "start": {
+            "x": -4.1,
+            "y": 0.65
+          },
+          "mid": {
+            "x": -4.217157287525381,
+            "y": 0.9328427124746193
+          },
+          "end": {
+            "x": -4.5,
+            "y": 1.05
+          },
+          "stroke_width_mm": 0.05
+        },
+        {
+          "type": "arc",
+          "start": {
+            "x": -5.699999999999999,
+            "y": 1.05
+          },
+          "mid": {
+            "x": -5.982842712474619,
+            "y": 0.9328427124746193
+          },
+          "end": {
+            "x": -6.1,
+            "y": 0.65
+          },
+          "stroke_width_mm": 0.05
+        },
+        {
+          "type": "arc",
+          "start": {
+            "x": -6.1,
+            "y": -0.65
+          },
+          "mid": {
+            "x": -5.982842712474619,
+            "y": -0.9328427124746193
+          },
+          "end": {
+            "x": -5.699999999999999,
+            "y": -1.05
+          },
+          "stroke_width_mm": 0.05
+        },
+        {
+          "type": "line",
+          "start": {
+            "x": 4.5,
+            "y": -1.05
+          },
+          "end": {
+            "x": 5.699999999999999,
+            "y": -1.05
+          },
+          "stroke_width_mm": 0.05
+        },
+        {
+          "type": "line",
+          "start": {
+            "x": 6.1,
+            "y": -0.65
+          },
+          "end": {
+            "x": 6.1,
+            "y": 0.65
+          },
+          "stroke_width_mm": 0.05
+        },
+        {
+          "type": "line",
+          "start": {
+            "x": 5.699999999999999,
+            "y": 1.05
+          },
+          "end": {
+            "x": 4.5,
+            "y": 1.05
+          },
+          "stroke_width_mm": 0.05
+        },
+        {
+          "type": "line",
+          "start": {
+            "x": 4.1,
+            "y": 0.65
+          },
+          "end": {
+            "x": 4.1,
+            "y": -0.65
+          },
+          "stroke_width_mm": 0.05
+        },
+        {
+          "type": "arc",
+          "start": {
+            "x": 5.699999999999999,
+            "y": -1.05
+          },
+          "mid": {
+            "x": 5.982842712474619,
+            "y": -0.9328427124746193
+          },
+          "end": {
+            "x": 6.1,
+            "y": -0.65
+          },
+          "stroke_width_mm": 0.05
+        },
+        {
+          "type": "arc",
+          "start": {
+            "x": 6.1,
+            "y": 0.65
+          },
+          "mid": {
+            "x": 5.982842712474619,
+            "y": 0.9328427124746193
+          },
+          "end": {
+            "x": 5.699999999999999,
+            "y": 1.05
+          },
+          "stroke_width_mm": 0.05
+        },
+        {
+          "type": "arc",
+          "start": {
+            "x": 4.5,
+            "y": 1.05
+          },
+          "mid": {
+            "x": 4.217157287525381,
+            "y": 0.9328427124746193
+          },
+          "end": {
+            "x": 4.1,
+            "y": 0.65
+          },
+          "stroke_width_mm": 0.05
+        },
+        {
+          "type": "arc",
+          "start": {
+            "x": 4.1,
+            "y": -0.65
+          },
+          "mid": {
+            "x": 4.217157287525381,
+            "y": -0.9328427124746193
+          },
+          "end": {
+            "x": 4.5,
+            "y": -1.05
+          },
+          "stroke_width_mm": 0.05
+        }
+      ]
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"added_count\":16,\"footprint_path\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\footprints\\\\ESP-DubSiren-V2-Mechanical.pretty\\\\Bourns_PTV111-1.kicad_mod\",\"layer\":\"Edge.Cuts\",\"matched_count\":0,\"mode\":\"replace\",\"success\":true}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "get_footprint_info",
+    "arguments": {
+      "footprint_path": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\footprints\\ESP-DubSiren-V2-Mechanical.pretty\\Bourns_PTV111-1.kicad_mod",
+      "include_pads": true,
+      "include_graphics": true
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"coordinate_space\":\"footprint_local\",\"description\":\"Exact PTV111 manufacturer recommended PCB pattern; current PTV/PTT Rev09/23 p2; origin mounting-aperture midpoint. Pin4 dummy plated unnumbered. NPTH routed apertures on Edge.Cuts.\",\"graphic_count\":19,\"graphics\":[{\"end\":{\"x\":-4.5,\"y\":-1.05},\"item_id\":null,\"layer\":\"Edge.Cuts\",\"start\":{\"x\":-5.7,\"y\":-1.05},\"stroke_width_mm\":0.05,\"type\":\"line\"},{\"end\":{\"x\":-4.1,\"y\":0.65},\"item_id\":null,\"layer\":\"Edge.Cuts\",\"start\":{\"x\":-4.1,\"y\":-0.65},\"stroke_width_mm\":0.05,\"type\":\"line\"},{\"end\":{\"x\":-5.7,\"y\":1.05},\"item_id\":null,\"layer\":\"Edge.Cuts\",\"start\":{\"x\":-4.5,\"y\":1.05},\"stroke_width_mm\":0.05,\"type\":\"line\"},{\"end\":{\"x\":-6.1,\"y\":-0.65},\"item_id\":null,\"layer\":\"Edge.Cuts\",\"start\":{\"x\":-6.1,\"y\":0.65},\"stroke_width_mm\":0.05,\"type\":\"line\"},{\"end\":{\"x\":-4.1,\"y\":-0.65},\"item_id\":null,\"layer\":\"Edge.Cuts\",\"mid\":{\"x\":-4.217157,\"y\":-0.932843},\"start\":{\"x\":-4.5,\"y\":-1.05},\"stroke_width_mm\":0.05,\"type\":\"arc\"},{\"end\":{\"x\":-4.5,\"y\":1.05},\"item_id\":null,\"layer\":\"Edge.Cuts\",\"mid\":{\"x\":-4.217157,\"y\":0.932843},\"start\":{\"x\":-4.1,\"y\":0.65},\"stroke_width_mm\":0.05,\"type\":\"arc\"},{\"end\":{\"x\":-6.1,\"y\":0.65},\"item_id\":null,\"layer\":\"Edge.Cuts\",\"mid\":{\"x\":-5.982843,\"y\":0.932843},\"start\":{\"x\":-5.7,\"y\":1.05},\"stroke_width_mm\":0.05,\"type\":\"arc\"},{\"end\":{\"x\":-5.7,\"y\":-1.05},\"item_id\":null,\"layer\":\"Edge.Cuts\",\"mid\":{\"x\":-5.982843,\"y\":-0.932843},\"start\":{\"x\":-6.1,\"y\":-0.65},\"stroke_width_mm\":0.05,\"type\":\"arc\"},{\"end\":{\"x\":5.7,\"y\":-1.05},\"item_id\":null,\"layer\":\"Edge.Cuts\",\"start\":{\"x\":4.5,\"y\":-1.05},\"stroke_width_mm\":0.05,\"type\":\"line\"},{\"end\":{\"x\":6.1,\"y\":0.65},\"item_id\":null,\"layer\":\"Edge.Cuts\",\"start\":{\"x\":6.1,\"y\":-0.65},\"stroke_width_mm\":0.05,\"type\":\"line\"},{\"end\":{\"x\":4.5,\"y\":1.05},\"item_id\":null,\"layer\":\"Edge.Cuts\",\"start\":{\"x\":5.7,\"y\":1.05},\"stroke_width_mm\":0.05,\"type\":\"line\"},{\"end\":{\"x\":4.1,\"y\":-0.65},\"item_id\":null,\"layer\":\"Edge.Cuts\",\"start\":{\"x\":4.1,\"y\":0.65},\"stroke_width_mm\":0.05,\"type\":\"line\"},{\"end\":{\"x\":6.1,\"y\":-0.65},\"item_id\":null,\"layer\":\"Edge.Cuts\",\"mid\":{\"x\":5.982843,\"y\":-0.932843},\"start\":{\"x\":5.7,\"y\":-1.05},\"stroke_width_mm\":0.05,\"type\":\"arc\"},{\"end\":{\"x\":5.7,\"y\":1.05},\"item_id\":null,\"layer\":\"Edge.Cuts\",\"mid\":{\"x\":5.982843,\"y\":0.932843},\"start\":{\"x\":6.1,\"y\":0.65},\"stroke_width_mm\":0.05,\"type\":\"arc\"},{\"end\":{\"x\":4.1,\"y\":0.65},\"item_id\":null,\"layer\":\"Edge.Cuts\",\"mid\":{\"x\":4.217157,\"y\":0.932843},\"start\":{\"x\":4.5,\"y\":1.05},\"stroke_width_mm\":0.05,\"type\":\"arc\"},{\"end\":{\"x\":4.5,\"y\":-1.05},\"item_id\":null,\"layer\":\"Edge.Cuts\",\"mid\":{\"x\":4.217157,\"y\":-0.932843},\"start\":{\"x\":4.1,\"y\":-0.65},\"stroke_width_mm\":0.05,\"type\":\"arc\"},{\"end\":{\"x\":6.6,\"y\":4.75},\"fill\":\"none\",\"item_id\":null,\"layer\":\"F.CrtYd\",\"start\":{\"x\":-6.6,\"y\":-8.0},\"stroke_width_mm\":0.05,\"type\":\"rect\"},{\"end\":{\"x\":6.1,\"y\":1.1},\"fill\":\"none\",\"item_id\":null,\"layer\":\"F.SilkS\",\"start\":{\"x\":-6.1,\"y\":-7.6},\"stroke_width_mm\":0.12,\"type\":\"rect\"},{\"end\":{\"x\":6.0,\"y\":1.0},\"fill\":\"none\",\"item_id\":null,\"layer\":\"F.Fab\",\"start\":{\"x\":-6.0,\"y\":-7.5},\"stroke_width_mm\":0.1,\"type\":\"rect\"}],\"has_3d_model\":false,\"has_courtyard\":true,\"name\":\"Bourns_PTV111-1\",\"pad_count\":4,\"pads\":[{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"*.Cu\",\"offset\":null,\"shape\":\"rect\",\"size\":{\"x\":1.9,\"y\":1.9}}],\"drill\":{\"end_layer\":null,\"shape\":\"circle\",\"size\":{\"x\":1.1,\"y\":1.1},\"start_layer\":null},\"layers\":[\"*.Cu\",\"*.Mask\"],\"net\":\"\",\"number\":\"1\",\"pad_type\":\"thru_hole\",\"rotation_deg\":0.0,\"shape\":\"rect\",\"size\":{\"x\":1.9,\"y\":1.9},\"uuid\":null,\"x\":-3.75,\"y\":3.3},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"*.Cu\",\"offset\":null,\"shape\":\"circle\",\"size\":{\"x\":1.9,\"y\":1.9}}],\"drill\":{\"end_layer\":null,\"shape\":\"circle\",\"size\":{\"x\":1.1,\"y\":1.1},\"start_layer\":null},\"layers\":[\"*.Cu\",\"*.Mask\"],\"net\":\"\",\"number\":\"2\",\"pad_type\":\"thru_hole\",\"rotation_deg\":0.0,\"shape\":\"circle\",\"size\":{\"x\":1.9,\"y\":1.9},\"uuid\":null,\"x\":-1.25,\"y\":3.3},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"*.Cu\",\"offset\":null,\"shape\":\"circle\",\"size\":{\"x\":1.9,\"y\":1.9}}],\"drill\":{\"end_layer\":null,\"shape\":\"circle\",\"size\":{\"x\":1.1,\"y\":1.1},\"start_layer\":null},\"layers\":[\"*.Cu\",\"*.Mask\"],\"net\":\"\",\"number\":\"3\",\"pad_type\":\"thru_hole\",\"rotation_deg\":0.0,\"shape\":\"circle\",\"size\":{\"x\":1.9,\"y\":1.9},\"uuid\":null,\"x\":1.25,\"y\":3.3},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"*.Cu\",\"offset\":null,\"shape\":\"circle\",\"size\":{\"x\":1.9,\"y\":1.9}}],\"drill\":{\"end_layer\":null,\"shape\":\"circle\",\"size\":{\"x\":1.1,\"y\":1.1},\"start_layer\":null},\"layers\":[\"*.Cu\",\"*.Mask\"],\"net\":\"\",\"number\":\"\",\"pad_type\":\"thru_hole\",\"rotation_deg\":0.0,\"shape\":\"circle\",\"size\":{\"x\":1.9,\"y\":1.9},\"uuid\":null,\"x\":3.75,\"y\":3.3}],\"path\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\footprints\\\\ESP-DubSiren-V2-Mechanical.pretty\\\\Bourns_PTV111-1.kicad_mod\"}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "create_footprint",
+    "arguments": {
+      "name": "Bourns_PEC11R-4120F-S0018",
+      "output": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\footprints\\ESP-DubSiren-V2-Mechanical.pretty\\Bourns_PEC11R-4120F-S0018.kicad_mod",
+      "pads": [
+        {
+          "number": "A",
+          "x": -2.5,
+          "y": 7.5,
+          "width": 1.9,
+          "height": 1.9,
+          "type": "thru_hole",
+          "shape": "rect",
+          "drill": 1.05
+        },
+        {
+          "number": "C",
+          "x": 0,
+          "y": 7.5,
+          "width": 1.9,
+          "height": 1.9,
+          "type": "thru_hole",
+          "shape": "circle",
+          "drill": 1.05
+        },
+        {
+          "number": "B",
+          "x": 2.5,
+          "y": 7.5,
+          "width": 1.9,
+          "height": 1.9,
+          "type": "thru_hole",
+          "shape": "circle",
+          "drill": 1.05
+        },
+        {
+          "number": "S1",
+          "x": -2.5,
+          "y": -7,
+          "width": 1.9,
+          "height": 1.9,
+          "type": "thru_hole",
+          "shape": "circle",
+          "drill": 1.05
+        },
+        {
+          "number": "S2",
+          "x": 2.5,
+          "y": -7,
+          "width": 1.9,
+          "height": 1.9,
+          "type": "thru_hole",
+          "shape": "circle",
+          "drill": 1.05
+        }
+      ],
+      "body_width": 12.5,
+      "body_height": 13.4,
+      "package_type": "through_hole",
+      "description": "Bourns PEC11R-4xxxF-Sxxxx manufacturer p2 pattern, shaft origin. Five contact holes; two 2.6x1.8 routed NPTH apertures centered +/-6.6mm."
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"courtyard\":true,\"footprint\":\"Bourns_PEC11R-4120F-S0018\",\"model\":\"\",\"output\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\footprints\\\\ESP-DubSiren-V2-Mechanical.pretty\\\\Bourns_PEC11R-4120F-S0018.kicad_mod\",\"pad_count\":5,\"pin1_marked\":true,\"success\":true}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "set_footprint_graphics",
+    "arguments": {
+      "footprint_path": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\footprints\\ESP-DubSiren-V2-Mechanical.pretty\\Bourns_PEC11R-4120F-S0018.kicad_mod",
+      "selector": {
+        "layer": "F.CrtYd"
+      },
+      "mode": "replace",
+      "graphics": [
+        {
+          "type": "rect",
+          "start": {
+            "x": -8.4,
+            "y": -8.5
+          },
+          "end": {
+            "x": 8.4,
+            "y": 9
+          },
+          "stroke_width_mm": 0.05,
+          "fill": "none"
+        }
+      ]
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"added_count\":1,\"footprint_path\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\footprints\\\\ESP-DubSiren-V2-Mechanical.pretty\\\\Bourns_PEC11R-4120F-S0018.kicad_mod\",\"layer\":\"F.CrtYd\",\"matched_count\":1,\"mode\":\"replace\",\"success\":true}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "set_footprint_graphics",
+    "arguments": {
+      "footprint_path": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\footprints\\ESP-DubSiren-V2-Mechanical.pretty\\Bourns_PEC11R-4120F-S0018.kicad_mod",
+      "selector": {
+        "layer": "Edge.Cuts"
+      },
+      "mode": "replace",
+      "graphics": [
+        {
+          "type": "line",
+          "start": {
+            "x": -7.499999999999999,
+            "y": -0.9
+          },
+          "end": {
+            "x": -5.7,
+            "y": -0.9
+          },
+          "stroke_width_mm": 0.05
+        },
+        {
+          "type": "line",
+          "start": {
+            "x": -5.3,
+            "y": -0.5
+          },
+          "end": {
+            "x": -5.3,
+            "y": 0.5
+          },
+          "stroke_width_mm": 0.05
+        },
+        {
+          "type": "line",
+          "start": {
+            "x": -5.7,
+            "y": 0.9
+          },
+          "end": {
+            "x": -7.499999999999999,
+            "y": 0.9
+          },
+          "stroke_width_mm": 0.05
+        },
+        {
+          "type": "line",
+          "start": {
+            "x": -7.8999999999999995,
+            "y": 0.5
+          },
+          "end": {
+            "x": -7.8999999999999995,
+            "y": -0.5
+          },
+          "stroke_width_mm": 0.05
+        },
+        {
+          "type": "arc",
+          "start": {
+            "x": -5.7,
+            "y": -0.9
+          },
+          "mid": {
+            "x": -5.417157287525381,
+            "y": -0.7828427124746192
+          },
+          "end": {
+            "x": -5.3,
+            "y": -0.5
+          },
+          "stroke_width_mm": 0.05
+        },
+        {
+          "type": "arc",
+          "start": {
+            "x": -5.3,
+            "y": 0.5
+          },
+          "mid": {
+            "x": -5.417157287525381,
+            "y": 0.7828427124746192
+          },
+          "end": {
+            "x": -5.7,
+            "y": 0.9
+          },
+          "stroke_width_mm": 0.05
+        },
+        {
+          "type": "arc",
+          "start": {
+            "x": -7.499999999999999,
+            "y": 0.9
+          },
+          "mid": {
+            "x": -7.7828427124746185,
+            "y": 0.7828427124746192
+          },
+          "end": {
+            "x": -7.8999999999999995,
+            "y": 0.5
+          },
+          "stroke_width_mm": 0.05
+        },
+        {
+          "type": "arc",
+          "start": {
+            "x": -7.8999999999999995,
+            "y": -0.5
+          },
+          "mid": {
+            "x": -7.7828427124746185,
+            "y": -0.7828427124746192
+          },
+          "end": {
+            "x": -7.499999999999999,
+            "y": -0.9
+          },
+          "stroke_width_mm": 0.05
+        },
+        {
+          "type": "line",
+          "start": {
+            "x": 5.7,
+            "y": -0.9
+          },
+          "end": {
+            "x": 7.499999999999999,
+            "y": -0.9
+          },
+          "stroke_width_mm": 0.05
+        },
+        {
+          "type": "line",
+          "start": {
+            "x": 7.8999999999999995,
+            "y": -0.5
+          },
+          "end": {
+            "x": 7.8999999999999995,
+            "y": 0.5
+          },
+          "stroke_width_mm": 0.05
+        },
+        {
+          "type": "line",
+          "start": {
+            "x": 7.499999999999999,
+            "y": 0.9
+          },
+          "end": {
+            "x": 5.7,
+            "y": 0.9
+          },
+          "stroke_width_mm": 0.05
+        },
+        {
+          "type": "line",
+          "start": {
+            "x": 5.3,
+            "y": 0.5
+          },
+          "end": {
+            "x": 5.3,
+            "y": -0.5
+          },
+          "stroke_width_mm": 0.05
+        },
+        {
+          "type": "arc",
+          "start": {
+            "x": 7.499999999999999,
+            "y": -0.9
+          },
+          "mid": {
+            "x": 7.7828427124746185,
+            "y": -0.7828427124746192
+          },
+          "end": {
+            "x": 7.8999999999999995,
+            "y": -0.5
+          },
+          "stroke_width_mm": 0.05
+        },
+        {
+          "type": "arc",
+          "start": {
+            "x": 7.8999999999999995,
+            "y": 0.5
+          },
+          "mid": {
+            "x": 7.7828427124746185,
+            "y": 0.7828427124746192
+          },
+          "end": {
+            "x": 7.499999999999999,
+            "y": 0.9
+          },
+          "stroke_width_mm": 0.05
+        },
+        {
+          "type": "arc",
+          "start": {
+            "x": 5.7,
+            "y": 0.9
+          },
+          "mid": {
+            "x": 5.417157287525381,
+            "y": 0.7828427124746192
+          },
+          "end": {
+            "x": 5.3,
+            "y": 0.5
+          },
+          "stroke_width_mm": 0.05
+        },
+        {
+          "type": "arc",
+          "start": {
+            "x": 5.3,
+            "y": -0.5
+          },
+          "mid": {
+            "x": 5.417157287525381,
+            "y": -0.7828427124746192
+          },
+          "end": {
+            "x": 5.7,
+            "y": -0.9
+          },
+          "stroke_width_mm": 0.05
+        }
+      ]
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"added_count\":16,\"footprint_path\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\footprints\\\\ESP-DubSiren-V2-Mechanical.pretty\\\\Bourns_PEC11R-4120F-S0018.kicad_mod\",\"layer\":\"Edge.Cuts\",\"matched_count\":0,\"mode\":\"replace\",\"success\":true}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "set_footprint_graphics",
+    "arguments": {
+      "footprint_path": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\footprints\\ESP-DubSiren-V2-Mechanical.pretty\\Bourns_PEC11R-4120F-S0018.kicad_mod",
+      "selector": {
+        "layer": "F.Fab"
+      },
+      "mode": "replace",
+      "graphics": [
+        {
+          "type": "rect",
+          "start": {
+            "x": -6.25,
+            "y": -6.7
+          },
+          "end": {
+            "x": 6.25,
+            "y": 6.7
+          },
+          "stroke_width_mm": 0.1,
+          "fill": "none"
+        },
+        {
+          "type": "circle",
+          "center": {
+            "x": 0,
+            "y": 0
+          },
+          "radius_mm": 3.5,
+          "stroke_width_mm": 0.1,
+          "fill": "none"
+        }
+      ]
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"added_count\":2,\"footprint_path\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\footprints\\\\ESP-DubSiren-V2-Mechanical.pretty\\\\Bourns_PEC11R-4120F-S0018.kicad_mod\",\"layer\":\"F.Fab\",\"matched_count\":1,\"mode\":\"replace\",\"success\":true}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "name": "get_footprint_info",
+    "arguments": {
+      "footprint_path": "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\v2\\footprints\\ESP-DubSiren-V2-Mechanical.pretty\\Bourns_PEC11R-4120F-S0018.kicad_mod",
+      "include_pads": true,
+      "include_graphics": true
+    },
+    "result": {
+      "content": [
+        {
+          "text": "{\"coordinate_space\":\"footprint_local\",\"description\":\"Bourns PEC11R-4xxxF-Sxxxx manufacturer p2 pattern, shaft origin. Five contact holes; two 2.6x1.8 routed NPTH apertures centered +/-6.6mm.\",\"graphic_count\":21,\"graphics\":[{\"end\":{\"x\":-5.7,\"y\":-0.9},\"item_id\":null,\"layer\":\"Edge.Cuts\",\"start\":{\"x\":-7.5,\"y\":-0.9},\"stroke_width_mm\":0.05,\"type\":\"line\"},{\"end\":{\"x\":-5.3,\"y\":0.5},\"item_id\":null,\"layer\":\"Edge.Cuts\",\"start\":{\"x\":-5.3,\"y\":-0.5},\"stroke_width_mm\":0.05,\"type\":\"line\"},{\"end\":{\"x\":-7.5,\"y\":0.9},\"item_id\":null,\"layer\":\"Edge.Cuts\",\"start\":{\"x\":-5.7,\"y\":0.9},\"stroke_width_mm\":0.05,\"type\":\"line\"},{\"end\":{\"x\":-7.9,\"y\":-0.5},\"item_id\":null,\"layer\":\"Edge.Cuts\",\"start\":{\"x\":-7.9,\"y\":0.5},\"stroke_width_mm\":0.05,\"type\":\"line\"},{\"end\":{\"x\":-5.3,\"y\":-0.5},\"item_id\":null,\"layer\":\"Edge.Cuts\",\"mid\":{\"x\":-5.417157,\"y\":-0.782843},\"start\":{\"x\":-5.7,\"y\":-0.9},\"stroke_width_mm\":0.05,\"type\":\"arc\"},{\"end\":{\"x\":-5.7,\"y\":0.9},\"item_id\":null,\"layer\":\"Edge.Cuts\",\"mid\":{\"x\":-5.417157,\"y\":0.782843},\"start\":{\"x\":-5.3,\"y\":0.5},\"stroke_width_mm\":0.05,\"type\":\"arc\"},{\"end\":{\"x\":-7.9,\"y\":0.5},\"item_id\":null,\"layer\":\"Edge.Cuts\",\"mid\":{\"x\":-7.782843,\"y\":0.782843},\"start\":{\"x\":-7.5,\"y\":0.9},\"stroke_width_mm\":0.05,\"type\":\"arc\"},{\"end\":{\"x\":-7.5,\"y\":-0.9},\"item_id\":null,\"layer\":\"Edge.Cuts\",\"mid\":{\"x\":-7.782843,\"y\":-0.782843},\"start\":{\"x\":-7.9,\"y\":-0.5},\"stroke_width_mm\":0.05,\"type\":\"arc\"},{\"end\":{\"x\":7.5,\"y\":-0.9},\"item_id\":null,\"layer\":\"Edge.Cuts\",\"start\":{\"x\":5.7,\"y\":-0.9},\"stroke_width_mm\":0.05,\"type\":\"line\"},{\"end\":{\"x\":7.9,\"y\":0.5},\"item_id\":null,\"layer\":\"Edge.Cuts\",\"start\":{\"x\":7.9,\"y\":-0.5},\"stroke_width_mm\":0.05,\"type\":\"line\"},{\"end\":{\"x\":5.7,\"y\":0.9},\"item_id\":null,\"layer\":\"Edge.Cuts\",\"start\":{\"x\":7.5,\"y\":0.9},\"stroke_width_mm\":0.05,\"type\":\"line\"},{\"end\":{\"x\":5.3,\"y\":-0.5},\"item_id\":null,\"layer\":\"Edge.Cuts\",\"start\":{\"x\":5.3,\"y\":0.5},\"stroke_width_mm\":0.05,\"type\":\"line\"},{\"end\":{\"x\":7.9,\"y\":-0.5},\"item_id\":null,\"layer\":\"Edge.Cuts\",\"mid\":{\"x\":7.782843,\"y\":-0.782843},\"start\":{\"x\":7.5,\"y\":-0.9},\"stroke_width_mm\":0.05,\"type\":\"arc\"},{\"end\":{\"x\":7.5,\"y\":0.9},\"item_id\":null,\"layer\":\"Edge.Cuts\",\"mid\":{\"x\":7.782843,\"y\":0.782843},\"start\":{\"x\":7.9,\"y\":0.5},\"stroke_width_mm\":0.05,\"type\":\"arc\"},{\"end\":{\"x\":5.3,\"y\":0.5},\"item_id\":null,\"layer\":\"Edge.Cuts\",\"mid\":{\"x\":5.417157,\"y\":0.782843},\"start\":{\"x\":5.7,\"y\":0.9},\"stroke_width_mm\":0.05,\"type\":\"arc\"},{\"end\":{\"x\":5.7,\"y\":-0.9},\"item_id\":null,\"layer\":\"Edge.Cuts\",\"mid\":{\"x\":5.417157,\"y\":-0.782843},\"start\":{\"x\":5.3,\"y\":-0.5},\"stroke_width_mm\":0.05,\"type\":\"arc\"},{\"end\":{\"x\":8.4,\"y\":9.0},\"fill\":\"none\",\"item_id\":null,\"layer\":\"F.CrtYd\",\"start\":{\"x\":-8.4,\"y\":-8.5},\"stroke_width_mm\":0.05,\"type\":\"rect\"},{\"end\":{\"x\":3.6,\"y\":8.6},\"fill\":\"none\",\"item_id\":null,\"layer\":\"F.SilkS\",\"start\":{\"x\":-3.6,\"y\":-8.1},\"stroke_width_mm\":0.12,\"type\":\"rect\"},{\"end\":{\"x\":6.25,\"y\":6.7},\"fill\":\"none\",\"item_id\":null,\"layer\":\"F.Fab\",\"start\":{\"x\":-6.25,\"y\":-6.7},\"stroke_width_mm\":0.1,\"type\":\"rect\"},{\"center\":{\"x\":0.0,\"y\":0.0},\"fill\":\"none\",\"item_id\":null,\"layer\":\"F.Fab\",\"radius_mm\":3.5,\"stroke_width_mm\":0.1,\"type\":\"circle\"},{\"center\":{\"x\":-2.5,\"y\":9.0},\"fill\":\"solid\",\"item_id\":null,\"layer\":\"F.SilkS\",\"radius_mm\":0.1499999999999999,\"stroke_width_mm\":0.1,\"type\":\"circle\"}],\"has_3d_model\":false,\"has_courtyard\":true,\"name\":\"Bourns_PEC11R-4120F-S0018\",\"pad_count\":5,\"pads\":[{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"*.Cu\",\"offset\":null,\"shape\":\"rect\",\"size\":{\"x\":1.9,\"y\":1.9}}],\"drill\":{\"end_layer\":null,\"shape\":\"circle\",\"size\":{\"x\":1.05,\"y\":1.05},\"start_layer\":null},\"layers\":[\"*.Cu\",\"*.Mask\"],\"net\":\"\",\"number\":\"A\",\"pad_type\":\"thru_hole\",\"rotation_deg\":0.0,\"shape\":\"rect\",\"size\":{\"x\":1.9,\"y\":1.9},\"uuid\":null,\"x\":-2.5,\"y\":7.5},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"*.Cu\",\"offset\":null,\"shape\":\"circle\",\"size\":{\"x\":1.9,\"y\":1.9}}],\"drill\":{\"end_layer\":null,\"shape\":\"circle\",\"size\":{\"x\":1.05,\"y\":1.05},\"start_layer\":null},\"layers\":[\"*.Cu\",\"*.Mask\"],\"net\":\"\",\"number\":\"C\",\"pad_type\":\"thru_hole\",\"rotation_deg\":0.0,\"shape\":\"circle\",\"size\":{\"x\":1.9,\"y\":1.9},\"uuid\":null,\"x\":0.0,\"y\":7.5},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"*.Cu\",\"offset\":null,\"shape\":\"circle\",\"size\":{\"x\":1.9,\"y\":1.9}}],\"drill\":{\"end_layer\":null,\"shape\":\"circle\",\"size\":{\"x\":1.05,\"y\":1.05},\"start_layer\":null},\"layers\":[\"*.Cu\",\"*.Mask\"],\"net\":\"\",\"number\":\"B\",\"pad_type\":\"thru_hole\",\"rotation_deg\":0.0,\"shape\":\"circle\",\"size\":{\"x\":1.9,\"y\":1.9},\"uuid\":null,\"x\":2.5,\"y\":7.5},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"*.Cu\",\"offset\":null,\"shape\":\"circle\",\"size\":{\"x\":1.9,\"y\":1.9}}],\"drill\":{\"end_layer\":null,\"shape\":\"circle\",\"size\":{\"x\":1.05,\"y\":1.05},\"start_layer\":null},\"layers\":[\"*.Cu\",\"*.Mask\"],\"net\":\"\",\"number\":\"S1\",\"pad_type\":\"thru_hole\",\"rotation_deg\":0.0,\"shape\":\"circle\",\"size\":{\"x\":1.9,\"y\":1.9},\"uuid\":null,\"x\":-2.5,\"y\":-7.0},{\"copper_layers\":[{\"chamfer_ratio\":null,\"corner_rounding_ratio\":null,\"layer\":\"*.Cu\",\"offset\":null,\"shape\":\"circle\",\"size\":{\"x\":1.9,\"y\":1.9}}],\"drill\":{\"end_layer\":null,\"shape\":\"circle\",\"size\":{\"x\":1.05,\"y\":1.05},\"start_layer\":null},\"layers\":[\"*.Cu\",\"*.Mask\"],\"net\":\"\",\"number\":\"S2\",\"pad_type\":\"thru_hole\",\"rotation_deg\":0.0,\"shape\":\"circle\",\"size\":{\"x\":1.9,\"y\":1.9},\"uuid\":null,\"x\":2.5,\"y\":-7.0}],\"path\":\"C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\v2\\\\footprints\\\\ESP-DubSiren-V2-Mechanical.pretty\\\\Bourns_PEC11R-4120F-S0018.kicad_mod\"}",
+          "type": "text"
+        }
+      ],
+      "isError": false
+    }
+  }
+]

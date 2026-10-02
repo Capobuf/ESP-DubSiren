@@ -1,6 +1,6 @@
 # V2 GPIO and connector pinout
 
-**INTERIM:** Derived from the saved KiCad netlist. Performance controls remain absent until exact mechanical acceptance. GPIO names and physical module pad numbers are different identifiers.
+**INTERIM:** Derived from the saved KiCad netlist. The seven pots and encoder are present; SW1-SW4 remain pending exact MX2A drilling evidence. GPIO names and physical module pad numbers are different identifiers.
 
 | MCU physical pad | Function / GPIO | Saved net | Status |
 |---:|---|---|---|
@@ -149,13 +149,18 @@ U5 is Adafruit 5393, primary header 1-11; its VIN is 3.3 V. U6 is Adafruit 6250,
 
 J1 has four physical shield stakes sharing SH. J2 is a dual RCA block: pin 2 is the connected X1 center, pin 4 is the unused X2 center, pins 1 and 3 are barrels.
 
-## Planned controls, not fitted
+## Performance controls and power switch
 
-| Reference | Exact MPN | Intended connection | Acceptance gap |
+| Reference | Exact MPN | Saved connection | Status |
 |---|---|---|---|
-| RV1-RV6 | PTV111-3420A-B203 | 1 GND, 2 POT1-POT6, 3 respective POT_TOP, 4 dummy NC | View and row-to-axis geometry unresolved |
-| RV7 | PTV111-1420A-B103 | 1 GND, 2 MASTER, 3 POT7_TOP, 4 dummy NC | View and row-to-axis geometry unresolved |
-| SW1-SW4 | MX2A-11NW | BTN1-BTN4 to GND, 10 kohm pull-ups fitted | Exact MX2A drawing not verified |
-| SW7 | PEC11R-4120F-S0018 | A ENC_A, B ENC_B, C GND; push to ENC_SW/GND | PCB drawing view unresolved |
+| RV1-RV6 | PTV111-3420A-B203 | 1 GND, 2 POT1-POT6, 3 respective POTn_TOP | Present; dummy physical lead 4 uses isolated unnumbered land |
+| RV7 | PTV111-1420A-B103 | 1 GND, 2 MASTER, 3 POT7_TOP | Present; dummy physical lead 4 uses isolated unnumbered land |
+| SW1-SW4 | MX2A-11NW | Intended BTN1-BTN4 to GND; existing 10 kohm pull-ups | Absent; exact manufacturer drilling pattern remains unverified |
+| SW7 | PEC11R-4120F-S0018 | A ENC_A, B ENC_B, C GND, S1 ENC_SW, S2 GND | Present |
+| U7 | TPS22918DBVR | 1 VIN and 3 ON to VBUS_PROTECTED, 2 GND, 4 VBUS_SLEW_CT, 5 NC, 6 +5V | Present |
+| C10 | CL10B105MO8NNWC | 1 VBUS_PROTECTED, 2 GND | Present; 1 uF direct input bypass |
+| C11 | GRM1885C1H103JA01D | 1 VBUS_SLEW_CT, 2 GND | Present; 10 nF / 50 V C0G timing capacitor |
 
-The absent parts explain the empty lower schematic regions. ERC cannot identify missing switches when a pull-up and MCU already give their net two connected pins. No generic substitute has been placed to hide this incompleteness.
+F1 output and D1 cathode are now VBUS_PROTECTED. U7 output retains the +5V net feeding the MPM3612, DAC and TP1. Each pot's clockwise terminal 3 is fed through its own 4.7 kohm resistor; increasing clockwise rotation increases ADC voltage. Firmware endpoint calibration and encoder decoding remain required.
+
+ERC is clean for present components. It cannot identify a missing switch when its pull-up and MCU already provide two connected pins. See `reports/CONTROLS-POWER-PHYSICAL-PIN-MAPS.md` and `reports/USB-POWER-DECISION.md` for physical mapping and open power qualification.

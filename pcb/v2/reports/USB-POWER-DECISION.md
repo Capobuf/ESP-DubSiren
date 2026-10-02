@@ -1,0 +1,47 @@
+# USB power engineering decision, 2026-10-02
+
+The saved schematic now has `VBUS_RAW -> F1 PTC -> VBUS_PROTECTED -> U7 TPS22918DBVR -> +5V`. The TVS remains at the protected input; U7 feeds both the MPM3612 and DAC. C10 is 1 uF on U7 input, C11 is 10 nF C0G 50 V on CT, ON is tied to VIN, QOD is intentionally open. MPM3612 EN remains tied to its VIN. This implements controlled bulk-capacitor charging. It is not a claim of USB certification or proof that the present firmware meets USB pre-configuration/suspend current limits.
+
+## Passive solution evaluated first
+
+MPS [MPM3612-33 Rev 1.0](https://www.monolithicpower.com/en/documentview/productdocument/index/version/2/document_type/Datasheet/lang/en/sku/MPM3612GLQ-33/document_id/11833/), equations 4–5, gives `I_CIN,RMS = IOUT sqrt(D(1-D))` and `deltaVIN = IOUT D(1-D)/(fSW CIN_effective)`, where D = VOUT/VIN. For a 0.5 A output allocation at 5 V/3.3 V, D = 0.66 and RMS capacitor current = 0.237 A. Use minimum CCM frequency 1.125 MHz (1.25 MHz minus 10%).
+
+A hypothetical 4.7 uF MLCC retaining 2 uF at 5 V, then 0.8 initial-tolerance and 0.85 temperature factors, gives 1.36 uF effective and 73.3 mV ideal input ripple. At 4.35 V input, D = 0.759 and ripple 59.8 mV. These are small enough to show that 22 uF is **not inherently a fixed MPS minimum**. Such a capacitor would still need an exact MPN DC-bias/ESR/ripple-temperature curve before purchase; this feasibility calculation does not assert an unverified capacitor's performance.
+
+However, the unmodified purchased Adafruit 6250 Eagle schematic contains C11 = 10 uF **directly on VIN**. Even with zero buck capacitance that alone has no headroom below the USB 10 uF attach-capacitance design bound once positive component tolerance is included. With 4.7 uF buck CIN + 0.1 uF bypass the nominal total is 14.8 uF and the + 20% total 17.76 uF, before protection parasitics. Reducing only the buck capacitor cannot solve the complete-unit problem. The PTC is not a slew controller, and DC-bias loss at 5 V cannot be used as the initial uncharged-capacitance bound.
+
+Powering DAC VIN from 3.3 V was also evaluated. The [Adafruit guide](https://learn.adafruit.com/adafruit-pcm510x-i2s-dac/pinouts) permits 3.3–5 V. But its actual regulator is AP2127K-3.3, not AP2112. The [AP2127 datasheet](https://www.diodes.com/datasheet/download/AP2127.pdf), p 5, guarantees a 300 mV maximum dropout at 300 mA; MPM minimum 3.267 V minus that conservative bound is 2.967 V, below PCM5102's 3.0 V recommended minimum. Actual 45–50 mA dropout is much smaller on typical curves, but no guaranteed low-current maximum was available to close that corner. Retaining 5 V also preserves regulated analog-supply headroom. No breakout parts are removed or bypassed.
+
+Thus one controlled-slew IC is justified by the **complete purchased-module capacitance**, not by blindly treating the MPS 22 uF example as mandatory. Retain purchased C1 = 22 uF behind U7; avoid buying a different buck CIN in addition to the necessary input switch. C1 Samsung CL21A226MPCLRNC retains 6.957 uF typical at 5 V from its saved exact manufacturer curve. At 0.5 A/5 V and 1.125 MHz its ideal ripple is 14.3 mV; after 0.8 x 0.85 factors, 21.0 mV. Capacitor current is 0.237 A RMS; board temperature/ESR heating and pulsed-load ripple remain bench checks, not asserted capacitor ripple ratings.
+
+## Attach capacitance and ramp
+
+Direct VBUS-visible intentional MLCC: C10 = 1.0 uF. Initial + 20% and conservative + 15% temperature bound = 1.38 uF. Allocate 0.02 uF for protection/switch parasitics, giving a 1.40 uF design ceiling, 8.6 uF below 10 uF. The parasitic allocation is an engineering allowance to verify, not a measured total. Downstream C1/C2 and DAC input are isolated by the controlled pass element during attach. CT is charged internally; it is not a direct VBUS shunt capacitor.
+
+[TI TPS22918 Rev C](https://www.ti.com/lit/ds/symlink/tps22918.pdf) p 14 gives `SR=0.55 CT(pF)+30 us/V`; with 10 nF this predicts 27.65 ms 10–90% at 5 V. Table 2 measured typical is 26.55 ms. Direct downstream 5 V bulk is 32.1 uF nominal, so `C*0.8*5V/26.55ms=4.84mA` nominal charging current. With + 20% load-cap tolerance and -5% CT tolerance the same typical model gives about 6.1 mA. **TI supplies no guaranteed minimum rise-time limit**, so this is a design estimate, not a worst-case guarantee.
+
+The 32.1 uF figure is not the whole startup load. Buck output and MCU local caps contribute 44.2 uF; reset/mux/ADC add about 1.2 uF; display VIN and its regulated rail have another 30.2 uF; the DAC has about 50.3 uF local rail decoupling plus two 2.2 uF charge-pump capacitors. Those are behind regulators and charge under their own startup behavior, and the MCU/DAC draw operating current during portions of the ramp. A deliberately conservative energy/charge estimate at 5.5 V input and 3.333 V internal rails, treating every DAC 2.2 uF as a full supply charge, is roughly 0.5 mC total startup charge. Spread over the nominal ramp this is tens of mA, but that does not prove the instantaneous peak: MPM's separate 1.0–1.6 ms soft-start can concentrate 3.3 V charging. Firmware and measured startup traces must establish the complete waveform.
+
+The [USB-IF current inrush procedure](https://compliance.usb.org/index.asp?UpdateFile=Electrical) measures at least 100 ms after attach and integrates regions above 100 mA; nominal capacitance arithmetic alone is insufficient. Capture USB attach, brownout/reconnect and startup at >= 1 MS/s, with MCU, display and DAC fitted, then evaluate the trace. Do not describe this untested board as USB-compliant.
+
+Added MPNs: U7 **TPS22918DBVR** (slew control) and C11 **GRM1885C1H103JA01D**, 10 nF C0G 50 V, 5% (stable CT). [Murata's exact reference sheet](https://search.murata.co.jp/Ceramy/image/img/A01X/G101/ENG/GRM1885C1H103JA01-01A.pdf) verifies the value/package/rating. TI recommends CT rating >= 20 V above 4 V VIN; the purchased 16 V / 100 nF is not substituted. C10 reuses purchased CL10B105MO8NNWC. U7 is not a current-limit or reverse-current-blocking IC; retain F1. At 0.5 A and 79 mohm maximum RON, U7 drops 39.5 mV and dissipates 19.8 mW. Unplug discharge/body-diode behavior must be tested; the source is USB-only, with no battery or second supply.
+
+## Rail and USB current budget
+
+These are engineering allocations for the intended unit, not all-temperature manufacturer-guaranteed maxima. [Espressif WROOM-1/1U v 1.8](https://www.espressif.com/sites/default/files/documentation/esp32-s3-wroom-1_wroom-1u_datasheet_en.pdf) table 6-4 lists 355 mA at 802.11b 1 Mbps 20.5 dBm TX, 100% duty, 3.3 V/25 C. Its 500 mA supply recommendation is supply capability, not maximum current. Reserve 45 mA beyond the 355 mA figure for memory/peripheral/activity variation; this does not invent an independently specified N16R8 flash/PSRAM maximum.
+
+|Load|Steady estimate|Upper operating allocation|Rail|
+|---|---: |---: |---|
+|ESP32-S3-WROOM-1U-N16R8 including memory allowance|150 mA|400 mA|3.3 V|
+|Adafruit 5393 complete display including backlight|50 mA|80 mA|3.3 V|
+|One 4051, seven pots, pull-ups and other carrier logic|5 mA|5 mA|3.3 V|
+|Adafruit 6250 complete DAC|30 mA|50 mA|5 V|
+|Total buck output|205 mA|485 mA|3.3 V|
+
+The TFT controller itself has a 7.51 mA maximum under the ST7789VW p 40 black-screen/60 Hz test; it does not bound the backlight. Adafruit does not publish a guaranteed complete 5393 current maximum in the retrieved documentation. 80 mA is a design allocation, requiring measurement at full backlight and worst display workload. PCM5102 table p 6 gives 13 mA digital + 32 mA analog/charge pump maximum for its specified 48 kHz audio test; 50 mA allows control/LDO and load overhead, but external loading and sample rate must be validated. No microSD is fitted/used.
+
+At 5 V input and 85% buck efficiency the steady estimate is `3.3*0.205/(5*0.85)+0.030=189mA`. At 4.5 V **at the USB receptacle**, allocate 0.15 V for PTC, switch, copper and connections, leaving 4.35 V at the buck/DAC. With high 3.3 V rail = 3.333 V and 85% efficiency, the upper allocation gives `3.333*0.485/(4.35*0.85)+0.050=487mA`. Margin to 500 mA is only 13 mA (2.6%). Regulator load 485 mA leaves 515 mA to its 1 A rating; power 487 mA is not the same as that rail current.
+
+A 500 mA MCU transient plus 80 mA display + 5 mA other produces about 577 mA VBUS under that corner, exceeding the default budget. Local caps reduce brief peaks but cannot support a sustained excess. The allocation therefore supports keeping the simple Rd sink as a **prototype with a bounded operating policy**, not a proven unrestricted maximum-RF USB 2 device. The current firmware does not enable Wi-Fi/BLE; adding RF must be qualified with reduced TX power/duty or measured budget control. A stronger Type-C advertisement cannot be assumed. If intended tested modes exceed 500 mA persistently, implement source-current detection before enabling those modes; USB-PD is not presently justified.
+
+USB 2's 500 mA is the configured-device allowance. Before configuration the default allowance is 100 mA and suspend has its own limit. The present firmware does not implement/verify this complete power policy; a slew switch alone does not solve it. USB attach/pre-configuration, suspend, maximum DSP/RF, backlight and audio tests are explicit remaining qualification work. The BOM and schematic record the hardware decision; they do not relabel this gap as solved firmware.
