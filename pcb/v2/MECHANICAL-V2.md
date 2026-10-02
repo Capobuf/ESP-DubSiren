@@ -34,14 +34,14 @@ drawing's 27.5 +/-0.3 mm. Socket axes are 8 mm above the PCB and the body reache
 20.5 mm above it. `reports/RCA-PHYSICAL-LEAD-MAP.md` records the rigid transform
 and validation; this is not an assembled enclosure interference check.
 
-## Control geometry and remaining source question
+## Accepted control geometry
 
 | Exact part | Evidence available | Unresolved fact / required evidence |
 |---|---|---|
 | PTV111-3420A-B203 | Current Bourns PTV/PTT p2 and p5: four physical pins, pin 4 dummy; 2.5 mm pitch; 13.6 mm tab span; 11 mm row separation | Resolved as PTV111-3; new project-local footprint and populated RV1-RV6 |
 | PTV111-1420A-B103 | Same document: four pins, 2.5 mm pitch; 10.2 mm tab span; 3.3 mm row separation | Resolved as PTV111-1; separate footprint and populated RV7 |
 | PEC11R-4120F-S0018 | Bourns PEC11R revision 04/26 pp2-3: encoder A/C/B and two switch terminals | New exact rear-pin/push-switch footprint and populated SW7 |
-| MX2A-11NW | Current 16-page CHERRY datasheet and older CHERRY sheet identify exact PCB-mount variant | Neither contains the dimensioned hole pattern; exhaustive source-search record in reports/MX2A-SOURCE-SEARCH.md |
+| MX2A-11NW | Official CHERRY 2025-10-24 MX1A replacement notice: unchanged form, fit and function; legacy dimensioned PCB layout | Resolved; native SW_Cherry_MX_1.00u_PCB accepted unchanged for SW1-SW4 |
 
 Old Bourns material found during research differs from current tab-span values;
 it must not override the current exact-series drawing. Generic web descriptions
@@ -51,8 +51,9 @@ The user's resolved Bourns interpretation is adopted. The previous Bourns
 orientation blocker is closed. Mechanical apertures are now routed Edge.Cuts
 because the installed MCP pad writer exposes only circular drills. Refer to the
 control acceptance evidence for dimensions, milling radius and physical lead maps.
-The exact CHERRY drilling coordinates, diameters/tolerances and viewing direction
-still require a manufacturer drawing or explicit mounting-equivalence statement.
+CHERRY equivalence closes the mounting evidence chain. See SOURCES-V2.md and
+reports/CHERRY-NATIVE-FOOTPRINT-AUDIT.md for coordinates and tolerance comparison.
+Dry-fit one purchased MX2A-11NW in the fabricated PCB as a prototype check.
 
 ## Knobs and control topology
 

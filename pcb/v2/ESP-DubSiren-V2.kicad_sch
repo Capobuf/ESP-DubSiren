@@ -5699,6 +5699,157 @@
 			)
 			(embedded_fonts no)
 		)
+		(symbol "Switch:SW_SPST"
+			(pin_names
+				(offset 0)
+				(hide yes)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property "Reference" "SW"
+				(at 0 3.175 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "SW_SPST"
+				(at 0 -2.54 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Description" "Single Pole Single Throw (SPST) switch"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_keywords" "switch lever"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol "SW_SPST_0_0"
+				(circle
+					(center -2.032 0)
+					(radius 0.508)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -1.524 0.254)
+						(xy 1.524 1.778)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(circle
+					(center 2.032 0)
+					(radius 0.508)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "SW_SPST_1_1"
+				(pin passive line
+					(at -5.08 0 0)
+					(length 2.54)
+					(name "A"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 5.08 0 180)
+					(length 2.54)
+					(name "B"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
 	)
 	(no_connect
 		(at 313.69 83.82)
@@ -6648,6 +6799,62 @@
 		)
 		(uuid "bd61f09c-8db2-4a06-a6b6-c87889a83ab0")
 	)
+	(wire
+		(pts
+			(xy 396.24 259.08)
+			(xy 393.7 259.08)
+		)
+		(uuid "fe867bf3-3ee6-4be4-a7e3-3889ea63c595")
+	)
+	(wire
+		(pts
+			(xy 406.4 259.08)
+			(xy 408.94 259.08)
+		)
+		(uuid "614859c3-4d6d-4b58-a416-577b971513a3")
+	)
+	(wire
+		(pts
+			(xy 434.34 259.08)
+			(xy 431.8 259.08)
+		)
+		(uuid "99010123-5dc7-46c1-9675-a74fb1b123b6")
+	)
+	(wire
+		(pts
+			(xy 444.5 259.08)
+			(xy 447.04 259.08)
+		)
+		(uuid "de386edf-c49f-47e6-a7ca-b990abb84a7b")
+	)
+	(wire
+		(pts
+			(xy 472.44 259.08)
+			(xy 469.9 259.08)
+		)
+		(uuid "d4b47f02-3c62-4982-aeeb-9d0d2fcf9440")
+	)
+	(wire
+		(pts
+			(xy 482.6 259.08)
+			(xy 485.14 259.08)
+		)
+		(uuid "dfb21a09-a648-4fdd-9ef3-62dd65d75c57")
+	)
+	(wire
+		(pts
+			(xy 510.54 259.08)
+			(xy 508 259.08)
+		)
+		(uuid "a429c49c-e8ec-49c2-9849-762a58bb2349")
+	)
+	(wire
+		(pts
+			(xy 520.7 259.08)
+			(xy 523.24 259.08)
+		)
+		(uuid "5b44da92-3a63-4d2e-8428-9ffddd10d0f2")
+	)
 	(text "USB-C / input protection"
 		(at 20.32 15.24 0)
 		(effects
@@ -6735,16 +6942,6 @@
 			(justify left bottom)
 		)
 		(uuid "e50e30f5-5b1d-4f5c-b7f7-6d584db0af7f")
-	)
-	(text "DRAFT - pending mechanical pin-map acceptance and USB inrush review"
-		(at 20.32 360.68 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "58ca2a20-3c99-4d14-b41b-7cb78767f65d")
 	)
 	(text "MPM: no external inductor / MOSFET / feedback divider. PG and optional VCC capacitor unused."
 		(at 20.32 370.84 0)
@@ -8066,6 +8263,91 @@
 		)
 		(uuid "3d0d3af3-1cac-450b-b4fc-b8358dee56a0")
 	)
+	(label "BTN1"
+		(at 393.7 259.08 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "57e5acfa-a32c-4289-a683-e74cf24f51fe")
+	)
+	(label "GND"
+		(at 408.94 259.08 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "c12daf9f-9d24-4b04-a44d-4deb8e92f468")
+	)
+	(label "BTN2"
+		(at 431.8 259.08 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "41abb5b0-e103-44f4-8fda-f4bacd6a989a")
+	)
+	(label "GND"
+		(at 447.04 259.08 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "66b17d12-4d65-4ed4-bc6f-9876f35c6c59")
+	)
+	(label "BTN3"
+		(at 469.9 259.08 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "6d023a57-188a-464f-b42c-fa2427d90bb6")
+	)
+	(label "GND"
+		(at 485.14 259.08 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "1c0f0c79-e1ee-4111-a242-b00e2ea915e9")
+	)
+	(label "BTN4"
+		(at 508 259.08 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "728c2ab7-c91d-4693-9d64-abba0565d9cf")
+	)
+	(label "GND"
+		(at 523.24 259.08 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "aedc7618-f39d-410f-be3f-682468275a23")
+	)
+  (text "PROTOTYPE - all controls populated; USB power policy and bench qualification pending"
+    (at 20.32 360.68 0)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid "ea03b57d-4b36-4f16-b169-59c50b463ca5")
+  )
 	(symbol
 		(lib_id "ESP-DubSiren-V2:ESP32-S3-WROOM-1U-N16R8")
 		(at 330.2 63.5 0)
@@ -17247,15 +17529,6 @@
 				)
 			)
 		)
-		(instances
-			(project "ESP-DubSiren-V2"
-				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
-					(reference "U7")
-					(unit 1)
-				)
-			)
-		)
-	
 		(property "MPN" "TPS22918DBVR"
 			(at 182.88 93.98 0)
 			(hide yes)
@@ -17273,7 +17546,16 @@
 					(size 1.27 1.27)
 				)
 			)
-		))
+		)
+		(instances
+			(project "ESP-DubSiren-V2"
+				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
+					(reference "U7")
+					(unit 1)
+				)
+			)
+		)
+	)
 	(symbol
 		(lib_id "Device:C")
 		(at 139.7 101.6 0)
@@ -17327,15 +17609,6 @@
 				)
 			)
 		)
-		(instances
-			(project "ESP-DubSiren-V2"
-				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
-					(reference "C10")
-					(unit 1)
-				)
-			)
-		)
-	
 		(property "MPN" "CL10B105MO8NNWC"
 			(at 139.7 101.6 0)
 			(hide yes)
@@ -17353,7 +17626,16 @@
 					(size 1.27 1.27)
 				)
 			)
-		))
+		)
+		(instances
+			(project "ESP-DubSiren-V2"
+				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
+					(reference "C10")
+					(unit 1)
+				)
+			)
+		)
+	)
 	(symbol
 		(lib_id "Device:C")
 		(at 218.44 101.6 0)
@@ -17407,15 +17689,6 @@
 				)
 			)
 		)
-		(instances
-			(project "ESP-DubSiren-V2"
-				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
-					(reference "C11")
-					(unit 1)
-				)
-			)
-		)
-	
 		(property "MPN" "GRM1885C1H103JA01D"
 			(at 218.44 101.6 0)
 			(hide yes)
@@ -17433,7 +17706,16 @@
 					(size 1.27 1.27)
 				)
 			)
-		))
+		)
+		(instances
+			(project "ESP-DubSiren-V2"
+				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
+					(reference "C11")
+					(unit 1)
+				)
+			)
+		)
+	)
 	(symbol
 		(lib_id "power:GND")
 		(at 182.88 104.14 0)
@@ -17678,4 +17960,316 @@
 			)
 		)
 	)
+	(symbol
+		(lib_id "Switch:SW_SPST")
+		(at 401.32 259.08 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "b12c4792-1501-4d7f-925b-c7dbf9072832")
+		(property "Reference" "SW1"
+			(at 401.32 255.905 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "MX2A-11NW"
+			(at 401.32 261.62 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB"
+			(at 401.32 259.08 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" "https://www.mouser.com/PCN/CHERRY_MX1A_11NW_EOL.pdf"
+			(at 401.32 259.08 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Single Pole Single Throw (SPST) switch"
+			(at 401.32 259.08 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "MX2A-11NW"
+			(at 401.32 259.08 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "CHERRY"
+			(at 401.32 259.08 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "ESP-DubSiren-V2"
+				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
+					(reference "SW1")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Switch:SW_SPST")
+		(at 439.42 259.08 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "496e4239-b2be-49aa-978a-dd4c74d7ef99")
+		(property "Reference" "SW2"
+			(at 439.42 255.905 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "MX2A-11NW"
+			(at 439.42 261.62 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB"
+			(at 439.42 259.08 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" "https://www.mouser.com/PCN/CHERRY_MX1A_11NW_EOL.pdf"
+			(at 439.42 259.08 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Single Pole Single Throw (SPST) switch"
+			(at 439.42 259.08 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "MX2A-11NW"
+			(at 439.42 259.08 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "CHERRY"
+			(at 439.42 259.08 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "ESP-DubSiren-V2"
+				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
+					(reference "SW2")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Switch:SW_SPST")
+		(at 477.52 259.08 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "046702f2-b6a1-4b24-902e-3316bbdd067c")
+		(property "Reference" "SW3"
+			(at 477.52 255.905 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "MX2A-11NW"
+			(at 477.52 261.62 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB"
+			(at 477.52 259.08 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" "https://www.mouser.com/PCN/CHERRY_MX1A_11NW_EOL.pdf"
+			(at 477.52 259.08 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Single Pole Single Throw (SPST) switch"
+			(at 477.52 259.08 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "MX2A-11NW"
+			(at 477.52 259.08 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "CHERRY"
+			(at 477.52 259.08 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "ESP-DubSiren-V2"
+				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
+					(reference "SW3")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Switch:SW_SPST")
+		(at 515.62 259.08 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "e50cd161-8ba9-47c1-b032-a5a3e2dca50e")
+		(property "Reference" "SW4"
+			(at 515.62 255.905 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "MX2A-11NW"
+			(at 515.62 261.62 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB"
+			(at 515.62 259.08 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" "https://www.mouser.com/PCN/CHERRY_MX1A_11NW_EOL.pdf"
+			(at 515.62 259.08 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Single Pole Single Throw (SPST) switch"
+			(at 515.62 259.08 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "ESP-DubSiren-V2"
+				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
+					(reference "SW4")
+					(unit 1)
+				)
+			)
+		)
+	
+		(property "MPN" "MX2A-11NW"
+			(at 515.62 259.08 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "CHERRY"
+			(at 515.62 259.08 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		))
 )

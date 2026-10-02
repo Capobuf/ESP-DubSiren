@@ -1,17 +1,17 @@
 # V2 electrical design evidence
 
-Status: **INCOMPLETE - engineering draft, not a fabrication release.** The saved schematic contains 53 fitted purchased components and seven PCB test pads, plus virtual power symbols/flags. RV1-RV7 and SW7 now use accepted Bourns footprints. SW1-SW4 remain absent because the exact MX2A manufacturer drilling dimensions could not be verified. The existing button nets and pull-ups remain present.
+Status: **SCHEMATIC COMPLETE - prototype engineering, not a fabrication release.** The saved schematic contains 57 fitted purchased components and seven PCB test pads, plus virtual power symbols/flags. All twelve performance controls are present. RV1-RV7 and SW7 use accepted Bourns footprints; SW1-SW4 use the native CHERRY footprint supported by the official MX1A-to-MX2A form-fit-function equivalence notice and legacy PCB drawing. USB power qualification and PCB validation remain separate tasks.
 
-The final saved schematic reports **0 ERC errors and 0 warnings**, with no suppressions. Wire endpoints, component connections, shorts and orphan checks also return zero findings. These checks certify connectivity of present components, not missing switches, PCB routing or USB qualification. The final schematic render and netlist were inspected; V1 was not modified.
+The final saved schematic reports **0 ERC errors and 0 warnings**, with no suppressions. Wire endpoints, component connections, shorts and orphan checks also return zero findings. These checks certify connectivity of present components, not PCB routing or USB qualification. The final schematic render and netlist were inspected; V1 was not modified.
 
 ## Saved evidence and BOM
 
-- `../BOM-V2.csv` combines the actual fitted schematic parts with clearly marked pending performance switches and purchased knobs. It is an engineering unit BOM, not a fabrication release. `BOM-V2-SCHEMATIC.csv` is the direct MCP export of 60 present physical rows (53 purchased parts and seven PCB test pads).
-- `netlist-v2-controls-power.net`, `erc-v2-controls-power.json`, `final-electrical-checks.json` and `schematic-v2-controls-power.png/.pdf` describe the current saved schematic. Earlier progress/interim exports remain historical evidence.
+- `../BOM-V2.csv` combines the actual fitted schematic parts with purchased knobs. It is an engineering unit BOM, not a fabrication release. `BOM-V2-SCHEMATIC.csv` is the direct MCP export of 64 present physical rows (57 purchased parts and seven PCB test pads).
+- `netlist-v2-complete.net`, `erc-v2-complete.json`, `cherry-schematic-readback.json` and `schematic-v2-complete.png/.pdf` describe the current saved schematic. Earlier progress/interim exports remain historical evidence.
 - `CONTROLS-POWER-PHYSICAL-PIN-MAPS.md`, `controls-library-create.json`, `controls-scratch-readback.json` and `power-switch-acceptance.json` record the new lead-to-symbol-to-pad acceptance. `controls-power-scratch.svg/.png` and `controls-power-symbols.png` show the disposable acceptance placements.
 - Earlier `ELECTRICAL-PHYSICAL-PIN-MAPS.csv`, `USB-RESET-RCA-PIN-MAPS.csv` and Adafruit maps remain applicable to the previously accepted parts.
-- `USB-POWER-DECISION.md` supersedes the earlier provisional current/inrush paragraphs. `CHERRY-NATIVE-FOOTPRINT-AUDIT.md` records why the native MX footprint is not yet accepted for MX2A.
-- The main PCB remains unpopulated and unrouted. A blank-board DRC is not acceptance evidence.
+- `USB-POWER-DECISION.md` supersedes the earlier provisional current/inrush paragraphs. `CHERRY-NATIVE-FOOTPRINT-AUDIT.md` records acceptance of the native footprint and its pin map for MX2A.
+- PCB placement/routing and its DRC are tracked by the mechanical/PCB workstream. Schematic ERC does not establish board acceptance.
 
 ## Display, audio and GPIO
 

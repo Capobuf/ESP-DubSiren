@@ -1,5 +1,14 @@
 # MX2A-11NW manufacturer drawing search, 2026-10-02
 
+**RESOLVED in the continuation:** the user identified the official
+[CHERRY Americas 2025-10-24 EOL / Replacement Notification](https://www.mouser.com/PCN/CHERRY_MX1A_11NW_EOL.pdf).
+It names MX2A-11NW as the replacement for MX1A-11NW, with unchanged form, fit and
+function. That explicitly closes the mounting-equivalence gap described below.
+The [legacy manufacturer MX layout](https://cdn.sparkfun.com/datasheets/Components/Switches/MX%20Series.pdf)
+and native KiCad `SW_Cherry_MX_1.00u_PCB` are now the accepted mounting basis.
+See `CHERRY-NATIVE-FOOTPRINT-AUDIT.md` for the current acceptance result.
+The historical investigation below is retained as provenance, not an active blocker.
+
 The exact switch remains selected. This record concerns missing manufacturer
 fabrication dimensions, not keycap tolerances or a proposed substitution.
 
@@ -62,7 +71,7 @@ a drill-size difference; it does not establish the current MX2A post diameter or
 finished-hole tolerance. The native 13.20 mm courtyard also does not bound the
 published 15.63 mm body. No library was silently substituted into the project.
 
-## Exact evidence still needed
+## Previously missing evidence (now supplied by official equivalence)
 
 Relative to the key/center-post axis, establish the X/Y coordinates and finished
 PCB hole tolerances for both electrical terminals, both fixation posts and the
@@ -77,8 +86,8 @@ MX footprint to an old MX drawing does not prove the requested exact-part match.
 The known 15.63 mm body must also be reconciled with its fabrication outline and
 courtyard. No arbitrary replacement footprint has been accepted.
 
-The user's section 7 explicitly requires documenting the exact missing dimension
+The user's original section 7 explicitly required documenting the exact missing dimension
 before stopping, and section 37 permits an intermediate stop when a manufacturer
 dimension necessary for PCB fabrication cannot be established after exhausting
-official documentation. This is the remaining source question; the resolved
+official documentation. The new official equivalence closes that source question; the resolved
 Bourns orientation and purchased-knob assignments are not reopened here.

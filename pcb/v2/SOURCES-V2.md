@@ -37,7 +37,8 @@ material, not a reason to add its optional filter network.
 | Adafruit 6250 | [Official PCB repository](https://github.com/adafruit/Adafruit-PCM510x-I2S-DAC-PCB), [guide](https://learn.adafruit.com/adafruit-pcm510x-i2s-dac?view=all) | `sources/adafruit-6250`, commit `2edfe9e71b59e6acc73d0ab2b2f796149146ce74`, original license retained |
 | Bourns PTV111 variants | [Current PTV/PTT datasheet](https://bourns.com/docs/product-datasheets/ptvptt.pdf), revision 09/23, pp2,5 | `sources/Bourns-PTV-PTT.pdf`; separate PTV111-3 / PTV111-1 footprints accepted with the user's resolved ordering/view interpretation; `reports/CONTROLS-POWER-PHYSICAL-PIN-MAPS.md` |
 | Bourns PEC11R-4120F-S0018 | [Bourns PEC11R mechanical and ordering drawings](https://www.bourns.com/docs/product-datasheets/pec11r.pdf) | `../components-documentation/PEC11R.pdf`; exact five-lead push-switch footprint accepted; same physical pin-map report |
-| CHERRY MX2A-11NW | [CHERRY product downloads](https://www.cherry.de/en-gb/product/mx2a-black/downloads), [current English datasheet](https://pim.cherry-world.net/datasheet/23002?locale=en_GB) | `sources/Cherry-MX2A-Black.pdf`; no dimensioned PCB pattern in retrieved sheet |
+| CHERRY MX2A-11NW | [CHERRY Americas EOL / Replacement Notification, 2025-10-24](https://www.mouser.com/PCN/CHERRY_MX1A_11NW_EOL.pdf), manufacturer paper mirrored by Mouser; [legacy CHERRY MX Series drawing](https://cdn.sparkfun.com/datasheets/Components/Switches/MX%20Series.pdf), p2 | Accepted equivalence chain: MX2A-11NW replaces MX1A-11NW without changes to form, fit or function; native `Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB` uses that legacy fixation-pin pattern. `sources/Cherry-MX-Legacy-Layout.pdf`, `reports/CHERRY-NATIVE-FOOTPRINT-AUDIT.md` |
+| CHERRY MX2A current specifications | [CHERRY product downloads](https://www.cherry.de/en-gb/product/mx2a-black/downloads), [current English datasheet](https://pim.cherry-world.net/datasheet/23002?locale=en_GB) | `sources/Cherry-MX2A-Black.pdf`; performance/body data, with mounting established by the replacement notice and legacy drawing |
 | CHERRY older MX2A sheet | [Manufacturer paper republished by JW Shop](https://www.jw-shop.com/pdf/spec-MX2A.pdf), exact Black variant pp5-6 | `sources/Cherry-MX2A-2024-republished.pdf`; also lacks mechanical pattern |
 | Same Sky RCJ-2123 | [RCJ-21 datasheet](https://www.sameskydevices.com/product/resource/rcj-21.pdf), Rev1.06,2026-09-01,p2 | `../components-documentation/rcj_21.pdf`; explicit TOP VIEW |
 | RCJ-2123 STEP | [Manufacturer CAD service](https://www.sameskydevices.com/product/resource/3dmodel/rcj-21-series/rcj-2123), [terms](https://www.sameskydevices.com/cad-model-terms) | Original and aligned STEP under `3dmodels`; alignment script under `sources` |
@@ -66,15 +67,18 @@ The Hammond is rejected for a direct single planar PCB. The 125 x 140 x 42 mm
 parametric replacement is a study, not an accepted complete assembly. Its sources
 and reproducible generators are recorded in `MECHANICAL-V2.md`.
 
-CHERRY documentation was searched beyond the current datasheet: older exact
-MX2A paper, exact-part distributor links, the current manufacturer catalog and
-explicit mounting-equivalence references. See `reports/MX2A-SOURCE-SEARCH.md`
-for URLs, failed redirects, the historical MX drawing limitation and the exact
-missing fabrication dimensions. The native KiCad footprint is not accepted merely
-because its name says Cherry MX.
+The previous CHERRY source gap is **closed** by the official replacement notice
+identified by the user and retrieved in this continuation. It states:
+"Optimized internal components. No changes to form, fit, or function."
+The validation chain is MX2A-11NW -> official replacement for MX1A-11NW -> unchanged
+form/fit/function -> legacy CHERRY fixation-pin PCB layout -> native KiCad footprint.
+The associated native KiCad model is accepted for dimensional mounting; cosmetic
+internal MX2A details are immaterial. Dry-fit one purchased MX2A-11NW in the
+fabricated PCB before considering the hardware production-validated.
 
 The user's additional [sszczep library](https://github.com/sszczep/kicad-libraries)
 was inspected at `7f4d13488a3a255c5a3ec4e45466822d0e9351a6`. Its generator cites
 the historical MX1A paper hosted by SparkFun. The current source-search and
 native-footprint audit record its matching pin positions and 1.75 mm fixation
-drills (native KiCad: 1.70 mm). It contains no exact MX2A manufacturer drawing.
+drills (native KiCad: 1.70 mm). It is comparison evidence only; the official
+replacement notice plus legacy manufacturer drawing is the accepted authority.

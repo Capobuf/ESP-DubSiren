@@ -1,6 +1,6 @@
 # V2 GPIO and connector pinout
 
-**INTERIM:** Derived from the saved KiCad netlist. The seven pots and encoder are present; SW1-SW4 remain pending exact MX2A drilling evidence. GPIO names and physical module pad numbers are different identifiers.
+**SCHEMATIC COMPLETE:** Derived from the saved KiCad netlist. All seven pots, four CHERRY switches and the encoder are present. GPIO names and physical module pad numbers are different identifiers.
 
 | MCU physical pad | Function / GPIO | Saved net | Status |
 |---:|---|---|---|
@@ -155,7 +155,7 @@ J1 has four physical shield stakes sharing SH. J2 is a dual RCA block: pin 2 is 
 |---|---|---|---|
 | RV1-RV6 | PTV111-3420A-B203 | 1 GND, 2 POT1-POT6, 3 respective POTn_TOP | Present; dummy physical lead 4 uses isolated unnumbered land |
 | RV7 | PTV111-1420A-B103 | 1 GND, 2 MASTER, 3 POT7_TOP | Present; dummy physical lead 4 uses isolated unnumbered land |
-| SW1-SW4 | MX2A-11NW | Intended BTN1-BTN4 to GND; existing 10 kohm pull-ups | Absent; exact manufacturer drilling pattern remains unverified |
+| SW1-SW4 | MX2A-11NW | Pin 1 to respective BTN1-BTN4; pin 2 to GND; existing 10 kohm pull-ups | Present; native CHERRY footprint accepted via official form-fit-function equivalence |
 | SW7 | PEC11R-4120F-S0018 | A ENC_A, B ENC_B, C GND, S1 ENC_SW, S2 GND | Present |
 | U7 | TPS22918DBVR | 1 VIN and 3 ON to VBUS_PROTECTED, 2 GND, 4 VBUS_SLEW_CT, 5 NC, 6 +5V | Present |
 | C10 | CL10B105MO8NNWC | 1 VBUS_PROTECTED, 2 GND | Present; 1 uF direct input bypass |
@@ -163,4 +163,4 @@ J1 has four physical shield stakes sharing SH. J2 is a dual RCA block: pin 2 is 
 
 F1 output and D1 cathode are now VBUS_PROTECTED. U7 output retains the +5V net feeding the MPM3612, DAC and TP1. Each pot's clockwise terminal 3 is fed through its own 4.7 kohm resistor; increasing clockwise rotation increases ADC voltage. Firmware endpoint calibration and encoder decoding remain required.
 
-ERC is clean for present components. It cannot identify a missing switch when its pull-up and MCU already provide two connected pins. See `reports/CONTROLS-POWER-PHYSICAL-PIN-MAPS.md` and `reports/USB-POWER-DECISION.md` for physical mapping and open power qualification.
+ERC is clean with all intended controls present. The exported netlist confirms each switch reaches its assigned button input and ground. See `reports/CONTROLS-POWER-PHYSICAL-PIN-MAPS.md` and `reports/USB-POWER-DECISION.md` for physical mapping and open power qualification.

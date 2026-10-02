@@ -1,50 +1,54 @@
 ﻿Reference,Value,Footprint,MPN,Manufacturer,Quantity,DNP,Datasheet,DesignStatus
-C1,22u,Capacitor_SMD:C_0805_2012Metric,CL21A226MPCLRNC,Samsung,1,,,Present in schematic; engineering draft
-C2,100n,Capacitor_SMD:C_0603_1608Metric,CL10B104KO8NNNC,Samsung,1,,,Present in schematic; engineering draft
-C3,22u,Capacitor_SMD:C_0805_2012Metric,CL21A226MPCLRNC,Samsung,1,,,Present in schematic; engineering draft
-C4,100n,Capacitor_SMD:C_0603_1608Metric,CL10B104KO8NNNC,Samsung,1,,,Present in schematic; engineering draft
-C5,22u,Capacitor_SMD:C_0805_2012Metric,CL21A226MPCLRNC,Samsung,1,,,Present in schematic; engineering draft
-C6,100n,Capacitor_SMD:C_0603_1608Metric,CL10B104KO8NNNC,Samsung,1,,,Present in schematic; engineering draft
-C7,1u,Capacitor_SMD:C_0603_1608Metric,CL10B105MO8NNWC,Samsung,1,,,Present in schematic; engineering draft
-C8,100n,Capacitor_SMD:C_0603_1608Metric,CL10B104KO8NNNC,Samsung,1,,,Present in schematic; engineering draft
-C9,100n,Capacitor_SMD:C_0603_1608Metric,CL10B104KO8NNNC,Samsung,1,,,Present in schematic; engineering draft
-C10,1u,Capacitor_SMD:C_0603_1608Metric,CL10B105MO8NNWC,Samsung,1,,https://product.samsungsem.com/mlcc/CL10B105MO8NNW.do,Present in schematic; engineering draft
-C11,10n C0G 50V,Capacitor_SMD:C_0603_1608Metric,GRM1885C1H103JA01D,Murata,1,,https://search.murata.co.jp/Ceramy/image/img/A01X/G101/ENG/GRM1885C1H103JA01-01A.pdf,Present in schematic; engineering draft
-D1,SMF5.0A,Diode_SMD:D_SOD-123F,SMF5.0A_R1_00001,PANJIT,1,,https://www.panjit.com.cn/upload/datasheet/SMF5.0A_SERIES.pdf,Present in schematic; engineering draft
-F1,1.1A PTC,ESP-DubSiren-V2-Electrical:Bel_0ZCG0110CF2B_1812,0ZCG0110CF2B,Bel,1,,https://www.belfuse.com/resources/datasheets/circuitprotection/ds-cp-0zcg-series.pdf,Present in schematic; engineering draft
-J1,USB4085-GF-A,Connector_USB:USB_C_Receptacle_GCT_USB4085,USB4085-GF-A,GCT,1,,https://az.y-ic.com/datasheet/e9/USB4085-GF-A.pdf,Present in schematic; engineering draft
-J2,RCJ-2123,ESP-DubSiren-V2-Mechanical:SameSky_RCJ-2123,RCJ-2123,Same Sky,1,,https://www.sameskydevices.com/product/resource/rcj-21.pdf,Present in schematic; engineering draft
-R1,10,Resistor_SMD:R_0603_1608Metric,NRC06J100TRF,NIC,1,,,Present in schematic; engineering draft
-R2,22,Resistor_SMD:R_0603_1608Metric,RC0603JR-0722RL,Yageo,1,,,Present in schematic; engineering draft
-R3,22,Resistor_SMD:R_0603_1608Metric,RC0603JR-0722RL,Yageo,1,,,Present in schematic; engineering draft
-R4,5.1k,Resistor_SMD:R_0603_1608Metric,AC0603FR-075K1L,Yageo,1,,,Present in schematic; engineering draft
-R5,5.1k,Resistor_SMD:R_0603_1608Metric,AC0603FR-075K1L,Yageo,1,,,Present in schematic; engineering draft
-R6,10k,Resistor_SMD:R_0603_1608Metric,RC0603JR-0710KL,Yageo,1,,,Present in schematic; engineering draft
-R7,10k,Resistor_SMD:R_0603_1608Metric,RC0603JR-0710KL,Yageo,1,,,Present in schematic; engineering draft
-R8,4.7k,Resistor_SMD:R_0603_1608Metric,RC0603FR-074K7L,Yageo,1,,,Present in schematic; engineering draft
-R9,4.7k,Resistor_SMD:R_0603_1608Metric,RC0603FR-074K7L,Yageo,1,,,Present in schematic; engineering draft
-R10,4.7k,Resistor_SMD:R_0603_1608Metric,RC0603FR-074K7L,Yageo,1,,,Present in schematic; engineering draft
-R11,4.7k,Resistor_SMD:R_0603_1608Metric,RC0603FR-074K7L,Yageo,1,,,Present in schematic; engineering draft
-R12,4.7k,Resistor_SMD:R_0603_1608Metric,RC0603FR-074K7L,Yageo,1,,,Present in schematic; engineering draft
-R13,4.7k,Resistor_SMD:R_0603_1608Metric,RC0603FR-074K7L,Yageo,1,,,Present in schematic; engineering draft
-R14,4.7k,Resistor_SMD:R_0603_1608Metric,RC0603FR-074K7L,Yageo,1,,,Present in schematic; engineering draft
-R15,10k,Resistor_SMD:R_0603_1608Metric,RC0603JR-0710KL,Yageo,1,,,Present in schematic; engineering draft
-R16,10k,Resistor_SMD:R_0603_1608Metric,RC0603JR-0710KL,Yageo,1,,,Present in schematic; engineering draft
-R17,10k,Resistor_SMD:R_0603_1608Metric,RC0603JR-0710KL,Yageo,1,,,Present in schematic; engineering draft
-R18,10k,Resistor_SMD:R_0603_1608Metric,RC0603JR-0710KL,Yageo,1,,,Present in schematic; engineering draft
-R19,10k,Resistor_SMD:R_0603_1608Metric,RC0603JR-0710KL,Yageo,1,,,Present in schematic; engineering draft
-R20,10k,Resistor_SMD:R_0603_1608Metric,RC0603JR-0710KL,Yageo,1,,,Present in schematic; engineering draft
-R21,10k,Resistor_SMD:R_0603_1608Metric,RC0603JR-0710KL,Yageo,1,,,Present in schematic; engineering draft
-RV1,20k PTV111-3420A-B203,ESP-DubSiren-V2-Mechanical:Bourns_PTV111-3,PTV111-3420A-B203,Bourns,1,,https://bourns.com/docs/product-datasheets/ptvptt.pdf,Present in schematic; engineering draft
-RV2,20k PTV111-3420A-B203,ESP-DubSiren-V2-Mechanical:Bourns_PTV111-3,PTV111-3420A-B203,Bourns,1,,https://bourns.com/docs/product-datasheets/ptvptt.pdf,Present in schematic; engineering draft
-RV3,20k PTV111-3420A-B203,ESP-DubSiren-V2-Mechanical:Bourns_PTV111-3,PTV111-3420A-B203,Bourns,1,,https://bourns.com/docs/product-datasheets/ptvptt.pdf,Present in schematic; engineering draft
-RV4,20k PTV111-3420A-B203,ESP-DubSiren-V2-Mechanical:Bourns_PTV111-3,PTV111-3420A-B203,Bourns,1,,https://bourns.com/docs/product-datasheets/ptvptt.pdf,Present in schematic; engineering draft
-RV5,20k PTV111-3420A-B203,ESP-DubSiren-V2-Mechanical:Bourns_PTV111-3,PTV111-3420A-B203,Bourns,1,,https://bourns.com/docs/product-datasheets/ptvptt.pdf,Present in schematic; engineering draft
-RV6,20k PTV111-3420A-B203,ESP-DubSiren-V2-Mechanical:Bourns_PTV111-3,PTV111-3420A-B203,Bourns,1,,https://bourns.com/docs/product-datasheets/ptvptt.pdf,Present in schematic; engineering draft
-RV7,10k PTV111-1420A-B103,ESP-DubSiren-V2-Mechanical:Bourns_PTV111-1,PTV111-1420A-B103,Bourns,1,,https://bourns.com/docs/product-datasheets/ptvptt.pdf,Present in schematic; engineering draft
-SW5,RESET,ESP-DubSiren-V2-Electrical:CK_PTS636SM43SMTR_LFS,PTS636SM43SMTR LFS,C&K/Littelfuse,1,,https://www.ckswitches.com/media/2779/pts636.pdf,Present in schematic; engineering draft
-SW6,BOOT,ESP-DubSiren-V2-Electrical:CK_PTS636SM43SMTR_LFS,PTS636SM43SMTR LFS,C&K/Littelfuse,1,,https://www.ckswitches.com/media/2779/pts636.pdf,Present in schematic; engineering draft
-SW7,PEC11R-4120F-S0018,ESP-DubSiren-V2-Mechanical:Bourns_PEC11R-4120F-S0018,PEC11R-4120F-S0018,Bourns,1,,https://www.bourns.com/docs/product-datasheets/pec11r.pdf,Present in schematic; engineering draft
+C1,22u,Capacitor_SMD:C_0805_2012Metric,CL21A226MPCLRNC,Samsung,1,,,Present in complete schematic; prototype qualification pending
+C2,100n,Capacitor_SMD:C_0603_1608Metric,CL10B104KO8NNNC,Samsung,1,,,Present in complete schematic; prototype qualification pending
+C3,22u,Capacitor_SMD:C_0805_2012Metric,CL21A226MPCLRNC,Samsung,1,,,Present in complete schematic; prototype qualification pending
+C4,100n,Capacitor_SMD:C_0603_1608Metric,CL10B104KO8NNNC,Samsung,1,,,Present in complete schematic; prototype qualification pending
+C5,22u,Capacitor_SMD:C_0805_2012Metric,CL21A226MPCLRNC,Samsung,1,,,Present in complete schematic; prototype qualification pending
+C6,100n,Capacitor_SMD:C_0603_1608Metric,CL10B104KO8NNNC,Samsung,1,,,Present in complete schematic; prototype qualification pending
+C7,1u,Capacitor_SMD:C_0603_1608Metric,CL10B105MO8NNWC,Samsung,1,,,Present in complete schematic; prototype qualification pending
+C8,100n,Capacitor_SMD:C_0603_1608Metric,CL10B104KO8NNNC,Samsung,1,,,Present in complete schematic; prototype qualification pending
+C9,100n,Capacitor_SMD:C_0603_1608Metric,CL10B104KO8NNNC,Samsung,1,,,Present in complete schematic; prototype qualification pending
+C10,1u,Capacitor_SMD:C_0603_1608Metric,CL10B105MO8NNWC,Samsung,1,,https://product.samsungsem.com/mlcc/CL10B105MO8NNW.do,Present in complete schematic; prototype qualification pending
+C11,10n C0G 50V,Capacitor_SMD:C_0603_1608Metric,GRM1885C1H103JA01D,Murata,1,,https://search.murata.co.jp/Ceramy/image/img/A01X/G101/ENG/GRM1885C1H103JA01-01A.pdf,Present in complete schematic; prototype qualification pending
+D1,SMF5.0A,Diode_SMD:D_SOD-123F,SMF5.0A_R1_00001,PANJIT,1,,https://www.panjit.com.cn/upload/datasheet/SMF5.0A_SERIES.pdf,Present in complete schematic; prototype qualification pending
+F1,1.1A PTC,ESP-DubSiren-V2-Electrical:Bel_0ZCG0110CF2B_1812,0ZCG0110CF2B,Bel,1,,https://www.belfuse.com/resources/datasheets/circuitprotection/ds-cp-0zcg-series.pdf,Present in complete schematic; prototype qualification pending
+J1,USB4085-GF-A,Connector_USB:USB_C_Receptacle_GCT_USB4085,USB4085-GF-A,GCT,1,,https://az.y-ic.com/datasheet/e9/USB4085-GF-A.pdf,Present in complete schematic; prototype qualification pending
+J2,RCJ-2123,ESP-DubSiren-V2-Mechanical:SameSky_RCJ-2123,RCJ-2123,Same Sky,1,,https://www.sameskydevices.com/product/resource/rcj-21.pdf,Present in complete schematic; prototype qualification pending
+R1,10,Resistor_SMD:R_0603_1608Metric,NRC06J100TRF,NIC,1,,,Present in complete schematic; prototype qualification pending
+R2,22,Resistor_SMD:R_0603_1608Metric,RC0603JR-0722RL,Yageo,1,,,Present in complete schematic; prototype qualification pending
+R3,22,Resistor_SMD:R_0603_1608Metric,RC0603JR-0722RL,Yageo,1,,,Present in complete schematic; prototype qualification pending
+R4,5.1k,Resistor_SMD:R_0603_1608Metric,AC0603FR-075K1L,Yageo,1,,,Present in complete schematic; prototype qualification pending
+R5,5.1k,Resistor_SMD:R_0603_1608Metric,AC0603FR-075K1L,Yageo,1,,,Present in complete schematic; prototype qualification pending
+R6,10k,Resistor_SMD:R_0603_1608Metric,RC0603JR-0710KL,Yageo,1,,,Present in complete schematic; prototype qualification pending
+R7,10k,Resistor_SMD:R_0603_1608Metric,RC0603JR-0710KL,Yageo,1,,,Present in complete schematic; prototype qualification pending
+R8,4.7k,Resistor_SMD:R_0603_1608Metric,RC0603FR-074K7L,Yageo,1,,,Present in complete schematic; prototype qualification pending
+R9,4.7k,Resistor_SMD:R_0603_1608Metric,RC0603FR-074K7L,Yageo,1,,,Present in complete schematic; prototype qualification pending
+R10,4.7k,Resistor_SMD:R_0603_1608Metric,RC0603FR-074K7L,Yageo,1,,,Present in complete schematic; prototype qualification pending
+R11,4.7k,Resistor_SMD:R_0603_1608Metric,RC0603FR-074K7L,Yageo,1,,,Present in complete schematic; prototype qualification pending
+R12,4.7k,Resistor_SMD:R_0603_1608Metric,RC0603FR-074K7L,Yageo,1,,,Present in complete schematic; prototype qualification pending
+R13,4.7k,Resistor_SMD:R_0603_1608Metric,RC0603FR-074K7L,Yageo,1,,,Present in complete schematic; prototype qualification pending
+R14,4.7k,Resistor_SMD:R_0603_1608Metric,RC0603FR-074K7L,Yageo,1,,,Present in complete schematic; prototype qualification pending
+R15,10k,Resistor_SMD:R_0603_1608Metric,RC0603JR-0710KL,Yageo,1,,,Present in complete schematic; prototype qualification pending
+R16,10k,Resistor_SMD:R_0603_1608Metric,RC0603JR-0710KL,Yageo,1,,,Present in complete schematic; prototype qualification pending
+R17,10k,Resistor_SMD:R_0603_1608Metric,RC0603JR-0710KL,Yageo,1,,,Present in complete schematic; prototype qualification pending
+R18,10k,Resistor_SMD:R_0603_1608Metric,RC0603JR-0710KL,Yageo,1,,,Present in complete schematic; prototype qualification pending
+R19,10k,Resistor_SMD:R_0603_1608Metric,RC0603JR-0710KL,Yageo,1,,,Present in complete schematic; prototype qualification pending
+R20,10k,Resistor_SMD:R_0603_1608Metric,RC0603JR-0710KL,Yageo,1,,,Present in complete schematic; prototype qualification pending
+R21,10k,Resistor_SMD:R_0603_1608Metric,RC0603JR-0710KL,Yageo,1,,,Present in complete schematic; prototype qualification pending
+RV1,20k PTV111-3420A-B203,ESP-DubSiren-V2-Mechanical:Bourns_PTV111-3,PTV111-3420A-B203,Bourns,1,,https://bourns.com/docs/product-datasheets/ptvptt.pdf,Present in complete schematic; prototype qualification pending
+RV2,20k PTV111-3420A-B203,ESP-DubSiren-V2-Mechanical:Bourns_PTV111-3,PTV111-3420A-B203,Bourns,1,,https://bourns.com/docs/product-datasheets/ptvptt.pdf,Present in complete schematic; prototype qualification pending
+RV3,20k PTV111-3420A-B203,ESP-DubSiren-V2-Mechanical:Bourns_PTV111-3,PTV111-3420A-B203,Bourns,1,,https://bourns.com/docs/product-datasheets/ptvptt.pdf,Present in complete schematic; prototype qualification pending
+RV4,20k PTV111-3420A-B203,ESP-DubSiren-V2-Mechanical:Bourns_PTV111-3,PTV111-3420A-B203,Bourns,1,,https://bourns.com/docs/product-datasheets/ptvptt.pdf,Present in complete schematic; prototype qualification pending
+RV5,20k PTV111-3420A-B203,ESP-DubSiren-V2-Mechanical:Bourns_PTV111-3,PTV111-3420A-B203,Bourns,1,,https://bourns.com/docs/product-datasheets/ptvptt.pdf,Present in complete schematic; prototype qualification pending
+RV6,20k PTV111-3420A-B203,ESP-DubSiren-V2-Mechanical:Bourns_PTV111-3,PTV111-3420A-B203,Bourns,1,,https://bourns.com/docs/product-datasheets/ptvptt.pdf,Present in complete schematic; prototype qualification pending
+RV7,10k PTV111-1420A-B103,ESP-DubSiren-V2-Mechanical:Bourns_PTV111-1,PTV111-1420A-B103,Bourns,1,,https://bourns.com/docs/product-datasheets/ptvptt.pdf,Present in complete schematic; prototype qualification pending
+SW1,MX2A-11NW,Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB,MX2A-11NW,CHERRY,1,,https://www.mouser.com/PCN/CHERRY_MX1A_11NW_EOL.pdf,Present in complete schematic; prototype qualification pending
+SW2,MX2A-11NW,Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB,MX2A-11NW,CHERRY,1,,https://www.mouser.com/PCN/CHERRY_MX1A_11NW_EOL.pdf,Present in complete schematic; prototype qualification pending
+SW3,MX2A-11NW,Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB,MX2A-11NW,CHERRY,1,,https://www.mouser.com/PCN/CHERRY_MX1A_11NW_EOL.pdf,Present in complete schematic; prototype qualification pending
+SW4,MX2A-11NW,Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB,MX2A-11NW,CHERRY,1,,https://www.mouser.com/PCN/CHERRY_MX1A_11NW_EOL.pdf,Present in complete schematic; prototype qualification pending
+SW5,RESET,ESP-DubSiren-V2-Electrical:CK_PTS636SM43SMTR_LFS,PTS636SM43SMTR LFS,C&K/Littelfuse,1,,https://www.ckswitches.com/media/2779/pts636.pdf,Present in complete schematic; prototype qualification pending
+SW6,BOOT,ESP-DubSiren-V2-Electrical:CK_PTS636SM43SMTR_LFS,PTS636SM43SMTR LFS,C&K/Littelfuse,1,,https://www.ckswitches.com/media/2779/pts636.pdf,Present in complete schematic; prototype qualification pending
+SW7,PEC11R-4120F-S0018,ESP-DubSiren-V2-Mechanical:Bourns_PEC11R-4120F-S0018,PEC11R-4120F-S0018,Bourns,1,,https://www.bourns.com/docs/product-datasheets/pec11r.pdf,Present in complete schematic; prototype qualification pending
 TP1,+5V,TestPoint:TestPoint_Pad_D1.0mm,PCB test pad,PCB,1,,,PCB feature; not purchased
 TP2,+3V3,TestPoint:TestPoint_Pad_D1.0mm,PCB test pad,PCB,1,,,PCB feature; not purchased
 TP3,GND,TestPoint:TestPoint_Pad_D1.0mm,PCB test pad,PCB,1,,,PCB feature; not purchased
@@ -52,14 +56,13 @@ TP4,ADC_MUX,TestPoint:TestPoint_Pad_D1.0mm,PCB test pad,PCB,1,,,PCB feature; not
 TP5,AUDIO_MONO,TestPoint:TestPoint_Pad_D1.0mm,PCB test pad,PCB,1,,,PCB feature; not purchased
 TP6,UART_TX,TestPoint:TestPoint_Pad_D1.0mm,PCB test pad,PCB,1,,,PCB feature; not purchased
 TP7,UART_RX,TestPoint:TestPoint_Pad_D1.0mm,PCB test pad,PCB,1,,,PCB feature; not purchased
-U1,ESP32-S3-WROOM-1U-N16R8,ESP-DubSiren-V2-Electrical:Espressif_ESP32-S3-WROOM-1U,ESP32-S3-WROOM-1U-N16R8,Espressif,1,,https://www.espressif.com/sites/default/files/documentation/esp32-s3-wroom-1_wroom-1u_datasheet_en.pdf,Present in schematic; engineering draft
-U2,MPM3612GLQ-33-Z,ESP-DubSiren-V2-Electrical:MPS_MPM3612GLQ-33_LGA-8-1EP_3x3mm,MPM3612GLQ-33-Z,MPS,1,,https://www.monolithicpower.com/en/documentview/productdocument/index/version/2/document_type/Datasheet/lang/en/sku/MPM3612GLQ-33/document_id/11833/,Present in schematic; engineering draft
-U3,74HC4051D,Package_SO:SOIC-16_3.9x9.9mm_P1.27mm,74HC4051D,Toshiba,1,,https://toshiba.semicon-storage.com/us/semiconductor/product/general-purpose-logic-ics/detail.74HC4051D.html,Present in schematic; engineering draft
-U4,USBLC6-2SC6,Package_TO_SOT_SMD:SOT-23-6,USBLC6-2SC6,SLKOR,1,,https://www.slkoric.com/upload/file/1782371251_7008.PDF,Present in schematic; engineering draft
-U5,Adafruit 5393,ESP-DubSiren-V2-Mechanical:Adafruit_5393_DisplayFace,5393,Adafruit,1,,https://learn.adafruit.com/adafruit-1-47-round-rectangle-tft-display?view=all,Present in schematic; engineering draft
-U6,Adafruit 6250,ESP-DubSiren-V2-Mechanical:Adafruit_6250_ComponentFace,6250,Adafruit,1,,https://learn.adafruit.com/adafruit-pcm510x-i2s-dac?view=all,Present in schematic; engineering draft
-U7,TPS22918DBVR,Package_TO_SOT_SMD:SOT-23-6,TPS22918DBVR,Texas Instruments,1,,https://www.ti.com/lit/ds/symlink/tps22918.pdf,Present in schematic; engineering draft
-SW1-SW4,MX2A Black PCB mount,,MX2A-11NW,CHERRY,4,,,Pending manufacturer drilling acceptance; absent from schematic
+U1,ESP32-S3-WROOM-1U-N16R8,ESP-DubSiren-V2-Electrical:Espressif_ESP32-S3-WROOM-1U,ESP32-S3-WROOM-1U-N16R8,Espressif,1,,https://www.espressif.com/sites/default/files/documentation/esp32-s3-wroom-1_wroom-1u_datasheet_en.pdf,Present in complete schematic; prototype qualification pending
+U2,MPM3612GLQ-33-Z,ESP-DubSiren-V2-Electrical:MPS_MPM3612GLQ-33_LGA-8-1EP_3x3mm,MPM3612GLQ-33-Z,MPS,1,,https://www.monolithicpower.com/en/documentview/productdocument/index/version/2/document_type/Datasheet/lang/en/sku/MPM3612GLQ-33/document_id/11833/,Present in complete schematic; prototype qualification pending
+U3,74HC4051D,Package_SO:SOIC-16_3.9x9.9mm_P1.27mm,74HC4051D,Toshiba,1,,https://toshiba.semicon-storage.com/us/semiconductor/product/general-purpose-logic-ics/detail.74HC4051D.html,Present in complete schematic; prototype qualification pending
+U4,USBLC6-2SC6,Package_TO_SOT_SMD:SOT-23-6,USBLC6-2SC6,SLKOR,1,,https://www.slkoric.com/upload/file/1782371251_7008.PDF,Present in complete schematic; prototype qualification pending
+U5,Adafruit 5393,ESP-DubSiren-V2-Mechanical:Adafruit_5393_DisplayFace,5393,Adafruit,1,,https://learn.adafruit.com/adafruit-1-47-round-rectangle-tft-display?view=all,Present in complete schematic; prototype qualification pending
+U6,Adafruit 6250,ESP-DubSiren-V2-Mechanical:Adafruit_6250_ComponentFace,6250,Adafruit,1,,https://learn.adafruit.com/adafruit-pcm510x-i2s-dac?view=all,Present in complete schematic; prototype qualification pending
+U7,TPS22918DBVR,Package_TO_SOT_SMD:SOT-23-6,TPS22918DBVR,Texas Instruments,1,,https://www.ti.com/lit/ds/symlink/tps22918.pdf,Present in complete schematic; prototype qualification pending
 KN1-KN6,Front pot knob,,1100,Davies Molding,6,,,Purchased mechanical item; verify clamping/concentricity on 6 mm shaft
 KN7,Master knob,,SAK-023,Same Sky,1,,,Purchased mechanical item
 KN8,Encoder knob,,CL170805B,CLIFF,1,,,Purchased mechanical item; enclosure fit pending
