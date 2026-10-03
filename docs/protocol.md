@@ -70,6 +70,37 @@ PAD_CONFIG <1..4> CLASSIC|TWO_TONE|LICKSHOT|PING <variant-index> 0|1
 PANEL_RESET
 ```
 
+Configurable-panel commands (additive in firmware 0.9.0):
+
+```text
+POT <1..6> <0..1>
+PANEL BEHAVIOR PICKUP|JUMP
+PANEL POT CLASSIC|EXTENDED <1..6> TARGET NONE|PITCH|RATE|LFO_DEPTH|ECHO_LEVEL|ECHO_TIME|ECHO_FEEDBACK|ECHO_FILTER|DECAY|SWEEP_AMOUNT|SWEEP_TIME
+PANEL POT CLASSIC|EXTENDED <1..6> MODE CONTINUOUS|ZONES
+PANEL POT CLASSIC|EXTENDED <1..6> RANGE <minimum> <maximum>
+PANEL POT CLASSIC|EXTENDED <1..6> ZONES <low> <middle> <high>
+PANEL BUTTON CLASSIC|EXTENDED <1..4> ACTION NONE|TRIGGER|PLAY_SOUND|HOLD|MOD_UP|MOD_DOWN|ECHO_CUT|ECHO_LOOP|ECHO_SPIN
+PANEL BUTTON CLASSIC|EXTENDED <1..4> SOUND CLASSIC|TWO_TONE|LICKSHOT|PING <variant-index> <latch:0|1>
+PANEL ENCODER OFF|LIVE_PITCH <step-semitones> <range-semitones>
+PANEL RESET_DEFAULTS
+PANEL BEGIN|COMMIT|CANCEL
+```
+
+`POT` is the raw normalized front-pot input. Assignment, zone/continuous
+mapping, musical ranges and Pickup are applied only by the shared C++
+controller. Configuration commands validate a complete candidate before
+mutation; invalid ranges, unsupported profile targets and invalid sound/latch
+combinations are rejected atomically. Existing semantic `SET` commands remain
+available for development and cause matching Pickup latches to re-arm.
+VirtualESP wraps a restored `panel.json` in `PANEL BEGIN` / `PANEL COMMIT` and
+sends `PANEL CANCEL` on any rejected field, so a damaged file cannot partially
+replace the running configuration.
+
+The encoder menu opens on release of an unconsumed click in both profiles.
+While a physical Trigger or Play Sound button is held, Home rotation applies
+the configured transient live transpose (default one semitone per detent,
+clamped to +/-12); releasing the final relevant button resets it to zero.
+
 `PAD`, `ENCODER_SWITCH`, and `ENCODER_ROTATE` are raw front-panel actions
 interpreted by the shared C++ `PerformanceController`. Classic is the default:
 PAD 1 is Trigger, PAD 2 toggles Hold on press, PAD 3 is Manual Mod, PAD 4 is
@@ -151,7 +182,7 @@ An AUDIO payload is always 960 bytes: 480 signed int16 mono PCM samples at
 48,000 Hz. A STATUS payload is UTF-8 JSON. `HELLO` currently returns:
 
 ```json
-{"name":"DubSiren","protocol":1,"sampleRate":48000,"blockSamples":480,"firmware":"0.8.0","renderUs":0,"maxRenderUs":0,"cycleUs":0,"maxCycleUs":0,"maxUsbWriteUs":0,"maxI2sWriteUs":0,"displayRenderUs":0,"maxDisplayRenderUs":0,"output":"BOTH","i2sReady":true,"panel":{"revision":1,"menuRevision":0,"selectedPad":1,"currentPad":1,"activePad":0,"pads":[{"sound":"CLASSIC","variant":"SINE 1","variantIndex":0,"hold":false,"holdSupported":true}],"display":{"width":320,"height":172,"mode":"HOME","menuIndex":0,"editing":false,"menuItems":["PROFILE","BACK"],"profile":"CLASSIC","voice":"SINE 1","pitch":"MID","rate":"MID","hold":false,"echoCut":false,"tuneHz":220.0,"rateHz":0.7,"depth":1.0,"echoLoop":false}}}
+{"name":"DubSiren","protocol":1,"sampleRate":48000,"blockSamples":480,"firmware":"0.9.0","output":"BOTH","i2sReady":true,"panel":{"revision":1,"settings":{"schema":1,"potBehavior":"PICKUP"},"persistenceStatus":"","display":{"width":320,"height":172,"mode":"HOME","menuIndex":0,"editing":false,"title":"SETTINGS","rows":[{"key":"PROFILE","label":"PROFILE","value":"CLASSIC"}],"profile":"CLASSIC","voice":"SINE 1","pitch":"MID","pitchMode":"ZONES","rate":"MID","rateMode":"ZONES","tuneHz":392.0,"rateHz":0.7,"liveTranspose":0}}}
 ```
 
 Timing zeros above are placeholders, not measured performance. `renderUs` is the
@@ -161,14 +192,22 @@ writes. `maxUsbWriteUs` and `maxI2sWriteUs` isolate the maximum time spent in
 each output write. `displayRenderUs` and `maxDisplayRenderUs` measure complete
 ST7789 text redraws independently from the audio counters. `output` reports the
 active routing selection and `i2sReady` reports
-whether I2S initialization succeeded. `panel` reports the controller-owned pad
-state; the example abbreviates the four-entry `pads` array after its first
-entry. `panel.display` is logical state, not pixels: it reports the fixed
+whether I2S initialization succeeded. `panel` reports controller-owned runtime
+and settings state; the example intentionally abbreviates timing fields,
+profiles, pots, buttons and menu rows. `panel.display` is logical state, not pixels: it reports the fixed
 dimensions, Home/Menu mode, menu cursor/edit state, ordered row keys, current
 Depth, Echo Loop, profile, voice, confirmed pitch/rate labels, Hold, Echo Cut
 and Extended tuneHz/rateHz. Firmware sends an updated STATUS packet when controller
 or menu state changes. These are additive status/command changes: existing
 commands, packet framing, and protocol version 1 remain compatible.
+
+In firmware 0.9.0, `panel.settings` contains the complete schema-1 persistent
+panel configuration and its revision. `panel.display.rows` contains ordered
+objects with controller-owned `key`, `label` and already-formatted `value`,
+plus `title`, `footer` and `overlay`. Renderers consume these strings rather
+than reconstructing menu presentation. Effective pitch/rate/echo/master values
+and `liveTranspose` are included for connection reconstruction.
+`panel.persistenceStatus` is non-empty when NVS loading or saving failed.
 
 There is no CRC because USB is the reliable transport. The Python parser scans
 again for `DS` after invalid data or lost framing and rejects AUDIO payloads of

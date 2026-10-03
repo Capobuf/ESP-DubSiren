@@ -22,6 +22,16 @@ public:
     const char *menuItemKey(unsigned index) const {
         return performance_.menuItemKey(index);
     }
+    const char *menuItemLabel(unsigned index) const {
+        return performance_.menuItemLabel(index);
+    }
+    const char *menuItemValue(unsigned index) const {
+        return performance_.menuItemValue(index);
+    }
+    const char *menuTitle() const { return performance_.menuTitle(); }
+    const char *menuFooter() const { return performance_.menuFooter(); }
+    const char *overlayTitle() const { return performance_.overlayTitle(); }
+    const char *overlayValue() const { return performance_.overlayValue(); }
     unsigned selectedPad() const { return performance_.selectedPad(); }
     unsigned currentPad() const { return performance_.currentPad(); }
     int activePad() const { return performance_.activePad(); }
@@ -41,6 +51,31 @@ public:
     PerformanceController::DisplayMode displayMode() const {
         return performance_.displayMode();
     }
+    const PanelSettings &panelSettings() const { return performance_.settings(); }
+    unsigned panelSettingsRevision() const { return performance_.settingsRevision(); }
+    bool applyPanelSettings(const PanelSettings &settings) {
+        return performance_.applySettings(settings);
+    }
+    void setPersistenceStatus(const char *status) {
+        performance_.setPersistenceStatus(status);
+    }
+    const char *persistenceStatus() const {
+        return performance_.persistenceStatus();
+    }
+    const char *buttonActionNameFor(PerformanceProfile profile,
+                                    unsigned button) const {
+        return performance_.buttonActionNameFor(profile, button);
+    }
+    bool pickupWaiting(unsigned pot) const {
+        return performance_.pickupWaiting(pot);
+    }
+    int pickupDirection(unsigned pot) const {
+        return performance_.pickupDirection(pot);
+    }
+    void formatCurrentValue(PotTarget target, char *buffer,
+                            unsigned size) const {
+        performance_.formatCurrentValue(target, buffer, size);
+    }
 
 private:
     static bool parseFloat(const String &text, float &value);
@@ -48,6 +83,10 @@ private:
     static bool parseMode(const String &text, SirenMode &mode);
     static bool parseLfoShape(const String &text, LfoShape &shape);
     static bool parseSyndrumWave(const String &text, SyndrumWave &wave);
+    static bool parseProfileName(const char *text, PerformanceProfile &profile);
+    static bool parsePotTargetName(const char *text, PotTarget &target);
+    static bool parseButtonActionName(const char *text, ButtonAction &action);
+    static bool parsePanelSoundName(const char *text, PanelSound &sound);
     bool parsePanelCommand(const String &command);
 
     ControlStore &controls_;

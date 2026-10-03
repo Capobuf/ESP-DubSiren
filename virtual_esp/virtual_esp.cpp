@@ -106,6 +106,100 @@ VIRTUAL_ESP_API const char *virtual_esp_menu_item_key(unsigned index) {
     return ready() ? parser->menuItemKey(index) : "BACK";
 }
 
+VIRTUAL_ESP_API const char *virtual_esp_menu_item_label(unsigned index) {
+    return ready() ? parser->menuItemLabel(index) : "BACK";
+}
+
+VIRTUAL_ESP_API const char *virtual_esp_menu_item_value(unsigned index) {
+    return ready() ? parser->menuItemValue(index) : "";
+}
+
+VIRTUAL_ESP_API const char *virtual_esp_menu_title() {
+    return ready() ? parser->menuTitle() : "SETTINGS";
+}
+
+VIRTUAL_ESP_API const char *virtual_esp_menu_footer() {
+    return ready() ? parser->menuFooter() : "";
+}
+
+VIRTUAL_ESP_API const char *virtual_esp_overlay_title() {
+    return ready() ? parser->overlayTitle() : "";
+}
+
+VIRTUAL_ESP_API const char *virtual_esp_overlay_value() {
+    return ready() ? parser->overlayValue() : "";
+}
+
+VIRTUAL_ESP_API unsigned virtual_esp_settings_revision() {
+    return ready() ? parser->panelSettingsRevision() : 0;
+}
+
+VIRTUAL_ESP_API unsigned virtual_esp_settings_schema() {
+    return ready() ? parser->panelSettings().schemaVersion : 0;
+}
+
+VIRTUAL_ESP_API const char *virtual_esp_pot_behavior() {
+    return ready() ? potBehaviorName(parser->panelSettings().potBehavior) : "PICKUP";
+}
+
+VIRTUAL_ESP_API const char *virtual_esp_encoder_action() {
+    return ready() && parser->panelSettings().encoderHoldAction == EncoderHoldAction::LivePitch
+        ? "LIVE_PITCH" : "OFF";
+}
+
+VIRTUAL_ESP_API unsigned virtual_esp_encoder_step() {
+    return ready() ? parser->panelSettings().encoderStepSemitones : 1;
+}
+
+VIRTUAL_ESP_API unsigned virtual_esp_encoder_range() {
+    return ready() ? parser->panelSettings().encoderRangeSemitones : 12;
+}
+
+VIRTUAL_ESP_API const char *virtual_esp_pot_target(unsigned profile, unsigned pot) {
+    if (!ready() || profile > 1 || pot < 1 || pot > 6) return "UNKNOWN";
+    return potTargetName(parser->panelSettings().profiles[profile].pots[pot - 1].target);
+}
+
+VIRTUAL_ESP_API const char *virtual_esp_pot_mode(unsigned profile, unsigned pot) {
+    if (!ready() || profile > 1 || pot < 1 || pot > 6) return "CONTINUOUS";
+    return potModeName(parser->panelSettings().profiles[profile].pots[pot - 1].mode);
+}
+
+VIRTUAL_ESP_API float virtual_esp_pot_min(unsigned profile, unsigned pot) {
+    return ready() && profile < 2 && pot >= 1 && pot <= 6
+        ? parser->panelSettings().profiles[profile].pots[pot - 1].minimum : 0.0f;
+}
+
+VIRTUAL_ESP_API float virtual_esp_pot_max(unsigned profile, unsigned pot) {
+    return ready() && profile < 2 && pot >= 1 && pot <= 6
+        ? parser->panelSettings().profiles[profile].pots[pot - 1].maximum : 1.0f;
+}
+
+VIRTUAL_ESP_API float virtual_esp_pot_zone(unsigned profile, unsigned pot, unsigned zone) {
+    return ready() && profile < 2 && pot >= 1 && pot <= 6 && zone < 3
+        ? parser->panelSettings().profiles[profile].pots[pot - 1].zones[zone] : 0.0f;
+}
+
+VIRTUAL_ESP_API const char *virtual_esp_button_action(unsigned profile, unsigned button) {
+    if (!ready() || profile > 1 || button < 1 || button > 4) return "UNKNOWN";
+    return buttonActionName(parser->panelSettings().profiles[profile].buttons[button - 1].action);
+}
+
+VIRTUAL_ESP_API const char *virtual_esp_button_sound(unsigned profile, unsigned button) {
+    if (!ready() || profile > 1 || button < 1 || button > 4) return "UNKNOWN";
+    return panelSoundName(parser->panelSettings().profiles[profile].buttons[button - 1].sound);
+}
+
+VIRTUAL_ESP_API unsigned virtual_esp_button_variant(unsigned profile, unsigned button) {
+    return ready() && profile < 2 && button >= 1 && button <= 4
+        ? parser->panelSettings().profiles[profile].buttons[button - 1].variant : 0;
+}
+
+VIRTUAL_ESP_API int virtual_esp_button_latch(unsigned profile, unsigned button) {
+    return ready() && profile < 2 && button >= 1 && button <= 4 &&
+        parser->panelSettings().profiles[profile].buttons[button - 1].latch;
+}
+
 VIRTUAL_ESP_API const char *virtual_esp_profile() {
     return controls->snapshot().profile == PerformanceProfile::Classic ? "CLASSIC" : "EXTENDED";
 }
@@ -117,6 +211,22 @@ VIRTUAL_ESP_API int virtual_esp_echo_cut() { return controls->snapshot().echoCut
 
 VIRTUAL_ESP_API float virtual_esp_tune() { return controls->snapshot().tuneHz; }
 VIRTUAL_ESP_API float virtual_esp_rate_hz() { return controls->snapshot().lfoRateHz; }
+VIRTUAL_ESP_API float virtual_esp_pitch_position() { return controls->snapshot().pitchPosition; }
+VIRTUAL_ESP_API float virtual_esp_rate_position() { return controls->snapshot().ratePosition; }
+VIRTUAL_ESP_API float virtual_esp_echo_level() { return controls->snapshot().echoLevel; }
+VIRTUAL_ESP_API float virtual_esp_delay_ms() { return controls->snapshot().delayMs; }
+VIRTUAL_ESP_API float virtual_esp_feedback() { return controls->snapshot().feedback; }
+VIRTUAL_ESP_API float virtual_esp_echo_filter() { return controls->snapshot().echoFilterPosition; }
+VIRTUAL_ESP_API float virtual_esp_master() { return controls->snapshot().masterVolume; }
+VIRTUAL_ESP_API int virtual_esp_live_transpose() { return controls->snapshot().liveTransposeSemitones; }
+VIRTUAL_ESP_API int virtual_esp_pitch_zones_active() { return controls->snapshot().pitchZonesActive; }
+VIRTUAL_ESP_API int virtual_esp_rate_zones_active() { return controls->snapshot().rateZonesActive; }
+VIRTUAL_ESP_API const char *virtual_esp_echo_filter_name() {
+    static char value[24];
+    if (ready()) parser->formatCurrentValue(PotTarget::EchoFilter, value, sizeof(value));
+    else value[0] = '\0';
+    return value;
+}
 
 VIRTUAL_ESP_API float virtual_esp_depth() {
     return ready() ? controls->snapshot().lfoDepthOctaves : 0.0f;

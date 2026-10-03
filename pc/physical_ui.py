@@ -9,42 +9,13 @@ from app import DubSirenApp, OUTPUT_VALUES
 from control_ranges import CONTROL_SPECS, ControlSpec
 from panel_display import DISPLAY_HEIGHT, DISPLAY_WIDTH, PanelDisplay
 
-ECHO_FILTER_DEADBAND = 0.05
+PANEL_KNOBS = tuple((f"POT {number}", f"POT_{number}") for number in range(1, 7))
+FRONT_POT_SPEC = ControlSpec(0.0, 1.0, 0.5, lambda value: f"{value:.0%}")
+PANEL_SCHEMA_VERSION = 1
 
 
-def echo_filter_amount(value: float) -> float:
-    distance = max(0.0, min(1.0, abs(value)))
-    if distance <= ECHO_FILTER_DEADBAND:
-        return 0.0
-    return (distance - ECHO_FILTER_DEADBAND) / (1.0 - ECHO_FILTER_DEADBAND)
-
-
-def format_echo_filter(value: float) -> str:
-    amount = echo_filter_amount(value)
-    if amount == 0.0:
-        return "FLAT"
-    return f"{'LP' if value < 0 else 'HP'} {round(amount * 100)}%"
-
-
-def echo_filter_frequencies(value: float) -> tuple[float, float]:
-    amount = echo_filter_amount(value)
-    if amount == 0.0:
-        return 60.0, 16000.0
-    if value < 0.0:
-        return 60.0, 16000.0 * ((400.0 / 16000.0) ** amount)
-    return 60.0 * ((4000.0 / 60.0) ** amount), 16000.0
-
-
-ECHO_FILTER_SPEC = ControlSpec(-1.0, 1.0, 0.0, format_echo_filter)
-
-PANEL_KNOBS = (
-    ("PITCH", "PITCH_POSITION"),
-    ("RATE", "RATE_POSITION"),
-    ("ECHO LEVEL", "ECHO_LEVEL"),
-    ("ECHO TIME", "DELAY_MS"),
-    ("ECHO FEEDBACK", "FEEDBACK"),
-    ("ECHO FILTER", "ECHO_FILTER"),
-)
+class PanelConfigError(ValueError):
+    pass
 
 DEFAULT_PANEL_STATE = {
     "revision": 0,
@@ -59,7 +30,17 @@ DEFAULT_PANEL_STATE = {
         "menuIndex": 0,
         "editing": False,
         "menuItems": [
-            "PROFILE", "BACK"
+            "PROFILE", "POTS", "BUTTONS", "ENCODER", "RESET_DEFAULTS", "BACK"
+        ],
+        "title": "SETTINGS",
+        "footer": "TURN SELECT / PUSH OPEN",
+        "rows": [
+            {"key": "PROFILE", "label": "PROFILE", "value": "CLASSIC"},
+            {"key": "POTS", "label": "POTS", "value": ""},
+            {"key": "BUTTONS", "label": "BUTTONS", "value": ""},
+            {"key": "ENCODER", "label": "ENCODER", "value": ""},
+            {"key": "RESET_DEFAULTS", "label": "RESET DEFAULTS", "value": ""},
+            {"key": "BACK", "label": "BACK", "value": ""},
         ],
         "profile": "CLASSIC", "voice": "SINE 1",
         "pitch": "MID", "rate": "MID", "hold": False, "echoCut": False,
@@ -79,38 +60,139 @@ def panel_config_path() -> Path:
     return base / "panel.json"
 
 
-def load_panel_config(path: Path) -> list[dict]:
+def _validated_panel_config(data: object) -> dict:
+    if not isinstance(data, dict) or data.get("schema") != PANEL_SCHEMA_VERSION:
+        raise PanelConfigError("panel.json has an unsupported or missing schema")
+    if data.get("potBehavior") not in ("PICKUP", "JUMP"):
+        raise PanelConfigError("panel.json has an invalid potBehavior")
+    encoder = data.get("encoder")
+    if (
+        not isinstance(encoder, dict)
+        or encoder.get("holdTurn") not in ("OFF", "LIVE_PITCH")
+        or not isinstance(encoder.get("step"), int)
+        or not isinstance(encoder.get("range"), int)
+        or not 1 <= encoder["step"] <= encoder["range"] <= 24
+    ):
+        raise PanelConfigError("panel.json has invalid encoder settings")
+    profiles = data.get("profiles")
+    if not isinstance(profiles, dict):
+        raise PanelConfigError("panel.json is missing profiles")
+    allowed_targets = {
+        "CLASSIC": {"NONE", "PITCH", "RATE", "ECHO LEVEL", "ECHO TIME",
+                    "ECHO FEEDBACK", "ECHO FILTER"},
+        "EXTENDED": {"NONE", "PITCH", "RATE", "LFO DEPTH", "ECHO LEVEL",
+                     "ECHO TIME", "ECHO FEEDBACK", "ECHO FILTER", "DECAY",
+                     "SWEEP AMOUNT", "SWEEP TIME"},
+    }
+    allowed_actions = {"NONE", "TRIGGER", "PLAY SOUND", "HOLD", "MOD UP",
+                       "MOD DOWN", "ECHO CUT", "ECHO LOOP", "ECHO SPIN"}
+    allowed_sounds = {"CLASSIC", "TWO TONE", "LICKSHOT", "PING"}
+    for profile_name in ("CLASSIC", "EXTENDED"):
+        profile = profiles.get(profile_name)
+        if not isinstance(profile, dict):
+            raise PanelConfigError(f"panel.json is missing {profile_name}")
+        pots = profile.get("pots")
+        buttons = profile.get("buttons")
+        if not isinstance(pots, list) or len(pots) != 6:
+            raise PanelConfigError(f"panel.json {profile_name} must contain six pots")
+        if not isinstance(buttons, list) or len(buttons) != 4:
+            raise PanelConfigError(f"panel.json {profile_name} must contain four buttons")
+        for pot in pots:
+            if not isinstance(pot, dict) or pot.get("target") not in allowed_targets[profile_name]:
+                raise PanelConfigError(f"panel.json has an invalid {profile_name} pot target")
+            if pot.get("mode") not in ("CONTINUOUS", "ZONES"):
+                raise PanelConfigError("panel.json has an invalid pot mode")
+            values = (pot.get("min"), pot.get("max"))
+            zones = pot.get("zones")
+            if (not all(isinstance(value, (int, float)) and math.isfinite(value) for value in values)
+                    or values[0] >= values[1]
+                    or not isinstance(zones, list) or len(zones) != 3
+                    or not all(isinstance(value, (int, float)) and math.isfinite(value) for value in zones)):
+                raise PanelConfigError("panel.json has invalid pot ranges")
+            if pot["mode"] == "ZONES":
+                if (profile_name != "CLASSIC" or pot["target"] not in ("PITCH", "RATE")
+                        or not zones[0] < zones[1] < zones[2]):
+                    raise PanelConfigError("panel.json has invalid zone values")
+        for button in buttons:
+            if not isinstance(button, dict) or button.get("action") not in allowed_actions:
+                raise PanelConfigError("panel.json has an invalid button action")
+            if (button.get("sound") not in allowed_sounds
+                    or not isinstance(button.get("variant"), int)
+                    or not isinstance(button.get("latch"), bool)):
+                raise PanelConfigError("panel.json has invalid Play Sound data")
+            if (profile_name == "CLASSIC" and button["action"] == "PLAY SOUND" and
+                    (button["sound"] != "CLASSIC" or button["variant"] >= 2)):
+                raise PanelConfigError("panel.json has an unsupported Classic sound")
+    return data
+
+
+def load_panel_config(path: Path) -> dict | None:
+    if not path.exists():
+        return None
     try:
         data = json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, ValueError, TypeError):
-        return []
-    pads = data.get("pads") if isinstance(data, dict) else None
-    if not isinstance(pads, list) or len(pads) != 4:
-        return []
-    result = []
-    for pad in pads:
-        if not isinstance(pad, dict):
-            return []
-        sound = pad.get("sound")
-        variant = pad.get("variantIndex")
-        if not isinstance(sound, str) or not isinstance(variant, int):
-            return []
-        result.append({"sound": sound, "variantIndex": variant})
-    return result
+    except OSError as exc:
+        raise PanelConfigError(f"cannot read panel.json: {exc}") from exc
+    except (ValueError, TypeError) as exc:
+        raise PanelConfigError(f"panel.json is not valid JSON: {exc}") from exc
+    return _validated_panel_config(data)
 
 
-def save_panel_config(path: Path, pads: list[dict]) -> None:
-    payload = {
-        "pads": [
-            {
-                "sound": pad["sound"],
-                "variantIndex": pad["variantIndex"],
-            }
-            for pad in pads
-        ]
-    }
+def save_panel_config(path: Path, settings: dict) -> None:
+    payload = json.loads(json.dumps(_validated_panel_config(settings)))
+    payload.pop("revision", None)
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+
+
+def panel_settings_commands(settings: dict) -> list[str]:
+    settings = _validated_panel_config(settings)
+    commands = ["PANEL BEGIN", f"PANEL BEHAVIOR {settings['potBehavior']}"]
+    encoder = settings["encoder"]
+    commands.append(
+        f"PANEL ENCODER {encoder['holdTurn']} {encoder['step']} {encoder['range']}"
+    )
+    for profile_name in ("CLASSIC", "EXTENDED"):
+        profile = settings["profiles"][profile_name]
+        for number, pot in enumerate(profile["pots"], start=1):
+            target = pot["target"].replace(" ", "_")
+            commands.append(f"PANEL POT {profile_name} {number} TARGET {target}")
+            commands.append(
+                f"PANEL POT {profile_name} {number} RANGE {pot['min']:.9g} {pot['max']:.9g}"
+            )
+            if pot["mode"] == "ZONES":
+                zones = " ".join(f"{value:.9g}" for value in pot["zones"])
+                commands.append(f"PANEL POT {profile_name} {number} MODE ZONES")
+                commands.append(f"PANEL POT {profile_name} {number} ZONES {zones}")
+        for number, button in enumerate(profile["buttons"], start=1):
+            action = button["action"].replace(" ", "_")
+            commands.append(f"PANEL BUTTON {profile_name} {number} ACTION {action}")
+            if button["action"] == "PLAY SOUND":
+                sound = button["sound"].replace(" ", "_")
+                commands.append(
+                    f"PANEL BUTTON {profile_name} {number} SOUND {sound} "
+                    f"{button['variant']} {int(button['latch'])}"
+                )
+    commands.append("PANEL COMMIT")
+    return commands
+
+
+def panel_settings_signature(settings: dict | None) -> object:
+    if settings is None:
+        return None
+    value = json.loads(json.dumps(settings))
+    value.pop("revision", None)
+
+    def normalized(item):
+        if isinstance(item, float):
+            return round(item, 5)
+        if isinstance(item, list):
+            return [normalized(child) for child in item]
+        if isinstance(item, dict):
+            return {key: normalized(child) for key, child in item.items()}
+        return item
+
+    return normalized(value)
 
 
 class DialControl(ttk.Frame):
@@ -409,16 +491,23 @@ class PhysicalDubSirenApp(DubSirenApp):
         }
         self.parameter_values["HPF_HZ"] = 60.0
         self.parameter_values["LPF_HZ"] = 7000.0
-        self.echo_filter_macro = 0.0
-        self.echo_filter_active = True
         self.panel_state = json.loads(json.dumps(DEFAULT_PANEL_STATE))
         self._last_menu_revision = 0
         self._panel_status_seen = False
         self._input_sources: dict[str, set[str]] = {}
         self._encoder_sources: set[str] = set()
         self._saved_config_applied = False
+        self._virtual_restore_pending = False
+        self._connected_virtual = False
+        self._last_saved_settings_revision: int | None = None
         self._panel_config_path = panel_config_path()
-        self._saved_pad_configs = load_panel_config(self._panel_config_path)
+        self._panel_config_error: str | None = None
+        self._panel_io_error: str | None = None
+        try:
+            self._saved_panel_config = load_panel_config(self._panel_config_path)
+        except PanelConfigError as exc:
+            self._saved_panel_config = None
+            self._panel_config_error = str(exc)
         self.overlay_token: str | None = None
         self.dials: dict[str, DialControl] = {}
         super().__init__(root)
@@ -487,11 +576,7 @@ class PhysicalDubSirenApp(DubSirenApp):
                 panel,
                 label,
                 command_name,
-                (
-                    ECHO_FILTER_SPEC
-                    if command_name == "ECHO_FILTER"
-                    else CONTROL_SPECS[command_name]
-                ),
+                FRONT_POT_SPEC,
                 self._panel_parameter_changed,
             )
             dial.grid(
@@ -592,7 +677,6 @@ class PhysicalDubSirenApp(DubSirenApp):
             text="KEYS  1–4 pads   [ / ] encoder   E press",
             justify="right",
         ).pack(side="right", padx=12)
-        self.dials["ECHO_FILTER"].value_label.configure(text="FLAT")
         self._update_pad_labels()
 
     def _panel_parameter_changed(
@@ -601,48 +685,31 @@ class PhysicalDubSirenApp(DubSirenApp):
         value: float,
         final: bool,
     ) -> None:
-        if name == "ECHO_FILTER":
-            self.echo_filter_macro = value
-            self.echo_filter_active = True
-            self._show_overlay("FILTER", format_echo_filter(value))
+        self.parameter_values[name] = value
+        if name.startswith("POT_"):
+            number = int(name.removeprefix("POT_"))
+            send = lambda: self._send(f"POT {number} {self.parameter_values[name]:.6g}")
         else:
-            self.parameter_values[name] = value
-            if name in ("PITCH_POSITION", "RATE_POSITION"):
-                self._update_control_activity()
-                if self.panel_state.get("display", {}).get("profile", "CLASSIC") == "CLASSIC":
-                    key = "pitch" if name == "PITCH_POSITION" else "rate"
-                    self._show_overlay(key.upper(), self.panel_state["display"].get(key, "MID"))
-                else:
-                    target = "TUNE_HZ" if name == "PITCH_POSITION" else "LFO_RATE_HZ"
-                    actual = CONTROL_SPECS[target].from_normalized(value)
-                    self.parameter_values[target] = actual
-                    self._show_overlay("TUNE" if name == "PITCH_POSITION" else "RATE", CONTROL_SPECS[target].formatter(actual))
-            else:
-                self._show_overlay(self._parameter_label(name), CONTROL_SPECS[name].formatter(value))
+            self._show_overlay(self._parameter_label(name), CONTROL_SPECS[name].formatter(value))
+            send = lambda: self._send_parameter(name, self.parameter_values[name])
 
         if final:
             pending = self.pending_sends.pop(name, None)
             if pending is not None:
                 self.root.after_cancel(pending)
-            if name == "ECHO_FILTER":
-                self._apply_echo_filter()
-            else:
-                self._send_parameter(name, value)
+            send()
         elif name not in self.pending_sends:
-            callback = (
-                self._flush_echo_filter
-                if name == "ECHO_FILTER"
-                else lambda parameter=name: self._flush_panel_parameter(parameter)
+            self.pending_sends[name] = self.root.after(
+                25, lambda parameter=name: self._flush_panel_parameter(parameter)
             )
-            self.pending_sends[name] = self.root.after(25, callback)
-
-    def _flush_echo_filter(self) -> None:
-        self.pending_sends.pop("ECHO_FILTER", None)
-        self._apply_echo_filter()
 
     def _flush_panel_parameter(self, name: str) -> None:
         self.pending_sends.pop(name, None)
-        self._send_parameter(name, self.parameter_values[name])
+        if name.startswith("POT_"):
+            number = int(name.removeprefix("POT_"))
+            self._send(f"POT {number} {self.parameter_values[name]:.6g}")
+        else:
+            self._send_parameter(name, self.parameter_values[name])
 
     def _parameter_label(self, name: str) -> str:
         return {
@@ -681,48 +748,13 @@ class PhysicalDubSirenApp(DubSirenApp):
             self._send("ENCODER_SWITCH 0")
 
     def _menu_items(self) -> list[tuple[str, str, str]]:
-        selected = int(self.panel_state["selectedPad"])
-        pad = self.panel_state["pads"][selected - 1]
         display = self.panel_state.get("display", {})
-        values = {
-            "PROFILE": "EXTENDED" if display.get("profile", "CLASSIC") == "CLASSIC" else "DS01E",
-            "PAD": str(selected),
-            "ASSIGNMENT": pad["sound"],
-            "VARIANT": pad["variant"],
-            "HOLD": "ON" if pad["hold"] else "OFF",
-            "ECHO_LOOP": "ON" if display.get("echoLoop") else "OFF",
-            "BACK": "",
-        }
-        labels = {
-            "PROFILE": "SWITCH TO",
-            "PAD": "CONFIGURE PAD",
-            "ASSIGNMENT": "ASSIGNMENT",
-            "VARIANT": "VARIANT",
-            "HOLD": "HOLD",
-            "ECHO_LOOP": "ECHO LOOP",
-            "BACK": "BACK",
-        }
         return [
-            (key, labels[key], values[key])
-            for key in display.get("menuItems", ())
-            if key in labels
+            (str(row.get("key", "")), str(row.get("label", "")),
+             str(row.get("value", "")))
+            for row in display.get("rows", ())
+            if isinstance(row, dict)
         ]
-
-    def _apply_echo_filter(self) -> None:
-        hpf, lpf = echo_filter_frequencies(self.echo_filter_macro)
-
-        self.parameter_values["HPF_HZ"] = hpf
-        self.parameter_values["LPF_HZ"] = lpf
-        self._send_parameter("ECHO_FILTER", self.echo_filter_macro)
-
-    def _format_echo_filter(self) -> str:
-        if abs(self.echo_filter_macro) < 0.001:
-            return "FLAT"
-        return (
-            "LOW PASS"
-            if self.echo_filter_macro < 0.0
-            else "HIGH PASS"
-        )
 
     def _pad_down(self, pad: int, source: str) -> None:
         action = f"PAD_{pad}"
@@ -786,37 +818,44 @@ class PhysicalDubSirenApp(DubSirenApp):
     def _update_pad_labels(self) -> None:
         if not hasattr(self, "pad_buttons"):
             return
+        actions = self.panel_state.get("display", {}).get("buttons", [])
+        profile_name = self.panel_state.get("display", {}).get("profile", "CLASSIC")
+        configured_buttons = self.panel_state.get("settings", {}).get(
+            "profiles", {}
+        ).get(profile_name, {}).get("buttons", [])
         for number, (button, pad) in enumerate(
             zip(self.pad_buttons, self.panel_state["pads"]), start=1
         ):
-            baseline = self.panel_state.get("display", {}).get("profile", "CLASSIC") == "CLASSIC"
-            label = ("TRIGGER", "HOLD", "MANUAL MOD", "ECHO CUT")[number - 1] if baseline else pad["sound"]
+            action = actions[number - 1] if len(actions) == 4 else "PLAY SOUND"
+            if action == "PLAY SOUND" and len(configured_buttons) == 4:
+                label = configured_buttons[number - 1].get("sound", pad["sound"])
+            else:
+                label = pad["sound"] if action == "PLAY SOUND" else action
             button.configure(text=f"BTN{number} - {label}")
         self._update_control_activity()
 
     def _update_control_activity(self) -> None:
         display = self.panel_state.get("display", {})
-        baseline = display.get("profile", "CLASSIC") == "CLASSIC"
-        current = int(self.panel_state.get("currentPad", 1))
-        ping = not baseline and self.panel_state["pads"][current - 1]["sound"] == "PING"
-        for name, key, target in (("PITCH_POSITION", "pitch", "TUNE_HZ"), ("RATE_POSITION", "rate", "LFO_RATE_HZ")):
+        profile_name = display.get("profile", "CLASSIC")
+        settings = self.panel_state.get("settings", {})
+        profile = settings.get("profiles", {}).get(profile_name, {})
+        pots = profile.get("pots", [])
+        for number in range(1, 7):
+            name = f"POT_{number}"
             if name not in self.dials:
                 continue
-            dial = self.dials[name]
-            dial.set_active(not (ping and key == "rate"))
-            if baseline:
-                label = display.get(key, "MID")
-            elif ping and key == "rate":
-                label = "INACTIVE FOR PING"
-            else:
-                label = CONTROL_SPECS[target].formatter(self.parameter_values[target])
-            dial.value_label.configure(text=label)
+            target = pots[number - 1].get("target", "CONNECT") if len(pots) == 6 else "CONNECT"
+            self.dials[name].set_active(True)
+            self.dials[name].value_label.configure(text=target)
 
     def _show_overlay(
         self,
         title: str,
         value: str,
     ) -> None:
+        if self.panel_state.get("display", {}).get("mode") != "HOME":
+            self._refresh_display()
+            return
         if self.overlay_token is not None:
             self.root.after_cancel(self.overlay_token)
         self.display.render_overlay(title, value)
@@ -838,12 +877,15 @@ class PhysicalDubSirenApp(DubSirenApp):
         display = self.panel_state.get("display", DEFAULT_PANEL_STATE["display"])
         if display.get("mode") == "HOME" and display.get("profile", "CLASSIC") == "CLASSIC":
             params = dict(self.parameter_values, PROFILE="CLASSIC",
-                          PITCH=display.get("pitch", "MID"), RATE=display.get("rate", "MID"),
+                          PITCH=(display.get("pitch", "MID")
+                                 if display.get("pitchMode", "ZONES") == "ZONES" else ""),
+                          RATE=(display.get("rate", "MID")
+                                if display.get("rateMode", "ZONES") == "ZONES" else ""),
                           ECHO_CUT=display.get("echoCut", False))
             self.display.render_home(1, 1, display.get("voice", "SINE 1"), "DS01E / CLASSIC", "",
                                      bool(display.get("hold")), bool(display.get("echoLoop")),
                                      self.transport.connected, params,
-                                     format_echo_filter(self.echo_filter_macro))
+                                     str(display.get("filter", "FLAT")))
         elif display.get("mode") == "HOME":
             selected = int(self.panel_state["selectedPad"])
             current = int(self.panel_state.get("currentPad", selected))
@@ -864,8 +906,7 @@ class PhysicalDubSirenApp(DubSirenApp):
                 bool(display.get("echoLoop")),
                 self.transport.connected,
                 self.parameter_values,
-                format_echo_filter(self.echo_filter_macro)
-                if self.echo_filter_active else "CUSTOM",
+                str(display.get("filter", "CUSTOM")),
             )
         else:
             items = self._menu_items()
@@ -879,6 +920,8 @@ class PhysicalDubSirenApp(DubSirenApp):
                 ],
                 menu_index,
                 bool(display.get("editing")),
+                str(display.get("title", "SETTINGS")),
+                str(display.get("footer", "")),
             )
 
     def _send_parameter(
@@ -892,51 +935,53 @@ class PhysicalDubSirenApp(DubSirenApp):
         selected = self._selected_output()
         self._send(f"SET OUTPUT {selected}")
         self.active_output = selected
-
-        self._send("SET PROFILE CLASSIC")
-        live_parameters = (
-            "PITCH_POSITION", "RATE_POSITION", "DELAY_MS",
-            "FEEDBACK", "ECHO_LEVEL", "MASTER",
-        )
-        for name in live_parameters:
-            value = self.parameter_values[name]
-            self._send_parameter(name, value)
-        if self.echo_filter_active:
-            self._apply_echo_filter()
-        self._send_bool("ECHO_LOOP", self.echo_loop_var.get())
         self._send("PANEL_RESET")
-        if not self._saved_config_applied:
+        if self._connected_virtual and not self._saved_config_applied:
             self._saved_config_applied = True
-            for number, pad in enumerate(self._saved_pad_configs, start=1):
-                sound = pad["sound"].replace(" ", "_")
-                self._send(
-                    f"PAD_CONFIG {number} {sound} {pad['variantIndex']} 0"
-                )
+            if self._saved_panel_config is not None:
+                self._virtual_restore_pending = True
+                try:
+                    for command in panel_settings_commands(self._saved_panel_config):
+                        self.transport.send(command)
+                except Exception as exc:
+                    try:
+                        self.transport.send("PANEL CANCEL")
+                    except Exception:
+                        pass
+                    self._virtual_restore_pending = False
+                    self._panel_io_error = f"panel.json apply failed: {exc}"
+                    self.connection_var.set(self._panel_io_error)
+            elif self._panel_config_error:
+                self.connection_var.set(self._panel_config_error)
         self._refresh_display()
 
     def _handle_status(self, status: object) -> None:
         if isinstance(status, dict):
+            self._connected_virtual = status.get("virtual") is True
             panel = status.get("panel")
             if (
                 isinstance(panel, dict)
                 and isinstance(panel.get("pads"), list)
                 and len(panel["pads"]) == 4
             ):
-                old_pad_config = [
-                    (pad.get("sound"), pad.get("variantIndex"))
-                    for pad in self.panel_state.get("pads", ())
-                ]
                 old_display = self.panel_state.get("display", {})
                 menu_revision = int(panel.get("menuRevision", 0))
                 self._panel_status_seen = True
                 self._last_menu_revision = menu_revision
                 self.panel_state = panel
                 display = panel.get("display", {})
-                for key, parameter in (("tuneHz", "TUNE_HZ"), ("rateHz", "LFO_RATE_HZ")):
+                for key, parameter in (
+                    ("tuneHz", "TUNE_HZ"), ("rateHz", "LFO_RATE_HZ"),
+                    ("depth", "LFO_DEPTH_OCT"), ("echoLevel", "ECHO_LEVEL"),
+                    ("delayMs", "DELAY_MS"), ("feedback", "FEEDBACK"),
+                    ("master", "MASTER"),
+                ):
                     if key in display:
                         self.parameter_values[parameter] = float(display[key])
                 for key, title in (("pitch", "PITCH"), ("rate", "RATE")):
-                    if display.get(key) != old_display.get(key) and display.get("profile") == "CLASSIC":
+                    if (display.get("mode") == "HOME"
+                            and display.get(key) != old_display.get(key)
+                            and display.get("profile") == "CLASSIC"):
                         self._show_overlay(title, display.get(key, "MID"))
                 if "depth" in display:
                     old_depth = self.parameter_values["LFO_DEPTH_OCT"]
@@ -954,25 +999,60 @@ class PhysicalDubSirenApp(DubSirenApp):
                         )
                 if "echoLoop" in display:
                     self.echo_loop_var.set(bool(display["echoLoop"]))
+                if "MASTER" in self.dials and hasattr(self.dials["MASTER"], "set_value"):
+                    self.dials["MASTER"].set_value(self.parameter_values["MASTER"])
                 self._update_pad_labels()
                 if old_display.get("mode") != display.get("mode"):
                     if self.overlay_token is not None:
                         self.root.after_cancel(self.overlay_token)
                         self.overlay_token = None
-                new_pad_config = [
-                    (pad.get("sound"), pad.get("variantIndex"))
-                    for pad in panel["pads"]
-                ]
-                if self._saved_config_applied and old_pad_config != new_pad_config:
-                    try:
-                        save_panel_config(self._panel_config_path, panel["pads"])
-                    except OSError:
-                        pass
+                overlay = display.get("overlay", {})
+                if (
+                    display.get("mode") == "HOME"
+                    and isinstance(overlay, dict)
+                    and overlay.get("title")
+                    and overlay != old_display.get("overlay", {})
+                ):
+                    self._show_overlay(str(overlay["title"]), str(overlay.get("value", "")))
+
+                settings = panel.get("settings")
+                if self._connected_virtual and isinstance(settings, dict):
+                    settings_revision = int(settings.get("revision", 0))
+                    comparable = panel_settings_signature(settings)
+                    saved = panel_settings_signature(self._saved_panel_config)
+                    if self._virtual_restore_pending:
+                        if saved == comparable:
+                            self._virtual_restore_pending = False
+                            self._last_saved_settings_revision = settings_revision
+                    elif self._last_saved_settings_revision is None:
+                        self._last_saved_settings_revision = settings_revision
+                    elif settings_revision != self._last_saved_settings_revision:
+                        self._last_saved_settings_revision = settings_revision
+                        try:
+                            save_panel_config(self._panel_config_path, settings)
+                            self._saved_panel_config = comparable
+                        except (OSError, PanelConfigError) as exc:
+                            self._panel_io_error = f"panel.json save failed: {exc}"
+                            self.connection_var.set(self._panel_io_error)
+                if panel.get("persistenceStatus"):
+                    self.connection_var.set(str(panel["persistenceStatus"]))
         super()._handle_status(status)
+        if isinstance(status, dict) and isinstance(status.get("panel"), dict):
+            persistence_status = status["panel"].get("persistenceStatus")
+            if persistence_status:
+                self.connection_var.set(str(persistence_status))
+        if self._panel_config_error and self._connected_virtual:
+            self.connection_var.set(self._panel_config_error)
+        elif self._panel_io_error and self._connected_virtual:
+            self.connection_var.set(self._panel_io_error)
         self._refresh_display()
 
     def connect(self) -> None:
         self._saved_config_applied = False
+        self._virtual_restore_pending = False
+        self._connected_virtual = False
+        self._last_saved_settings_revision = None
+        self._panel_io_error = None
         self._panel_status_seen = False
         super().connect()
         self._refresh_display()

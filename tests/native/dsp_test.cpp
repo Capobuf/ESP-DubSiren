@@ -173,7 +173,8 @@ void testParser() {
     assert(!parser.parse("SET PROFILE NOPE"));
     assert(parser.parse("SET PROFILE EXTENDED"));
     state = store.snapshot();
-    assert(state.profile == PerformanceProfile::Extended && state.tuneHz == 333.0f);
+    assert(state.profile == PerformanceProfile::Extended &&
+           fabsf(state.tuneHz - PerformanceConfig::kClassicPitchHz[2]) < .001f);
 
     assert(parser.parse("SET MODE LICKSHOT"));
     assert(store.snapshot().mode == SirenMode::Lickshot);
@@ -280,7 +281,7 @@ void testPadController() {
     assert(store.snapshot().mode == SirenMode::Sine2);
     assert(store.snapshot().hold);
     assert(parser.parse("PAD 3 1"));
-    assert(!parser.padHold(1));
+    assert(parser.padHold(1));
     assert(parser.parse("PAD 3 0"));
 
     assert(parser.parse("PAD_CONFIG 3 PING 0 0"));
@@ -334,37 +335,36 @@ void testPanelDisplayState() {
     assert(fabsf(store.snapshot().lfoDepthOctaves - 1.05f) < 0.0001f);
 
     assert(parser.parse("ENCODER_SWITCH 1"));
+    assert(strcmp(parser.displayModeName(), "HOME") == 0);
     assert(parser.parse("ENCODER_SWITCH 0"));
     assert(strcmp(parser.displayModeName(), "MENU") == 0);
     assert(parser.menuIndex() == 0 && !parser.menuEditing());
-    assert(parser.menuItemCount() == 7);
-    assert(strcmp(parser.menuItemKey(0), "PAD") == 0);
+    assert(parser.menuItemCount() == 6);
+    assert(strcmp(parser.menuTitle(), "SETTINGS") == 0);
+    assert(strcmp(parser.menuItemKey(0), "PROFILE") == 0);
+    assert(strcmp(parser.menuItemLabel(1), "POTS") == 0);
 
     assert(parser.parse("ENCODER_ROTATE NEXT"));
     assert(parser.menuIndex() == 1);
     assert(parser.parse("ENCODER_SWITCH 1"));
     assert(parser.parse("ENCODER_SWITCH 0"));
+    assert(!parser.menuEditing());
+    assert(strcmp(parser.menuTitle(), "POT CONTROLS") == 0);
+    assert(strcmp(parser.menuItemKey(0), "BEHAVIOR") == 0);
+
+    assert(parser.parse("ENCODER_ROTATE NEXT"));
+    assert(parser.parse("ENCODER_SWITCH 1"));
+    assert(parser.parse("ENCODER_SWITCH 0"));
+    assert(strcmp(parser.menuTitle(), "POT 1 - PITCH") == 0);
+    assert(strcmp(parser.menuItemKey(0), "FUNCTION") == 0);
+    assert(parser.parse("ENCODER_SWITCH 1"));
+    assert(parser.parse("ENCODER_SWITCH 0"));
     assert(parser.menuEditing());
     assert(parser.parse("ENCODER_ROTATE NEXT"));
-    assert(strcmp(parser.padSoundName(1), "TWO TONE") == 0);
+    assert(parser.panelSettings().profiles[1].pots[0].target == PotTarget::Rate);
     assert(parser.parse("ENCODER_SWITCH 1"));
     assert(parser.parse("ENCODER_SWITCH 0"));
     assert(!parser.menuEditing());
-
-    assert(parser.parse("ENCODER_ROTATE NEXT"));
-    assert(strcmp(parser.menuItemKey(parser.menuIndex()), "VARIANT") == 0);
-    assert(parser.parse("ENCODER_SWITCH 1"));
-    assert(parser.parse("ENCODER_SWITCH 0"));
-    assert(parser.parse("ENCODER_ROTATE NEXT"));
-    assert(strcmp(parser.padVariantName(1), "TRIANGLE") == 0);
-    assert(parser.parse("ENCODER_SWITCH 1"));
-    assert(parser.parse("ENCODER_SWITCH 0"));
-
-    for (int i = 0; i < 4; ++i) assert(parser.parse("ENCODER_ROTATE NEXT"));
-    assert(strcmp(parser.menuItemKey(parser.menuIndex()), "BACK") == 0);
-    assert(parser.parse("ENCODER_SWITCH 1"));
-    assert(parser.parse("ENCODER_SWITCH 0"));
-    assert(strcmp(parser.displayModeName(), "HOME") == 0);
 }
 
 void testDynamicSweep() {
@@ -976,7 +976,7 @@ void testClassicControls() {
         assert(static_cast<int>(store.snapshot().mode) == i);
         assert(parser.parse("ENCODER_ROTATE NEXT"));
         assert(store.snapshot().lfoDepthOctaves == 1.0f);
-        assert(store.snapshot().tuneHz == 220.0f);
+        assert(fabsf(store.snapshot().tuneHz - PerformanceConfig::kClassicPitchHz[1]) < .001f);
     }
     assert(store.snapshot().mode == SirenMode::Sine1);
     assert(parser.parse("ENCODER_ROTATE PREV"));
@@ -1001,10 +1001,14 @@ void testClassicControls() {
     assert(parser.parse("PANEL_RESET"));
     assert(!store.snapshot().modUp && !store.snapshot().echoCut);
     assert(parser.parse("ENCODER_SWITCH 1"));
+    assert(strcmp(parser.displayModeName(), "HOME") == 0);
+    assert(parser.parse("ENCODER_SWITCH 0"));
     assert(strcmp(parser.displayModeName(), "MENU") == 0);
     assert(strcmp(parser.menuItemKey(0), "PROFILE") == 0);
-    assert(parser.parse("ENCODER_SWITCH 0"));
     assert(parser.parse("ENCODER_SWITCH 1"));
+    assert(parser.parse("ENCODER_SWITCH 0"));
+    assert(parser.menuEditing());
+    assert(parser.parse("ENCODER_ROTATE NEXT"));
     assert(store.snapshot().profile == PerformanceProfile::Extended);
 }
 
@@ -1075,6 +1079,158 @@ void testSelectors() {
     assert(!store.snapshot().echoFilterFlat && fabsf(store.snapshot().lowPassHz - 400) < .01f);
     assert(parser.parse("SET ECHO_FILTER 1"));
     assert(fabsf(store.snapshot().highPassHz - 4000) < .01f);
+}
+
+void testConfigurablePanel() {
+    ControlStore store;
+    CommandParser parser(store);
+    const PanelSettings &factory = parser.panelSettings();
+    assert(factory.schemaVersion == PanelSettings::kSchemaVersion);
+    assert(factory.potBehavior == PotBehavior::Pickup);
+    assert(factory.profiles[0].pots[0].target == PotTarget::Pitch);
+    assert(factory.profiles[0].pots[0].mode == PotMode::Zones);
+    assert(factory.profiles[0].pots[1].target == PotTarget::Rate);
+    assert(factory.profiles[0].buttons[0].action == ButtonAction::Trigger);
+    assert(factory.profiles[0].buttons[1].action == ButtonAction::Hold);
+    assert(factory.profiles[0].buttons[2].action == ButtonAction::ModUp);
+    assert(factory.profiles[0].buttons[3].action == ButtonAction::EchoCut);
+    for (unsigned button = 0; button < 4; ++button)
+        assert(factory.profiles[1].buttons[button].action == ButtonAction::PlaySound);
+
+    // Pickup waits for a crossing after an external parameter change.
+    assert(parser.parse("SET CLASSIC_PITCH MID"));
+    const float baseTune = store.snapshot().tuneHz;
+    assert(parser.parse("POT 1 0"));
+    assert(store.snapshot().classicPitch == ClassicPitch::Mid);
+    assert(store.snapshot().tuneHz == baseTune);
+    assert(parser.pickupWaiting(1) && parser.pickupDirection(1) > 0);
+    assert(parser.parse("POT 1 0.9"));
+    assert(store.snapshot().classicPitch == ClassicPitch::High);
+    assert(!parser.pickupWaiting(1));
+
+    assert(parser.parse("PANEL BEHAVIOR JUMP"));
+    assert(parser.parse("POT 1 0"));
+    assert(store.snapshot().classicPitch == ClassicPitch::Low);
+    assert(fabsf(store.snapshot().tuneHz - PerformanceConfig::kClassicPitchHz[0]) < .001f);
+    assert(parser.parse("POT 2 1"));
+    assert(store.snapshot().classicModulation == ClassicModulation::Manual);
+
+    // Continuous endpoints and validated ranges are owned by the C++ descriptor.
+    assert(parser.parse("PANEL POT CLASSIC 1 MODE CONTINUOUS"));
+    assert(!store.snapshot().pitchZonesActive);
+    assert(parser.parse("PANEL POT CLASSIC 1 RANGE 100 800"));
+    assert(parser.parse("POT 1 0"));
+    assert(fabsf(store.snapshot().tuneHz - 100.0f) < .001f);
+    assert(parser.parse("POT 1 1"));
+    assert(fabsf(store.snapshot().tuneHz - 800.0f) < .01f);
+    const PotConfig validRange = parser.panelSettings().profiles[0].pots[0];
+    assert(!parser.parse("PANEL POT CLASSIC 1 RANGE 900 100"));
+    assert(parser.panelSettings().profiles[0].pots[0].minimum == validRange.minimum);
+    assert(parser.panelSettings().profiles[0].pots[0].maximum == validRange.maximum);
+    assert(!parser.parse("PANEL POT CLASSIC 1 RANGE 20 100"));
+
+    assert(parser.parse("PANEL POT CLASSIC 1 MODE ZONES"));
+    assert(store.snapshot().pitchZonesActive);
+    assert(parser.parse("PANEL POT CLASSIC 1 ZONES 220 440 880"));
+    assert(!parser.parse("PANEL POT CLASSIC 1 ZONES 440 220 880"));
+    assert(parser.panelSettings().profiles[0].pots[0].zones[1] == 440.0f);
+
+    // Settings are independent per profile and unsupported targets are rejected.
+    assert(parser.parse("PANEL POT CLASSIC 3 TARGET NONE"));
+    assert(parser.parse("PANEL POT EXTENDED 3 TARGET DECAY"));
+    assert(!parser.parse("PANEL POT CLASSIC 3 TARGET DECAY"));
+    assert(parser.panelSettings().profiles[0].pots[2].target == PotTarget::None);
+    assert(parser.panelSettings().profiles[1].pots[2].target == PotTarget::Decay);
+    assert(parser.parse("SET PROFILE EXTENDED"));
+    assert(!store.snapshot().pitchZonesActive);
+    assert(!store.snapshot().rateZonesActive);
+    assert(parser.parse("SET PROFILE CLASSIC"));
+    assert(store.snapshot().pitchZonesActive);
+    assert(store.snapshot().rateZonesActive);
+    assert(parser.panelSettings().profiles[1].pots[2].target == PotTarget::Decay);
+
+    // Configured momentary and toggle button semantics remain finite and explicit.
+    assert(parser.parse("PANEL BUTTON CLASSIC 1 ACTION ECHO_LOOP"));
+    assert(parser.parse("PAD 1 1"));
+    assert(store.snapshot().echoLoop);
+    assert(parser.parse("PAD 1 0"));
+    assert(store.snapshot().echoLoop);
+    assert(parser.parse("PANEL BUTTON CLASSIC 4 ACTION ECHO_CUT"));
+    assert(parser.parse("PAD 4 1"));
+    assert(store.snapshot().echoCut);
+    assert(parser.parse("PAD 4 0"));
+    assert(!store.snapshot().echoCut);
+    assert(!parser.parse("PANEL BUTTON CLASSIC 2 ACTION SCRIPT"));
+
+    assert(parser.parse("SET PROFILE EXTENDED"));
+    assert(parser.parse("PANEL BUTTON EXTENDED 2 SOUND TWO_TONE 2 1"));
+    assert(parser.parse("PANEL BUTTON EXTENDED 3 ACTION HOLD"));
+    assert(parser.parse("PAD 2 1"));
+    assert(store.snapshot().mode == SirenMode::Square && store.snapshot().hold);
+    assert(parser.parse("PAD 2 0"));
+    assert(store.snapshot().hold);
+    assert(parser.parse("PAD 3 1"));
+    assert(parser.parse("PAD 3 0"));
+    assert(store.snapshot().hold);
+    assert(parser.parse("PAD 3 1"));
+    assert(parser.parse("PAD 3 0"));
+    assert(store.snapshot().hold);
+    assert(!parser.parse("PANEL BUTTON EXTENDED 4 SOUND PING 0 1"));
+
+    // Live pitch is transient, clamped and does not alter the stored base tune.
+    assert(parser.parse("PANEL RESET_DEFAULTS"));
+    assert(parser.parse("SET PROFILE CLASSIC"));
+    const float storedTune = store.snapshot().tuneHz;
+    assert(parser.parse("PANEL ENCODER LIVE_PITCH 1 2"));
+    assert(parser.parse("PAD 1 1"));
+    for (int detent = 0; detent < 5; ++detent)
+        assert(parser.parse("ENCODER_ROTATE NEXT"));
+    assert(store.snapshot().liveTransposeSemitones == 2);
+    assert(store.snapshot().tuneHz == storedTune);
+    assert(strcmp(parser.displayModeName(), "HOME") == 0);
+    assert(parser.parse("PAD 1 0"));
+    assert(store.snapshot().liveTransposeSemitones == 0);
+
+    assert(parser.parse("SET PROFILE EXTENDED"));
+    assert(parser.parse("PANEL BUTTON EXTENDED 1 ACTION TRIGGER"));
+    assert(parser.parse("SET MODE GUNSHOT"));
+    assert(parser.parse("PAD 1 1"));
+    assert(parser.parse("ENCODER_ROTATE NEXT"));
+    assert(store.snapshot().liveTransposeSemitones == 0);
+    assert(strcmp(parser.overlayValue(), "N/A") == 0);
+    assert(parser.parse("PAD 1 0"));
+
+    // Rear Master remains direct and is never subject to Pickup.
+    assert(parser.parse("SET MASTER 0.23"));
+    assert(fabsf(store.snapshot().masterVolume - .23f) < .0001f);
+
+    assert(parser.parse("PANEL RESET_DEFAULTS"));
+    assert(parser.panelSettings().potBehavior == PotBehavior::Pickup);
+    assert(parser.panelSettings().profiles[0].pots[0].mode == PotMode::Zones);
+    assert(parser.panelSettings().profiles[1].buttons[3].sound == PanelSound::Ping);
+
+    assert(parser.parse("PANEL BEGIN"));
+    assert(parser.parse("PANEL POT CLASSIC 1 TARGET NONE"));
+    assert(parser.panelSettings().profiles[0].pots[0].target == PotTarget::Pitch);
+    assert(!parser.parse("PANEL POT CLASSIC 2 RANGE 100 1"));
+    assert(!parser.parse("PANEL COMMIT"));
+    assert(parser.panelSettings().profiles[0].pots[0].target == PotTarget::Pitch);
+    assert(parser.parse("PANEL BEGIN"));
+    assert(parser.parse("PANEL POT CLASSIC 1 TARGET NONE"));
+    assert(parser.parse("PANEL COMMIT"));
+    assert(parser.panelSettings().profiles[0].pots[0].target == PotTarget::None);
+    assert(parser.parse("PANEL RESET_DEFAULTS"));
+
+    ControlState transposeState;
+    transposeState.mode = SirenMode::TestTone;
+    transposeState.classicModulation = ClassicModulation::Manual;
+    transposeState.classicPitchUsesTune = true;
+    transposeState.tuneHz = 392.0f;
+    transposeState.modUp = true;
+    transposeState.liveTransposeSemitones = 12;
+    const float transposed = renderFrequency(transposeState);
+    assert(transposed > 780.0f && transposed < 788.0f);
+    assert(transposeState.tuneHz == 392.0f);
 }
 
 void testClassicDryRelease() {
@@ -1239,6 +1395,7 @@ int main() {
     testClassicControls();
     testClassicCalibration();
     testSelectors();
+    testConfigurablePanel();
     testClassicDryRelease();
     testWetIsolation();
     testSingleRepeatAndFeedback();

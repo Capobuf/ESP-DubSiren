@@ -88,8 +88,12 @@ sorgenti cambiano.
 La superficie predefinita presenta PITCH, RATE, ECHO LEVEL, ECHO TIME,
 ECHO FEEDBACK ed ECHO FILTER; BTN1 TRIGGER, BTN2 HOLD, BTN3 MANUAL MOD e
 BTN4 ECHO CUT. L'encoder cicla i quattro voicing; premendolo si apre il menu
-con accesso a Extended. Il Master resta separato sul retro. La Home 320x172
-mostra voicing, Pitch/Rate e stato Hold/Echo, con overlay temporanei dei pot.
+al rilascio del click. I sei pot e i quattro pulsanti sono configurabili per
+profilo dal controller C++ condiviso; Pickup evita salti dopo cambio profilo o
+parametro. Mentre un pulsante sonoro e' fisicamente premuto, l'encoder applica
+un transpose live temporaneo. Il Master resta separato e non assegnabile sul
+retro. La Home 320x172 mostra insieme etichette e valori fisici, con overlay
+temporanei dei pot.
 Il prodotto finale userà un display piccolo, principalmente testuale, per
 stato, parametri, menu e impostazioni. Classic ed Extended mostrano solo testo;
 il driver ST7789 usa la configurazione del 5393, ancora da verificare su hardware.
@@ -109,7 +113,7 @@ Con l'hardware reale:
 
 1. premere **Refresh** e scegliere la COM Espressif;
 2. scegliere **PC**, **PCM5102A** o **Both** nel selettore Output;
-3. premere **Connect** e attendere `Connected · firmware 0.8.0`;
+3. premere **Connect** e attendere `Connected · firmware 0.9.0`;
 4. premere **Start Audio**;
 5. usare BTN1 Trigger, BTN2 Hold, BTN3 Manual Mod e BTN4 Echo Cut;
    ruotare l'encoder per scegliere il voicing, premerlo per il menu.

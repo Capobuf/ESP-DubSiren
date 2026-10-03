@@ -155,6 +155,40 @@ class VirtualTransport:
         library.virtual_esp_menu_item_count.restype = ctypes.c_uint
         library.virtual_esp_menu_item_key.argtypes = [ctypes.c_uint]
         library.virtual_esp_menu_item_key.restype = ctypes.c_char_p
+        for name in (
+            "menu_item_label", "menu_item_value",
+        ):
+            function = getattr(library, "virtual_esp_" + name)
+            function.argtypes = [ctypes.c_uint]
+            function.restype = ctypes.c_char_p
+        for name in (
+            "menu_title", "menu_footer", "overlay_title", "overlay_value",
+            "pot_behavior", "encoder_action",
+            "echo_filter_name",
+        ):
+            function = getattr(library, "virtual_esp_" + name)
+            function.argtypes = []
+            function.restype = ctypes.c_char_p
+        for name in (
+            "settings_revision", "settings_schema", "encoder_step", "encoder_range",
+        ):
+            function = getattr(library, "virtual_esp_" + name)
+            function.argtypes = []
+            function.restype = ctypes.c_uint
+        for name in ("pot_target", "pot_mode", "button_action", "button_sound"):
+            function = getattr(library, "virtual_esp_" + name)
+            function.argtypes = [ctypes.c_uint, ctypes.c_uint]
+            function.restype = ctypes.c_char_p
+        for name in ("pot_min", "pot_max"):
+            function = getattr(library, "virtual_esp_" + name)
+            function.argtypes = [ctypes.c_uint, ctypes.c_uint]
+            function.restype = ctypes.c_float
+        library.virtual_esp_pot_zone.argtypes = [ctypes.c_uint, ctypes.c_uint, ctypes.c_uint]
+        library.virtual_esp_pot_zone.restype = ctypes.c_float
+        library.virtual_esp_button_variant.argtypes = [ctypes.c_uint, ctypes.c_uint]
+        library.virtual_esp_button_variant.restype = ctypes.c_uint
+        library.virtual_esp_button_latch.argtypes = [ctypes.c_uint, ctypes.c_uint]
+        library.virtual_esp_button_latch.restype = ctypes.c_int
         library.virtual_esp_depth.argtypes = []
         library.virtual_esp_depth.restype = ctypes.c_float
         library.virtual_esp_echo_loop.argtypes = []
@@ -179,11 +213,20 @@ class VirtualTransport:
             function = getattr(library, "virtual_esp_" + name)
             function.argtypes = []
             function.restype = ctypes.c_char_p
-        for name in ("tune", "rate_hz"):
+        for name in (
+            "tune", "rate_hz", "pitch_position", "rate_position",
+            "echo_level", "delay_ms", "feedback", "echo_filter", "master",
+        ):
             function = getattr(library, "virtual_esp_" + name)
             function.argtypes = []
             function.restype = ctypes.c_float
         for name in ("hold", "echo_cut"):
+            function = getattr(library, "virtual_esp_" + name)
+            function.argtypes = []
+            function.restype = ctypes.c_int
+        library.virtual_esp_live_transpose.argtypes = []
+        library.virtual_esp_live_transpose.restype = ctypes.c_int
+        for name in ("pitch_zones_active", "rate_zones_active"):
             function = getattr(library, "virtual_esp_" + name)
             function.argtypes = []
             function.restype = ctypes.c_int
@@ -207,9 +250,58 @@ class VirtualTransport:
                 }
             )
         menu_items = []
+        menu_rows = []
         for index in range(self._lib.virtual_esp_menu_item_count()):
             key = self._lib.virtual_esp_menu_item_key(index)
-            menu_items.append(key.decode("ascii") if key else "BACK")
+            label = self._lib.virtual_esp_menu_item_label(index)
+            value = self._lib.virtual_esp_menu_item_value(index)
+            decoded_key = key.decode("ascii") if key else "BACK"
+            menu_items.append(decoded_key)
+            menu_rows.append({
+                "key": decoded_key,
+                "label": label.decode("ascii") if label else "BACK",
+                "value": value.decode("ascii") if value else "",
+            })
+        profiles = {}
+        for profile_index, profile_name in enumerate(("CLASSIC", "EXTENDED")):
+            pots = []
+            for pot in range(1, 7):
+                target = self._lib.virtual_esp_pot_target(profile_index, pot)
+                pot_mode = self._lib.virtual_esp_pot_mode(profile_index, pot)
+                pots.append({
+                    "target": target.decode("ascii"),
+                    "mode": pot_mode.decode("ascii"),
+                    "min": self._lib.virtual_esp_pot_min(profile_index, pot),
+                    "max": self._lib.virtual_esp_pot_max(profile_index, pot),
+                    "zones": [self._lib.virtual_esp_pot_zone(profile_index, pot, zone)
+                              for zone in range(3)],
+                })
+            buttons = []
+            for button in range(1, 5):
+                action = self._lib.virtual_esp_button_action(profile_index, button)
+                sound = self._lib.virtual_esp_button_sound(profile_index, button)
+                buttons.append({
+                    "action": action.decode("ascii"),
+                    "sound": sound.decode("ascii"),
+                    "variant": self._lib.virtual_esp_button_variant(profile_index, button),
+                    "latch": bool(self._lib.virtual_esp_button_latch(profile_index, button)),
+                })
+            profiles[profile_name] = {"pots": pots, "buttons": buttons}
+        behavior = self._lib.virtual_esp_pot_behavior()
+        encoder_action = self._lib.virtual_esp_encoder_action()
+        settings = {
+            "schema": self._lib.virtual_esp_settings_schema(),
+            "revision": self._lib.virtual_esp_settings_revision(),
+            "potBehavior": behavior.decode("ascii"),
+            "encoder": {
+                "holdTurn": encoder_action.decode("ascii"),
+                "step": self._lib.virtual_esp_encoder_step(),
+                "range": self._lib.virtual_esp_encoder_range(),
+            },
+            "profiles": profiles,
+        }
+        pitch_mode = "ZONES" if self._lib.virtual_esp_pitch_zones_active() else "CONTINUOUS"
+        rate_mode = "ZONES" if self._lib.virtual_esp_rate_zones_active() else "CONTINUOUS"
         mode = self._lib.virtual_esp_display_mode()
         return {
             "name": "DubSiren",
@@ -222,6 +314,8 @@ class VirtualTransport:
             "virtual": True,
             "panel": {
                 "revision": self._lib.virtual_esp_panel_revision(),
+                "settings": settings,
+                "persistenceStatus": "",
                 "menuRevision": self._lib.virtual_esp_panel_menu_revision(),
                 "selectedPad": self._lib.virtual_esp_selected_pad(),
                 "currentPad": self._lib.virtual_esp_current_pad(),
@@ -234,14 +328,38 @@ class VirtualTransport:
                     "menuIndex": self._lib.virtual_esp_menu_index(),
                     "editing": bool(self._lib.virtual_esp_menu_editing()),
                     "menuItems": menu_items,
+                    "rows": menu_rows,
+                    "title": self._lib.virtual_esp_menu_title().decode("ascii"),
+                    "footer": self._lib.virtual_esp_menu_footer().decode("ascii"),
+                    "overlay": {
+                        "title": self._lib.virtual_esp_overlay_title().decode("ascii"),
+                        "value": self._lib.virtual_esp_overlay_value().decode("ascii"),
+                    },
+                    "buttons": [
+                        button["action"]
+                        for button in profiles[
+                            self._lib.virtual_esp_profile().decode("ascii")
+                        ]["buttons"]
+                    ],
                     "profile": self._lib.virtual_esp_profile().decode("ascii"),
                     "voice": self._lib.virtual_esp_voice().decode("ascii"),
                     "pitch": self._lib.virtual_esp_pitch().decode("ascii"),
                     "rate": self._lib.virtual_esp_rate().decode("ascii"),
+                    "pitchMode": pitch_mode,
+                    "rateMode": rate_mode,
                     "hold": bool(self._lib.virtual_esp_hold()),
                     "echoCut": bool(self._lib.virtual_esp_echo_cut()),
                     "tuneHz": self._lib.virtual_esp_tune(),
                     "rateHz": self._lib.virtual_esp_rate_hz(),
+                    "liveTranspose": self._lib.virtual_esp_live_transpose(),
+                    "pitchPosition": self._lib.virtual_esp_pitch_position(),
+                    "ratePosition": self._lib.virtual_esp_rate_position(),
+                    "echoLevel": self._lib.virtual_esp_echo_level(),
+                    "delayMs": self._lib.virtual_esp_delay_ms(),
+                    "feedback": self._lib.virtual_esp_feedback(),
+                    "echoFilter": self._lib.virtual_esp_echo_filter(),
+                    "filter": self._lib.virtual_esp_echo_filter_name().decode("ascii"),
+                    "master": self._lib.virtual_esp_master(),
                     "depth": self._lib.virtual_esp_depth(),
                     "echoLoop": bool(self._lib.virtual_esp_echo_loop()),
                 },

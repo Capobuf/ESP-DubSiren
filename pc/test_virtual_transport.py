@@ -158,48 +158,50 @@ class VirtualTransportTests(unittest.TestCase):
         self.assertEqual(self.statuses[-1]["panel"]["display"]["menuIndex"], 1)
         self.transport.send("ENCODER_SWITCH 1")
         self.transport.send("ENCODER_SWITCH 0")
+        display = self.statuses[-1]["panel"]["display"]
+        self.assertEqual(display["title"], "POT CONTROLS")
+        self.assertEqual(display["rows"][0]["label"], "BEHAVIOR")
+
+        self.transport.send("ENCODER_ROTATE NEXT")
+        self.transport.send("ENCODER_SWITCH 1")
+        self.transport.send("ENCODER_SWITCH 0")
+        display = self.statuses[-1]["panel"]["display"]
+        self.assertTrue(display["title"].startswith("POT 1"))
+        self.assertEqual(display["rows"][0]["key"], "FUNCTION")
+
+        self.transport.send("ENCODER_SWITCH 1")
+        self.transport.send("ENCODER_SWITCH 0")
         self.assertTrue(self.statuses[-1]["panel"]["display"]["editing"])
         self.transport.send("ENCODER_ROTATE NEXT")
-        self.assertEqual(self.statuses[-1]["panel"]["pads"][0]["sound"], "TWO TONE")
+        self.assertEqual(
+            self.statuses[-1]["panel"]["settings"]["profiles"]["EXTENDED"]["pots"][0]["target"],
+            "RATE",
+        )
         self.transport.send("ENCODER_SWITCH 1")
         self.transport.send("ENCODER_SWITCH 0")
         self.assertFalse(self.statuses[-1]["panel"]["display"]["editing"])
 
-        self.transport.send("ENCODER_ROTATE NEXT")
-        self.transport.send("ENCODER_SWITCH 1")
-        self.transport.send("ENCODER_SWITCH 0")
-        self.transport.send("ENCODER_ROTATE NEXT")
-        self.assertEqual(self.statuses[-1]["panel"]["pads"][0]["variant"], "TRIANGLE")
-        self.transport.send("ENCODER_SWITCH 1")
-        self.transport.send("ENCODER_SWITCH 0")
+    def test_pickup_live_pitch_and_menu_footer_share_controller_state(self):
+        self.transport.send("POT 1 0")
+        display = self.statuses[-1]["panel"]["display"]
+        self.assertEqual(display["overlay"]["title"], "PITCH")
+        self.assertIn("UP PICKUP", display["overlay"]["value"])
 
+        self.transport.send("PAD 1 1")
         self.transport.send("ENCODER_ROTATE NEXT")
-        self.assertEqual(
-            self.statuses[-1]["panel"]["display"]["menuItems"][
-                self.statuses[-1]["panel"]["display"]["menuIndex"]
-            ],
-            "HOLD",
-        )
-        self.transport.send("ENCODER_SWITCH 1")
-        self.transport.send("ENCODER_SWITCH 0")
-        self.assertTrue(self.statuses[-1]["panel"]["pads"][0]["hold"])
+        display = self.statuses[-1]["panel"]["display"]
+        self.assertEqual(display["overlay"]["title"], "LIVE PITCH")
+        self.assertEqual(display["liveTranspose"], 1)
+        self.transport.send("PAD 1 0")
+        self.assertEqual(self.statuses[-1]["panel"]["display"]["liveTranspose"], 0)
 
-        self.transport.send("ENCODER_ROTATE NEXT")
         self.transport.send("ENCODER_SWITCH 1")
         self.transport.send("ENCODER_SWITCH 0")
-        self.assertTrue(self.statuses[-1]["panel"]["display"]["echoLoop"])
-
-        self.transport.send("ENCODER_ROTATE NEXT")
-        self.transport.send("ENCODER_ROTATE NEXT")
-        self.assertEqual(
-            self.statuses[-1]["panel"]["display"]["menuItems"][
-                self.statuses[-1]["panel"]["display"]["menuIndex"]
-            ],
-            "BACK",
-        )
-        self.transport.send("ENCODER_SWITCH 1")
-        self.transport.send("ENCODER_SWITCH 0")
-        self.assertEqual(self.statuses[-1]["panel"]["display"]["mode"], "HOME")
+        self.transport.send("POT 3 0")
+        display = self.statuses[-1]["panel"]["display"]
+        self.assertEqual(display["mode"], "MENU")
+        self.assertEqual(display["title"], "SETTINGS")
+        self.assertIn("ECHO LEVEL", display["footer"])
 
     def test_classic_default_selectors_buttons_and_audio_release(self):
         def display():

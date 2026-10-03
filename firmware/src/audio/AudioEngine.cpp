@@ -72,11 +72,12 @@ void AudioEngine::render(const ControlState &controls, int16_t *output,
     const bool classic = controls.profile == PerformanceProfile::Classic;
     const int pitchIndex = static_cast<int>(controls.classicPitch);
     const int modulationIndex = static_cast<int>(controls.classicModulation);
-    tuneHz_.setTarget(classic ? PerformanceConfig::kClassicPitchHz[pitchIndex]
-                              : controls.tuneHz);
+    tuneHz_.setTarget(classic && !controls.classicPitchUsesTune
+                          ? PerformanceConfig::kClassicPitchHz[pitchIndex]
+                          : controls.tuneHz);
     depthOctaves_.setTarget(classic ? PerformanceConfig::kClassicDepthOctaves
                                     : controls.lfoDepthOctaves);
-    rateHz_.setTarget(classic && modulationIndex < 3
+    rateHz_.setTarget(classic && modulationIndex < 3 && !controls.classicRateUsesRate
                           ? PerformanceConfig::kClassicRateHz[modulationIndex]
                           : controls.lfoRateHz);
     const bool echoLoop = !classic && controls.echoLoop;
@@ -179,6 +180,7 @@ void AudioEngine::render(const ControlState &controls, int16_t *output,
         const float echoCutWet = echoCutWet_.next();
         const float master = masterVolume_.next();
         const float performanceBend = performanceBend_.next();
+        const float livePitch = controls.liveTransposeSemitones / 12.0f;
 
         const float sweepLevel = sweepEnvelope_.next(
             controls.sweepMs, Config::kSampleRate);
@@ -220,16 +222,16 @@ void AudioEngine::render(const ControlState &controls, int16_t *output,
                                       ? (lfo_.gate() ? 1.0f : -1.0f)
                                       : 0.0f;
             frequencyTarget = clampFrequency(
-                tune * exp2f(depth * oscillatorModulation + performanceBend +
+                tune * exp2f(depth * oscillatorModulation + performanceBend + livePitch +
                              sweepPitch));
             frequencySmoothing = 0.00829871f;  // 2.5 ms anti-click slew.
         } else if ((classic || controls.voicingV2) &&
                    currentMode_ == SirenMode::TestTone) {
             frequencyTarget = clampFrequency(
-                tune * exp2f(performanceBend + sweepPitch));
+                tune * exp2f(performanceBend + livePitch + sweepPitch));
         } else if (tonal) {
             frequencyTarget = clampFrequency(
-                tune * exp2f(depth * modulation + performanceBend + sweepPitch));
+                tune * exp2f(depth * modulation + performanceBend + livePitch + sweepPitch));
         }
         if (tonal) {
             oscillatorFrequencyHz_ +=
@@ -262,7 +264,7 @@ void AudioEngine::render(const ControlState &controls, int16_t *output,
                     classic) * envelopeLevel;
             } else if (currentMode_ == SirenMode::Syndrum) {
                 const float frequency = clampFrequency(
-                    tune * exp2f((queuedActivation
+                    tune * exp2f(livePitch + (queuedActivation
                         ? activation.syndrumSweepOctaves
                         : controls.syndrumSweepOctaves) * syndrumLevel));
                 dry = oscillator_.nextSyndrum(

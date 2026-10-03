@@ -122,18 +122,20 @@ an abrupt boundary.
 ## Performance controller
 
 `PerformanceController` is compiled into both firmware and VirtualESP.
-Classic is the default and owns Trigger/Hold/Manual Mod/Echo Cut, a four-voice
-encoder and an Extended/Back menu. Normalized Pitch/Rate inputs are interpreted
-in shared C++ with hysteresis; the filter macro is likewise atomic in C++.
-Extended retains pad assignment, variant, priority, combinations and Depth.
-Saved Extended assignments never activate themselves during Classic startup.
+Classic is the default. `PanelSettings` owns the versioned per-profile POT and
+BTN mapping, Pickup/Jump behavior, zones/ranges and the live-pitch encoder
+gesture. Raw numbered POT inputs, target curves, hysteresis and the filter
+macro are interpreted only in shared C++. Extended retains pad priority,
+combinations and its established encoder+button shortcuts.
 
 VirtualESP exports the same compact logical display state through its C ABI:
-320×172 dimensions, Home/Menu mode, menu index/edit flag, ordered menu item
-keys, profile/voice, confirmed Pitch/Rate, Hold/Echo Cut, Depth and Echo Loop. `VirtualTransport` adds these values to
-`panel.display`. Both the desktop text widget and the Adafruit renderer show
-Classic and Extended state, temporary parameter values and encoder menus.
-The desktop widget uses Tk text directly and requires no external resources.
+320x172 dimensions, Home/Menu mode, controller-formatted title, ordered rows,
+values, footer and temporary overlay, plus the full versioned panel settings.
+`VirtualTransport` adds these values to `panel.display`. Both the desktop text
+widget and the Adafruit renderer therefore show the same Classic and Extended
+state, parameter values and encoder menus without rebuilding UI semantics in
+Python. The desktop widget uses Tk text directly and requires no external
+resources.
 
 An Extended pad activation updates the mode-specific configuration and an eight-entry
 activation ring in one `ControlStore` write. The audio engine transfers unseen

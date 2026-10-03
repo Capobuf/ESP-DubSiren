@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include <Preferences.h>
 #include <atomic>
 
 #include "Config.h"
@@ -33,6 +34,85 @@ std::atomic<uint32_t> maximumI2sWriteUs{0};
 bool i2sReady = false;
 bool hostLinked = false;
 String commandBuffer;
+Preferences panelPreferences;
+bool panelPreferencesReady = false;
+unsigned savedPanelSettingsRevision = 0;
+
+String panelSettingsJson() {
+    const PanelSettings &settings = commandParser.panelSettings();
+    String json = String("{\"schema\":") + settings.schemaVersion +
+        ",\"revision\":" + commandParser.panelSettingsRevision() +
+        ",\"potBehavior\":\"" + potBehaviorName(settings.potBehavior) +
+        "\",\"encoder\":{\"holdTurn\":\"" +
+        (settings.encoderHoldAction == EncoderHoldAction::LivePitch
+            ? "LIVE_PITCH" : "OFF") +
+        "\",\"step\":" + static_cast<unsigned>(settings.encoderStepSemitones) +
+        ",\"range\":" + static_cast<unsigned>(settings.encoderRangeSemitones) + "},\"profiles\":{";
+    for (unsigned profile = 0; profile < 2; ++profile) {
+        if (profile) json += ",";
+        json += profile == 0 ? "\"CLASSIC\":{" : "\"EXTENDED\":{";
+        json += "\"pots\":[";
+        for (unsigned pot = 0; pot < 6; ++pot) {
+            if (pot) json += ",";
+            const PotConfig &config = settings.profiles[profile].pots[pot];
+            json += String("{\"target\":\"") + potTargetName(config.target) +
+                "\",\"mode\":\"" + potModeName(config.mode) +
+                "\",\"min\":" + String(config.minimum, 5) +
+                ",\"max\":" + String(config.maximum, 5) +
+                ",\"zones\":[" + String(config.zones[0], 5) + "," +
+                String(config.zones[1], 5) + "," + String(config.zones[2], 5) + "]}";
+        }
+        json += "],\"buttons\":[";
+        for (unsigned button = 0; button < 4; ++button) {
+            if (button) json += ",";
+            const ButtonConfig &config = settings.profiles[profile].buttons[button];
+            json += String("{\"action\":\"") + buttonActionName(config.action) +
+                "\",\"sound\":\"" + panelSoundName(config.sound) +
+                "\",\"variant\":" + static_cast<unsigned>(config.variant) +
+                ",\"latch\":" + (config.latch ? "true" : "false") + "}";
+        }
+        json += "]}";
+    }
+    json += "}}";
+    return json;
+}
+
+void loadPanelSettings() {
+    panelPreferencesReady = panelPreferences.begin("panel", false);
+    if (!panelPreferencesReady) {
+        commandParser.setPersistenceStatus("NVS UNAVAILABLE");
+        return;
+    }
+    const size_t storedSize = panelPreferences.getBytesLength("settings");
+    if (storedSize == 0) {
+        savedPanelSettingsRevision = commandParser.panelSettingsRevision();
+        return;
+    }
+    PanelSettings stored;
+    if (storedSize != sizeof(stored) ||
+        panelPreferences.getBytes("settings", &stored, sizeof(stored)) != sizeof(stored) ||
+        !commandParser.applyPanelSettings(stored)) {
+        commandParser.setPersistenceStatus("INVALID SAVED CONFIG");
+        savedPanelSettingsRevision = commandParser.panelSettingsRevision();
+        return;
+    }
+    savedPanelSettingsRevision = commandParser.panelSettingsRevision();
+}
+
+void savePanelSettingsIfNeeded() {
+    const unsigned revision = commandParser.panelSettingsRevision();
+    if (revision == savedPanelSettingsRevision) return;
+    savedPanelSettingsRevision = revision;
+    if (!panelPreferencesReady) {
+        commandParser.setPersistenceStatus("SAVE FAILED - NVS");
+        return;
+    }
+    const PanelSettings &settings = commandParser.panelSettings();
+    if (panelPreferences.putBytes("settings", &settings, sizeof(settings)) != sizeof(settings))
+        commandParser.setPersistenceStatus("SAVE FAILED");
+    else
+        commandParser.setPersistenceStatus("");
+}
 
 const char *outputModeName(OutputMode mode) {
     switch (mode) {
@@ -70,6 +150,11 @@ void updateMaximum(std::atomic<uint32_t> &maximum, uint32_t value) {
 void sendStatus() {
     const OutputMode mode = outputMode.load(std::memory_order_relaxed);
     const ControlState displayState = controls.snapshot();
+    const bool pitchZones = displayState.pitchZonesActive;
+    const bool rateZones = displayState.rateZonesActive;
+    char filterValue[24];
+    commandParser.formatCurrentValue(PotTarget::EchoFilter,
+                                     filterValue, sizeof(filterValue));
     String pads = "[";
     for (unsigned pad = 1; pad <= 4; ++pad) {
         if (pad > 1) pads += ",";
@@ -82,11 +167,23 @@ void sendStatus() {
     }
     pads += "]";
     String menuItems = "[";
+    String menuRows = "[";
     for (unsigned index = 0; index < commandParser.menuItemCount(); ++index) {
-        if (index > 0) menuItems += ",";
+        if (index > 0) { menuItems += ","; menuRows += ","; }
         menuItems += String("\"") + commandParser.menuItemKey(index) + "\"";
+        menuRows += String("{\"key\":\"") + commandParser.menuItemKey(index) +
+            "\",\"label\":\"" + commandParser.menuItemLabel(index) +
+            "\",\"value\":\"" + commandParser.menuItemValue(index) + "\"}";
     }
     menuItems += "]";
+    menuRows += "]";
+    String buttons = "[";
+    for (unsigned button = 1; button <= 4; ++button) {
+        if (button > 1) buttons += ",";
+        buttons += String("\"") + commandParser.buttonActionNameFor(
+            displayState.profile, button) + "\"";
+    }
+    buttons += "]";
     const String json =
         String("{\"name\":\"DubSiren\",\"protocol\":1,\"sampleRate\":") +
         Config::kSampleRate + ",\"blockSamples\":" + Config::kBlockSamples +
@@ -106,6 +203,8 @@ void sendStatus() {
         ",\"output\":\"" + outputModeName(mode) +
         "\",\"i2sReady\":" + (i2sReady ? "true" : "false") +
         ",\"panel\":{\"revision\":" + commandParser.panelRevision() +
+        ",\"settings\":" + panelSettingsJson() +
+        ",\"persistenceStatus\":\"" + commandParser.persistenceStatus() + "\"" +
         ",\"menuRevision\":" + commandParser.panelMenuRevision() +
         ",\"selectedPad\":" + commandParser.selectedPad() +
         ",\"currentPad\":" + commandParser.currentPad() +
@@ -117,14 +216,31 @@ void sendStatus() {
         "\",\"menuIndex\":" + commandParser.menuIndex() +
         ",\"editing\":" + (commandParser.menuEditing() ? "true" : "false") +
         ",\"menuItems\":" + menuItems +
+        ",\"title\":\"" + commandParser.menuTitle() +
+        "\",\"footer\":\"" + commandParser.menuFooter() +
+        "\",\"rows\":" + menuRows +
+        ",\"overlay\":{\"title\":\"" + commandParser.overlayTitle() +
+        "\",\"value\":\"" + commandParser.overlayValue() + "\"}" +
+        ",\"buttons\":" + buttons +
         ",\"profile\":\"" + (displayState.profile == PerformanceProfile::Classic ? "CLASSIC" : "EXTENDED") +
         "\",\"voice\":\"" + modeName(displayState.mode) +
         "\",\"pitch\":\"" + pitchName(displayState.classicPitch) +
         "\",\"rate\":\"" + rateName(displayState.classicModulation) + "\"" +
+        ",\"pitchMode\":\"" + (pitchZones ? "ZONES" : "CONTINUOUS") + "\"" +
+        ",\"rateMode\":\"" + (rateZones ? "ZONES" : "CONTINUOUS") + "\"" +
         ",\"hold\":" + (displayState.hold ? "true" : "false") +
         ",\"echoCut\":" + (displayState.echoCut ? "true" : "false") +
         ",\"tuneHz\":" + String(displayState.tuneHz, 4) +
         ",\"rateHz\":" + String(displayState.lfoRateHz, 4) +
+        ",\"liveTranspose\":" + static_cast<int>(displayState.liveTransposeSemitones) +
+        ",\"pitchPosition\":" + String(displayState.pitchPosition, 4) +
+        ",\"ratePosition\":" + String(displayState.ratePosition, 4) +
+        ",\"echoLevel\":" + String(displayState.echoLevel, 4) +
+        ",\"delayMs\":" + String(displayState.delayMs, 4) +
+        ",\"feedback\":" + String(displayState.feedback, 4) +
+        ",\"echoFilter\":" + String(displayState.echoFilterPosition, 4) +
+        ",\"filter\":\"" + filterValue + "\"" +
+        ",\"master\":" + String(displayState.masterVolume, 4) +
         ",\"depth\":" + String(displayState.lfoDepthOctaves, 4) +
         ",\"echoLoop\":" + (displayState.echoLoop ? "true" : "false") +
         "}}}";
@@ -150,6 +266,7 @@ void handleCommand(String command) {
         const unsigned panelRevision = commandParser.panelRevision();
         if (commandParser.parse(command) &&
             commandParser.panelRevision() != panelRevision) {
+            savePanelSettingsIfNeeded();
             sendStatus();
         }
     }
@@ -226,12 +343,14 @@ void setup() {
         outputMode.store(OutputMode::Pc, std::memory_order_relaxed);
     }
     engine.begin();
+    loadPanelSettings();
     xTaskCreatePinnedToCore(audioTask, "audio", 6144, nullptr, 2, nullptr, 1);
     panelDisplay.begin();
 }
 
 void loop() {
     pollCommands();
+    savePanelSettingsIfNeeded();
     panelDisplay.update(hostLinked);
     delay(1);
 }

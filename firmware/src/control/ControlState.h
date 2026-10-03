@@ -56,8 +56,12 @@ struct ControlState {
     ClassicModulation classicModulation = ClassicModulation::Medium;
     float pitchPosition = 0.5f;
     float ratePosition = 0.375f;
+    bool classicPitchUsesTune = false;
+    bool classicRateUsesRate = false;
+    bool pitchZonesActive = true;
+    bool rateZonesActive = true;
     SirenMode mode = SirenMode::Sine1;
-    float tuneHz = 220.0f;
+    float tuneHz = PerformanceConfig::kClassicPitchHz[1];
     LfoShape lfoShape = LfoShape::Classic;
     float lfoRateHz = 0.70f;
     float lfoDepthOctaves = 1.0f;
@@ -72,6 +76,7 @@ struct ControlState {
     bool hold = false;
     bool modUp = false;
     bool modDown = false;
+    int8_t liveTransposeSemitones = 0;
     bool modulationEnabled = true;
     bool retrigger = false;
     float delayMs = 360.0f;

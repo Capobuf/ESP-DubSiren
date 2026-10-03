@@ -39,8 +39,18 @@ class PanelDisplay(ttk.Frame):
         if params.get("PROFILE") == "CLASSIC":
             self._text(16, 10, "DS01E / CLASSIC", 11, MUTED)
             self._text(16, 31, sound, 24, ACCENT)
-            self._text(16, 73, "PITCH  " + str(params.get("PITCH", "MID")), 17)
-            self._text(16, 99, "RATE   " + str(params.get("RATE", "MID")), 17)
+            pitch = str(params.get("PITCH", "MID"))
+            pitch = (pitch + " \u00b7 ") if pitch else ""
+            self._text(16, 73, "PITCH  " + pitch +
+                       f"{params.get('TUNE_HZ', 392):.0f} Hz", 17)
+            rate = str(params.get("RATE", "MID"))
+            if rate == "MANUAL":
+                pass
+            elif rate:
+                rate += f" \u00b7 {params.get('LFO_RATE_HZ', .7):.2f} Hz"
+            else:
+                rate = f"{params.get('LFO_RATE_HZ', .7):.2f} Hz"
+            self._text(16, 99, "RATE   " + rate, 17)
             status = ["HOLD"] if hold else []
             status.append("ECHO CUT" if params.get("ECHO_CUT") else
                           "ECHO" if float(params.get("ECHO_LEVEL", 0)) > 0 else "DRY")
@@ -67,11 +77,15 @@ class PanelDisplay(ttk.Frame):
     def render_overlay(self, title: str, value: str) -> None:
         self.canvas.delete("all")
         self._text(16, 40, title, 14, MUTED)
-        self._text(16, 80, value, 24, ACCENT)
+        self._text(16, 80, value.replace("UP PICKUP", "↑ PICKUP").replace(
+            "DOWN PICKUP", "↓ PICKUP"), 24, ACCENT)
 
-    def render_menu(self, items: list[tuple[str, str]], index: int, editing: bool) -> None:
+    def render_menu(
+        self, items: list[tuple[str, str]], index: int, editing: bool,
+        title: str = "SETTINGS", footer: str | None = None,
+    ) -> None:
         self.canvas.delete("all")
-        self._text(16, 12, "EDIT" if editing else "SELECT", 18, ACCENT)
+        self._text(16, 12, title, 18, ACCENT)
         start = max(0, min(index - 1, len(items) - 3))
         for row, (label, value) in enumerate(items[start:start + 3]):
             active = start + row == index
@@ -79,5 +93,5 @@ class PanelDisplay(ttk.Frame):
             self._text(16, y, ("> " if active else "  ") + label,
                        10, TEXT if active else MUTED)
             self._text(304, y, value, 10, AMBER if active else MUTED, "ne")
-        self._text(16, 149, "TURN CHANGE / PUSH SAVE" if editing else
-                   "TURN SELECT / PUSH OPEN")
+        self._text(16, 149, footer or ("TURN CHANGE / PUSH SAVE" if editing else
+                   "TURN SELECT / PUSH OPEN"))

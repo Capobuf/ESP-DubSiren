@@ -54,11 +54,19 @@ void PanelDisplay::update(bool linked) {
     const unsigned revision = controller_.panelRevision();
     const auto mode = controller_.displayMode();
     const bool stateChanged = firstRender_ || captureOverlay(lastState_, state);
+    if (!firstRender_ && revision != lastRevision_ &&
+        controller_.overlayTitle()[0] != '\0') {
+        overlayLabel_ = controller_.overlayTitle();
+        overlayValue_ = controller_.overlayValue();
+        focus_ = Focus::Tune;
+        overlayUntilMs_ = now + kOverlayDurationMs;
+    }
     const bool overlayExpired = focus_ != Focus::None &&
         static_cast<int32_t>(overlayUntilMs_ - now) <= 0;
     if (overlayExpired || mode == PerformanceController::DisplayMode::Menu) {
         focus_ = Focus::None;
         overlayValue_ = "";
+        overlayLabel_ = "";
     }
     if (!firstRender_ && !stateChanged && !overlayExpired &&
         revision == lastRevision_ && linked == lastLinked_ && mode == lastMode_) {
@@ -84,19 +92,32 @@ void PanelDisplay::update(bool linked) {
 
 void PanelDisplay::renderHome(const ControlState &state, bool linked) {
     if (state.profile == PerformanceProfile::Classic) {
+        const bool pitchZones = state.pitchZonesActive;
+        const bool rateZones = state.rateZonesActive;
         drawText(16, 10, "DS01E / CLASSIC", 1, kMuted);
         drawText(16, 31, modeName(state.mode), 3, kChartreuse);
-        drawText(16, 73, String("PITCH  ") + pitchName(state.classicPitch), 2, kOffWhite);
-        drawText(16, 99, String("RATE   ") + rateName(state.classicModulation), 2, kOffWhite);
-        String status = state.hold ? "HOLD  " : "";
-        status += state.echoCut ? "ECHO CUT" : state.echoLevel > 0.0f ? "ECHO" : "DRY";
-        drawText(16, 139, status, 2, kAmber);
+        drawText(16, 73, String("PITCH  ") +
+                 (pitchZones ? String(pitchName(state.classicPitch)) + " - " : "") +
+                 decimal(state.tuneHz, 0) + " Hz", 2, kOffWhite);
+        drawText(16, 99, String("RATE   ") +
+                 (rateZones ? String(rateName(state.classicModulation)) : "") +
+                 (rateZones && state.classicModulation == ClassicModulation::Manual
+                    ? "" : String(rateZones ? " - " : "") + decimal(state.lfoRateHz, 2) + " Hz"),
+                 2, kOffWhite);
+        String status = controller_.persistenceStatus();
+        if (!status.length()) {
+            status = state.hold ? "HOLD  " : "";
+            status += state.echoCut ? "ECHO CUT" : state.echoLevel > 0.0f ? "ECHO" : "DRY";
+        }
+        drawText(16, 139, status, status.length() > 18 ? 1 : 2,
+                 controller_.persistenceStatus()[0] ? kRed : kAmber);
         if (focus_ != Focus::None) {
             const char *labels[] = {"", "PITCH", "RATE", "DEPTH", "ECHO LEVEL",
                 "ECHO TIME", "ECHO FEEDBACK", "FILTER", "MASTER"};
             tft_.fillRect(10, 61, 300, 72, kBlack);
             tft_.drawRect(10, 61, 300, 72, kChartreuseDim);
-            drawText(22, 68, labels[static_cast<unsigned>(focus_)], 1, kMuted);
+            drawText(22, 68, overlayLabel_.length()
+                ? overlayLabel_ : labels[static_cast<unsigned>(focus_)], 1, kMuted);
             drawText(22, 92, overlayValue_, 3, kOffWhite);
         }
         return;
@@ -117,16 +138,19 @@ void PanelDisplay::renderHome(const ControlState &state, bool linked) {
         drawText(16, 111, String(labels[static_cast<unsigned>(focus_)]) +
                  " " + overlayValue_, 2, kAmber);
     }
-    String status;
-    if (controller_.padHold(controller_.currentPad())) status += "HOLD ";
-    if (state.echoLoop) status += "LOOP ";
-    if (linked) status += "LINK";
+    String status = controller_.persistenceStatus();
+    if (!status.length()) {
+        if (controller_.padHold(controller_.currentPad())) status += "HOLD ";
+        if (state.echoLoop) status += "LOOP ";
+        if (linked) status += "LINK";
+    }
     if (!status.length()) status = "SYSTEM READY";
-    drawText(16, 149, status, 1, state.echoLoop ? kRed : kChartreuse);
+    drawText(16, 149, status, 1,
+             controller_.persistenceStatus()[0] || state.echoLoop ? kRed : kChartreuse);
 }
 
 void PanelDisplay::renderMenu(const ControlState &state) {
-    drawText(16, 12, controller_.menuEditing() ? "EDIT" : "SELECT", 2, kChartreuse);
+    drawText(16, 12, controller_.menuTitle(), 2, kChartreuse);
     const unsigned count = controller_.menuItemCount();
     const unsigned index = controller_.menuIndex();
     unsigned start = index > 0 ? index - 1 : 0;
@@ -135,12 +159,10 @@ void PanelDisplay::renderMenu(const ControlState &state) {
         const unsigned absolute = start + row;
         const int16_t y = 48 + static_cast<int16_t>(row) * 28;
         const bool active = absolute == index;
-        const char *key = controller_.menuItemKey(absolute);
-        String label = strcmp(key, "PAD") == 0 ? "CONFIGURE PAD" : key;
-        label.replace('_', ' ');
+        const char *label = controller_.menuItemLabel(absolute);
         drawText(16, y, String(active ? "> " : "  ") + label,
                  1, active ? kOffWhite : kMuted);
-        const String value = menuValue(key, state);
+        const String value = controller_.menuItemValue(absolute);
         if (value.length()) {
             int16_t x1, y1;
             uint16_t width, height;
@@ -149,9 +171,7 @@ void PanelDisplay::renderMenu(const ControlState &state) {
             drawText(304 - width, y, value, 1, active ? kAmber : kMuted);
         }
     }
-    drawText(16, 149, controller_.menuEditing() ? "TURN CHANGE / PUSH SAVE"
-                                              : "TURN SELECT / PUSH OPEN",
-             1, kOffWhite);
+    drawText(16, 149, controller_.menuFooter(), 1, kOffWhite);
 }
 
 bool PanelDisplay::captureOverlay(const ControlState &before,
@@ -201,27 +221,11 @@ bool PanelDisplay::captureOverlay(const ControlState &before,
     if (focus != Focus::None && controller_.displayMode() ==
                                   PerformanceController::DisplayMode::Home) {
         focus_ = focus;
+        overlayLabel_ = "";
         overlayValue_ = value;
         overlayUntilMs_ = millis() + kOverlayDurationMs;
     }
     return focus != Focus::None || flagChanged;
-}
-
-String PanelDisplay::menuValue(const char *key,
-                               const ControlState &state) const {
-    if (strcmp(key, "PROFILE") == 0) return state.profile == PerformanceProfile::Classic ? "EXTENDED" : "DS01E";
-    if (strcmp(key, "PAD") == 0) return String(controller_.selectedPad());
-    if (strcmp(key, "ASSIGNMENT") == 0) {
-        return controller_.padSoundName(controller_.selectedPad());
-    }
-    if (strcmp(key, "VARIANT") == 0) {
-        return controller_.padVariantName(controller_.selectedPad());
-    }
-    if (strcmp(key, "HOLD") == 0) {
-        return controller_.padHold(controller_.selectedPad()) ? "ON" : "OFF";
-    }
-    if (strcmp(key, "ECHO_LOOP") == 0) return state.echoLoop ? "ON" : "OFF";
-    return "";
 }
 
 void PanelDisplay::drawText(int16_t x, int16_t y, const String &text,

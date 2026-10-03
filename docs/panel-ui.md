@@ -6,31 +6,37 @@ separate rear Master. No extra performance knobs.
 
 | Control | Classic mapping / command |
 |---|---|
-| POT1 PITCH | `SET PITCH_POSITION <0..1>` |
-| POT2 RATE | `SET RATE_POSITION <0..1>` |
-| POT3 ECHO LEVEL | `SET ECHO_LEVEL` |
-| POT4 ECHO TIME | `SET DELAY_MS` (50-1000 ms, logarithmic travel) |
-| POT5 ECHO FEEDBACK | `SET FEEDBACK` |
-| POT6 ECHO FILTER | `SET ECHO_FILTER <-1..1>`; atomic shared HP/LP macro |
+| POT1..POT6 | `POT <1..6> <0..1>`; C++ applies the active profile mapping |
 | BTN1 TRIGGER | `PAD 1 0|1` |
 | BTN2 HOLD | `PAD 2 0|1`; toggle on rising edge |
 | BTN3 MANUAL MOD | `PAD 3 0|1` |
 | BTN4 ECHO CUT | `PAD 4 0|1` |
 | Encoder turn | `ENCODER_ROTATE PREV|NEXT`; cycles four voicings |
-| Encoder push | `ENCODER_SWITCH 0|1`; opens Menu on press |
+| Encoder push | `ENCODER_SWITCH 0|1`; opens Menu on completed click/release |
 | Rear Master | `SET MASTER` |
 
-Classic Home shows the selected voicing, PITCH LOW/MID/HIGH, RATE
-SLOW/MID/FAST/MANUAL and HOLD/ECHO/ECHO CUT/DRY state. A brief pot overlay shows
-its name and confirmed selector position, time in ms, percentage or FILTER
-LP/FLAT/HP amount. Selector labels come from C++ STATUS, including hysteresis;
-Python does not implement a second selector or any DSP.
+Factory mappings reproduce the original controls. Each profile has independent
+POT and BTN assignments. Pitch and Rate can use zones or continuous ranges;
+target-specific curves, validation and formatting live in C++. Pickup is the
+factory behavior, with an UP/DOWN direction shown until the physical pot
+crosses the current value. Rear Master is fixed and remains immediately live.
 
-Classic Menu contains SWITCH TO EXTENDED and BACK. Extended retains the old
-pad bank, Depth encoder, pad configuration menu and textual Home.
-Its menu also offers SWITCH TO DS01E. All advanced sounds and settings remain
-available in the debug UI (`pc/app.py`, choose EXTENDED). See
-[controls](controls.md) for the preserved Extended gestures.
+Classic Home shows symbolic and physical values together, for example
+`PITCH MID / 392 Hz` and `RATE SLOW / 0.35 Hz`. Selector labels and values come
+from C++ STATUS, including hysteresis; Python does not implement a second
+selector or any DSP.
+
+The shallow menu contains Profile, Pots, Buttons, Encoder, Reset Defaults and
+Back. Submenus expose only applicable fields and the controller supplies the
+page title, ordered rows, labels, values and footer to both renderers. Moving a
+pot while Menu is open updates the footer without replacing the menu. Reset
+Defaults requires an explicit YES confirmation.
+
+Holding a physical Trigger or Play Sound button while turning the encoder
+applies transient live pitch. The factory step is one semitone with a +/-12
+range. It never changes base Tune and resets when the final relevant physical
+button is released. Gunshot reports N/A. Existing Extended encoder+button
+shortcuts retain precedence.
 
 The default filter is FLAT. Its centered deadband bypasses wet filtering;
 left/right movement applies the project LP/HP calibration in the core.
@@ -44,9 +50,12 @@ profile changes. Switching profile clears gates and Hold. Pot commands keep
 one 25 ms timer per control, flush periodically and send the final position
 on release.
 
-Saved Extended pad assignments remain in `%APPDATA%/ESP-DubSiren/panel.json`;
-restoring them never leaves Classic or triggers audio. No pressed state,
-gate or Hold is restored from disk.
+The ESP32 stores schema-1 `PanelSettings` in Preferences/NVS and reports corrupt
+loads and save failures. VirtualESP stores the same logical schema in
+`%APPDATA%/ESP-DubSiren/panel.json`; invalid files are surfaced instead of
+silently ignored. A real device is authoritative on connection: the PC adopts
+STATUS and never pushes a profile, mapping or stale local default. No pressed
+state, gate, live transpose or other transient state is restored from disk.
 
 ## Hardware display
 

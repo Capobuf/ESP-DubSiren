@@ -36,7 +36,6 @@ private:
     void renderMenu(const ControlState &state);
     void drawText(int16_t x, int16_t y, const String &text, uint8_t size,
                   uint16_t color);
-    String menuValue(const char *key, const ControlState &state) const;
     bool captureOverlay(const ControlState &before, const ControlState &after);
 
     ControlStore &controls_;
@@ -54,5 +53,6 @@ private:
     unsigned lastRevision_ = 0;
     ControlState lastState_;
     String overlayValue_;
+    String overlayLabel_;
     Focus focus_ = Focus::None;
 };

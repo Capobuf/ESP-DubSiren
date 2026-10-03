@@ -1,3 +1,4 @@
+import json
 import tempfile
 import unittest
 from pathlib import Path
@@ -9,10 +10,10 @@ from physical_ui import (
     DISPLAY_WIDTH,
     PANEL_KNOBS,
     PanelDisplay,
+    PanelConfigError,
     PhysicalDubSirenApp,
-    echo_filter_frequencies,
-    format_echo_filter,
     load_panel_config,
+    panel_settings_commands,
     save_panel_config,
 )
 
@@ -50,6 +51,9 @@ class FakeDial:
 
     def set_active(self, active):
         self.active = active
+
+    def set_value(self, value, notify=False):
+        self.value = value
 
 
 class FakeRoot:
@@ -105,8 +109,6 @@ def make_app() -> PhysicalDubSirenApp:
     }
     app.parameter_values["HPF_HZ"] = 60.0
     app.parameter_values["LPF_HZ"] = 7000.0
-    app.echo_filter_macro = 0.0
-    app.echo_filter_active = False
     app.panel_state = {
         **DEFAULT_PANEL_STATE,
         "display": {
@@ -125,7 +127,8 @@ def make_app() -> PhysicalDubSirenApp:
         ],
     }
     app.pad_buttons = [FakeWidget() for _ in range(4)]
-    app.dials = {"RATE_POSITION": FakeDial(), "PITCH_POSITION": FakeDial()}
+    app.dials = {f"POT_{number}": FakeDial() for number in range(1, 7)}
+    app.dials["MASTER"] = FakeDial()
     app.transport = FakeTransport()
     app.active_output = None
     app.pending_sends = {}
@@ -136,38 +139,77 @@ def make_app() -> PhysicalDubSirenApp:
     app._input_sources = {}
     app._encoder_sources = set()
     app._saved_config_applied = True
-    app._saved_pad_configs = []
+    app._connected_virtual = False
+    app._saved_panel_config = None
+    app._panel_config_error = None
+    app._virtual_restore_pending = False
+    app._last_saved_settings_revision = None
     return app
 
 
+def sample_settings() -> dict:
+    targets = ["PITCH", "RATE", "ECHO LEVEL", "ECHO TIME", "ECHO FEEDBACK", "ECHO FILTER"]
+    ranges = [(80.0, 1600.0), (0.15, 20.0), (0.0, 1.0),
+              (50.0, 1000.0), (0.0, 1.05), (-1.0, 1.0)]
+    pots = [
+        {"target": target, "mode": "CONTINUOUS", "min": limits[0], "max": limits[1],
+         "zones": [0.2, 0.5, 0.8]}
+        for target, limits in zip(targets, ranges)
+    ]
+    pots[0].update(mode="ZONES", min=80.0, max=1600.0,
+                   zones=[261.63, 392.0, 587.33])
+    pots[1].update(mode="ZONES", min=0.05, max=20.0,
+                   zones=[0.35, 0.7, 2.8])
+    buttons = [
+        {"action": action, "sound": "CLASSIC", "variant": 0, "latch": False}
+        for action in ("TRIGGER", "HOLD", "MOD UP", "ECHO CUT")
+    ]
+    extended_pots = json.loads(json.dumps(pots))
+    for pot in extended_pots:
+        pot["mode"] = "CONTINUOUS"
+    extended_buttons = [
+        {"action": "PLAY SOUND", "sound": sound, "variant": 0, "latch": False}
+        for sound in ("CLASSIC", "TWO TONE", "LICKSHOT", "PING")
+    ]
+    return {
+        "schema": 1, "potBehavior": "PICKUP",
+        "encoder": {"holdTurn": "LIVE_PITCH", "step": 1, "range": 12},
+        "profiles": {
+            "CLASSIC": {"pots": pots, "buttons": buttons},
+            "EXTENDED": {"pots": extended_pots, "buttons": extended_buttons},
+        },
+    }
+
+
 class PhysicalUiTests(unittest.TestCase):
-    def test_panel_mapping_names_echo_controls_explicitly(self):
+    def test_panel_knobs_send_raw_numbered_controls(self):
         self.assertEqual(
             PANEL_KNOBS,
-            (
-                ("PITCH", "PITCH_POSITION"),
-                ("RATE", "RATE_POSITION"),
-                ("ECHO LEVEL", "ECHO_LEVEL"),
-                ("ECHO TIME", "DELAY_MS"),
-                ("ECHO FEEDBACK", "FEEDBACK"),
-                ("ECHO FILTER", "ECHO_FILTER"),
-            ),
+            tuple((f"POT {number}", f"POT_{number}") for number in range(1, 7)),
         )
+        app = make_app()
+        app._show_overlay = lambda *_args: None
+        app._panel_parameter_changed("POT_3", 0.75, True)
+        self.assertEqual(app.commands[-1], "POT 3 0.75")
+        self.assertFalse(any("ECHO_LEVEL" in command for command in app.commands))
 
     def test_menu_configures_only_selected_pad_and_secondary_echo_loop(self):
         app = make_app()
         keys = [key for key, _label, _value in app._menu_items()]
         self.assertEqual(
             keys,
-            ["PROFILE", "BACK"],
+            ["PROFILE", "POTS", "BUTTONS", "ENCODER", "RESET_DEFAULTS", "BACK"],
         )
         app.panel_state["selectedPad"] = 4
-        app.panel_state["display"]["menuItems"] = [
-            "PAD", "ASSIGNMENT", "VARIANT", "ECHO_LOOP", "BACK"
+        app.panel_state["display"]["rows"] = [
+            {"key": "ACTION", "label": "ACTION", "value": "PLAY SOUND"},
+            {"key": "SOUND", "label": "SOUND", "value": "PING"},
+            {"key": "VARIANT", "label": "VARIANT", "value": "SINE"},
+            {"key": "BACK", "label": "BACK", "value": ""},
         ]
         keys = [key for key, _label, _value in app._menu_items()]
         self.assertEqual(
-            keys, ["PAD", "ASSIGNMENT", "VARIANT", "ECHO_LOOP", "BACK"]
+            keys, ["ACTION", "SOUND", "VARIANT", "BACK"]
         )
 
     def test_encoder_sends_raw_detent_to_shared_controller(self):
@@ -192,7 +234,7 @@ class PhysicalUiTests(unittest.TestCase):
             {"PROFILE": "CLASSIC", "PITCH": "HIGH", "RATE": "MANUAL", "ECHO_CUT": True},
         )
         self.assertIn("SINE 2", text())
-        self.assertIn("PITCH  HIGH", text())
+        self.assertIn("PITCH  HIGH \u00b7 392 Hz", text())
         self.assertIn("RATE   MANUAL", text())
         self.assertIn("HOLD / ECHO CUT", text())
 
@@ -214,13 +256,22 @@ class PhysicalUiTests(unittest.TestCase):
         self.assertIn("80%", text())
 
         display.canvas.calls.clear()
+        display.render_overlay("PITCH", "UP PICKUP - 392 Hz")
+        self.assertIn("↑ PICKUP - 392 Hz", text())
+
+        display.canvas.calls.clear()
+        display.render_overlay("LIVE PITCH", "+3 st - 466 Hz")
+        self.assertIn("LIVE PITCH", text())
+        self.assertIn("+3 st - 466 Hz", text())
+
+        display.canvas.calls.clear()
         display.render_menu(
             [("CONFIGURE PAD", "2"), ("ASSIGNMENT", "TWO TONE"),
              ("VARIANT", "TRIANGLE"), ("HOLD", "ON"),
              ("ECHO LOOP", "ON"), ("BACK", "")], 4, True,
         )
         self.assertIn("> ECHO LOOP", text())
-        self.assertIn("EDIT", text())
+        self.assertIn("SETTINGS", text())
         self.assertIn("TURN CHANGE / PUSH SAVE", text())
         self.assertNotIn("  CONFIGURE PAD", text())
         for kind, args, _kwargs in display.canvas.calls:
@@ -228,14 +279,22 @@ class PhysicalUiTests(unittest.TestCase):
                 self.assertTrue(0 <= args[0] < DISPLAY_WIDTH)
                 self.assertTrue(0 <= args[1] < DISPLAY_HEIGHT)
 
+        display.canvas.calls.clear()
+        display.render_menu(
+            [("PROFILE", "CLASSIC"), ("POTS", ""), ("BUTTONS", "")],
+            1, False, "SETTINGS", "PITCH UP PICKUP - 392 Hz",
+        )
+        self.assertIn("SETTINGS", text())
+        self.assertIn("PITCH UP PICKUP - 392 Hz", text())
+
     def test_confirmed_selector_labels_and_baseline_buttons(self):
         app = make_app()
-        app.panel_state["display"]["pitch"] = "HIGH"
-        app.panel_state["display"]["rate"] = "MANUAL"
+        app.panel_state["settings"] = sample_settings()
+        app.panel_state["display"]["buttons"] = ["TRIGGER", "HOLD", "MOD UP", "ECHO CUT"]
         app._update_pad_labels()
-        self.assertEqual(app.dials["RATE_POSITION"].value_label.config["text"], "MANUAL")
-        self.assertEqual(app.dials["PITCH_POSITION"].value_label.config["text"], "HIGH")
-        for button, label in zip(app.pad_buttons, ("TRIGGER", "HOLD", "MANUAL MOD", "ECHO CUT")):
+        self.assertEqual(app.dials["POT_1"].value_label.config["text"], "PITCH")
+        self.assertEqual(app.dials["POT_2"].value_label.config["text"], "RATE")
+        for button, label in zip(app.pad_buttons, ("TRIGGER", "HOLD", "MOD UP", "ECHO CUT")):
             self.assertIn(label, button.config["text"])
 
     def test_pad_sources_overlap_and_keyboard_repeat_is_ignored(self):
@@ -261,7 +320,7 @@ class PhysicalUiTests(unittest.TestCase):
 
         self.assertEqual(app.commands, ["PAD 2 1"])
         self.assertTrue(app.pad_buttons[1].config["pressed"])
-        self.assertEqual(app.dials["PITCH_POSITION"].finishes, 1)
+        self.assertEqual(app.dials["POT_1"].finishes, 1)
 
     def test_full_release_uses_panel_reset_without_erasing_configuration(self):
         app = make_app()
@@ -274,85 +333,74 @@ class PhysicalUiTests(unittest.TestCase):
         self.assertEqual(app._input_sources, {})
         self.assertEqual(app._encoder_sources, set())
 
-    def test_echo_filter_macro_reuses_existing_hpf_lpf(self):
-        app = make_app()
-        for macro, expected in (
-            (0.0, (60.0, 16000.0)),
-            (-1.0, (60.0, 400.0)),
-            (1.0, (4000.0, 16000.0)),
-        ):
-            app.echo_filter_macro = macro
-            app._apply_echo_filter()
-            self.assertAlmostEqual(app.parameter_values["HPF_HZ"], expected[0])
-            self.assertAlmostEqual(app.parameter_values["LPF_HZ"], expected[1])
-
-    def test_echo_filter_has_flat_deadband_and_logarithmic_sides(self):
-        self.assertEqual(format_echo_filter(-0.05), "FLAT")
-        self.assertEqual(format_echo_filter(0.05), "FLAT")
-        self.assertEqual(echo_filter_frequencies(0.05), (60.0, 16000.0))
-        low_hpf, low_lpf = echo_filter_frequencies(-0.5)
-        high_hpf, high_lpf = echo_filter_frequencies(0.5)
-        self.assertEqual(low_hpf, 60.0)
-        self.assertGreater(low_lpf, 400.0)
-        self.assertLess(low_lpf, 16000.0)
-        self.assertGreater(high_hpf, 60.0)
-        self.assertLess(high_hpf, 4000.0)
-        self.assertEqual(high_lpf, 16000.0)
-
     def test_knob_throttle_keeps_one_timer_and_sends_latest_periodically(self):
         app = make_app()
         app._show_overlay = lambda *_args: None
 
-        app._panel_parameter_changed("ECHO_FILTER", -0.4, False)
-        token = app.pending_sends["ECHO_FILTER"]
-        app._panel_parameter_changed("ECHO_FILTER", 0.6, False)
-        self.assertEqual(app.pending_sends["ECHO_FILTER"], token)
+        app._panel_parameter_changed("POT_6", 0.4, False)
+        token = app.pending_sends["POT_6"]
+        app._panel_parameter_changed("POT_6", 0.6, False)
+        self.assertEqual(app.pending_sends["POT_6"], token)
         self.assertEqual(app.root.cancelled, [])
 
         app.root.callbacks[token]()
         self.assertEqual(len(app.commands), 1)
-        expected_hpf, expected_lpf = echo_filter_frequencies(0.6)
-        self.assertEqual(
-            app.commands,
-            ["SET ECHO_FILTER 0.6"],
-        )
-        app._panel_parameter_changed("ECHO_FILTER", 1.0, False)
-        final_token = app.pending_sends["ECHO_FILTER"]
-        app._panel_parameter_changed("ECHO_FILTER", 1.0, True)
+        self.assertEqual(app.commands, ["POT 6 0.6"])
+        app._panel_parameter_changed("POT_6", 1.0, False)
+        final_token = app.pending_sends["POT_6"]
+        app._panel_parameter_changed("POT_6", 1.0, True)
         self.assertIn(final_token, app.root.cancelled)
-        self.assertEqual(app.commands[-1], "SET ECHO_FILTER 1")
+        self.assertEqual(app.commands[-1], "POT 6 1")
 
-    def test_sync_preserves_unrepresented_filter_until_tone_is_moved(self):
+    def test_real_device_sync_does_not_push_profile_or_defaults(self):
         app = make_app()
         app._synchronize_controls()
 
-        self.assertNotIn("SET HPF_HZ 60", app.commands)
-        self.assertNotIn("SET LPF_HZ 7000", app.commands)
-        self.assertFalse(any(command.startswith("SET MODE") for command in app.commands))
+        self.assertFalse(any(command.startswith("SET PROFILE") for command in app.commands))
+        self.assertFalse(any(command.startswith("SET ") and "OUTPUT" not in command
+                             for command in app.commands))
         self.assertIn("PANEL_RESET", app.commands)
 
-        app.commands.clear()
-        app.echo_filter_active = True
+    def test_virtual_sync_applies_only_validated_panel_settings(self):
+        app = make_app()
+        app._connected_virtual = True
+        app._saved_config_applied = False
+        app._saved_panel_config = sample_settings()
+        app.transport.send = app.commands.append
+
         app._synchronize_controls()
-        self.assertIn("SET ECHO_FILTER 0", app.commands)
-        self.assertIn("SET PROFILE CLASSIC", app.commands)
+
+        self.assertTrue(app._virtual_restore_pending)
+        self.assertIn("PANEL BEHAVIOR PICKUP", app.commands)
+        self.assertIn("PANEL POT CLASSIC 1 TARGET PITCH", app.commands)
+        self.assertIn("PANEL BUTTON EXTENDED 4 SOUND PING 0 0", app.commands)
+        self.assertFalse(any(command.startswith("SET PROFILE") for command in app.commands))
 
     def test_panel_configuration_round_trip(self):
-        pads = [
-            {"sound": "CLASSIC", "variantIndex": 0, "hold": False},
-            {"sound": "TWO TONE", "variantIndex": 0, "hold": False},
-            {"sound": "LICKSHOT", "variantIndex": 0, "hold": False},
-            {"sound": "PING", "variantIndex": 0, "hold": False},
-        ]
-        pads[1]["variantIndex"] = 2
-        pads[2]["hold"] = True
+        settings = sample_settings()
+        settings["profiles"]["EXTENDED"]["buttons"][1]["variant"] = 2
+        settings["profiles"]["EXTENDED"]["buttons"][2]["latch"] = True
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "panel.json"
-            save_panel_config(path, pads)
+            save_panel_config(path, settings)
             loaded = load_panel_config(path)
-        self.assertEqual(loaded[1]["variantIndex"], 2)
-        self.assertNotIn("hold", loaded[2])
-        self.assertNotIn("selectedPad", loaded[0])
+        self.assertEqual(loaded["schema"], 1)
+        self.assertEqual(loaded["profiles"]["EXTENDED"]["buttons"][1]["variant"], 2)
+        commands = panel_settings_commands(loaded)
+        self.assertIn("PANEL POT CLASSIC 1 TARGET PITCH", commands)
+        self.assertIn("PANEL BUTTON EXTENDED 2 SOUND TWO_TONE 2 0", commands)
+
+    def test_invalid_panel_configuration_is_surfaced(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "panel.json"
+            path.write_text('{"schema": 99}', encoding="utf-8")
+            with self.assertRaises(PanelConfigError):
+                load_panel_config(path)
+
+    def test_panel_configuration_save_failure_is_surfaced(self):
+        with tempfile.TemporaryDirectory() as directory:
+            with self.assertRaises(OSError):
+                save_panel_config(Path(directory), sample_settings())
 
 
 if __name__ == "__main__":
