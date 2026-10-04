@@ -12,6 +12,7 @@ from physical_ui import (
     PanelDisplay,
     PanelConfigError,
     PhysicalDubSirenApp,
+    _validated_legacy_panel_config,
     load_panel_config,
     migrate_panel_config,
     panel_settings_commands,
@@ -444,8 +445,22 @@ class PhysicalUiTests(unittest.TestCase):
         self.assertIsNone(app._panel_config_error)
         self.assertIsNone(app._panel_io_error)
 
+    def test_legacy_classic_family_accepts_new_extended_waveforms(self):
+        for variant in (3, 4):
+            legacy = {"pads": [
+                {"sound": "CLASSIC", "variantIndex": variant},
+                {"sound": "TWO TONE", "variantIndex": 0},
+                {"sound": "LICKSHOT", "variantIndex": 0},
+                {"sound": "PING", "variantIndex": 0},
+            ]}
+            self.assertEqual(
+                _validated_legacy_panel_config(legacy)["pads"][0]["variantIndex"],
+                variant,
+            )
+
     def test_malformed_legacy_and_unknown_schemas_remain_errors(self):
         invalid = [{"pads": []}, {"pads": [{"sound": [], "variantIndex": 0}] * 4},
+                   {"pads": [{"sound": "CLASSIC", "variantIndex": 5}] * 4},
                    {"pads": [{"sound": "PING", "variantIndex": 99}] * 4},
                    {"schema": 99, "pads": []}, {}, {"schema": True}]
         with tempfile.TemporaryDirectory() as directory:

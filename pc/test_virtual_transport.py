@@ -199,6 +199,29 @@ class VirtualTransportTests(unittest.TestCase):
         self.assertAlmostEqual(panel["display"]["depth"], 1.05, places=4)
         self.assertFalse(panel["display"]["hold"])
 
+    def test_extended_waveform_encoder_cycle_audio_and_classic_boundary(self):
+        for command in ("SET PROFILE EXTENDED", "SET ECHO_LEVEL 0",
+                        "SET LFO_DEPTH_OCT 0", "SET DECAY_MS 0", "STREAM 1"):
+            self.transport.send(command)
+        for voice in ("SINE 2", "SONAR", "SAW", "TRIANGLE", "SINE 1"):
+            self.transport.send("ENCODER_ROTATE NEXT")
+            self.assertEqual(self.statuses[-1]["panel"]["pads"][0]["variant"], voice)
+            if voice in ("SAW", "TRIANGLE"):
+                self._drain()
+                self.transport.send("PAD 1 1")
+                self.assertEqual(self.statuses[-1]["panel"]["display"]["voice"], voice)
+                self._assert_non_silent_audio()
+                self.transport.send("PAD 1 0")
+                time.sleep(0.04)
+                self._drain()
+                for _ in range(4):
+                    self.assertFalse(any(array.array("h", self.audio_queue.get(timeout=0.2))))
+        self.transport.send("SET PROFILE CLASSIC")
+        for voice in ("SAW", "TRIANGLE"):
+            with self.assertRaisesRegex(RuntimeError, "rejected command"):
+                self.transport.send(f"SET MODE {voice}")
+        self.assertEqual(self.statuses[-1]["panel"]["display"]["voice"], "SINE 1")
+
     def test_pickup_live_pitch_and_menu_footer_share_controller_state(self):
         self.transport.send("POT 1 0")
         display = self.statuses[-1]["panel"]["display"]

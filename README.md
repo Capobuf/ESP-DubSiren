@@ -12,7 +12,8 @@ nei manuali ufficiali Benidub, senza dichiarare un clone circuitale o una
 corrispondenza sonora misurata.
 
 **Extended** conserva Lickshot, Sonar, Syndrum, Gunshot, Dynamic Sweep, forme
-LFO aggiuntive e controlli avanzati. Sine 1 e Sine 2 usano le stesse voci di
+LFO aggiuntive e controlli avanzati, e aggiunge i carrier SAW e TRIANGLE.
+Sine 1 e Sine 2 usano le stesse voci di
 Classic; Sonar emette ping pulsanti con cadenza regolata da Rate.
 Il DSP/control C++ è condiviso da firmware
 e Virtual ESP. Tarature, fonti e limiti sono in [controls](docs/controls.md);
@@ -132,7 +133,7 @@ thread e seriale. Per un controllo automatico dell'hardware collegato:
 Dettagli: [architettura](docs/architecture.md), [protocollo](docs/protocol.md) e
 [controlli](docs/controls.md).
 
-Per creare ventisei brevi WAV di confronto direttamente dal PCM firmware
+Per creare ventotto brevi WAV di confronto direttamente dal PCM firmware
 (con la scheda collegata), eseguire dalla cartella `pc`:
 
 ```powershell

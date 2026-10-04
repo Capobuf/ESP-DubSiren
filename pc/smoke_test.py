@@ -151,11 +151,11 @@ class SmokeTest:
         self.send("SET DECAY_MS 0", "HOLD 1", "SET LFO_DEPTH_OCT 0")
         mode_hashes = {}
         for mode in ("SINE1", "SINE2", "TEST_TONE", "SQUARE",
-                     "LICKSHOT", "SONAR"):
+                     "SAW", "TRIANGLE", "LICKSHOT", "SONAR"):
             self.send(f"SET MODE {mode}")
             self.settle(0.08)
             mode_hashes[mode] = hashlib.sha256(self.grab(12)).hexdigest()[:12]
-        assert len(set(mode_hashes.values())) == 6
+        assert len(set(mode_hashes.values())) == 8
         print("MODES", mode_hashes)
 
         self.send(

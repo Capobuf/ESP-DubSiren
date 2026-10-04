@@ -134,3 +134,23 @@ Validation: native DSP suite and all 45 Python tests pass; ESP32-S3 build passes
 with 120,772 bytes static RAM and 388,221 bytes flash. `git diff --check` passes.
 The hardware smoke test was updated for pulse cadence and silence instead of
 a continuous Sonar frequency window; it was not run on hardware in this check.
+
+## Extended Saw/Triangle PR integration - 2026-10-04
+
+PR #4 adds Extended-only SAW and TRIANGLE carriers, protocol commands,
+desktop controls and two more variants in the Extended Classic pad family.
+Integration preserves the shared Sine voicings, pulsed Sonar and current
+encoder gestures from main. Classic still exposes only its original four modes.
+
+Review corrected a missing import in the new legacy-panel test and adjusted
+the waveform crossing assertion to the current 4,800-sample (100 ms) window:
+220 Hz produces about 22 positive crossings, not 220. Native spectral checks
+verify the Saw harmonics and Triangle's suppressed even harmonics. A new
+Virtual ESP regression cycles all five pad variants, plays both new carriers,
+checks dry silence after release and rejects them after switching to Classic.
+
+Validation: all 47 Python tests and the native DSP suite pass; ESP32-S3 build
+passes with 120,844 bytes static RAM and 388,477 bytes flash. Python tests ran
+from a temporary copy of the tracked sources because the working checkout's
+Virtual ESP DLL was already loaded by another process. No hardware smoke test,
+upload or physical listening check was performed during this review.

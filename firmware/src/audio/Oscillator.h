@@ -40,6 +40,8 @@ private:
                        float phaseIncrement, float sampleRate);
     float nextSquare(float frequencyHz, float modulation, float envelopeLevel,
                      float phaseIncrement, float sampleRate);
+    float nextSaw(float phaseIncrement);
+    float nextTriangle();
     float nextLickshot(float frequencyHz, float modulation,
                        float envelopeLevel, float phaseIncrement,
                        float sampleRate);

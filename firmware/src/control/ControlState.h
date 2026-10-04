@@ -12,6 +12,8 @@ enum class SirenMode {
     Sonar,
     Syndrum,
     Gunshot,
+    Saw,
+    Triangle,
     Count,
 };
 
@@ -105,7 +107,7 @@ inline const char *rateName(ClassicModulation rate) {
 
 inline const char *modeName(SirenMode mode) {
     static const char *names[] = {"SINE 1", "SINE 2", "TEST TONE", "SQUARE",
-        "LICKSHOT", "SONAR", "SYNDRUM", "GUNSHOT"};
+        "LICKSHOT", "SONAR", "SYNDRUM", "GUNSHOT", "SAW", "TRIANGLE"};
     return names[static_cast<unsigned>(mode)];
 }
 

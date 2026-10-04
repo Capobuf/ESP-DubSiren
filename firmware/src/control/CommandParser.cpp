@@ -412,6 +412,8 @@ bool CommandParser::parseMode(const String &text, SirenMode &mode) {
     else if (text == "SONAR") mode = SirenMode::Sonar;
     else if (text == "SYNDRUM") mode = SirenMode::Syndrum;
     else if (text == "GUNSHOT") mode = SirenMode::Gunshot;
+    else if (text == "SAW") mode = SirenMode::Saw;
+    else if (text == "TRIANGLE") mode = SirenMode::Triangle;
     else return false;
     return true;
 }

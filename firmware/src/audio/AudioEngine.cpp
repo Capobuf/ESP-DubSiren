@@ -51,7 +51,8 @@ void AudioEngine::begin() {
 bool AudioEngine::isTonalMode(SirenMode mode) {
     return mode == SirenMode::Sine1 || mode == SirenMode::Sine2 ||
            mode == SirenMode::TestTone || mode == SirenMode::Square ||
-           mode == SirenMode::Lickshot || mode == SirenMode::Sonar;
+           mode == SirenMode::Lickshot || mode == SirenMode::Sonar ||
+           mode == SirenMode::Saw || mode == SirenMode::Triangle;
 }
 
 float AudioEngine::nextGunshot(float envelopeLevel) {

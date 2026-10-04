@@ -112,7 +112,7 @@ def main() -> None:
     parser.add_argument(
         "--modes",
         nargs="+",
-        default=["SINE1", "SINE2", "TEST_TONE", "SQUARE"],
+        default=["SINE1", "SINE2", "TEST_TONE", "SQUARE", "SAW", "TRIANGLE"],
     )
     args = parser.parse_args()
 
@@ -122,7 +122,11 @@ def main() -> None:
         for mode in args.modes:
             for voicing in ("LEGACY", "V2"):
                 pcm = capture.capture(mode, voicing)
-                print(mode, voicing, metrics(pcm, mode in ("SINE1", "SINE2")))
+                print(
+                    mode,
+                    voicing,
+                    metrics(pcm, mode in ("SINE1", "SINE2", "SAW", "TRIANGLE")),
+                )
     finally:
         capture.close()
 

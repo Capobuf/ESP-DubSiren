@@ -17,6 +17,10 @@ inline int selectorZone(float position, int current, int zones) {
     return current;
 }
 constexpr float kTestGain = 0.72f;
+// Canonical Extended oscillator levels. Keep the waveform itself neutral;
+// character can be added downstream without baking an arbitrary filter into it.
+constexpr float kSawGain = 0.72f;
+constexpr float kTriangleGain = 0.72f;
 constexpr float kManualAttackMs = 8.0f;
 constexpr float kManualReleaseMs = 12.0f;
 constexpr float kEchoTimeMinMs = 50.0f;

@@ -70,6 +70,12 @@ inline float polyBlep(float phase, float phaseIncrement) {
     return 0.0f;
 }
 
+inline float bandLimitedSaw(float phase, float phaseIncrement) {
+    float output = 2.0f * phase - 1.0f;
+    output -= polyBlep(phase, phaseIncrement);
+    return output;
+}
+
 inline float bandLimitedPulse(float phase, float phaseIncrement, float duty) {
     const float minimumDuty = phaseIncrement < 0.49f ? phaseIncrement : 0.49f;
     const float maximumDuty = 1.0f - minimumDuty;

@@ -123,7 +123,8 @@ follows effective LFO rate, including Dynamic Sweep; amplitude pulses remain
 active with pitch modulation disabled. Entry into Sonar or a trigger/hold
 activation resets its ping envelope and the LFO even with RETRIGGER off, while
 oscillator phase and delay contents continue. Manual uses the MOD UP gate.
-Calibration is
+SAW uses a PolyBLEP ramp and TRIANGLE uses a direct continuous triangle;
+both are Extended-only continuous carriers with DC blocking. Calibration is
 centralized in PerformanceConfig.h and does not claim measured hardware fidelity.
 
 SYNDRUM and GUNSHOT are transient modes. A trigger activation event starts their

@@ -117,7 +117,10 @@ void PerformanceController::applySound(ControlState &state, unsigned index,
     switch (config.sound) {
         case PanelSound::Classic:
             state.mode = variant == 0 ? SirenMode::Sine1
-                       : variant == 1 ? SirenMode::Sine2 : SirenMode::Sonar;
+                       : variant == 1 ? SirenMode::Sine2
+                       : variant == 2 ? SirenMode::Sonar
+                       : variant == 3 ? SirenMode::Saw
+                                      : SirenMode::Triangle;
             state.lfoShape = LfoShape::Classic;
             state.modulationEnabled = true;
             state.retrigger = false;

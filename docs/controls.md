@@ -24,6 +24,21 @@ A/B measurement was performed. These are functional references, not evidence
 of circuit or sonic identity. The single-button manual gesture and bipolar
 filter calibration below are project implementation choices.
 
+Additional waveform research checked on 2026-10-04:
+
+- [ZEN Instruments' NJD redraw](https://zeninstruments.blogspot.com/2022/04/njd-dub-siren-schematic-redraw-and-pcb.html)
+  describes the classic NJD audio oscillator as a variable-pulse-width square
+  oscillator followed by cascaded low-pass stages. Keeping the DS01-inspired
+  Classic voicings pulse-derived is a project choice informed by this NJD
+  reference, not evidence of the Benidub circuit or literal sine oscillators.
+- [Benidub DS71](https://benidub.com/products/ds71-dub-siren/) documents eight
+  preset **LFO** waveforms but does not identify them as alternative carrier
+  waveforms, so they are not copied into the audio oscillator.
+- [Zongo Dub Siren](https://siren.zongosound.com/) exposes the conventional
+  Sine/Square/Triangle/Sawtooth carrier set. Triangle and Saw are therefore
+  added only to Extended as useful, distinct project waveforms; this is not a
+  claim that either waveform exists in the DS01/DS01E circuit.
+
 | Selector | Current Classic calibration |
 |---|---|
 | PITCH LOW / MID / HIGH | 261.63 / 392.00 / 587.33 Hz |
@@ -98,9 +113,9 @@ host-to-speaker latency.
   echo can fill the gaps, so use ECHO LEVEL zero to hear the dry ping pattern.
 - TEST TONE: fixed base-pitch sine beep; half-cycle automatic gate with the
   same 2/3 ms anti-click ramp. Manual gates the beep directly from BTN3.
-- SQUARE: existing PolyBLEP/one-pole voicing retained; automatic high/low pitch
-  uses the LFO gate and a 2.5 ms pitch slew. Manual switches those two targets
-  directly from BTN3, never from a frozen automatic phase.
+- SQUARE: PolyBLEP/one-pole voicing; automatic high/low pitch uses the LFO gate
+  and a 2.5 ms pitch slew. Manual switches those two targets directly from
+  BTN3, never from a frozen automatic phase.
 
 Sine voices retain the project's RC-like automatic pitch modulation. Manual
 uses an 8 ms attack / 12 ms release RC response for their pitch, without
@@ -133,9 +148,14 @@ safety limiter. Echo never controls the dry gate.
 
 Extended preserves Lickshot, Sonar, Syndrum, Gunshot, Dynamic Sweep, extra LFO
 shapes, continuous Tune/Rate, Depth, Decay, RISE/DIVE, Retrigger, Spin and Loop.
-Lickshot and Gunshot are not DS01E voices. `pc/app.py` exposes all advanced
-parameters. The physical UI retains its old four-pad bank inside Extended:
-Classic (Sine 1/Sine 2/Sonar), Two Tone, Lickshot, Ping (Syndrum). Last pad wins;
+It also adds SAW and TRIANGLE as continuous tonal carriers. SAW is a PolyBLEP
+ramp to limit the obvious high-frequency aliasing of a naive digital saw;
+TRIANGLE is a direct continuous triangle with naturally faster harmonic rolloff.
+Both use DC blocking and the normal Extended pitch/modulation/gate/echo chain.
+Lickshot, Gunshot, Saw and Triangle are not DS01E voices. `pc/app.py` exposes
+all advanced parameters. The physical UI retains its four-pad bank inside
+Extended: Classic (Sine 1/Sine 2/Sonar/Saw/Triangle), Two Tone, Lickshot, Ping
+(Syndrum). Last pad wins;
 free encoder rotation cycles the selected pad's waveform variant. BTN1 held
 while turning adjusts Depth in 0.05-octave steps (0-2 octaves). A latched Hold
 alone leaves rotation on variant selection. Holding other Trigger/Play Sound
