@@ -23,7 +23,7 @@ for commands, HELLO, STATUS, controls, and triggers.
 Control commands:
 
 ```text
-SET MODE SINE1|SINE2|TEST_TONE|SQUARE|LICKSHOT|SONAR|SYNDRUM|GUNSHOT
+SET MODE SINE1|SINE2|TEST_TONE|SQUARE|SAW|TRIANGLE|LICKSHOT|SONAR|SYNDRUM|GUNSHOT
 SET PROFILE CLASSIC|EXTENDED
 SET CLASSIC_PITCH LOW|MID|HIGH
 SET CLASSIC_MOD SLOW|MID|MEDIUM|FAST|MANUAL
@@ -126,7 +126,9 @@ SET VOICING LEGACY|V2
 These limits are absolute DSP/protocol ranges. PITCH_POSITION and RATE_POSITION
 are additive normalized inputs, quantized with 0.015 hysteresis in Classic.
 In Extended they map to continuous 80-1600 Hz and 0.15-20 Hz. Direct enum
-commands remain supported; MEDIUM is retained as an alias for MID.
+commands remain supported; MEDIUM is retained as an alias for MID. SAW and
+TRIANGLE are Extended-only tonal carriers; they use the normal Tune, LFO,
+Dynamic Sweep, live transpose, gate and echo paths.
 ECHO_FILTER is an atomic bipolar macro with a central FLAT bypass; explicit
 HPF_HZ/LPF_HZ commands disable that bypass. Other controls retain physical units.
 `SET MODE` rejects Extended-only modes while in Classic; select Extended first. Existing finite numeric controls are clamped to their absolute
