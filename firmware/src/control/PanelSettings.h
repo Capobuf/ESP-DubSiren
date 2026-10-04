@@ -153,7 +153,7 @@ inline const char *panelSoundName(PanelSound sound) {
 
 inline unsigned panelSoundVariantCount(PanelSound sound) {
     switch (sound) {
-        case PanelSound::Classic: return 3;
+        case PanelSound::Classic: return 5;
         case PanelSound::TwoTone: return 3;
         case PanelSound::Lickshot: return 2;
         case PanelSound::Ping: return 3;
@@ -167,7 +167,7 @@ inline bool panelSoundSupportsLatch(PanelSound sound) {
 }
 
 inline const char *panelSoundVariantName(PanelSound sound, unsigned variant) {
-    static const char *classic[] = {"SINE 1", "SINE 2", "SONAR"};
+    static const char *classic[] = {"SINE 1", "SINE 2", "SONAR", "SAW", "TRIANGLE"};
     static const char *twoTone[] = {"RC", "TRIANGLE", "SQUARE"};
     static const char *lickshot[] = {"SAW DOWN", "ASYM DOWN"};
     static const char *ping[] = {"SINE", "TRIANGLE", "SQUARE"};
