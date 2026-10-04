@@ -12,7 +12,7 @@ nei manuali ufficiali Benidub, senza dichiarare un clone circuitale o una
 corrispondenza sonora misurata.
 
 **Extended** conserva Lickshot, Sonar, Syndrum, Gunshot, Dynamic Sweep, forme
-LFO aggiuntive e controlli avanzati. Il DSP/control C++ è condiviso da firmware
+LFO aggiuntive e controlli avanzati, e aggiunge i carrier SAW e TRIANGLE. Il DSP/control C++ è condiviso da firmware
 e Virtual ESP. Tarature, fonti e limiti sono in [controls](docs/controls.md);
 le verifiche della revisione sono in [baseline validation](docs/baseline-validation.md).
 
