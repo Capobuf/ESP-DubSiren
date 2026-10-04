@@ -78,6 +78,10 @@ float Oscillator::renderVoice(SirenMode mode, float frequencyHz,
                               sampleRate);
     } else if (mode == SirenMode::Sonar) {
         output = nextSonar();
+    } else if (mode == SirenMode::Saw) {
+        output = nextSaw(increment);
+    } else if (mode == SirenMode::Triangle) {
+        output = nextTriangle();
     } else if (classicProfile && mode == SirenMode::Sine1) {
         output = nextSine1(frequencyHz, modulation, envelopeLevel, increment,
                            sampleRate);
@@ -125,6 +129,8 @@ float Oscillator::nextLegacy(SirenMode mode, float phaseIncrement) const {
         case SirenMode::Sonar:
         case SirenMode::Syndrum:
         case SirenMode::Gunshot:
+        case SirenMode::Saw:
+        case SirenMode::Triangle:
         case SirenMode::Count:
             return 0.0f;
     }
@@ -225,6 +231,20 @@ float Oscillator::nextSquare(float frequencyHz, float modulation,
     value = analogSaturate(value, kSquareVoicing.drive,
                            kSquareVoicing.asymmetry);
     return state.dcBlocker.process(value) * kSquareVoicing.outputGain;
+}
+
+float Oscillator::nextSaw(float phaseIncrement) {
+    VoiceState &state = voices_[static_cast<int>(SirenMode::Saw)];
+    const float value = bandLimitedSaw(phase_, phaseIncrement);
+    return state.dcBlocker.process(value) * PerformanceConfig::kSawGain;
+}
+
+float Oscillator::nextTriangle() {
+    VoiceState &state = voices_[static_cast<int>(SirenMode::Triangle)];
+    // A triangle is continuous at the phase wrap and its harmonics already
+    // decay as 1/n^2, so the stateless form stays clean without crossfade state.
+    const float value = 1.0f - 4.0f * fabsf(phase_ - 0.5f);
+    return state.dcBlocker.process(value) * PerformanceConfig::kTriangleGain;
 }
 
 float Oscillator::nextLickshot(float frequencyHz, float modulation,
