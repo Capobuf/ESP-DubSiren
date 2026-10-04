@@ -133,7 +133,7 @@ def _validated_panel_config(data: object) -> dict:
 
 def _validated_legacy_panel_config(data: dict) -> dict:
     pads = data.get("pads")
-    variants = {"CLASSIC": 3, "TWO TONE": 3, "LICKSHOT": 2, "PING": 3}
+    variants = {"CLASSIC": 5, "TWO TONE": 3, "LICKSHOT": 2, "PING": 3}
     if (set(data) != {"pads"} or not isinstance(pads, list) or len(pads) != 4):
         raise PanelConfigError("panel.json has invalid legacy pad settings")
     for pad in pads:
