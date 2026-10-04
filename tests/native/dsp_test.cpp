@@ -180,6 +180,10 @@ void testParser() {
     assert(store.snapshot().mode == SirenMode::Lickshot);
     assert(parser.parse("SET MODE SONAR"));
     assert(store.snapshot().mode == SirenMode::Sonar);
+    assert(parser.parse("SET MODE SAW"));
+    assert(store.snapshot().mode == SirenMode::Saw);
+    assert(parser.parse("SET MODE TRIANGLE"));
+    assert(store.snapshot().mode == SirenMode::Triangle);
     assert(parser.parse("SET MODE SYNDRUM"));
     assert(store.snapshot().mode == SirenMode::Syndrum);
     assert(parser.parse("SET SYNDRUM_WAVE TRIANGLE"));
@@ -569,7 +573,8 @@ void testLfoReset() {
 }
 
 void testNewVoices() {
-    for (SirenMode mode : {SirenMode::Lickshot, SirenMode::Sonar}) {
+    for (SirenMode mode : {SirenMode::Lickshot, SirenMode::Sonar,
+                           SirenMode::Saw, SirenMode::Triangle}) {
         Oscillator oscillator;
         double energy = 0.0;
         int crossings = 0;
@@ -583,10 +588,25 @@ void testNewVoices() {
             previous = value;
         }
         assert(energy > 100.0);
-        if (mode == SirenMode::Sonar) {
+        if (mode == SirenMode::Sonar || mode == SirenMode::Saw ||
+            mode == SirenMode::Triangle) {
             assert(crossings >= 219 && crossings <= 221);
         }
     }
+
+    const HarmonicSnapshot saw = measureVoice(SirenMode::Saw, 0.0f);
+    const HarmonicSnapshot triangle = measureVoice(SirenMode::Triangle, 0.0f);
+    assert(saw.rms > 0.30f && saw.rms < 0.50f);
+    assert(triangle.rms > 0.30f && triangle.rms < 0.50f);
+    assert(fabsf(saw.mean) < 0.001f);
+    assert(fabsf(triangle.mean) < 0.001f);
+    // Saw contains both even and odd harmonics; an ideal triangle suppresses
+    // even harmonics and its third harmonic is approximately one ninth of H1.
+    assert(harmonicRatio(saw, 2) > 0.35f);
+    assert(harmonicRatio(saw, 3) > 0.20f);
+    assert(harmonicRatio(triangle, 2) < 0.02f);
+    assert(harmonicRatio(triangle, 3) > 0.07f);
+    assert(harmonicRatio(triangle, 3) < 0.16f);
 }
 
 void testPerformancePitch() {
@@ -1163,6 +1183,15 @@ void testConfigurablePanel() {
     assert(!parser.parse("PANEL BUTTON CLASSIC 2 ACTION SCRIPT"));
 
     assert(parser.parse("SET PROFILE EXTENDED"));
+    assert(parser.parse("PANEL BUTTON EXTENDED 1 SOUND CLASSIC 3 0"));
+    assert(parser.parse("PAD 1 1"));
+    assert(store.snapshot().mode == SirenMode::Saw);
+    assert(parser.parse("PAD 1 0"));
+    assert(parser.parse("PANEL BUTTON EXTENDED 1 SOUND CLASSIC 4 0"));
+    assert(parser.parse("PAD 1 1"));
+    assert(store.snapshot().mode == SirenMode::Triangle);
+    assert(parser.parse("PAD 1 0"));
+    assert(!parser.parse("PANEL BUTTON EXTENDED 1 SOUND CLASSIC 5 0"));
     assert(parser.parse("PANEL BUTTON EXTENDED 2 SOUND TWO_TONE 2 1"));
     assert(parser.parse("PANEL BUTTON EXTENDED 3 ACTION HOLD"));
     assert(parser.parse("PAD 2 1"));
