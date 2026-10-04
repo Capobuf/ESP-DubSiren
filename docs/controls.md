@@ -24,6 +24,21 @@ A/B measurement was performed. These are functional references, not evidence
 of circuit or sonic identity. The single-button manual gesture and bipolar
 filter calibration below are project implementation choices.
 
+Additional waveform research checked on 2026-10-04:
+
+- [ZEN Instruments' NJD redraw](https://zeninstruments.blogspot.com/2022/04/njd-dub-siren-schematic-redraw-and-pcb.html)
+  describes the classic NJD audio oscillator as a variable-pulse-width square
+  oscillator followed by cascaded low-pass stages. This supports keeping the
+  DS01-inspired Classic voicings pulse-derived rather than treating their
+  product names as literal mathematical sine waves.
+- [Benidub DS71](https://benidub.com/products/ds71-dub-siren/) documents eight
+  preset **LFO** waveforms but does not identify them as alternative carrier
+  waveforms, so they are not copied into the audio oscillator.
+- [Zongo Dub Siren](https://siren.zongosound.com/) exposes the conventional
+  Sine/Square/Triangle/Sawtooth carrier set. Triangle and Saw are therefore
+  added only to Extended as useful, distinct project waveforms; this is not a
+  claim that either waveform exists in the DS01/DS01E circuit.
+
 | Selector | Current Classic calibration |
 |---|---|
 | PITCH LOW / MID / HIGH | 261.63 / 392.00 / 587.33 Hz |
@@ -80,14 +95,18 @@ missed. Commands are applied at a 480-sample block boundary (up to 10 ms),
 plus output buffering: the 3 ms bound describes DSP fade time, not total
 host-to-speaker latency.
 
-- SINE 1: sine carrier, gain 0.72; removes the old pulse/three-RC/saturation chain.
-- SINE 2: sine plus second/third harmonics (0.18/0.12), gain 0.64. Harmonics
-  above 0.45 sample rate are omitted. No extra distortion stage.
+- SINE 1: PolyBLEP pulse-derived carrier. Duty moves from 0.27 to 0.45 with
+  modulation, then a one-pole low-pass tracks about 6x the carrier frequency,
+  followed by light asymmetric saturation and DC blocking.
+- SINE 2: a thinner pulse-derived voicing. Duty moves from 0.19 to 0.29,
+  low-pass tracks about 8x the carrier frequency, then the same class of light
+  saturation and DC blocking. These names follow the DS01 functional modes;
+  neither is asserted to be a literal sine oscillator.
 - TEST TONE: fixed base-pitch sine beep; half-cycle automatic gate with the
   same 2/3 ms anti-click ramp. Manual gates the beep directly from BTN3.
-- SQUARE: existing PolyBLEP/one-pole voicing retained; automatic high/low pitch
-  uses the LFO gate and a 2.5 ms pitch slew. Manual switches those two targets
-  directly from BTN3, never from a frozen automatic phase.
+- SQUARE: PolyBLEP/one-pole voicing; automatic high/low pitch uses the LFO gate
+  and a 2.5 ms pitch slew. Manual switches those two targets directly from
+  BTN3, never from a frozen automatic phase.
 
 Sine voices retain the project's RC-like automatic pitch modulation. Manual
 uses an 8 ms attack / 12 ms release RC response for their pitch, without
@@ -120,9 +139,14 @@ safety limiter. Echo never controls the dry gate.
 
 Extended preserves Lickshot, Sonar, Syndrum, Gunshot, Dynamic Sweep, extra LFO
 shapes, continuous Tune/Rate, Depth, Decay, RISE/DIVE, Retrigger, Spin and Loop.
-Lickshot and Gunshot are not DS01E voices. `pc/app.py` exposes all advanced
-parameters. The physical UI retains its old four-pad bank inside Extended:
-Classic (Sine 1/Sine 2/Sonar), Two Tone, Lickshot, Ping (Syndrum). Last pad wins;
+It also adds SAW and TRIANGLE as continuous tonal carriers. SAW is a PolyBLEP
+ramp to limit the obvious high-frequency aliasing of a naive digital saw;
+TRIANGLE is a direct continuous triangle with naturally faster harmonic rolloff.
+Both use DC blocking and the normal Extended pitch/modulation/gate/echo chain.
+Lickshot, Gunshot, Saw and Triangle are not DS01E voices. `pc/app.py` exposes
+all advanced parameters. The physical UI retains its four-pad bank inside
+Extended: Classic (Sine 1/Sine 2/Sonar/Saw/Triangle), Two Tone, Lickshot, Ping
+(Syndrum). Last pad wins;
 encoder rotation changes Depth, encoder+BTN1 toggles pad Hold, +BTN2/3 changes
 variant, +BTN4 cuts echo. Extended menu includes a return to DS01E.
 
