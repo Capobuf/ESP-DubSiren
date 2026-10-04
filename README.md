@@ -12,7 +12,10 @@ nei manuali ufficiali Benidub, senza dichiarare un clone circuitale o una
 corrispondenza sonora misurata.
 
 **Extended** conserva Lickshot, Sonar, Syndrum, Gunshot, Dynamic Sweep, forme
-LFO aggiuntive e controlli avanzati, e aggiunge i carrier SAW e TRIANGLE. Il DSP/control C++ è condiviso da firmware
+LFO aggiuntive e controlli avanzati, e aggiunge i carrier SAW e TRIANGLE.
+Sine 1 e Sine 2 usano le stesse voci di
+Classic; Sonar emette ping pulsanti con cadenza regolata da Rate.
+Il DSP/control C++ è condiviso da firmware
 e Virtual ESP. Tarature, fonti e limiti sono in [controls](docs/controls.md);
 le verifiche della revisione sono in [baseline validation](docs/baseline-validation.md).
 
@@ -90,8 +93,10 @@ ECHO FEEDBACK ed ECHO FILTER; BTN1 TRIGGER, BTN2 HOLD, BTN3 MANUAL MOD e
 BTN4 ECHO CUT. L'encoder cicla i quattro voicing; premendolo si apre il menu
 al rilascio del click. I sei pot e i quattro pulsanti sono configurabili per
 profilo dal controller C++ condiviso; Pickup evita salti dopo cambio profilo o
-parametro. Mentre un pulsante sonoro e' fisicamente premuto, l'encoder applica
-un transpose live temporaneo. Il Master resta separato e non assegnabile sul
+parametro. In Extended la rotazione libera cambia la variante del pad;
+BTN1 premuto + rotazione regola Depth. Con gli altri pulsanti sonori
+fisicamente premuti, l'encoder applica un transpose live temporaneo; in
+Classic vale anche per BTN1. Il Master resta separato e non assegnabile sul
 retro. La Home 320x172 mostra insieme etichette e valori fisici, con overlay
 temporanei dei pot.
 Il prodotto finale userà un display piccolo, principalmente testuale, per
@@ -128,7 +133,7 @@ thread e seriale. Per un controllo automatico dell'hardware collegato:
 Dettagli: [architettura](docs/architecture.md), [protocollo](docs/protocol.md) e
 [controlli](docs/controls.md).
 
-Per creare ventisei brevi WAV di confronto direttamente dal PCM firmware
+Per creare ventotto brevi WAV di confronto direttamente dal PCM firmware
 (con la scheda collegata), eseguire dalla cartella `pc`:
 
 ```powershell

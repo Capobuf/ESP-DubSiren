@@ -28,9 +28,9 @@ Additional waveform research checked on 2026-10-04:
 
 - [ZEN Instruments' NJD redraw](https://zeninstruments.blogspot.com/2022/04/njd-dub-siren-schematic-redraw-and-pcb.html)
   describes the classic NJD audio oscillator as a variable-pulse-width square
-  oscillator followed by cascaded low-pass stages. This supports keeping the
-  DS01-inspired Classic voicings pulse-derived rather than treating their
-  product names as literal mathematical sine waves.
+  oscillator followed by cascaded low-pass stages. Keeping the DS01-inspired
+  Classic voicings pulse-derived is a project choice informed by this NJD
+  reference, not evidence of the Benidub circuit or literal sine oscillators.
 - [Benidub DS71](https://benidub.com/products/ds71-dub-siren/) documents eight
   preset **LFO** waveforms but does not identify them as alternative carrier
   waveforms, so they are not copied into the audio oscillator.
@@ -95,13 +95,22 @@ missed. Commands are applied at a 480-sample block boundary (up to 10 ms),
 plus output buffering: the 3 ms bound describes DSP fade time, not total
 host-to-speaker latency.
 
-- SINE 1: PolyBLEP pulse-derived carrier. Duty moves from 0.27 to 0.45 with
-  modulation, then a one-pole low-pass tracks about 6x the carrier frequency,
-  followed by light asymmetric saturation and DC blocking.
-- SINE 2: a thinner pulse-derived voicing. Duty moves from 0.19 to 0.29,
-  low-pass tracks about 8x the carrier frequency, then the same class of light
-  saturation and DC blocking. These names follow the DS01 functional modes;
-  neither is asserted to be a literal sine oscillator.
+- SINE 1 (Classic and Extended): PolyBLEP pulse with modulation-dependent duty 0.27-0.45,
+  one tracking low-pass, asymmetric saturation and DC blocking; output gain 0.56.
+- SINE 2 (Classic and Extended): the same stages with duty 0.19-0.29 and a
+  different tracking cutoff; output gain 0.54. Both voices contain harmonics.
+  Both profiles call the same oscillator code, preserving the Classic timbres;
+  profile differences remain in controls and the outer release envelope.
+- Extended SONAR: sine carrier, gain 0.82, with a decaying ping on every rising
+  LFO gate. RATE controls repetition, with one ping per automatic LFO cycle.
+  Each ping has an internal 80 ms exponential time constant, a 2 ms attack and
+  a gate closing over 3 ms at the end of the active half-cycle, leaving silent
+  gaps even while HOLD is active. Pitch modulation and DEPTH still apply;
+  disabling pitch modulation keeps the amplitude pulses. A new trigger, Hold
+  activation or selection of Sonar starts the pulse cycle immediately, even
+  with RETRIGGER off. Manual produces a ping on each MOD UP press.
+  DECAY retains its meaning as the outer release after Trigger/Hold ends;
+  echo can fill the gaps, so use ECHO LEVEL zero to hear the dry ping pattern.
 - TEST TONE: fixed base-pitch sine beep; half-cycle automatic gate with the
   same 2/3 ms anti-click ramp. Manual gates the beep directly from BTN3.
 - SQUARE: PolyBLEP/one-pole voicing; automatic high/low pitch uses the LFO gate
@@ -147,8 +156,12 @@ Lickshot, Gunshot, Saw and Triangle are not DS01E voices. `pc/app.py` exposes
 all advanced parameters. The physical UI retains its four-pad bank inside
 Extended: Classic (Sine 1/Sine 2/Sonar/Saw/Triangle), Two Tone, Lickshot, Ping
 (Syndrum). Last pad wins;
-encoder rotation changes Depth, encoder+BTN1 toggles pad Hold, +BTN2/3 changes
-variant, +BTN4 cuts echo. Extended menu includes a return to DS01E.
+free encoder rotation cycles the selected pad's waveform variant. BTN1 held
+while turning adjusts Depth in 0.05-octave steps (0-2 octaves). A latched Hold
+alone leaves rotation on variant selection. Holding other Trigger/Play Sound
+buttons retains configured live pitch. Encoder push+BTN1 toggles pad Hold,
+push+BTN2/3 changes variant, and push+BTN4 cuts echo. Extended menu includes
+a return to DS01E.
 
 Profile changes release gates and momentary controls, clear pad Holds and keep
 delay contents; advanced numeric settings remain stored. Saved pad assignments

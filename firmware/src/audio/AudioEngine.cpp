@@ -154,7 +154,10 @@ void AudioEngine::render(const ControlState &controls, int16_t *output,
     }
     const bool retrigger = queuedActivation
         ? activation.retrigger : controls.retrigger;
-    if (!classic && retrigger && activationEdge) {
+    const bool sonarRestart = !classic && requestedMode == SirenMode::Sonar &&
+        (activationEdge || !modeInitialized_ || requestedMode != currentMode_);
+    if (sonarRestart) oscillator_.resetSonarPulse();
+    if (sonarRestart || (!classic && retrigger && activationEdge)) {
         lfo_.reset(shape);
     }
     previousTrigger_ = controls.trigger;
@@ -248,21 +251,23 @@ void AudioEngine::render(const ControlState &controls, int16_t *output,
         float dry;
         const bool tonalTransition = modeTransitionRemaining_ > 0 && tonal &&
                                      isTonalMode(previousMode_);
+        // Sonar's amplitude pulses keep running when pitch modulation is off.
+        const bool voiceGate = modulationEnabled || currentMode_ == SirenMode::Sonar ||
+            (tonalTransition && previousMode_ == SirenMode::Sonar)
+                ? lfo_.gate() : true;
         if (tonalTransition) {
             const float mix = 1.0f - static_cast<float>(modeTransitionRemaining_) /
                 (PerformanceConfig::kModeTransitionMs * Config::kSampleRate * 0.001f);
             dry = oscillator_.nextTransition(previousMode_, currentMode_, mix,
                 oscillatorFrequencyHz_, oscillatorModulation, envelopeLevel,
-                modulationEnabled ? lfo_.gate() : true,
-                Config::kSampleRate, classic || controls.voicingV2,
-                classic) * envelopeLevel;
+                voiceGate, Config::kSampleRate,
+                classic || controls.voicingV2) * envelopeLevel;
         } else {
             if (tonal) {
                 dry = oscillator_.next(currentMode_, oscillatorFrequencyHz_,
                     oscillatorModulation, envelopeLevel,
-                    modulationEnabled ? lfo_.gate() : true,
-                    Config::kSampleRate, classic || controls.voicingV2,
-                    classic) * envelopeLevel;
+                    voiceGate, Config::kSampleRate,
+                    classic || controls.voicingV2) * envelopeLevel;
             } else if (currentMode_ == SirenMode::Syndrum) {
                 const float frequency = clampFrequency(
                     tune * exp2f(livePitch + (queuedActivation

@@ -96,6 +96,7 @@ class SmokeTest:
 
         self.send(
             "SET OUTPUT PC",
+            "SET PROFILE EXTENDED",
             "SET MODE SINE1",
             "SET LFO_SHAPE TRIANGLE",
             "SET LFO_DEPTH_OCT 0",
@@ -185,13 +186,22 @@ class SmokeTest:
             "airhorn_hz": airhorn_hz,
         })
 
-        self.send("SET MODE SONAR", "SET LFO_DEPTH_OCT 0", "MODULATION 1")
+        self.send("SET MODE SONAR", "SET LFO_RATE_HZ 1",
+                  "SET LFO_DEPTH_OCT 0", "MODULATION 0")
         self.settle(0.20)
-        sonar_rms, sonar_peak, sonar_hz = metrics(self.grab(60))
-        assert sonar_rms > 5_000 and sonar_peak <= 32767
-        assert 217 <= sonar_hz <= 223
-        print("SONAR", {"hz": sonar_hz, "rms": sonar_rms})
+        sonar_pcm = self.grab(300)
+        sonar_blocks = [metrics(sonar_pcm[i:i + 960])[0]
+                        for i in range(0, len(sonar_pcm), 960)]
+        pings = sum(rms > 100 and (i == 0 or sonar_blocks[i - 1] <= 100)
+                    for i, rms in enumerate(sonar_blocks))
+        silent_blocks = sum(rms == 0 for rms in sonar_blocks)
+        assert 2 <= pings <= 4 and silent_blocks >= 100
+        assert max(sonar_blocks) > 2000 and metrics(sonar_pcm)[1] <= 32767
+        print("SONAR", {"pings_3s": pings, "silent_blocks": silent_blocks})
 
+        # Pitch gestures use a continuous voice; Sonar's gaps deliberately
+        # invalidate a full-window zero-crossing frequency estimate.
+        self.send("SET MODE SINE1", "MODULATION 1")
         self.send("MOD_UP 1", "MOD_DOWN 0")
         self.settle(0.25)
         rise_hz = metrics(self.grab(40))[2]
@@ -364,7 +374,7 @@ class SmokeTest:
         print("DELAY_LIVE_CHANGE", "ok")
 
         self.send(
-            "SET MODE SONAR",
+            "SET MODE SINE1",
             "SET TUNE_HZ 220",
             "SET LFO_DEPTH_OCT 0",
             "SET DELAY_MS 50",

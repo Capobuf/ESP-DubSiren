@@ -16,12 +16,6 @@ inline int selectorZone(float position, int current, int zones) {
            position < float(current) / zones - kSelectorHysteresis) --current;
     return current;
 }
-constexpr float kSine1Gain = 0.72f;
-// Preserve the existing Extended V2 carrier independently from the Classic
-// voicing below.
-constexpr float kExtendedSine2Gain = 0.64f;
-constexpr float kExtendedSine2Second = 0.18f;
-constexpr float kExtendedSine2Third = 0.12f;
 constexpr float kTestGain = 0.72f;
 // Canonical Extended oscillator levels. Keep the waveform itself neutral;
 // character can be added downstream without baking an arbitrary filter into it.
@@ -73,6 +67,7 @@ constexpr SirenVoicing kLickshotVoicing = {
     1, 5.00f, 0.495f, 0.004f, 1.12f, 0.020f, 0.62f,
 };
 constexpr float kSonarOutputGain = 0.82f;
+constexpr float kSonarPulseDecayMs = 80.0f;
 
 constexpr float kExtendedDecayMs = 120.0f;
 

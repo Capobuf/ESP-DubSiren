@@ -710,8 +710,8 @@ class PhysicalDubSirenApp(DubSirenApp):
         ttk.Label(
             rear,
             text=(
-                "Secondary sound options are controlled "
-                "from the encoder/display."
+                "EXTENDED: turn = waveform; BTN1 + turn = Depth.\n"
+                "Press the encoder to open settings."
             ),
             justify="left",
         ).pack(side="left", fill="x", expand=True, padx=12)

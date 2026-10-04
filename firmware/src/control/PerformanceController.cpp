@@ -453,6 +453,22 @@ void PerformanceController::rotateEncoder(int direction) {
     if (direction == 0) return;
     if (displayMode_ == DisplayMode::Home) {
         ControlState state = controls_.snapshot();
+        // Extended BTN1+turn edits Depth before the generic live-pitch gesture.
+        // A BTN1 consumed by an encoder-click shortcut is not a held modifier.
+        if (state.profile == PerformanceProfile::Extended &&
+            padDown_[0] && !consumed_[0]) {
+            modifierUsed_ = true;
+            state.lfoDepthOctaves = clampFloat(state.lfoDepthOctaves +
+                (direction < 0 ? -0.05f : 0.05f), 0.0f, 2.0f);
+            controls_.set(state);
+            notifyExternalChange(PotTarget::LfoDepth);
+            snprintf(overlayTitle_, sizeof(overlayTitle_), "DEPTH");
+            if (state.mode == SirenMode::Syndrum || state.mode == SirenMode::Gunshot)
+                snprintf(overlayValue_, sizeof(overlayValue_), "STORED - N/A");
+            else
+                snprintf(overlayValue_, sizeof(overlayValue_), "%.2f oct", state.lfoDepthOctaves);
+            return;
+        }
         if (anyRelevantButtonDown() &&
             settings_.encoderHoldAction == EncoderHoldAction::LivePitch) {
             modifierUsed_ = true;
@@ -483,8 +499,8 @@ void PerformanceController::rotateEncoder(int direction) {
         } else {
             overlayTitle_[0] = '\0';
             overlayValue_[0] = '\0';
-            state.lfoDepthOctaves = clampFloat(state.lfoDepthOctaves +
-                (direction < 0 ? -0.05f : 0.05f), 0.0f, 2.0f);
+            stepVariant(direction);
+            return;
         }
         controls_.set(state);
         changed();

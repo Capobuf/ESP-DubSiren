@@ -9,17 +9,18 @@ public:
     Oscillator();
     float next(SirenMode mode, float frequencyHz, float modulation,
                float envelopeLevel, bool lfoGate, float sampleRate,
-               bool voicingV2, bool classicProfile = false);
+               bool voicingV2);
     float nextTransition(SirenMode from, SirenMode to, float mix,
                          float frequencyHz, float modulation,
                          float envelopeLevel, bool lfoGate, float sampleRate,
-                         bool voicingV2, bool classicProfile = false);
+                         bool voicingV2);
     float nextSyndrum(SyndrumWave wave, float frequencyHz, float sampleRate);
+    void resetSonarPulse();
 
 private:
     float renderVoice(SirenMode mode, float frequencyHz, float modulation,
                       float envelopeLevel, bool lfoGate, float sampleRate,
-                      bool voicingV2, bool classicProfile);
+                      bool voicingV2);
     void advance(float increment);
     struct VoiceState {
         OnePoleLowPass filters[1];
@@ -35,7 +36,6 @@ private:
     float nextSine2(float frequencyHz, float modulation,
                     float envelopeLevel, float phaseIncrement,
                     float sampleRate);
-    float nextExtendedSine2(float frequencyHz, float sampleRate) const;
     float nextTestTone(float frequencyHz, float envelopeLevel, bool lfoGate,
                        float phaseIncrement, float sampleRate);
     float nextSquare(float frequencyHz, float modulation, float envelopeLevel,
@@ -45,9 +45,12 @@ private:
     float nextLickshot(float frequencyHz, float modulation,
                        float envelopeLevel, float phaseIncrement,
                        float sampleRate);
-    float nextSonar() const;
+    float nextSonar(bool lfoGate, float sampleRate);
 
     Envelope testGate_;
+    Envelope sonarGate_;
+    OneShotEnvelope sonarPing_;
+    bool previousSonarGate_ = false;
     float phase_;
     float syndrumTriangle_;
     VoiceState voices_[static_cast<int>(SirenMode::Count)];

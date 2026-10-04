@@ -42,7 +42,7 @@ SCENARIOS = (
     ("lickshot_airhorn", ("SET MODE LICKSHOT", "SET TUNE_HZ 220",
                           "MODULATION 0")),
     ("sonar", ("SET MODE SONAR", "SET TUNE_HZ 220",
-               "SET LFO_DEPTH_OCT 0", "MODULATION 1")),
+               "SET LFO_RATE_HZ 1", "SET LFO_DEPTH_OCT 0", "MODULATION 1")),
 )
 
 TRANSIENT_CAPTURE_NAMES = (

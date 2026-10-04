@@ -102,16 +102,29 @@ to the selected Tune and Rate. `SWEEP=0` bypasses both offsets. Triggering may
 therefore restart sweep and, when RETRIGGER is enabled, reset the LFO in the
 same block without resetting oscillator phase or delay.
 
-Classic SINE1 and SINE2 are pulse-derived voicings with different duty ranges
-and tracking low-pass ratios, followed by light saturation and DC blocking.
+SINE1 and SINE2 in both profiles use the existing Classic PolyBLEP pulse
+carriers with distinct duty ranges,
+one tracking low-pass filter, asymmetric saturation and DC blocking. Their
+duty responds to modulation, so harmonic balance changes during the sweep.
+Each sine voice has one implementation and shared filter state; oscillator
+dispatch no longer takes a profile flag. Legacy voicing selection does not
+select a separate sine implementation. Profile-specific controls and outer
+envelopes remain in AudioEngine.
 TEST_TONE gates a fixed-pitch sine with the LFO; SQUARE retains PolyBLEP and
 one tracking low-pass, selecting high/low pitch with a 2.5 ms slew. Their
 manual gates come from the button rather than frozen automatic phase.
 Classic amplitude uses a finite linear 2 ms attack / 3 ms release; its gate
 is applied after oscillator filtering so no dry filter tail escapes.
 Extended retains exponential release and one-shot envelopes. LICKSHOT keeps
-its pulse/filter/saturation voice, SONAR its sine carrier, SAW uses a PolyBLEP
-ramp, and TRIANGLE uses a direct continuous triangle. Calibration is
+its pulse/filter/saturation voice. SONAR applies an 80 ms exponential ping
+envelope to its sine carrier at each rising LFO gate, plus a finite 2/3 ms
+gate to leave exact silent gaps during the inactive half-cycle. Pulse cadence
+follows effective LFO rate, including Dynamic Sweep; amplitude pulses remain
+active with pitch modulation disabled. Entry into Sonar or a trigger/hold
+activation resets its ping envelope and the LFO even with RETRIGGER off, while
+oscillator phase and delay contents continue. Manual uses the MOD UP gate.
+SAW uses a PolyBLEP ramp and TRIANGLE uses a direct continuous triangle;
+both are Extended-only continuous carriers with DC blocking. Calibration is
 centralized in PerformanceConfig.h and does not claim measured hardware fidelity.
 
 SYNDRUM and GUNSHOT are transient modes. A trigger activation event starts their

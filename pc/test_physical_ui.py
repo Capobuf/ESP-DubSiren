@@ -12,6 +12,7 @@ from physical_ui import (
     PanelDisplay,
     PanelConfigError,
     PhysicalDubSirenApp,
+    _validated_legacy_panel_config,
     load_panel_config,
     migrate_panel_config,
     panel_settings_commands,
