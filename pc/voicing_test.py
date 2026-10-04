@@ -122,7 +122,11 @@ def main() -> None:
         for mode in args.modes:
             for voicing in ("LEGACY", "V2"):
                 pcm = capture.capture(mode, voicing)
-                print(mode, voicing, metrics(pcm, mode in ("SINE1", "SINE2")))
+                print(
+                    mode,
+                    voicing,
+                    metrics(pcm, mode in ("SINE1", "SINE2", "SAW", "TRIANGLE")),
+                )
     finally:
         capture.close()
 
