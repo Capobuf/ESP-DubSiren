@@ -91,8 +91,8 @@ class PerformanceControlTests(unittest.TestCase):
     def test_extended_and_classic_mode_lists(self):
         self.assertEqual(
             EXTENDED_MODES,
-            ("SINE1", "SINE2", "TEST_TONE", "SQUARE", "LICKSHOT", "SONAR",
-             "SYNDRUM", "GUNSHOT"),
+            ("SINE1", "SINE2", "TEST_TONE", "SQUARE", "SAW", "TRIANGLE",
+             "LICKSHOT", "SONAR", "SYNDRUM", "GUNSHOT"),
         )
         app = make_app()
         app._update_profile_ui()
@@ -105,12 +105,14 @@ class PerformanceControlTests(unittest.TestCase):
         self.assertIn("SET MODE SINE1", app.commands)
 
         app.commands.clear()
-        for mode in ("LICKSHOT", "SONAR", "SYNDRUM", "GUNSHOT"):
+        for mode in ("SAW", "TRIANGLE", "LICKSHOT", "SONAR", "SYNDRUM", "GUNSHOT"):
             app.mode_var.set(mode)
             app._mode_changed()
-        self.assertEqual(app.commands,
-                         ["SET MODE LICKSHOT", "SET MODE SONAR",
-                          "SET MODE SYNDRUM", "SET MODE GUNSHOT"])
+        self.assertEqual(
+            app.commands,
+            ["SET MODE SAW", "SET MODE TRIANGLE", "SET MODE LICKSHOT",
+             "SET MODE SONAR", "SET MODE SYNDRUM", "SET MODE GUNSHOT"],
+        )
 
     def test_transient_mode_controls(self):
         app = make_app()
