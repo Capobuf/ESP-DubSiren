@@ -102,15 +102,16 @@ to the selected Tune and Rate. `SWEEP=0` bypasses both offsets. Triggering may
 therefore restart sweep and, when RETRIGGER is enabled, reset the LFO in the
 same block without resetting oscillator phase or delay.
 
-Classic SINE1 uses a true sine carrier. SINE2 adds bounded second/third
-harmonics for more bite, without the previous pulse/filter/saturation chain.
+Classic SINE1 and SINE2 are pulse-derived voicings with different duty ranges
+and tracking low-pass ratios, followed by light saturation and DC blocking.
 TEST_TONE gates a fixed-pitch sine with the LFO; SQUARE retains PolyBLEP and
 one tracking low-pass, selecting high/low pitch with a 2.5 ms slew. Their
 manual gates come from the button rather than frozen automatic phase.
 Classic amplitude uses a finite linear 2 ms attack / 3 ms release; its gate
 is applied after oscillator filtering so no dry filter tail escapes.
 Extended retains exponential release and one-shot envelopes. LICKSHOT keeps
-its pulse/filter/saturation voice and SONAR its sine carrier. Calibration is
+its pulse/filter/saturation voice, SONAR its sine carrier, SAW uses a PolyBLEP
+ramp, and TRIANGLE uses a direct continuous triangle. Calibration is
 centralized in PerformanceConfig.h and does not claim measured hardware fidelity.
 
 SYNDRUM and GUNSHOT are transient modes. A trigger activation event starts their
