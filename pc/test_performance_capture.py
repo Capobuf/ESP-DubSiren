@@ -30,13 +30,14 @@ class FakeCapture:
 
 class PerformanceCaptureTests(unittest.TestCase):
     def test_scenarios_and_sweep_commands(self):
-        self.assertEqual(len(SCENARIOS), 11)
-        self.assertEqual(CAPTURE_COUNT, 26)
+        self.assertEqual(len(SCENARIOS), 13)
+        self.assertEqual(CAPTURE_COUNT, 28)
         self.assertEqual(len(TRANSIENT_CAPTURE_NAMES), 9)
         self.assertIn("dynamic_sweep_sine1", TRANSIENT_CAPTURE_NAMES)
         self.assertIn("gunshot_echo", TRANSIENT_CAPTURE_NAMES)
         names = {name for name, _commands in SCENARIOS}
-        self.assertTrue({"lickshot_saw_down", "lickshot_triangle",
+        self.assertTrue({"extended_saw", "extended_triangle",
+                         "lickshot_saw_down", "lickshot_triangle",
                          "lickshot_airhorn", "sonar"} <= names)
         capture = FakeCapture()
         pcm = capture_sequence(capture, "DELAY_MS", ("100", "800", "100"))
