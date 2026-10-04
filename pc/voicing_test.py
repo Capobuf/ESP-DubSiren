@@ -112,7 +112,7 @@ def main() -> None:
     parser.add_argument(
         "--modes",
         nargs="+",
-        default=["SINE1", "SINE2", "TEST_TONE", "SQUARE"],
+        default=["SINE1", "SINE2", "TEST_TONE", "SQUARE", "SAW", "TRIANGLE"],
     )
     args = parser.parse_args()
 
