@@ -1308,6 +1308,48 @@ void testSingleRepeatAndFeedback() {
     }
 }
 
+void testFeedbackTailDecays() {
+    for (bool flat : {true, false}) {
+        for (float feedback : {0.0f, 0.2f, 0.5f, 0.62f, 0.8f, 0.9f, 0.95f, 0.99f}) {
+            auto delay = std::make_unique<Delay>();
+            delay->begin(100, 400, 7000, kRate, flat);
+            for (int i = 0; i < 4800; ++i) {
+                const float dry = .3f * sinf(TWO_PI * 600 * i / kRate);
+                delay->process(dry, feedback, false, kRate);
+            }
+            double first = 0, tail = 0;
+            const int samples = feedback > .98f ? 4800000 : feedback > .9f ? 960000 : 480000;
+            for (int i = 0; i < samples; ++i) {
+                const float wet = delay->process(0, feedback, false, kRate);
+                assert(isfinite(wet));
+                if (i < 4800) first += wet * wet;
+                if (i >= samples - 48000) tail += wet * wet;
+            }
+            assert(first > 1);
+            assert(tail < first * 1e-6);
+        }
+    }
+}
+
+void testReducingFeedbackStopsSustainedTail() {
+    auto delay = std::make_unique<Delay>();
+    delay->begin(50, 60, 7000, kRate, true);
+    for (int i = 0; i < 2400; ++i) {
+        delay->process(.05f * sinf(TWO_PI * 600 * i / kRate), 1.05f, false, kRate);
+    }
+    double sustained = 0, cleared = 0;
+    for (int i = 0; i < 96000; ++i) {
+        const float wet = delay->process(0, 1.05f, false, kRate);
+        if (i >= 93600) sustained += wet * wet;
+    }
+    assert(sustained > 1); // Above-unity feedback still permits self-oscillation.
+    for (int i = 0; i < 48000; ++i) {
+        const float wet = delay->process(0, .5f, false, kRate);
+        if (i >= 45600) cleared += wet * wet;
+    }
+    assert(cleared == 0); // Lowering feedback also drains an already loud buffer.
+}
+
 void testManualAndClassicVoices() {
     Lfo slow, fast;
     slow.reset(LfoShape::Manual); fast.reset(LfoShape::Manual);
@@ -1399,6 +1441,8 @@ int main() {
     testClassicDryRelease();
     testWetIsolation();
     testSingleRepeatAndFeedback();
+    testFeedbackTailDecays();
+    testReducingFeedbackStopsSustainedTail();
     testManualAndClassicVoices();
     testSmoothing();
     testOneShotEnvelope();

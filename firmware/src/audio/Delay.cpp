@@ -91,13 +91,18 @@ float Delay::process(float dry, float feedback, bool echoLoop,
     if (echoLoop) {
         buffer_[writeIndex_] = floatToInt16(delayed);
     } else {
+        const float drive = PerformanceConfig::kFeedbackSaturationDrive;
+        const float bias = drive * PerformanceConfig::kFeedbackSaturationAsymmetry;
+        // fastTanh has at most unity slope. Compensate its drive and the
+        // write softClip's 1.5 small-signal gain, so repeats decay below 100%.
+        // Keep the original dry write and therefore the first repeat level.
         const float saturatedFeedback =
-            analogSaturate(filtered * feedback,
-                           PerformanceConfig::kFeedbackSaturationDrive,
-                           PerformanceConfig::kFeedbackSaturationAsymmetry) *
-            PerformanceConfig::kFeedbackSaturationGain;
+            (fastTanh(drive * filtered * feedback + bias) - fastTanh(bias)) /
+            (1.5f * drive);
         const float feedbackInput = softClip(dry + saturatedFeedback);
-        buffer_[writeIndex_] = floatToInt16(feedbackInput);
+        // Truncate toward zero: rounding can sustain a few LSBs indefinitely.
+        // LOOP keeps its separate rounded copy to preserve frozen contents.
+        buffer_[writeIndex_] = static_cast<int16_t>(feedbackInput * 32767.0f);
     }
     writeIndex_ = (writeIndex_ + 1) % kBufferSamples;
     return filtered;

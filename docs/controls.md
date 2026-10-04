@@ -102,8 +102,15 @@ safety limiter. Echo never controls the dry gate.
 
 - ECHO LEVEL = 0 excludes wet immediately, including a previously filled buffer.
 - FEEDBACK = 0 writes no feedback and permits one repetition.
-- Higher feedback increases repeat persistence; saturation/limiting protects
-  the existing >1 feedback range. It is not a linear decay-time control.
+- Below 100%, feedback makes the repeats decay; higher values produce longer
+  tails. Saturation compensates its gain and the delay write limiter's gain,
+  and the wet HP/LP filters have no resonant boost. Above 100% (or Extended
+  SPIN), protected self-oscillation remains available. ECHO LOOP deliberately
+  sustains the buffer independently of feedback.
+- For a short tail, start with ECHO TIME 150-250 ms and FEEDBACK 30-50%.
+  ECHO LEVEL controls volume, not tail duration. With Pickup, follow the UP/DOWN
+  indication until the pot reaches the stored value, then lower it; while
+  PICKUP is shown the stored feedback is unchanged.
 - ECHO CUT immediately mutes wet at the next block snapshot; release is smoothed.
   The ring buffer, filters and feedback continue evolving. No buffer is cleared.
   Abruptly cutting a loud wet waveform may click: exact mute takes precedence.

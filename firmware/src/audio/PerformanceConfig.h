@@ -98,9 +98,9 @@ constexpr float kGunshotOutputGain = 0.42f;
 constexpr unsigned kFilterUpdateSamples = 64;
 constexpr unsigned kLfoCoefficientUpdateSamples = 64;
 
-constexpr float kEchoFilterQ = 1.0f;
+// Non-resonant HP/LP filters avoid adding gain inside the feedback loop.
+constexpr float kEchoFilterQ = 0.70710678f;
 constexpr float kFeedbackSaturationDrive = 1.35f;
 constexpr float kFeedbackSaturationAsymmetry = 0.018f;
-constexpr float kFeedbackSaturationGain = 0.72f;
 constexpr float kEchoSpinFeedback = 1.05f;
 }  // namespace PerformanceConfig

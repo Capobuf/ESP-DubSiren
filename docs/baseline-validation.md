@@ -86,7 +86,20 @@ script is tracked for reproduction.
 Pitch/rate presets, modulation depth and curves, Sine 2 harmonic balance,
 relative voice loudness, Square edge character, manual response and filter
 resonance need subjective evaluation and eventually measured A/B recordings.
-The existing nonlinear feedback path can sustain at settings below 1.0 (the
-0.80 example approaches a plateau); its musical threshold remains a calibration
-point. Exact wet mute may click when a loud repeat is interrupted. No claim
+The table above records the earlier feedback calibration, which sustained below
+1.0 because saturation and the write limiter added small-signal gain. This was
+corrected on 2026-10-04 by normalizing both gains, using non-resonant echo filters
+and truncating normal delay writes to avoid int16 limit cycles. Regenerated
+captures in `artifacts/echo-decay/` give these SINE1 repeat peaks:
+
+| Feedback | Repeat 1 | Repeat 2 | Repeat 3 | Repeat 6 |
+|---|---:|---:|---:|---:|
+| 0 | 12589 | 0 | 0 | 0 |
+| 0.50 | 12589 | 5620 | 2734 | 337 |
+| 0.80 | 12589 | 7648 | 5435 | 2447 |
+
+Native tests check tail decay at feedback 0-0.99 with flat and filtered echo,
+and confirm that lowering an already self-oscillating 1.05 loop to 0.50 drains
+the buffer. Above-unity feedback and explicit ECHO LOOP remain available.
+Exact wet mute may click when a loud repeat is interrupted. No claim
 of indistinguishability from the DS01E is made.

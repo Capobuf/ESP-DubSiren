@@ -66,11 +66,14 @@ The one-second delay is a fixed 48,000-sample int16 ring buffer in internal RAM
 (96 kB). It does not use or require PSRAM. Delay reads are fractional and use
 linear interpolation. Delay time follows a 25 ms one-pole smoother limited to
 2000 ms of delay movement per second. A live sweep therefore bends pitch without
-jumping the read head. HPF and LPF are local RBJ biquads with Q 1.0;
+jumping the read head. HPF and LPF are local RBJ biquads with Q 0.7071;
 their cutoffs follow 18 ms smoothing and coefficients refresh every 64 samples
-without resetting filter state. The feedback path uses
-asymmetric saturation before the delay write, while the existing cubic
-`softClip` remains the final safety limiter.
+without resetting filter state. The feedback path uses asymmetric saturation
+normalized to compensate both the drive and the delay write `softClip`'s 1.5
+small-signal gain. Below 100%, repeats decay instead of acquiring hidden gain
+on each pass. Normal writes truncate int16 quantization toward zero to avoid
+residual limit cycles; LOOP retains rounded copies. The existing cubic
+`softClip` remains the final output safety limiter.
 
 ECHO LOOP reuses that same ring buffer and allocates no additional audio
 memory. Normal operation writes dry input plus saturated feedback. In loop

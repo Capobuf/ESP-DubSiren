@@ -1,0 +1,194 @@
+{
+  "sine1_dry": {
+    "peak": 16370,
+    "release_after_3_05ms_peak": 0,
+    "repeat_peaks": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "sine1_single": {
+    "peak": 16370,
+    "release_after_3_05ms_peak": 12589,
+    "repeat_peaks": [
+      12589,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "sine1_feedback_050": {
+    "peak": 16370,
+    "release_after_3_05ms_peak": 12589,
+    "repeat_peaks": [
+      12589,
+      5620,
+      2734,
+      1355,
+      675,
+      337
+    ]
+  },
+  "sine1_feedback_080": {
+    "peak": 16370,
+    "release_after_3_05ms_peak": 12589,
+    "repeat_peaks": [
+      12589,
+      7648,
+      5435,
+      4075,
+      3136,
+      2447
+    ]
+  },
+  "sine2_dry": {
+    "peak": 18884,
+    "release_after_3_05ms_peak": 0,
+    "repeat_peaks": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "sine2_single": {
+    "peak": 18884,
+    "release_after_3_05ms_peak": 13640,
+    "repeat_peaks": [
+      13640,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "sine2_feedback_050": {
+    "peak": 18884,
+    "release_after_3_05ms_peak": 13640,
+    "repeat_peaks": [
+      13640,
+      5986,
+      2903,
+      1438,
+      716,
+      357
+    ]
+  },
+  "sine2_feedback_080": {
+    "peak": 18884,
+    "release_after_3_05ms_peak": 13640,
+    "repeat_peaks": [
+      13640,
+      7982,
+      5621,
+      4197,
+      3223,
+      2513
+    ]
+  },
+  "test_tone_dry": {
+    "peak": 16930,
+    "release_after_3_05ms_peak": 0,
+    "repeat_peaks": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "test_tone_single": {
+    "peak": 16930,
+    "release_after_3_05ms_peak": 12856,
+    "repeat_peaks": [
+      12856,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "test_tone_feedback_050": {
+    "peak": 16930,
+    "release_after_3_05ms_peak": 12856,
+    "repeat_peaks": [
+      12856,
+      5844,
+      2870,
+      1430,
+      714,
+      357
+    ]
+  },
+  "test_tone_feedback_080": {
+    "peak": 16930,
+    "release_after_3_05ms_peak": 12856,
+    "repeat_peaks": [
+      12856,
+      7973,
+      5741,
+      4349,
+      3374,
+      2652
+    ]
+  },
+  "square_dry": {
+    "peak": 14225,
+    "release_after_3_05ms_peak": 0,
+    "repeat_peaks": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "square_single": {
+    "peak": 14225,
+    "release_after_3_05ms_peak": 11411,
+    "repeat_peaks": [
+      11411,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "square_feedback_050": {
+    "peak": 14225,
+    "release_after_3_05ms_peak": 11411,
+    "repeat_peaks": [
+      11411,
+      5187,
+      2532,
+      1256,
+      626,
+      313
+    ]
+  },
+  "square_feedback_080": {
+    "peak": 14225,
+    "release_after_3_05ms_peak": 11411,
+    "repeat_peaks": [
+      11411,
+      7221,
+      5225,
+      3997,
+      3117,
+      2457
+    ]
+  }
+}

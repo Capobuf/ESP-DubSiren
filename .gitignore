@@ -14,3 +14,4 @@ virtual_esp/bin/
 
 # Reproducible baseline audio captures
 artifacts/baseline/
+artifacts/echo-decay/*.wav
