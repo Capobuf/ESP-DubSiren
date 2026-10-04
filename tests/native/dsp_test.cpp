@@ -990,6 +990,9 @@ void testClassicControls() {
     CommandParser parser(store);
     assert(store.snapshot().profile == PerformanceProfile::Classic);
     assert(!parser.parse("SET MODE GUNSHOT"));
+    assert(!parser.parse("SET MODE SAW"));
+    assert(!parser.parse("SET MODE TRIANGLE"));
+    assert(store.snapshot().mode == SirenMode::Sine1);
     assert(parser.parse("PAD_CONFIG 1 LICKSHOT 0 0"));
     assert(store.snapshot().profile == PerformanceProfile::Classic);
     for (int i = 0; i < 4; ++i) {
