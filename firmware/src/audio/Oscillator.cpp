@@ -22,10 +22,10 @@ Oscillator::Oscillator() : phase_(0.0f), syndrumTriangle_(0.0f) {}
 
 float Oscillator::next(SirenMode mode, float frequencyHz, float modulation,
                        float envelopeLevel, bool lfoGate, float sampleRate,
-                       bool voicingV2, bool classicProfile) {
+                       bool voicingV2) {
     const float output = renderVoice(mode, frequencyHz, modulation,
                                      envelopeLevel, lfoGate, sampleRate,
-                                     voicingV2, classicProfile);
+                                     voicingV2);
     advance(frequencyHz / sampleRate);
     return output;
 }
@@ -33,14 +33,13 @@ float Oscillator::next(SirenMode mode, float frequencyHz, float modulation,
 float Oscillator::nextTransition(SirenMode from, SirenMode to, float mix,
                                  float frequencyHz, float modulation,
                                  float envelopeLevel, bool lfoGate,
-                                 float sampleRate, bool voicingV2,
-                                 bool classicProfile) {
+                                 float sampleRate, bool voicingV2) {
     const float oldVoice = renderVoice(from, frequencyHz, modulation,
                                       envelopeLevel, lfoGate, sampleRate,
-                                      voicingV2, classicProfile);
+                                      voicingV2);
     const float newVoice = renderVoice(to, frequencyHz, modulation,
                                       envelopeLevel, lfoGate, sampleRate,
-                                      voicingV2, classicProfile);
+                                      voicingV2);
     advance(frequencyHz / sampleRate);
     return oldVoice + (newVoice - oldVoice) * mix;
 }
@@ -69,25 +68,20 @@ float Oscillator::nextSyndrum(SyndrumWave wave, float frequencyHz,
 
 float Oscillator::renderVoice(SirenMode mode, float frequencyHz,
                               float modulation, float envelopeLevel,
-                              bool lfoGate, float sampleRate, bool voicingV2,
-                              bool classicProfile) {
+                              bool lfoGate, float sampleRate, bool voicingV2) {
     const float increment = frequencyHz / sampleRate;
     float output;
     if (mode == SirenMode::Lickshot) {
         output = nextLickshot(frequencyHz, modulation, envelopeLevel, increment,
                               sampleRate);
     } else if (mode == SirenMode::Sonar) {
-        output = nextSonar();
-    } else if (classicProfile && mode == SirenMode::Sine1) {
+        output = nextSonar(lfoGate, sampleRate);
+    } else if (mode == SirenMode::Sine1) {
         output = nextSine1(frequencyHz, modulation, envelopeLevel, increment,
                            sampleRate);
-    } else if (voicingV2 && mode == SirenMode::Sine1) {
-        output = sinf(phase_ * TWO_PI) * PerformanceConfig::kSine1Gain;
-    } else if (classicProfile && mode == SirenMode::Sine2) {
+    } else if (mode == SirenMode::Sine2) {
         output = nextSine2(frequencyHz, modulation, envelopeLevel, increment,
                            sampleRate);
-    } else if (voicingV2 && mode == SirenMode::Sine2) {
-        output = nextExtendedSine2(frequencyHz, sampleRate);
     } else if (voicingV2 && mode == SirenMode::TestTone) {
         output = nextTestTone(frequencyHz, envelopeLevel, lfoGate, increment,
                               sampleRate);
@@ -112,16 +106,13 @@ void Oscillator::advance(float increment) {
 float Oscillator::nextLegacy(SirenMode mode, float phaseIncrement) const {
     const float fundamental = sinf(phase_ * TWO_PI);
     switch (mode) {
-        case SirenMode::Sine1:
         case SirenMode::TestTone:
             return fundamental;
-        case SirenMode::Sine2: {
-            const float third = sinf(phase_ * TWO_PI * 3.0f);
-            return softClip((0.78f * fundamental + 0.22f * third) * 1.35f);
-        }
         case SirenMode::Square:
             return bandLimitedPulse(phase_, phaseIncrement, 0.5f);
         case SirenMode::Lickshot:
+        case SirenMode::Sine1:
+        case SirenMode::Sine2:
         case SirenMode::Sonar:
         case SirenMode::Syndrum:
         case SirenMode::Gunshot:
@@ -185,17 +176,6 @@ float Oscillator::nextSine2(float frequencyHz, float modulation,
     return state.dcBlocker.process(value) * kSine2Voicing.outputGain;
 }
 
-float Oscillator::nextExtendedSine2(float frequencyHz,
-                                    float sampleRate) const {
-    const float phase = phase_ * TWO_PI;
-    float value = sinf(phase);
-    if (frequencyHz * 2.0f < sampleRate * 0.45f)
-        value += PerformanceConfig::kExtendedSine2Second * sinf(phase * 2.0f);
-    if (frequencyHz * 3.0f < sampleRate * 0.45f)
-        value += PerformanceConfig::kExtendedSine2Third * sinf(phase * 3.0f);
-    return value * PerformanceConfig::kExtendedSine2Gain;
-}
-
 float Oscillator::nextTestTone(float, float, bool lfoGate, float, float sampleRate) {
     return sinf(phase_ * TWO_PI) * PerformanceConfig::kTestGain *
            testGate_.nextGate(lfoGate, sampleRate);
@@ -253,6 +233,18 @@ float Oscillator::nextLickshot(float frequencyHz, float modulation,
     return state.dcBlocker.process(value) * kLickshotVoicing.outputGain;
 }
 
-float Oscillator::nextSonar() const {
-    return sinf(phase_ * TWO_PI) * kSonarOutputGain;
+void Oscillator::resetSonarPulse() {
+    sonarPing_.reset();
+    sonarGate_ = Envelope();
+    previousSonarGate_ = false;
+}
+
+float Oscillator::nextSonar(bool lfoGate, float sampleRate) {
+    if (lfoGate && !previousSonarGate_) sonarPing_.trigger();
+    previousSonarGate_ = lfoGate;
+    // A decaying ping on each rising LFO gate, with a finite gate for silent
+    // gaps even at high rates and anti-click ramps at both edges.
+    const float ping = sonarPing_.next(kSonarPulseDecayMs, sampleRate);
+    return sinf(phase_ * TWO_PI) * kSonarOutputGain * ping *
+           sonarGate_.nextGate(lfoGate, sampleRate);
 }

@@ -56,7 +56,7 @@ HarmonicSnapshot measureVoice(SirenMode mode, float modulation,
     Oscillator oscillator;
     for (int i = 0; i < kWarmupSamples; ++i) {
         oscillator.next(mode, frequencyHz, modulation, 1.0f,
-                        true, kRate, true, true);
+                        true, kRate, true);
     }
 
     double real[5] = {};
@@ -67,7 +67,7 @@ HarmonicSnapshot measureVoice(SirenMode mode, float modulation,
     for (int i = 0; i < kMeasureSamples; ++i) {
         const float value = oscillator.next(
             mode, frequencyHz, modulation, 1.0f,
-            true, kRate, true, true);
+            true, kRate, true);
         assert(isfinite(value));
         energy += static_cast<double>(value) * value;
         sum += value;
@@ -332,7 +332,9 @@ void testPanelDisplayState() {
     assert(parser.displayWidth() == 320 && parser.displayHeight() == 172);
     assert(strcmp(parser.displayModeName(), "HOME") == 0);
     assert(parser.parse("ENCODER_ROTATE NEXT"));
-    assert(fabsf(store.snapshot().lfoDepthOctaves - 1.05f) < 0.0001f);
+    assert(parser.padVariant(1) == 1);
+    assert(store.snapshot().mode == SirenMode::Sine2);
+    assert(store.snapshot().lfoDepthOctaves == 1.0f);
 
     assert(parser.parse("ENCODER_SWITCH 1"));
     assert(strcmp(parser.displayModeName(), "HOME") == 0);
@@ -367,10 +369,73 @@ void testPanelDisplayState() {
     assert(!parser.menuEditing());
 }
 
+void testExtendedEncoderGestures() {
+    ControlStore store;
+    CommandParser parser(store);
+    assert(parser.parse("SET PROFILE EXTENDED"));
+    for (unsigned pad = 1; pad <= 4; ++pad) {
+        char command[24];
+        snprintf(command, sizeof(command), "PAD_SELECT %u", pad);
+        assert(parser.parse(command));
+        const float depth = store.snapshot().lfoDepthOctaves;
+        const float tune = store.snapshot().tuneHz;
+        const unsigned sequence = store.snapshot().activationSequence;
+        const unsigned count = panelSoundVariantCount(
+            parser.panelSettings().profiles[1].buttons[pad - 1].sound);
+        assert(parser.parse("ENCODER_ROTATE PREV"));
+        assert(parser.padVariant(pad) == count - 1);
+        assert(parser.parse("ENCODER_ROTATE NEXT"));
+        assert(parser.padVariant(pad) == 0);
+        for (unsigned variant = 1; variant <= count; ++variant) {
+            assert(parser.parse("ENCODER_ROTATE NEXT"));
+            assert(parser.padVariant(pad) == variant % count);
+            assert(store.snapshot().lfoDepthOctaves == depth);
+            assert(store.snapshot().tuneHz == tune);
+            assert(store.snapshot().liveTransposeSemitones == 0);
+            assert(store.snapshot().activationSequence == sequence);
+        }
+    }
+
+    assert(parser.parse("PAD 1 1"));
+    const float tune = store.snapshot().tuneHz;
+    const unsigned variant = parser.padVariant(1);
+    const unsigned settingsRevision = parser.panelSettingsRevision();
+    assert(parser.parse("ENCODER_ROTATE NEXT"));
+    assert(fabsf(store.snapshot().lfoDepthOctaves - 1.05f) < .0001f);
+    assert(parser.padVariant(1) == variant);
+    assert(store.snapshot().liveTransposeSemitones == 0);
+    assert(store.snapshot().tuneHz == tune);
+    assert(parser.panelSettingsRevision() == settingsRevision);
+    assert(strcmp(parser.overlayTitle(), "DEPTH") == 0);
+    for (int i = 0; i < 50; ++i) assert(parser.parse("ENCODER_ROTATE NEXT"));
+    assert(store.snapshot().lfoDepthOctaves == 2.0f);
+    for (int i = 0; i < 50; ++i) assert(parser.parse("ENCODER_ROTATE PREV"));
+    assert(store.snapshot().lfoDepthOctaves == 0.0f);
+    assert(parser.parse("PAD 1 0"));
+    assert(parser.parse("ENCODER_ROTATE NEXT"));
+    assert(parser.padVariant(1) == (variant + 1) % 3);
+    assert(store.snapshot().lfoDepthOctaves == 0.0f);
+
+    // A latched sound is not a physically held BTN1 modifier.
+    assert(parser.parse("PANEL BUTTON EXTENDED 1 SOUND CLASSIC 0 1"));
+    assert(store.snapshot().hold);
+    assert(parser.parse("ENCODER_ROTATE NEXT"));
+    assert(parser.padVariant(1) == 1);
+    assert(store.snapshot().lfoDepthOctaves == 0.0f);
+
+    // Other sound buttons keep the configured transient pitch gesture.
+    assert(parser.parse("PAD 2 1"));
+    assert(parser.parse("ENCODER_ROTATE NEXT"));
+    assert(store.snapshot().liveTransposeSemitones == 1);
+    assert(store.snapshot().lfoDepthOctaves == 0.0f);
+    assert(parser.parse("PAD 2 0"));
+    assert(store.snapshot().liveTransposeSemitones == 0);
+}
+
 void testDynamicSweep() {
     ControlState state;
     state.profile = PerformanceProfile::Extended;
-    state.mode = SirenMode::Sonar;
+    state.mode = SirenMode::Sine1;
     state.tuneHz = 220.0f;
     state.lfoDepthOctaves = 0.0f;
     state.modulationEnabled = false;
@@ -574,7 +639,7 @@ void testNewVoices() {
         double energy = 0.0;
         int crossings = 0;
         float previous = 0.0f;
-        for (int i = 0; i < 48000; ++i) {
+        for (int i = 0; i < 4800; ++i) {
             const float value = oscillator.next(mode, 220.0f, 0.25f, 1.0f,
                                                 true, kRate, true);
             assert(isfinite(value));
@@ -584,7 +649,7 @@ void testNewVoices() {
         }
         assert(energy > 100.0);
         if (mode == SirenMode::Sonar) {
-            assert(crossings >= 219 && crossings <= 221);
+            assert(crossings >= 21 && crossings <= 23);
         }
     }
 }
@@ -592,7 +657,7 @@ void testNewVoices() {
 void testPerformancePitch() {
     ControlState state;
     state.profile = PerformanceProfile::Extended;
-    state.mode = SirenMode::Sonar;
+    state.mode = SirenMode::Sine1;
     state.tuneHz = 220.0f;
     state.lfoShape = LfoShape::SawDown;
     state.lfoRateHz = 4.0f;
@@ -644,20 +709,92 @@ void testPerformancePitch() {
     assert(manualDown > 108.0f && manualDown < 112.0f);
 }
 
+void testSonarPulses() {
+    for (bool modulationEnabled : {false, true}) {
+        for (float rate : {1.0f, 4.0f}) {
+            auto engine = std::make_unique<AudioEngine>();
+            engine->begin();
+            ControlState state;
+            state.profile = PerformanceProfile::Extended;
+            state.mode = SirenMode::Sonar;
+            state.tuneHz = 375.0f;
+            state.lfoDepthOctaves = 0.0f;
+            state.lfoRateHz = rate;
+            state.modulationEnabled = modulationEnabled;
+            state.hold = true;
+            state.echoLevel = 0.0f;
+            int16_t block[480];
+            int pings = 0, silentBlocks = 0;
+            bool audible = false;
+            float peak = 0.0f;
+            for (int i = 0; i < 300; ++i) {
+                engine->render(state, block, 480);
+                const float rms = blockRms(block, 480);
+                if (rms > 100.0f && !audible) ++pings;
+                audible = rms > 100.0f;
+                if (rms == 0.0f) ++silentBlocks;
+                if (i < 10 && rms > peak) peak = rms;
+                if (rate == 1.0f && i == 25) assert(rms < peak * 0.1f);
+                for (int16_t sample : block) assert(abs(int(sample)) < 32767);
+            }
+            const int expected = static_cast<int>(3.0f * rate);
+            assert(pings >= expected - 1 && pings <= expected + 1);
+            assert(silentBlocks >= 100);
+            printf("Sonar %.1f Hz, pitch modulation %s: %d pings, %d silent blocks\n",
+                   rate, modulationEnabled ? "on" : "off", pings, silentBlocks);
+            state.hold = false;
+            state.decayMs = 0.0f;
+            engine->render(state, block, 480);
+            assert(blockRms(block, 480) == 0.0f);
+        }
+    }
+
+    // A new trigger or queued tap in a silent part of the cycle starts a ping
+    // immediately, even with the optional pitch retrigger disabled.
+    auto engine = std::make_unique<AudioEngine>();
+    engine->begin();
+    ControlState state;
+    state.profile = PerformanceProfile::Extended;
+    state.mode = SirenMode::Sonar;
+    state.lfoRateHz = 1.0f;
+    state.lfoDepthOctaves = 0.0f;
+    state.echoLevel = 0.0f;
+    state.trigger = true;
+    int16_t block[480];
+    for (int i = 0; i < 70; ++i) engine->render(state, block, 480);
+    assert(blockRms(block, 480) == 0.0f);
+    recordActivation(state);
+    engine->render(state, block, 480);
+    assert(blockRms(block, 480) > 1000.0f);
+    for (int i = 0; i < 70; ++i) engine->render(state, block, 480);
+    state.trigger = false;
+    engine->render(state, block, 480);
+    state.trigger = true;
+    engine->render(state, block, 480);
+    assert(blockRms(block, 480) > 1000.0f);
+
+    // Selecting Sonar from a continuous voice also starts with an audible ping.
+    state.mode = SirenMode::Sine1;
+    for (int i = 0; i < 70; ++i) engine->render(state, block, 480);
+    state.mode = SirenMode::Sonar;
+    engine->render(state, block, 480);
+    assert(blockRms(block, 480) > 1000.0f);
+}
+
 void testModeTransitionStartsContinuously() {
     Oscillator oldOnly;
     Oscillator transitioning;
     for (int i = 0; i < 1000; ++i) {
         oldOnly.next(SirenMode::Sine1, 220.0f, 0.0f, 1.0f,
-                     true, kRate, true, true);
+                     true, kRate, true);
         transitioning.next(SirenMode::Sine1, 220.0f, 0.0f, 1.0f,
-                           true, kRate, true, true);
+                           true, kRate, true);
     }
     const float expected = oldOnly.next(SirenMode::Sine1, 220.0f, 0.0f,
-                                        1.0f, true, kRate, true, true);
+                                        1.0f, true, kRate, true);
     const float actual = transitioning.nextTransition(
         SirenMode::Sine1, SirenMode::Square, 0.0f, 220.0f, 0.0f,
-        1.0f, true, kRate, true, true);
+        1.0f, true, kRate, true);
     assert(isfinite(actual) && fabsf(actual - expected) < 0.000001f);
 }
 
@@ -704,44 +841,44 @@ void testSine1DynamicVoicing() {
            harmonicRatio(fourthAbove2, 4));
 }
 
-void testSine1ExtendedPathUnchanged() {
-    Oscillator oscillator;
-    float phase = 0.0f;
-    const float increment = 220.0f / kRate;
-    for (int i = 0; i < 48000; ++i) {
-        const float modulation = i & 1 ? -1.0f : 1.0f;
-        const float expected = sinf(phase * TWO_PI) *
-                               PerformanceConfig::kSine1Gain;
-        const float actual = oscillator.next(
-            SirenMode::Sine1, 220.0f, modulation, 1.0f,
-            true, kRate, true, false);
-        assert(fabsf(actual - expected) < 0.000001f);
-        phase += increment;
-        if (phase >= 1.0f) phase -= floorf(phase);
-    }
-}
-
-void testSine2ExtendedPathUnchanged() {
-    Oscillator oscillator;
-    float phase = 0.0f;
-    const float frequency = 220.0f;
-    const float increment = frequency / kRate;
-    for (int i = 0; i < 48000; ++i) {
-        const float modulation = i & 1 ? -1.0f : 1.0f;
-        const float radians = phase * TWO_PI;
-        const float expected =
-            (sinf(radians) +
-             PerformanceConfig::kExtendedSine2Second *
-                 sinf(radians * 2.0f) +
-             PerformanceConfig::kExtendedSine2Third *
-                 sinf(radians * 3.0f)) *
-            PerformanceConfig::kExtendedSine2Gain;
-        const float actual = oscillator.next(
-            SirenMode::Sine2, frequency, modulation, 1.0f,
-            true, kRate, true, false);
-        assert(fabsf(actual - expected) < 0.000001f);
-        phase += increment;
-        if (phase >= 1.0f) phase -= floorf(phase);
+void testSharedSineVoicing() {
+    // Compare the complete Classic and Extended render paths at equal effective
+    // controls, including automatic/manual modulation and the legacy flag.
+    for (SirenMode mode : {SirenMode::Sine1, SirenMode::Sine2}) {
+        for (ClassicModulation modulation : {ClassicModulation::Medium,
+                                              ClassicModulation::Manual}) {
+            for (bool voicingV2 : {false, true}) {
+                auto classic = std::make_unique<AudioEngine>();
+                auto extended = std::make_unique<AudioEngine>();
+                classic->begin();
+                extended->begin();
+                ControlState a;
+                a.mode = mode;
+                a.classicPitchUsesTune = true;
+                a.classicRateUsesRate = true;
+                a.tuneHz = 375.0f;
+                a.lfoRateHz = 2.8f;
+                a.classicModulation = modulation;
+                a.lfoShape = modulation == ClassicModulation::Manual
+                    ? LfoShape::Manual : LfoShape::Classic;
+                a.modUp = modulation == ClassicModulation::Manual;
+                a.hold = true;
+                a.echoLevel = 0.0f;
+                a.voicingV2 = voicingV2;
+                ControlState b = a;
+                b.profile = PerformanceProfile::Extended;
+                int16_t first[480], second[480];
+                for (int block = 0; block < 200; ++block) {
+                    classic->render(a, first, 480);
+                    extended->render(b, second, 480);
+                    if (block < 100) continue;  // Different gate attacks settle.
+                    assert(blockRms(first, 480) > 1000.0f);
+                    for (int i = 0; i < 480; ++i) {
+                        assert(abs(int(first[i]) - int(second[i])) <= 1);
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -800,14 +937,14 @@ void testSine2Stability() {
             Oscillator oscillator;
             for (int i = 0; i < 24000; ++i) {
                 oscillator.next(SirenMode::Sine2, frequency, modulation, 1.0f,
-                                true, kRate, true, true);
+                                true, kRate, true);
             }
             double sum = 0.0;
             float peak = 0.0f;
             for (int i = 0; i < 48000; ++i) {
                 const float value = oscillator.next(
                     SirenMode::Sine2, frequency, modulation, 1.0f,
-                    true, kRate, true, true);
+                    true, kRate, true);
                 assert(isfinite(value));
                 sum += value;
                 if (fabsf(value) > peak) peak = fabsf(value);
@@ -825,7 +962,7 @@ void testSine1SafetyDcAndGain() {
             for (int i = 0; i < 96000; ++i) {
                 const float value = oscillator.next(
                     SirenMode::Sine1, frequency, modulation, 1.0f,
-                    true, kRate, true, true);
+                    true, kRate, true);
                 assert(isfinite(value) && fabsf(value) < 2.0f);
             }
         }
@@ -834,12 +971,12 @@ void testSine1SafetyDcAndGain() {
     Oscillator oscillator;
     for (int i = 0; i < 24000; ++i) {
         oscillator.next(SirenMode::Sine1, 375.0f, -1.0f, 1.0f,
-                        true, kRate, true, true);
+                        true, kRate, true);
     }
     double mean = 0.0;
     for (int i = 0; i < 96000; ++i) {
         mean += oscillator.next(SirenMode::Sine1, 375.0f, -1.0f, 1.0f,
-                                true, kRate, true, true);
+                                true, kRate, true);
     }
     assert(fabs(mean / 96000.0) < 0.001f);
 
@@ -1192,13 +1329,13 @@ void testConfigurablePanel() {
     assert(store.snapshot().liveTransposeSemitones == 0);
 
     assert(parser.parse("SET PROFILE EXTENDED"));
-    assert(parser.parse("PANEL BUTTON EXTENDED 1 ACTION TRIGGER"));
+    assert(parser.parse("PANEL BUTTON EXTENDED 2 ACTION TRIGGER"));
     assert(parser.parse("SET MODE GUNSHOT"));
-    assert(parser.parse("PAD 1 1"));
+    assert(parser.parse("PAD 2 1"));
     assert(parser.parse("ENCODER_ROTATE NEXT"));
     assert(store.snapshot().liveTransposeSemitones == 0);
     assert(strcmp(parser.overlayValue(), "N/A") == 0);
-    assert(parser.parse("PAD 1 0"));
+    assert(parser.parse("PAD 2 0"));
 
     // Rear Master remains direct and is never subject to Pickup.
     assert(parser.parse("SET MASTER 0.23"));
@@ -1414,7 +1551,7 @@ void testClassicAutomaticVoices() {
         double real = 0, imaginary = 0, energy = 0;
         for (int i = 0; i < 48000; ++i) {
             const float value = osc.next(static_cast<SirenMode>(voice), 220, 0,
-                                         1, true, kRate, true, true);
+                                         1, true, kRate, true);
             real += value * cos(TWO_PI * 440.0 * i / kRate);
             imaginary += value * sin(TWO_PI * 440.0 * i / kRate);
             energy += value * value;
@@ -1429,8 +1566,7 @@ void testClassicAutomaticVoices() {
 int main() {
     testClassicAutomaticVoices();
     testSine1DynamicVoicing();
-    testSine1ExtendedPathUnchanged();
-    testSine2ExtendedPathUnchanged();
+    testSharedSineVoicing();
     testSine2DynamicVoicing();
     testSine2Stability();
     testSine1SafetyDcAndGain();
@@ -1450,12 +1586,14 @@ int main() {
     testPadController();
     testQueuedPadActivation();
     testPanelDisplayState();
+    testExtendedEncoderGestures();
     testDynamicSweep();
     testSyndrum();
     testGunshot();
     testLfoShape();
     testLfoReset();
     testNewVoices();
+    testSonarPulses();
     testPerformancePitch();
     testModeTransitionStartsContinuously();
     testDelay();

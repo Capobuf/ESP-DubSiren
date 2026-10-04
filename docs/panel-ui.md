@@ -32,11 +32,18 @@ page title, ordered rows, labels, values and footer to both renderers. Moving a
 pot while Menu is open updates the footer without replacing the menu. Reset
 Defaults requires an explicit YES confirmation.
 
+In Extended Home, free encoder rotation cycles the selected pad's waveform
+variant. Holding physical BTN1 while turning adjusts Depth in 0.05-octave steps,
+clamped to 0-2 octaves. Releasing BTN1 keeps Depth and returns to variant
+selection; a latched Hold alone does not activate this modifier. Ping and
+Gunshot store Depth but report N/A because they do not use LFO depth.
+
 Holding a physical Trigger or Play Sound button while turning the encoder
-applies transient live pitch. The factory step is one semitone with a +/-12
-range. It never changes base Tune and resets when the final relevant physical
-button is released. Gunshot reports N/A. Existing Extended encoder+button
-shortcuts retain precedence.
+applies transient live pitch, except Extended BTN1 whose Depth gesture takes
+precedence. The factory step is one semitone with a +/-12 range. It never
+changes base Tune and resets when the final relevant physical button is
+released. Gunshot reports N/A. Existing Extended encoder-push+button shortcuts
+retain precedence over both rotation gestures.
 
 The default filter is FLAT. Its centered deadband bypasses wet filtering;
 left/right movement applies the project LP/HP calibration in the core.

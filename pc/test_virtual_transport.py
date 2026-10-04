@@ -145,7 +145,9 @@ class VirtualTransportTests(unittest.TestCase):
 
         self.transport.send("ENCODER_ROTATE NEXT")
         display = self.statuses[-1]["panel"]["display"]
-        self.assertAlmostEqual(display["depth"], 1.05, places=4)
+        self.assertEqual(self.statuses[-1]["panel"]["pads"][0]["variant"], "SINE 2")
+        self.assertAlmostEqual(display["depth"], 1.0, places=4)
+        self.assertEqual(display["liveTranspose"], 0)
 
         self.transport.send("ENCODER_SWITCH 1")
         self.transport.send("ENCODER_SWITCH 0")
@@ -180,6 +182,22 @@ class VirtualTransportTests(unittest.TestCase):
         self.transport.send("ENCODER_SWITCH 1")
         self.transport.send("ENCODER_SWITCH 0")
         self.assertFalse(self.statuses[-1]["panel"]["display"]["editing"])
+
+    def test_extended_btn1_turn_changes_depth_and_release_restores_waveform_selection(self):
+        self.transport.send("SET PROFILE EXTENDED")
+        self.transport.send("PAD 1 1")
+        self.transport.send("ENCODER_ROTATE NEXT")
+        panel = self.statuses[-1]["panel"]
+        self.assertAlmostEqual(panel["display"]["depth"], 1.05, places=4)
+        self.assertEqual(panel["display"]["liveTranspose"], 0)
+        self.assertEqual(panel["pads"][0]["variant"], "SINE 1")
+        self.assertEqual(panel["display"]["overlay"]["title"], "DEPTH")
+        self.transport.send("PAD 1 0")
+        self.transport.send("ENCODER_ROTATE NEXT")
+        panel = self.statuses[-1]["panel"]
+        self.assertEqual(panel["pads"][0]["variant"], "SINE 2")
+        self.assertAlmostEqual(panel["display"]["depth"], 1.05, places=4)
+        self.assertFalse(panel["display"]["hold"])
 
     def test_pickup_live_pitch_and_menu_footer_share_controller_state(self):
         self.transport.send("POT 1 0")

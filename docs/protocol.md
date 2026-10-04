@@ -100,13 +100,17 @@ The encoder menu opens on release of an unconsumed click in both profiles.
 While a physical Trigger or Play Sound button is held, Home rotation applies
 the configured transient live transpose (default one semitone per detent,
 clamped to +/-12); releasing the final relevant button resets it to zero.
+Extended BTN1+rotation takes precedence and edits Depth by 0.05 octaves,
+clamped to 0-2, without changing base Tune or live transpose. Free rotation
+in Extended cycles the selected pad's variant, leaving Depth unchanged.
 
 `PAD`, `ENCODER_SWITCH`, and `ENCODER_ROTATE` are raw front-panel actions
 interpreted by the shared C++ `PerformanceController`. Classic is the default:
 PAD 1 is Trigger, PAD 2 toggles Hold on press, PAD 3 is Manual Mod, PAD 4 is
 Echo Cut. Home rotation cycles SINE1/SINE2/TEST_TONE/SQUARE; push opens Menu.
 The Classic menu offers Extended or Back. Extended retains the old pad bank,
-priority/combination gestures and Depth rotation, with a return to Classic.
+priority/combination gestures, with a return to Classic. Only a physically
+held, unconsumed BTN1 enables its Depth rotation gesture; latched Hold does not.
 `PANEL_RESET` releases momentaries and preserves intentional Hold and delay.
 `PAD_CONFIG` stores Extended pad assignments without activating Extended.
 Profile switching releases momentaries and Hold, preserving echo contents.
