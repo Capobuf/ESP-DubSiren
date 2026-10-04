@@ -61,8 +61,13 @@ def panel_config_path() -> Path:
 
 
 def _validated_panel_config(data: object) -> dict:
-    if not isinstance(data, dict) or data.get("schema") != PANEL_SCHEMA_VERSION:
-        raise PanelConfigError("panel.json has an unsupported or missing schema")
+    if (not isinstance(data, dict) or type(data.get("schema")) is not int
+            or data["schema"] != PANEL_SCHEMA_VERSION):
+        schema = data.get("schema") if isinstance(data, dict) else None
+        raise PanelConfigError(
+            f"panel.json has an unsupported or missing schema "
+            f"(expected {PANEL_SCHEMA_VERSION}, found {schema!r})"
+        )
     if data.get("potBehavior") not in ("PICKUP", "JUMP"):
         raise PanelConfigError("panel.json has an invalid potBehavior")
     encoder = data.get("encoder")
@@ -126,6 +131,43 @@ def _validated_panel_config(data: object) -> dict:
     return data
 
 
+def _validated_legacy_panel_config(data: dict) -> dict:
+    pads = data.get("pads")
+    variants = {"CLASSIC": 3, "TWO TONE": 3, "LICKSHOT": 2, "PING": 3}
+    if (set(data) != {"pads"} or not isinstance(pads, list) or len(pads) != 4):
+        raise PanelConfigError("panel.json has invalid legacy pad settings")
+    for pad in pads:
+        if (not isinstance(pad, dict) or not isinstance(pad.get("sound"), str)
+                or pad["sound"] not in variants
+                or type(pad.get("variantIndex")) is not int
+                or not 0 <= pad["variantIndex"] < variants[pad["sound"]]):
+            raise PanelConfigError("panel.json has invalid legacy pad settings")
+    return data
+
+
+def migrate_panel_config(legacy: dict, defaults: dict) -> dict:
+    """Use the shared controller's defaults for fields absent in the old file."""
+    legacy = _validated_legacy_panel_config(legacy)
+    settings = json.loads(json.dumps(_validated_panel_config(defaults)))
+    for button, pad in zip(settings["profiles"]["EXTENDED"]["buttons"], legacy["pads"]):
+        button.update(action="PLAY SOUND", sound=pad["sound"],
+                      variant=pad["variantIndex"], latch=False)
+    return _validated_panel_config(settings)
+
+
+def save_migrated_panel_config(path: Path, settings: dict) -> None:
+    # Preserve the original bytes before replacing a recognized legacy file.
+    original = path.read_bytes()
+    backup = path.with_suffix(".legacy.json")
+    try:
+        with backup.open("xb") as destination:
+            destination.write(original)
+    except FileExistsError:
+        if backup.read_bytes() != original:
+            raise PanelConfigError(f"legacy backup already exists with different content: {backup}")
+    save_panel_config(path, settings)
+
+
 def load_panel_config(path: Path) -> dict | None:
     if not path.exists():
         return None
@@ -135,7 +177,12 @@ def load_panel_config(path: Path) -> dict | None:
         raise PanelConfigError(f"cannot read panel.json: {exc}") from exc
     except (ValueError, TypeError) as exc:
         raise PanelConfigError(f"panel.json is not valid JSON: {exc}") from exc
-    return _validated_panel_config(data)
+    try:
+        if isinstance(data, dict) and "schema" not in data and "pads" in data:
+            return _validated_legacy_panel_config(data)
+        return _validated_panel_config(data)
+    except PanelConfigError as exc:
+        raise PanelConfigError(f"{exc}: {path}") from exc
 
 
 def save_panel_config(path: Path, settings: dict) -> None:
@@ -503,11 +550,7 @@ class PhysicalDubSirenApp(DubSirenApp):
         self._panel_config_path = panel_config_path()
         self._panel_config_error: str | None = None
         self._panel_io_error: str | None = None
-        try:
-            self._saved_panel_config = load_panel_config(self._panel_config_path)
-        except PanelConfigError as exc:
-            self._saved_panel_config = None
-            self._panel_config_error = str(exc)
+        self._load_saved_panel_config()
         self.overlay_token: str | None = None
         self.dials: dict[str, DialControl] = {}
         super().__init__(root)
@@ -940,16 +983,30 @@ class PhysicalDubSirenApp(DubSirenApp):
             self._saved_config_applied = True
             if self._saved_panel_config is not None:
                 self._virtual_restore_pending = True
+                applied = False
                 try:
-                    for command in panel_settings_commands(self._saved_panel_config):
+                    legacy = "schema" not in self._saved_panel_config
+                    settings = (migrate_panel_config(
+                        self._saved_panel_config, self.panel_state.get("settings", {})
+                    ) if legacy else self._saved_panel_config)
+                    for command in panel_settings_commands(settings):
                         self.transport.send(command)
+                    applied = True
+                    self._saved_panel_config = settings
+                    if legacy:
+                        save_migrated_panel_config(self._panel_config_path, settings)
+                        self._panel_config_error = self._panel_io_error = None
                 except Exception as exc:
-                    try:
-                        self.transport.send("PANEL CANCEL")
-                    except Exception:
-                        pass
-                    self._virtual_restore_pending = False
-                    self._panel_io_error = f"panel.json apply failed: {exc}"
+                    if not applied:
+                        try:
+                            self.transport.send("PANEL CANCEL")
+                        except Exception:
+                            pass
+                        self._virtual_restore_pending = False
+                    # After COMMIT, await its STATUS even if saving fails, so
+                    # the queued acknowledgement cannot overwrite the old file.
+                    action = "save" if applied else "apply"
+                    self._panel_io_error = f"panel.json {action} failed: {exc}"
                     self.connection_var.set(self._panel_io_error)
             elif self._panel_config_error:
                 self.connection_var.set(self._panel_config_error)
@@ -1031,6 +1088,7 @@ class PhysicalDubSirenApp(DubSirenApp):
                         try:
                             save_panel_config(self._panel_config_path, settings)
                             self._saved_panel_config = comparable
+                            self._panel_config_error = self._panel_io_error = None
                         except (OSError, PanelConfigError) as exc:
                             self._panel_io_error = f"panel.json save failed: {exc}"
                             self.connection_var.set(self._panel_io_error)
@@ -1047,12 +1105,21 @@ class PhysicalDubSirenApp(DubSirenApp):
             self.connection_var.set(self._panel_io_error)
         self._refresh_display()
 
+    def _load_saved_panel_config(self) -> None:
+        self._panel_config_error = None
+        try:
+            self._saved_panel_config = load_panel_config(self._panel_config_path)
+        except PanelConfigError as exc:
+            self._saved_panel_config = None
+            self._panel_config_error = str(exc)
+
     def connect(self) -> None:
         self._saved_config_applied = False
         self._virtual_restore_pending = False
         self._connected_virtual = False
         self._last_saved_settings_revision = None
         self._panel_io_error = None
+        self._load_saved_panel_config()
         self._panel_status_seen = False
         super().connect()
         self._refresh_display()

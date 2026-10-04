@@ -13,6 +13,7 @@ from physical_ui import (
     PanelConfigError,
     PhysicalDubSirenApp,
     load_panel_config,
+    migrate_panel_config,
     panel_settings_commands,
     save_panel_config,
 )
@@ -142,6 +143,8 @@ def make_app() -> PhysicalDubSirenApp:
     app._connected_virtual = False
     app._saved_panel_config = None
     app._panel_config_error = None
+    app._panel_io_error = None
+    app.connection_var = FakeVariable("")
     app._virtual_restore_pending = False
     app._last_saved_settings_revision = None
     return app
@@ -397,10 +400,129 @@ class PhysicalUiTests(unittest.TestCase):
             with self.assertRaises(PanelConfigError):
                 load_panel_config(path)
 
+    def test_legacy_configuration_migrates_with_controller_defaults(self):
+        legacy = {"pads": [
+            {"sound": sound, "variantIndex": variant}
+            for sound, variant in (("CLASSIC", 2), ("TWO TONE", 1),
+                                   ("LICKSHOT", 1), ("PING", 2))
+        ]}
+        defaults = sample_settings()
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "panel.json"
+            path.write_text(json.dumps(legacy), encoding="utf-8")
+            settings = migrate_panel_config(load_panel_config(path), defaults)
+        self.assertEqual(settings["profiles"]["CLASSIC"], defaults["profiles"]["CLASSIC"])
+        self.assertEqual(settings["profiles"]["EXTENDED"]["pots"],
+                         defaults["profiles"]["EXTENDED"]["pots"])
+        commands = panel_settings_commands(settings)
+        self.assertIn("PANEL BUTTON EXTENDED 1 SOUND CLASSIC 2 0", commands)
+        self.assertIn("PANEL BUTTON EXTENDED 2 SOUND TWO_TONE 1 0", commands)
+        self.assertEqual(defaults["profiles"]["EXTENDED"]["buttons"][1]["variant"], 0)
+
+    def test_virtual_sync_migrates_legacy_file_and_preserves_original(self):
+        app = make_app()
+        app._connected_virtual = True
+        app._saved_config_applied = False
+        app.panel_state["settings"] = sample_settings()
+        app.transport.send = app.commands.append
+        legacy = {"pads": [
+            {"sound": sound, "variantIndex": variant}
+            for sound, variant in (("CLASSIC", 0), ("TWO TONE", 1),
+                                   ("LICKSHOT", 0), ("PING", 0))
+        ]}
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "panel.json"
+            original = (json.dumps(legacy, indent=2) + "\n").encode("utf-8")
+            path.write_bytes(original)
+            app._panel_config_path = path
+            app._saved_panel_config = load_panel_config(path)
+            app._synchronize_controls()
+            self.assertEqual(path.with_suffix(".legacy.json").read_bytes(), original)
+            self.assertEqual(load_panel_config(path)["schema"], 1)
+        self.assertIn("PANEL BUTTON EXTENDED 2 SOUND TWO_TONE 1 0", app.commands)
+        self.assertEqual(app.commands[-1], "PANEL COMMIT")
+        self.assertIsNone(app._panel_config_error)
+        self.assertIsNone(app._panel_io_error)
+
+    def test_malformed_legacy_and_unknown_schemas_remain_errors(self):
+        invalid = [{"pads": []}, {"pads": [{"sound": [], "variantIndex": 0}] * 4},
+                   {"pads": [{"sound": "PING", "variantIndex": 99}] * 4},
+                   {"schema": 99, "pads": []}, {}, {"schema": True}]
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "panel.json"
+            for payload in invalid:
+                with self.subTest(payload=payload):
+                    path.write_text(json.dumps(payload), encoding="utf-8")
+                    with self.assertRaises(PanelConfigError) as error:
+                        load_panel_config(path)
+                    self.assertIn(str(path), str(error.exception))
+
+    def test_rejected_legacy_restore_preserves_disk_and_retry_data(self):
+        app = make_app()
+        app._connected_virtual = True
+        app._saved_config_applied = False
+        app.panel_state["settings"] = sample_settings()
+        legacy = {"pads": [{"sound": "PING", "variantIndex": 1}] * 4}
+
+        def send(command):
+            app.commands.append(command)
+            if command.startswith("PANEL BUTTON"):
+                raise RuntimeError("rejected")
+
+        app.transport.send = send
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "panel.json"
+            original = json.dumps(legacy).encode("utf-8")
+            path.write_bytes(original)
+            app._panel_config_path = path
+            app._saved_panel_config = load_panel_config(path)
+            app._synchronize_controls()
+            self.assertEqual(path.read_bytes(), original)
+            self.assertFalse(path.with_suffix(".legacy.json").exists())
+        self.assertEqual(app._saved_panel_config, legacy)
+        self.assertFalse(app._virtual_restore_pending)
+        self.assertEqual(app.commands[-1], "PANEL CANCEL")
+        self.assertIn("apply failed", app._panel_io_error)
+
+    def test_legacy_backup_conflict_never_overwrites_original(self):
+        app = make_app()
+        app._connected_virtual = True
+        app._saved_config_applied = False
+        app.panel_state["settings"] = sample_settings()
+        app.transport.send = app.commands.append
+        legacy = {"pads": [{"sound": "PING", "variantIndex": 1}] * 4}
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "panel.json"
+            original = json.dumps(legacy).encode("utf-8")
+            path.write_bytes(original)
+            backup = path.with_suffix(".legacy.json")
+            backup.write_bytes(b"different backup")
+            app._panel_config_path = path
+            app._saved_panel_config = load_panel_config(path)
+            app._synchronize_controls()
+            self.assertEqual(path.read_bytes(), original)
+            self.assertEqual(backup.read_bytes(), b"different backup")
+        self.assertEqual(app.commands[-1], "PANEL COMMIT")
+        self.assertTrue(app._virtual_restore_pending)
+        self.assertEqual(app._saved_panel_config["schema"], 1)
+        self.assertIn("save failed", app._panel_io_error)
+
     def test_panel_configuration_save_failure_is_surfaced(self):
         with tempfile.TemporaryDirectory() as directory:
             with self.assertRaises(OSError):
                 save_panel_config(Path(directory), sample_settings())
+
+    def test_reload_uses_disk_after_failed_migration_and_clears_old_errors(self):
+        app = make_app()
+        app._saved_panel_config = sample_settings()
+        app._panel_config_error = "old error"
+        legacy = {"pads": [{"sound": "PING", "variantIndex": 1}] * 4}
+        with tempfile.TemporaryDirectory() as directory:
+            app._panel_config_path = Path(directory) / "panel.json"
+            app._panel_config_path.write_text(json.dumps(legacy), encoding="utf-8")
+            app._load_saved_panel_config()
+        self.assertEqual(app._saved_panel_config, legacy)
+        self.assertIsNone(app._panel_config_error)
 
 
 if __name__ == "__main__":

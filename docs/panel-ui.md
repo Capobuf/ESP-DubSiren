@@ -57,6 +57,16 @@ silently ignored. A real device is authoritative on connection: the PC adopts
 STATUS and never pushes a profile, mapping or stale local default. No pressed
 state, gate, live transpose or other transient state is restored from disk.
 
+Older VirtualESP files containing only four `pads` are migrated on connection.
+The controller supplies the default pots, Classic buttons and encoder settings;
+saved sounds and variants become Extended Play Sound button assignments.
+The original file is preserved as `panel.legacy.json` before saving schema 1.
+Microsoft Store Python may redirect the AppData file into its package's
+`LocalCache/Roaming/ESP-DubSiren` directory.
+
+Feedback at 0% still produces one delayed repeat. Set Echo Level to 0% for
+dry output, or hold ECHO CUT to mute the echo temporarily.
+
 ## Hardware display
 
 The Adafruit GFX/ST7789 text renderer targets Adafruit Product 5393.
