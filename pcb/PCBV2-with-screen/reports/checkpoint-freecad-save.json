@@ -1,0 +1,12 @@
+{
+  "success": true,
+  "result": {
+    "saved_documents": [
+      "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\PCBV2-with-screen\\mechanical\\hammond-placement-candidate.FCStd",
+      "C:\\Users\\dot\\Documents\\ESP-DubSiren\\pcb\\PCBV2-with-screen\\mechanical\\hammond-rear-panel-option.FCStd"
+    ]
+  },
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 792.0936999998958
+}
