@@ -7,7 +7,7 @@ per ciascun riferimento sono indicati anche in [BOM.csv](BOM.csv).
 
 | Uso | Fonte conservata / autorità |
 |---|---|
-| Contenitore da verificare | [STEP originale Hammond 29830PSLA](../cad/sources/Hammond_29830PSLA.stp); [disegno Hammond](https://www.hammfg.com/files/parts/pdf/29830PSLA.pdf) |
+| Contenitore confermato dall'utente nella #14 | [STEP originale Hammond 29830PSLA](../cad/sources/Hammond_29830PSLA.stp); [disegno originale, rev. 03.01.2024](../cad/sources/Hammond_29830PSLA.pdf), [fonte Hammond](https://www.hammfg.com/files/parts/pdf/29830PSLA.pdf) |
 | Dual RCA RCJ-2123 | [STEP originale](../cad/sources/SameSky_RCJ-2123.step), [disegno RCJ-21](../cad/sources/rcj_21.pdf); [servizio CAD Same Sky](https://www.sameskydevices.com/product/resource/3dmodel/rcj-21-series/rcj-2123), [termini](https://www.sameskydevices.com/cad-model-terms) |
 | Display 5393 | [Eagle, licenza e revisione originali](../cad/sources/adafruit-5393/); [repository Adafruit](https://github.com/adafruit/Adafruit-1.47in-320x172-Round-Rectangle-TFT-PCB), commit `73022f63a4b82117093ff5c250c119b6720005df` |
 | DAC 6250 | [Eagle, licenza e revisione originali](../cad/sources/adafruit-6250/); [repository Adafruit](https://github.com/adafruit/Adafruit-PCM510x-I2S-DAC-PCB), commit `2edfe9e71b59e6acc73d0ab2b2f796149146ce74`; [PCM5102](pcm5102.pdf) |
