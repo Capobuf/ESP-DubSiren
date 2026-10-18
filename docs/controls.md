@@ -208,3 +208,17 @@ parametri smussati e crossfade del bypass; Sweep conserva il significato sul pit
 Non è stato aggiunto gain per compensare automaticamente le armoniche rimosse:
 la taratura comparata delle voci e l'ascolto restano da validare, insieme al
 budget hardware e all'aliasing nelle combinazioni estreme.
+
+### Echo Color e Cut (#9)
+
+`SET ECHO_COLOR 0..1` (Extended) riutilizza low-pass e saturazione del feedback.
+Zero conserva la risposta neutra; aumentando Color si miscela il filtro nel
+ritorno anche in FLAT, il limite delle alte scende fino a 1500 Hz e il drive
+sale fino a tre volte il valore base, con compensazione della pendenza.
+Non c'è guadagno aggiuntivo del loop sotto il 100%; Loop conserva la copia
+del materiale, Spin mantiene il feedback temporaneamente elevato.
+
+Echo Cut usa ora una rampa lineare di massimo 2 ms in entrambe le direzioni,
+con zero esatto a fine taglio. Agisce solo sul ritorno: dry e memoria dell'echo
+continuano. Nessuna risonanza o wow/flutter aggiunti; richiederebbero una
+validazione separata. Ascolto dei tagli ritmici ancora da eseguire.

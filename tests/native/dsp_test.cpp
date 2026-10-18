@@ -1067,6 +1067,7 @@ void testEchoCutPreservesLoop() {
     state.echoCut = true;
     engine->render(state, block, 480);
     const float duringCut = blockRms(block, 480);
+    for (int i = 96; i < 480; ++i) assert(block[i] == 0);
     assert(duringCut < beforeCut * 0.5f);
     state.echoCut = false;
     engine->render(state, block, 480);
@@ -1451,7 +1452,7 @@ void testWetIsolation() {
     assert(memcmp(left, right, sizeof(left)) == 0);
     a.echoLevel = 1; a.echoCut = true;
     audible->render(a, left, 480); dry->render(b, right, 480);
-    assert(memcmp(left, right, sizeof(left)) == 0);
+    assert(memcmp(left + 96, right + 96, (480-96) * sizeof(int16_t)) == 0);
     a.echoCut = false;
     audible->render(a, left, 480); dry->render(b, right, 480);
     assert(memcmp(left, right, sizeof(left)) != 0); // Buffer evolved underneath cut.
@@ -1736,7 +1737,25 @@ void testDryToneAndContour() {
     }
 }
 
+void testColoredEchoDecay() {
+    for (float feedback : {0.0f, .5f, .8f, .99f}) {
+        auto delay = std::make_unique<Delay>(); delay->begin(50, 60, 19000, kRate, true);
+        delay->setColor(1);
+        for (int i = 0; i < 4800; ++i) delay->process(0, feedback, false, kRate);
+        double early = 0, late = 0;
+        for (int i = 0; i < 480000; ++i) {
+            const float input = i < 480 ? .4f * sinf(TWO_PI * 440 * i / kRate) : 0;
+            const float wet = delay->process(input, feedback, false, kRate);
+            assert(isfinite(wet) && fabsf(wet) < 1);
+            if (i >= 2400 && i < 4800) early += wet * wet;
+            if (i >= 477600) late += wet * wet;
+        }
+        assert(early > .01 && late < early * .001);
+    }
+}
+
 int main() {
+    testColoredEchoDecay();
     testDryToneAndContour();
     testLickshotArticulations();
     testTwoTonePitchTrajectories();

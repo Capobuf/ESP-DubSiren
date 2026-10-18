@@ -42,7 +42,7 @@ private:
     SmoothedParameter rateHz_;
     SmoothedParameter feedback_;
     SmoothedParameter echoLevel_;
-    SmoothedParameter echoCutWet_;
+    float echoCutWet_ = 1.0f;
     SmoothedParameter masterVolume_;
     SmoothedParameter performanceBend_;
     float oscillatorFrequencyHz_;
