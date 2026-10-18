@@ -345,8 +345,11 @@ void testPanelDisplayState() {
     assert(parser.parse("ENCODER_SWITCH 0"));
     assert(strcmp(parser.displayModeName(), "MENU") == 0);
     assert(parser.menuIndex() == 0 && !parser.menuEditing());
-    assert(parser.menuItemCount() == 6);
-    assert(strcmp(parser.menuTitle(), "SETTINGS") == 0);
+    assert(parser.menuItemCount() == 5);
+    assert(strcmp(parser.menuTitle(), "PERFORMANCE") == 0);
+    for (int i = 0; i < 3; ++i) assert(parser.parse("ENCODER_ROTATE NEXT"));
+    assert(parser.parse("ENCODER_SWITCH 1")); assert(parser.parse("ENCODER_SWITCH 0"));
+    assert(strcmp(parser.menuTitle(), "SETUP") == 0);
     assert(strcmp(parser.menuItemKey(0), "PROFILE") == 0);
     assert(strcmp(parser.menuItemLabel(1), "POTS") == 0);
 
@@ -1165,6 +1168,8 @@ void testClassicControls() {
     assert(strcmp(parser.displayModeName(), "HOME") == 0);
     assert(parser.parse("ENCODER_SWITCH 0"));
     assert(strcmp(parser.displayModeName(), "MENU") == 0);
+    for (int i = 0; i < 3; ++i) assert(parser.parse("ENCODER_ROTATE NEXT"));
+    assert(parser.parse("ENCODER_SWITCH 1")); assert(parser.parse("ENCODER_SWITCH 0"));
     assert(strcmp(parser.menuItemKey(0), "PROFILE") == 0);
     assert(parser.parse("ENCODER_SWITCH 1"));
     assert(parser.parse("ENCODER_SWITCH 0"));
@@ -1311,11 +1316,7 @@ void testConfigurablePanel() {
     assert(parser.panelSettings().profiles[1].pots[2].target == PotTarget::Decay);
 
     // Configured momentary and toggle button semantics remain finite and explicit.
-    assert(parser.parse("PANEL BUTTON CLASSIC 1 ACTION ECHO_LOOP"));
-    assert(parser.parse("PAD 1 1"));
-    assert(store.snapshot().echoLoop);
-    assert(parser.parse("PAD 1 0"));
-    assert(store.snapshot().echoLoop);
+    assert(!parser.parse("PANEL BUTTON CLASSIC 1 ACTION ECHO_LOOP"));
     assert(parser.parse("PANEL BUTTON CLASSIC 4 ACTION ECHO_CUT"));
     assert(parser.parse("PAD 4 1"));
     assert(store.snapshot().echoCut);
@@ -1754,7 +1755,46 @@ void testColoredEchoDecay() {
     }
 }
 
+void testPerformanceMenu() {
+    ControlStore store; CommandParser parser(store);
+    assert(parser.parse("SET PROFILE EXTENDED"));
+    auto click = [&]() { assert(parser.parse("ENCODER_SWITCH 1")); assert(parser.parse("ENCODER_SWITCH 0")); };
+    auto go = [&](const char *key) {
+        unsigned steps = 0;
+        while (strcmp(parser.menuItemKey(parser.menuIndex()), key) != 0) {
+            assert(++steps <= parser.menuItemCount()); assert(parser.parse("ENCODER_ROTATE NEXT"));
+        }
+        click();
+    };
+    click(); go("SOUND"); go("SOUND");
+    assert(parser.parse("ENCODER_ROTATE NEXT")); assert(parser.parse("ENCODER_ROTATE NEXT")); click();
+    assert(store.snapshot().mode == SirenMode::Lickshot);
+    go("BACK"); go("MOD"); go("MODULATION");
+    assert(parser.parse("ENCODER_ROTATE NEXT")); click();
+    assert(!store.snapshot().modulationEnabled);
+    assert(parser.parse("PAD 1 1")); assert(parser.parse("PAD 1 0"));
+    assert(!store.snapshot().modulationEnabled);
+    go("BACK"); go("SOUND"); go("DECAY");
+    const float before = store.snapshot().decayMs;
+    assert(parser.parse("ENCODER_ROTATE NEXT")); click();
+    assert(store.snapshot().decayMs > before);
+    assert(parser.parse("PAD 1 1")); assert(parser.parse("PAD 1 0"));
+    assert(store.snapshot().decayMs > before);
+    go("SOUND"); assert(parser.parse("ENCODER_ROTATE NEXT")); assert(parser.parse("ENCODER_ROTATE NEXT")); click();
+    assert(store.snapshot().mode == SirenMode::Gunshot);
+    assert(parser.parse("PAD 1 1")); assert(parser.parse("PAD 1 0"));
+    assert(store.snapshot().mode == SirenMode::Gunshot);
+    assert(!parser.parse("PANEL BUTTON CLASSIC 1 ACTION ECHO_SPIN"));
+    assert(!parser.parse("PANEL BUTTON CLASSIC 1 ACTION ECHO_LOOP"));
+    assert(parser.parse("PANEL BUTTON EXTENDED 1 ACTION ECHO_CUT"));
+    go("BACK"); go("BACK");
+    const float depth = store.snapshot().lfoDepthOctaves;
+    assert(parser.parse("PAD 1 1")); assert(parser.parse("ENCODER_ROTATE NEXT"));
+    assert(store.snapshot().lfoDepthOctaves == depth);
+}
+
 int main() {
+    testPerformanceMenu();
     testColoredEchoDecay();
     testDryToneAndContour();
     testLickshotArticulations();

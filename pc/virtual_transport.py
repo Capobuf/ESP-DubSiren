@@ -222,7 +222,7 @@ class VirtualTransport:
             function = getattr(library, "virtual_esp_" + name)
             function.argtypes = []
             function.restype = ctypes.c_float
-        for name in ("hold", "echo_cut"):
+        for name in ("hold", "echo_cut", "echo_spin"):
             function = getattr(library, "virtual_esp_" + name)
             function.argtypes = []
             function.restype = ctypes.c_int
@@ -352,6 +352,7 @@ class VirtualTransport:
                     "rateMode": rate_mode,
                     "hold": bool(self._lib.virtual_esp_hold()),
                     "echoCut": bool(self._lib.virtual_esp_echo_cut()),
+                    "echoSpin": bool(self._lib.virtual_esp_echo_spin()),
                     "tuneHz": self._lib.virtual_esp_tune(),
                     "rateHz": self._lib.virtual_esp_rate_hz(),
                     "liveTranspose": self._lib.virtual_esp_live_transpose(),

@@ -513,6 +513,8 @@ bool CommandParser::parsePanelSoundName(const char *text, PanelSound &sound) {
     else if (strcmp(text, "TWO_TONE") == 0) sound = PanelSound::TwoTone;
     else if (strcmp(text, "LICKSHOT") == 0) sound = PanelSound::Lickshot;
     else if (strcmp(text, "PING") == 0) sound = PanelSound::Ping;
+    else if (strcmp(text, "GUNSHOT") == 0) sound = PanelSound::Gunshot;
+    else if (strcmp(text, "TEST_TONE") == 0) sound = PanelSound::TestTone;
     else return false;
     return true;
 }
