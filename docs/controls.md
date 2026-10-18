@@ -167,3 +167,10 @@ Profile changes release gates and momentary controls, clear pad Holds and keep
 delay contents; advanced numeric settings remain stored. Saved pad assignments
 cannot silently switch the default profile. Syndrum/Gunshot remain one-shots;
 DECAY retains its exponential meaning in Extended (120 ms default time constant).
+
+### Two Tone Extended (#7)
+
+RC, Triangle e Square modulano il pitch con il valore continuo del LFO scelto.
+Il carrier resta quadrato; Classic conserva la commutazione discreta dei due livelli.
+Rate e Depth mantengono cadenza ed escursione nominale; Manual usa la curva
+manuale e MODULATION 0 esclude la modulazione.

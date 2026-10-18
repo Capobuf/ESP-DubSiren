@@ -227,7 +227,7 @@ void AudioEngine::renderSegment(const ControlState &controls, const ActivationEv
         float frequencyTarget = tune;
         float oscillatorModulation = modulation;
         float frequencySmoothing = 0.0137929f;  // 1.5 ms RC at 48 kHz.
-        if ((classic || controls.voicingV2) && currentMode_ == SirenMode::Square) {
+        if (classic && currentMode_ == SirenMode::Square) {
             oscillatorModulation = modulationEnabled
                                       ? (lfo_.gate() ? 1.0f : -1.0f)
                                       : 0.0f;
