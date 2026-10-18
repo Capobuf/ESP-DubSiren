@@ -11,7 +11,7 @@ from panel_display import DISPLAY_HEIGHT, DISPLAY_WIDTH, PanelDisplay
 
 PANEL_KNOBS = tuple((f"POT {number}", f"POT_{number}") for number in range(1, 7))
 FRONT_POT_SPEC = ControlSpec(0.0, 1.0, 0.5, lambda value: f"{value:.0%}")
-PANEL_SCHEMA_VERSION = 1
+PANEL_SCHEMA_VERSION = 2
 
 
 class PanelConfigError(ValueError):
@@ -61,6 +61,13 @@ def panel_config_path() -> Path:
 
 
 def _validated_panel_config(data: object) -> dict:
+    if isinstance(data, dict) and type(data.get("schema")) is int and data["schema"] == 1:
+        data = json.loads(json.dumps(data))
+        data["schema"] = 2
+        data["patches"] = [[0] * 23 for _ in range(4)]
+        for button in data.get("profiles", {}).get("CLASSIC", {}).get("buttons", []):
+            if isinstance(button, dict) and button.get("action") in ("ECHO LOOP", "ECHO SPIN"):
+                button["action"] = "NONE"
     if (not isinstance(data, dict) or type(data.get("schema")) is not int
             or data["schema"] != PANEL_SCHEMA_VERSION):
         schema = data.get("schema") if isinstance(data, dict) else None
@@ -129,6 +136,12 @@ def _validated_panel_config(data: object) -> dict:
                     not ((button["sound"] == "CLASSIC" and button["variant"] < 2) or
                          (button["sound"] in ("TWO TONE", "TEST TONE") and button["variant"] == 0))):
                 raise PanelConfigError("panel.json has an unsupported Classic sound")
+    patches = data.get("patches")
+    if (not isinstance(patches, list) or len(patches) != 4 or
+            any(not isinstance(patch, list) or len(patch) != 23 or
+                any(type(value) not in (int, float) or not math.isfinite(value) for value in patch)
+                for patch in patches)):
+        raise PanelConfigError("panel.json has invalid sound patches")
     return data
 
 
@@ -181,7 +194,10 @@ def load_panel_config(path: Path) -> dict | None:
     try:
         if isinstance(data, dict) and "schema" not in data and "pads" in data:
             return _validated_legacy_panel_config(data)
-        return _validated_panel_config(data)
+        validated = _validated_panel_config(data)
+        if data.get("schema") == 1:
+            save_migrated_panel_config(path, validated)
+        return validated
     except PanelConfigError as exc:
         raise PanelConfigError(f"{exc}: {path}") from exc
 
@@ -221,6 +237,8 @@ def panel_settings_commands(settings: dict) -> list[str]:
                     f"PANEL BUTTON {profile_name} {number} SOUND {sound} "
                     f"{button['variant']} {int(button['latch'])}"
                 )
+    for number, patch in enumerate(settings["patches"], start=1):
+        commands.append(f"PANEL PATCH {number} " + " ".join(f"{value:.9g}" for value in patch))
     commands.append("PANEL COMMIT")
     return commands
 

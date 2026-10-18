@@ -139,6 +139,10 @@ class VirtualTransport:
         library.virtual_esp_sample_rate.restype = ctypes.c_int
         library.virtual_esp_block_samples.argtypes = []
         library.virtual_esp_block_samples.restype = ctypes.c_int
+        library.virtual_esp_patch_value_count.argtypes = []
+        library.virtual_esp_patch_value_count.restype = ctypes.c_uint
+        library.virtual_esp_patch_value.argtypes = [ctypes.c_uint, ctypes.c_uint]
+        library.virtual_esp_patch_value.restype = ctypes.c_float
         library.virtual_esp_panel_revision.argtypes = []
         library.virtual_esp_panel_revision.restype = ctypes.c_uint
         library.virtual_esp_panel_menu_revision.argtypes = []
@@ -301,6 +305,9 @@ class VirtualTransport:
                 "range": self._lib.virtual_esp_encoder_range(),
             },
             "profiles": profiles,
+            "patches": [[self._lib.virtual_esp_patch_value(pad, field)
+                         for field in range(self._lib.virtual_esp_patch_value_count())]
+                        for pad in range(1, 5)],
         }
         pitch_mode = "ZONES" if self._lib.virtual_esp_pitch_zones_active() else "CONTINUOUS"
         rate_mode = "ZONES" if self._lib.virtual_esp_rate_zones_active() else "CONTINUOUS"

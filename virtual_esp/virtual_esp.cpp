@@ -74,6 +74,11 @@ VIRTUAL_ESP_API int virtual_esp_block_samples() {
     return static_cast<int>(Config::kBlockSamples);
 }
 
+VIRTUAL_ESP_API unsigned virtual_esp_patch_value_count() { return kSoundPatchValueCount; }
+VIRTUAL_ESP_API float virtual_esp_patch_value(unsigned pad, unsigned field) {
+    return ready() && pad >= 1 && pad <= 4 ? soundPatchValue(parser->panelSettings().patches[pad-1], field) : 0;
+}
+
 VIRTUAL_ESP_API unsigned virtual_esp_panel_revision() {
     return ready() ? parser->panelRevision() : 0;
 }

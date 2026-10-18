@@ -25,6 +25,10 @@ public:
     void resetMomentaries();
 
     bool selectPad(unsigned padNumber);
+    bool savePad(unsigned padNumber);
+    bool recallPad(unsigned padNumber);
+    bool importPatch(unsigned padNumber, const SoundPatch &patch);
+    bool patchDirty(unsigned padNumber) const;
     void stepAssignment(int direction);
     void stepVariant(int direction);
     void toggleSelectedHold();
@@ -99,7 +103,7 @@ private:
         Tune, Rate, Depth, Decay, Sweep, SweepTime, DrumSweep,
         Length, Punch, PitchTime, Tone, Contour, ContourTime,
         Shape, Modulation, Retrigger, ClassicRate,
-        EchoLevel, EchoTime, Feedback, Filter, Color, Loop, Spin, Cut,
+        EchoLevel, EchoTime, Feedback, Filter, Color, Loop, Spin, Cut, SavePatch, RecallPatch,
 
     };
     struct MenuRowView {
@@ -168,6 +172,7 @@ private:
     bool encoderPressed_ = false;
     bool modifierUsed_ = false;
     bool holdToggle_ = false;
+    bool soundLatchArmed_ = false;
     PickupState pickup_[6];
     DisplayMode displayMode_ = DisplayMode::Home;
     MenuPage menuPage_ = MenuPage::Root;

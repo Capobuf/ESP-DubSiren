@@ -42,33 +42,7 @@ enum class PerformanceProfile { Classic, Extended };
 enum class ClassicPitch { Low, Mid, High };
 enum class ClassicModulation { Slow, Medium, Fast, Manual };
 
-struct ActivationEvent {
-    uint32_t timestampUs = 0;
-    SirenMode mode = SirenMode::Sine1;
-    LfoShape lfoShape = LfoShape::Classic;
-    SyndrumWave syndrumWave = SyndrumWave::Sine;
-    LickshotArticulation lickshotArticulation = LickshotArticulation::Legacy;
-    float lickshotLengthMs = 150.0f;
-    float lickshotPunchOctaves = 2.0f;
-    float lickshotPitchMs = 70.0f;
-    float decayMs = PerformanceConfig::kExtendedDecayMs;
-    float syndrumSweepOctaves = 2.0f;
-    bool modulationEnabled = true;
-    bool retrigger = false;
-};
-
-constexpr unsigned kActivationEventCapacity = 8;
-
-struct ControlState {
-    PerformanceProfile profile = PerformanceProfile::Classic;
-    ClassicPitch classicPitch = ClassicPitch::Mid;
-    ClassicModulation classicModulation = ClassicModulation::Medium;
-    float pitchPosition = 0.5f;
-    float ratePosition = 0.375f;
-    bool classicPitchUsesTune = false;
-    bool classicRateUsesRate = false;
-    bool pitchZonesActive = true;
-    bool rateZonesActive = true;
+struct SoundState {
     SirenMode mode = SirenMode::Sine1;
     float tuneHz = PerformanceConfig::kClassicPitchHz[1];
     LfoShape lfoShape = LfoShape::Classic;
@@ -86,6 +60,27 @@ struct ControlState {
     float sweepMs = 650.0f;
     SyndrumWave syndrumWave = SyndrumWave::Sine;
     float syndrumSweepOctaves = 2.0f;
+    bool modulationEnabled = true;
+    bool retrigger = false;
+    bool voicingV2 = true;
+};
+
+struct ActivationEvent : SoundState {
+    uint32_t timestampUs = 0;
+};
+
+constexpr unsigned kActivationEventCapacity = 8;
+
+struct ControlState : SoundState {
+    PerformanceProfile profile = PerformanceProfile::Classic;
+    ClassicPitch classicPitch = ClassicPitch::Mid;
+    ClassicModulation classicModulation = ClassicModulation::Medium;
+    float pitchPosition = 0.5f;
+    float ratePosition = 0.375f;
+    bool classicPitchUsesTune = false;
+    bool classicRateUsesRate = false;
+    bool pitchZonesActive = true;
+    bool rateZonesActive = true;
     bool trigger = false;
     uint32_t activationSequence = 0;
     ActivationEvent activationEvents[kActivationEventCapacity];
@@ -93,8 +88,6 @@ struct ControlState {
     bool modUp = false;
     bool modDown = false;
     int8_t liveTransposeSemitones = 0;
-    bool modulationEnabled = true;
-    bool retrigger = false;
     float delayMs = 360.0f;
     float feedback = 0.62f;
     float echoLevel = 0.45f;
@@ -107,7 +100,6 @@ struct ControlState {
     bool echoSpin = false;
     bool echoLoop = false;
     float masterVolume = 0.50f;
-    bool voicingV2 = true;
 };
 
 inline const char *pitchName(ClassicPitch pitch) {
@@ -129,18 +121,8 @@ inline const char *modeName(SirenMode mode) {
 inline void recordActivation(ControlState &state, uint32_t timestampUs = micros()) {
     ActivationEvent &event = state.activationEvents[
         state.activationSequence % kActivationEventCapacity];
-    event.mode = state.mode;
+    static_cast<SoundState &>(event) = state;
     event.timestampUs = timestampUs;
-    event.lfoShape = state.lfoShape;
-    event.syndrumWave = state.syndrumWave;
-    event.lickshotArticulation = state.lickshotArticulation;
-    event.lickshotLengthMs = state.lickshotLengthMs;
-    event.lickshotPunchOctaves = state.lickshotPunchOctaves;
-    event.lickshotPitchMs = state.lickshotPitchMs;
-    event.decayMs = state.decayMs;
-    event.syndrumSweepOctaves = state.syndrumSweepOctaves;
-    event.modulationEnabled = state.modulationEnabled;
-    event.retrigger = state.retrigger;
     ++state.activationSequence;
 }
 

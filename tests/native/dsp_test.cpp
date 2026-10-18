@@ -1793,7 +1793,52 @@ void testPerformanceMenu() {
     assert(store.snapshot().lfoDepthOctaves == depth);
 }
 
+void testPadMemories() {
+    ControlStore store; CommandParser parser(store);
+    assert(parser.parse("SET PROFILE EXTENDED"));
+    for (unsigned pad = 1; pad <= 4; ++pad) {
+        char command[64];
+        snprintf(command, sizeof(command), "PAD %u 1", pad); assert(parser.parse(command));
+        snprintf(command, sizeof(command), "PAD %u 0", pad); assert(parser.parse(command));
+        snprintf(command, sizeof(command), "SET TUNE_HZ %u", pad * 220); assert(parser.parse(command));
+        snprintf(command, sizeof(command), "SET DECAY_MS %u", pad * 150); assert(parser.parse(command));
+        assert(parser.parse("SET SYNDRUM_SWEEP -1.5"));
+        assert(parser.parse("MODULATION 0"));
+        snprintf(command, sizeof(command), "PANEL SAVE %u", pad); assert(parser.parse(command));
+    }
+    const PanelSettings saved = parser.panelSettings();
+    ControlStore reboot; CommandParser restored(reboot);
+    assert(restored.applyPanelSettings(saved));
+    assert(restored.parse("SET PROFILE EXTENDED"));
+    assert(!reboot.snapshot().trigger && !reboot.snapshot().hold && !reboot.snapshot().echoLoop);
+    assert(restored.parse("SET ECHO_LEVEL 0.7")); assert(restored.parse("SET MASTER 0.3"));
+    for (unsigned pad = 1; pad <= 4; ++pad) {
+        char command[64]; snprintf(command, sizeof(command), "PANEL RECALL %u", pad);
+        assert(restored.parse(command));
+        assert(reboot.snapshot().tuneHz == pad * 220);
+        assert(reboot.snapshot().decayMs == pad * 150);
+        snprintf(command, sizeof(command), "PAD %u 1", pad); assert(restored.parse(command));
+        assert(reboot.snapshot().decayMs == pad * 150);
+        assert(reboot.snapshot().syndrumSweepOctaves == -1.5f);
+        assert(reboot.snapshot().echoLevel == .7f && reboot.snapshot().masterVolume == .3f);
+        const auto state = reboot.snapshot();
+        const auto &event = state.activationEvents[(state.activationSequence-1) % kActivationEventCapacity];
+        assert(event.tuneHz == state.tuneHz && event.decayMs == state.decayMs);
+        snprintf(command, sizeof(command), "PAD %u 0", pad); assert(restored.parse(command));
+        assert(restored.parse("POT 1 0")); assert(restored.pickupWaiting(1));
+    }
+    PanelSettingsV1 legacy = static_cast<const PanelSettingsV1 &>(saved); legacy.schemaVersion = 1;
+    legacy.profiles[0].buttons[0].action = ButtonAction::EchoLoop;
+    PanelSettings migrated; assert(migratePanelSettings(legacy, migrated));
+    assert(migrated.schemaVersion == 2 && !migrated.patches[0].valid);
+    assert(migrated.profiles[0].buttons[0].action == ButtonAction::None);
+    PanelSettings corrupt = saved; corrupt.patches[0].state.tuneHz = NAN;
+    assert(!restored.applyPanelSettings(corrupt));
+    assert(restored.panelSettings().patches[0].state.tuneHz == 220);
+}
+
 int main() {
+    testPadMemories();
     testPerformanceMenu();
     testColoredEchoDecay();
     testDryToneAndContour();
