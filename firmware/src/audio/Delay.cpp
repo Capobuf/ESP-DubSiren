@@ -24,6 +24,7 @@ Delay::Delay()
 
 void Delay::begin(float initialDelayMs, float highPassHz, float lowPassHz,
                   float sampleRate, bool flat) {
+    color_.configure(20.0f, sampleRate);
     flatMix_.configure(PerformanceConfig::kFilterMs, sampleRate);
     flatMix_.reset(flat ? 1.0f : 0.0f);
     delayMs_.configure(PerformanceConfig::kDelayMs, sampleRate);
@@ -57,8 +58,10 @@ float Delay::process(float dry, float feedback, bool echoLoop,
     else if (proposedDelay < oldDelay - maxStep) delayMs_.setCurrent(oldDelay - maxStep);
     const float delaySamples = delayMs_.current() * sampleRate * 0.001f;
     const float highPass = highPassHz_.next();
-    const float lowPass = lowPassHz_.next();
+    const float color = color_.next();
+    float lowPass = lowPassHz_.next();
     if (filterUpdateCountdown_ == 0) {
+        lowPass = fminf(lowPass, 19000.0f * powf(1500.0f / 19000.0f, color));
         if (fabsf(highPass - appliedHighPassHz_) > appliedHighPassHz_ * 0.002f) {
             highPass_.setHighPass(highPass, sampleRate, PerformanceConfig::kEchoFilterQ);
             appliedHighPassHz_ = highPass;
@@ -86,12 +89,12 @@ float Delay::process(float dry, float feedback, bool echoLoop,
     const float sample1 = buffer_[i1] / 32768.0f;
     const float delayed = sample0 + (sample1 - sample0) * fraction;
     const float shaped = lowPass_.process(highPass_.process(delayed));
-    const float flat = flatMix_.next();
+    const float flat = flatMix_.next() * (1.0f - color);
     const float filtered = shaped + (delayed - shaped) * flat;
     if (echoLoop) {
         buffer_[writeIndex_] = floatToInt16(delayed);
     } else {
-        const float drive = PerformanceConfig::kFeedbackSaturationDrive;
+        const float drive = PerformanceConfig::kFeedbackSaturationDrive * (1.0f + 2.0f * color);
         const float bias = drive * PerformanceConfig::kFeedbackSaturationAsymmetry;
         // fastTanh has at most unity slope. Compensate its drive and the
         // write softClip's 1.5 small-signal gain, so repeats decay below 100%.

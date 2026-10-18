@@ -98,6 +98,7 @@ struct ControlState {
     float delayMs = 360.0f;
     float feedback = 0.62f;
     float echoLevel = 0.45f;
+    float echoColor = 0.0f;
     float highPassHz = 60.0f;
     float lowPassHz = 7000.0f;
     float echoFilterPosition = 0.0f;

@@ -22,7 +22,7 @@ int16_t toInt16(float value) {
 
 AudioEngine::AudioEngine()
     : tuneHz_(220.0f), depthOctaves_(1.0f), rateHz_(0.70f),
-      feedback_(0.62f), echoLevel_(0.45f), echoCutWet_(1.0f),
+      feedback_(0.62f), echoLevel_(0.45f),
       masterVolume_(0.50f),
       performanceBend_(0.0f),
       oscillatorFrequencyHz_(220.0f), lastDry_(0.0f), transitionStartDry_(0.0f),
@@ -42,7 +42,6 @@ void AudioEngine::begin() {
     rateHz_.configure(PerformanceConfig::kRateMs, Config::kSampleRate);
     feedback_.configure(PerformanceConfig::kFeedbackMs, Config::kSampleRate);
     echoLevel_.configure(PerformanceConfig::kEchoMs, Config::kSampleRate);
-    echoCutWet_.configure(PerformanceConfig::kEchoCutMs, Config::kSampleRate);
     masterVolume_.configure(PerformanceConfig::kMasterMs, Config::kSampleRate);
     performanceBend_.configure(PerformanceConfig::kPerformanceBendMs,
                                Config::kSampleRate);
@@ -127,8 +126,7 @@ void AudioEngine::renderSegment(const ControlState &controls, const ActivationEv
                                    : controls.feedback));
     if (controls.echoLevel <= 0.0f) echoLevel_.reset(0.0f);
     echoLevel_.setTarget(controls.echoLevel);
-    if (controls.echoCut) echoCutWet_.reset(0.0f);
-    echoCutWet_.setTarget(controls.echoCut ? 0.0f : 1.0f);
+    delay_.setColor(classic ? 0.0f : controls.echoColor);
     masterVolume_.setTarget(controls.masterVolume);
     const bool queuedActivation = event != nullptr;
     const ActivationEvent activation = event ? *event : ActivationEvent{};
@@ -204,7 +202,11 @@ void AudioEngine::renderSegment(const ControlState &controls, const ActivationEv
         const float feedback = controls.feedback == 0.0f && !(controls.echoSpin && !classic)
             ? 0.0f : smoothedFeedback;
         const float echoLevel = echoLevel_.next();
-        const float echoCutWet = echoCutWet_.next();
+        const float cutStep = 1.0f / (PerformanceConfig::kEchoCutMs * .001f * Config::kSampleRate);
+        echoCutWet_ = controls.echoCut ? fmaxf(0.0f, echoCutWet_ - cutStep)
+                                       : fminf(1.0f, echoCutWet_ + cutStep);
+        if (echoCutWet_ < 0.00001f) echoCutWet_ = 0.0f;
+        const float echoCutWet = echoCutWet_;
         const float master = masterVolume_.next();
         const float performanceBend = performanceBend_.next();
         const float livePitch = controls.liveTransposeSemitones / 12.0f;
