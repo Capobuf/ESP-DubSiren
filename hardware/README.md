@@ -180,6 +180,48 @@ Le due strade da valutare, in ordine di impatto, sono:
 
 Le dimensioni fisiche del display restano aperte e non partecipano a queste prove.
 
+### Confronto fori potenziometri: D9,5 e D10
+
+Su richiesta dell'utente sono stati confrontati D9,5 e D10 con D9,2, per dare
+gioco alle boccole M9 × 0,75 dei PTV111-3 frontali. Il PTV111-1 del MASTER usa
+la stessa filettatura, ma il suo montaggio completo sul retro resta da modellare.
+**D10 è il candidato preferito per lo studio**, con 0,5 mm nominali per lato.
+
+| Foro | Gioco radiale su M9 | Copertura Davies centrata | Copertura Davies al massimo decentramento nominale |
+|---|---:|---:|---:|
+| D9,2, riferimento Gate A | 0,10 mm | 5,322 mm | 5,222 mm |
+| D9,5 | 0,25 mm | 5,172 mm | 4,922 mm |
+| D10 | 0,50 mm | 4,922 mm | 4,422 mm |
+
+La gonna della Davies 1100 è D19,84375 (25/32 pollici nel catalogo originale).
+Questi sono margini di copertura in proiezione; l'altezza della manopola e il
+serraggio devono ancora impedire aperture visibili lateralmente. Per la Cliff
+K85M del MASTER, D14 esterno, i margini corrispondenti su D10 sono 2 mm centrato
+e 1,5 mm al massimo decentramento nominale. Non sono incluse tolleranze reali.
+
+Con jack D12, D9,5 elimina l'interferenza delle sole boccole a +0,5° ma non a
++1° (2,554 mm³). D10 le lascia libere anche a +1°; a +2° resta un'interferenza
+di 5,698 mm³, a +5° di 48,607 mm³. I due risultati nulli sono stati verificati
+anche tramite contenimento delle sezioni ellittiche nei fori, indipendentemente
+dal booleano OCC: riserva radiale conservativa 0,089 mm per D9,5/+0,5° e
+0,172 mm per D10/+1°. Queste prove non eliminano le interferenze del jack e
+dell'USB né dimostrano il percorso completo.
+
+La manopola non sostituisce dado e rondella. Il riferimento già conservato
+Alps RKZ00023UA, **non selezionato come ferramenta del progetto**, ha rondella
+D14 × D9,1 × 0,5 e dado M9 × 0,75, SW11, spessore 2. La rondella coprirebbe
+D10 per 2 mm radiali a centraggio nominale. Tuttavia la boccola frontale sporge
+solo 2,5 mm dal pannello nella posa attuale: dado e rondella occuperebbero tutti
+quei 2,5 mm, senza riserva assiale dimostrata. Per il MASTER, gli spigoli del dado
+SW11 arrivano a circa D12,70, oltre l'incavo D12 della Cliff: non si può dichiarare
+che questa ferramenta rientri nella manopola. Fissaggio, accesso e distanza dal
+pannello rimangono quindi da risolvere, senza presumere un montaggio senza vuoti.
+
+Il confronto D10 è salvato nell'oggetto nativo nascosto `PotHole10Comparison`
+e nel report. **La dima Gate A e la sonda principale mantengono D9,2 come riferimento**;
+D10 è un candidato verificato parzialmente, non una foratura già rilasciata.
+Non è stato duplicato il layout né cambiata la posizione dei controlli.
+
 ## Controlli e limiti del progetto
 
 Verifica elettrica della PR #17, 18 ottobre 2026: ERC senza errori o warning. Il confronto DRC prima/dopo conserva

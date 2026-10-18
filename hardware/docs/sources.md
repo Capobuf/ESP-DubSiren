@@ -86,3 +86,12 @@ la parete Hammond inclinata di 1° lascia un dislivello di 0,305 mm sul dado.
 Non sono state ricavate coppie, deformazioni ammissibili o misure fisiche dalla
 sola geometria. I risultati D11,2 nel JSON sono un riferimento storico esplicito;
 le sonde native correnti e la tavola usano D12.
+
+Confronto fori pot su richiesta dell'utente: D9,5 e D10 rispetto a D9,2.
+Bourns PTV/PTT pagina 2 conferma M9 × 0,75 per PTV111-1 e PTV111-3.
+La gonna Davies 1100 misura 25/32 pollici = 19,84375 mm; Cliff K85M ha
+D14 esterno e incavo inferiore D12. Il riferimento Alps RKZ00023UA documenta
+dado M9 × 0,75 SW11 spesso 2 mm e rondella D14/D9,1 spessa 0,5 mm;
+non prova che siano gli accessori forniti con i potenziometri Bourns.
+Copertura nominale del foro e compatibilità assiale della ferramenta sono
+distinte nel report; nessun acquisto o sostituzione automatica della ferramenta.
