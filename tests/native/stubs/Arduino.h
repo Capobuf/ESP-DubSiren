@@ -2,6 +2,13 @@
 
 #include <math.h>
 #include <string>
+#include <chrono>
+#include <stdint.h>
+
+inline uint32_t micros() {
+    return static_cast<uint32_t>(std::chrono::duration_cast<std::chrono::microseconds>(
+        std::chrono::steady_clock::now().time_since_epoch()).count());
+}
 
 constexpr float TWO_PI = 6.2831853071795864769f;
 using SemaphoreHandle_t = int *;

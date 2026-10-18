@@ -15,6 +15,8 @@ class AudioEngine {
 public:
     AudioEngine();
     void begin();
+    uint32_t droppedActivations() const { return droppedActivations_; }
+    uint32_t renderedActivations() const { return renderedActivations_; }
     void render(const ControlState &controls, int16_t *output, size_t count);
 
 private:
@@ -44,12 +46,11 @@ private:
     bool modeInitialized_;
     bool previousTrigger_;
     bool previousHold_;
-    static constexpr unsigned kPendingActivationCapacity = 32;
-    ActivationEvent pendingActivations_[kPendingActivationCapacity];
-    uint32_t capturedActivationSequence_;
-    unsigned pendingActivationRead_;
-    unsigned pendingActivationWrite_;
-    unsigned pendingActivationCount_;
+    uint32_t capturedActivationSequence_ = 0;
+    uint32_t droppedActivations_ = 0;
+    uint32_t renderedActivations_ = 0;
+    void renderSegment(const ControlState &controls, const ActivationEvent *event,
+                       int16_t *output, size_t count);
     unsigned eventGateRemaining_;
 
     static bool isTonalMode(SirenMode mode);

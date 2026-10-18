@@ -156,7 +156,13 @@ resources.
 
 An Extended pad activation updates the mode-specific configuration and an eight-entry
 activation ring in one `ControlStore` write. The audio engine transfers unseen
-events to its local queue and consumes one per block. The sequence is
+events into the current block, preserving relative microsecond press intervals.
+There is no multi-block backlog: the ring retains the newest eight events;
+overwritten or simultaneous/superseded events increment `droppedActivations`.
+The first captured event starts at the block boundary. A zero-duration Classic
+tap receives a 2 ms minimum gate and the usual 3 ms release; Extended keeps
+its 10 ms minimum gate and exponential/one-shot tails. Hardware input latency,
+block wait, I2S buffering and PC buffering must be measured separately. The sequence is
 independent of the gate, so pressing another pad while one remains held still
 retriggers the appropriate envelope, and rapid press/release pairs survive a
 block snapshot. The active gate uses independent pad states and returns to the

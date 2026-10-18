@@ -1595,7 +1595,43 @@ void testClassicAutomaticVoices() {
     assert(secondHarmonic[1] > .13);
 }
 
+void testShortTriggerEvents() {
+    for (const char *profile : {"SET PROFILE CLASSIC", "SET PROFILE EXTENDED"}) {
+        for (int route = 0; route < 3; ++route) {
+            ControlStore store; CommandParser parser(store);
+            assert(parser.parse(profile));
+            assert(parser.parse("SET ECHO_LEVEL 0"));
+            if (route == 2) assert(parser.parse("PANEL BUTTON CLASSIC 3 ACTION TRIGGER"));
+            auto engine = std::make_unique<AudioEngine>(); engine->begin();
+            int16_t block[480];
+            engine->render(store.snapshot(), block, 480);
+            const char *press = route == 0 ? "TRIGGER 1" : route == 1 ? "PAD 1 1" : "PAD 3 1";
+            const char *release = route == 0 ? "TRIGGER 0" : route == 1 ? "PAD 1 0" : "PAD 3 0";
+            assert(parser.parse(press)); assert(parser.parse(release));
+            engine->render(store.snapshot(), block, 480);
+            assert(blockRms(block, 480) > 10);
+            assert(engine->renderedActivations() == 1);
+        }
+    }
+    for (unsigned interval = 1000; interval <= 9000; interval += 1000) {
+        auto engine = std::make_unique<AudioEngine>(); engine->begin();
+        ControlState state; state.echoLevel = 0;
+        recordActivation(state, 100000); recordActivation(state, 100000 + interval);
+        int16_t block[480]; engine->render(state, block, 480);
+        assert(engine->renderedActivations() == 2);
+        engine->render(state, block, 480);
+        assert(engine->renderedActivations() == 2);
+    }
+    auto engine = std::make_unique<AudioEngine>(); engine->begin();
+    ControlState state;
+    for (unsigned i = 0; i < 12; ++i) recordActivation(state, 100000 + i * 1000);
+    int16_t block[480]; engine->render(state, block, 480);
+    assert(engine->droppedActivations() == 4);
+    assert(engine->renderedActivations() == 8);
+}
+
 int main() {
+    testShortTriggerEvents();
     testClassicAutomaticVoices();
     testSine1DynamicVoicing();
     testSharedSineVoicing();

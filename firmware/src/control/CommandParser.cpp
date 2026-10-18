@@ -157,7 +157,7 @@ bool CommandParser::parse(const String &rawCommand) {
             return false;
         }
         if (name == "TRIGGER") {
-            if (value && !state.trigger && state.profile == PerformanceProfile::Extended) {
+            if (value && !state.trigger) {
                 recordActivation(state);
             }
             state.trigger = value;

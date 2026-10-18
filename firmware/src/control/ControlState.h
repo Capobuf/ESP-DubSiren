@@ -41,6 +41,7 @@ enum class ClassicPitch { Low, Mid, High };
 enum class ClassicModulation { Slow, Medium, Fast, Manual };
 
 struct ActivationEvent {
+    uint32_t timestampUs = 0;
     SirenMode mode = SirenMode::Sine1;
     LfoShape lfoShape = LfoShape::Classic;
     SyndrumWave syndrumWave = SyndrumWave::Sine;
@@ -111,10 +112,11 @@ inline const char *modeName(SirenMode mode) {
     return names[static_cast<unsigned>(mode)];
 }
 
-inline void recordActivation(ControlState &state) {
+inline void recordActivation(ControlState &state, uint32_t timestampUs = micros()) {
     ActivationEvent &event = state.activationEvents[
         state.activationSequence % kActivationEventCapacity];
     event.mode = state.mode;
+    event.timestampUs = timestampUs;
     event.lfoShape = state.lfoShape;
     event.syndrumWave = state.syndrumWave;
     event.decayMs = state.decayMs;
