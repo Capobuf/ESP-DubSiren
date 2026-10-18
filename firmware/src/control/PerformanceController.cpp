@@ -27,22 +27,11 @@ float editingStep(const TargetDescriptor &descriptor, float value, int direction
 
 void formatConfiguredValue(PotTarget target, float value,
                            char *buffer, unsigned size) {
-    switch (target) {
-        case PotTarget::Pitch:
-            if (value >= 1000.0f) snprintf(buffer, size, "%.2f kHz", value / 1000.0f);
-            else snprintf(buffer, size, "%.0f Hz", value);
-            break;
-        case PotTarget::Rate: snprintf(buffer, size, "%.2f Hz", value); break;
-        case PotTarget::LfoDepth: snprintf(buffer, size, "%.2f oct", value); break;
-        case PotTarget::EchoLevel:
-        case PotTarget::EchoFeedback:
-        case PotTarget::SweepAmount: snprintf(buffer, size, "%.0f%%", value * 100.0f); break;
-        case PotTarget::EchoTime:
-        case PotTarget::Decay:
-        case PotTarget::SweepTime: snprintf(buffer, size, "%.0f ms", value); break;
-        case PotTarget::EchoFilter: snprintf(buffer, size, "%+.0f%%", value * 100.0f); break;
-        default: snprintf(buffer, size, "%.2f", value); break;
-    }
+    const TargetDescriptor *descriptor = targetDescriptor(target);
+    if (!descriptor) snprintf(buffer, size, "N/A");
+    else if (target == PotTarget::Pitch && value >= 1000.0f)
+        snprintf(buffer, size, "%.2f kHz", value / 1000.0f);
+    else snprintf(buffer, size, descriptor->valueFormat, value * descriptor->displayScale);
 }
 
 }  // namespace
@@ -525,8 +514,9 @@ bool PerformanceController::setPot(unsigned potNumber, float position) {
     return true;
 }
 
-void PerformanceController::setEncoderPressed(bool pressed) {
+void PerformanceController::setEncoderPressed(bool pressed, bool cancelClick) {
     if (encoderPressed_ == pressed) return;
+    if (cancelClick && !pressed) modifierUsed_ = true;
     overlayTitle_[0] = '\0';
     overlayValue_[0] = '\0';
     encoderPressed_ = pressed;
@@ -600,6 +590,8 @@ void PerformanceController::rotateEncoder(int direction) {
         changed();
         return;
     }
+    overlayTitle_[0] = '\0';
+    overlayValue_[0] = '\0';
     normalizeMenuIndex();
     rebuildMenuView();
     if (menuEditing_) editMenuItem(menuRows_[menuIndex_].row, direction);
@@ -790,7 +782,8 @@ bool PerformanceController::configureButtonAction(PerformanceProfile profile,
 
 bool PerformanceController::configureButtonSound(PerformanceProfile profile,
         unsigned buttonNumber, PanelSound sound, unsigned variant, bool latch) {
-    if (buttonNumber < 1 || buttonNumber > 4) return rejectSettingsChange();
+    if (buttonNumber < 1 || buttonNumber > 4 ||
+        variant >= panelSoundVariantCount(sound)) return rejectSettingsChange();
     PanelSettings candidate = settingsTransaction_ ? stagedSettings_ : settings_;
     ButtonConfig &button = candidate.profiles[profileIndex(profile)].buttons[buttonNumber - 1];
     if (button.action != ButtonAction::PlaySound) return rejectSettingsChange();
@@ -818,6 +811,8 @@ bool PerformanceController::configurePotBehavior(PotBehavior behavior) {
 
 bool PerformanceController::configureEncoder(EncoderHoldAction action,
         unsigned step, unsigned range) {
+    if (step < 1 || step > 12 || range < step || range > 24)
+        return rejectSettingsChange();
     PanelSettings candidate = settingsTransaction_ ? stagedSettings_ : settings_;
     candidate.encoderHoldAction = action;
     candidate.encoderStepSemitones = static_cast<uint8_t>(step);
@@ -1447,19 +1442,19 @@ void PerformanceController::formatTargetValue(PotTarget target,
                 else snprintf(buffer, size, "%s - %.2f Hz", rateName(state.classicModulation), state.lfoRateHz);
             } else snprintf(buffer, size, "%.2f Hz", state.lfoRateHz);
             break;
-        case PotTarget::LfoDepth: snprintf(buffer, size, "%.2f oct", state.lfoDepthOctaves); break;
-        case PotTarget::EchoLevel: snprintf(buffer, size, "%.0f%%", state.echoLevel * 100); break;
-        case PotTarget::EchoTime: snprintf(buffer, size, "%.0f ms", state.delayMs); break;
-        case PotTarget::EchoFeedback: snprintf(buffer, size, "%.0f%%", state.feedback * 100); break;
+        case PotTarget::LfoDepth: formatConfiguredValue(target, state.lfoDepthOctaves, buffer, size); break;
+        case PotTarget::EchoLevel: formatConfiguredValue(target, state.echoLevel, buffer, size); break;
+        case PotTarget::EchoTime: formatConfiguredValue(target, state.delayMs, buffer, size); break;
+        case PotTarget::EchoFeedback: formatConfiguredValue(target, state.feedback, buffer, size); break;
         case PotTarget::EchoFilter: {
             const float amount = PerformanceConfig::echoFilterAmount(state.echoFilterPosition);
             if (amount == 0) snprintf(buffer, size, "FLAT");
             else snprintf(buffer, size, "%s %.0f%%", state.echoFilterPosition < 0 ? "LP" : "HP", amount * 100);
             break;
         }
-        case PotTarget::Decay: snprintf(buffer, size, "%.0f ms", state.decayMs); break;
-        case PotTarget::SweepAmount: snprintf(buffer, size, "%.0f%%", state.sweepAmount * 100); break;
-        case PotTarget::SweepTime: snprintf(buffer, size, "%.0f ms", state.sweepMs); break;
+        case PotTarget::Decay: formatConfiguredValue(target, state.decayMs, buffer, size); break;
+        case PotTarget::SweepAmount: formatConfiguredValue(target, state.sweepAmount, buffer, size); break;
+        case PotTarget::SweepTime: formatConfiguredValue(target, state.sweepMs, buffer, size); break;
         case PotTarget::None: snprintf(buffer, size, "OFF"); break;
         case PotTarget::Count: snprintf(buffer, size, "N/A"); break;
     }

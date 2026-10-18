@@ -1,6 +1,7 @@
 """Text display for the desktop panel, driven by confirmed controller state."""
 
 import tkinter as tk
+from tkinter import font as tkfont
 from tkinter import ttk
 
 
@@ -23,8 +24,18 @@ class PanelDisplay(ttk.Frame):
         self.canvas.pack()
 
     def _text(self, x, y, text, size=10, color=TEXT, anchor="nw"):
+        text = str(text)
+        available = x - 16 if anchor == "ne" else 304 - x
+        font = tkfont.Font(root=self.canvas, family="Consolas", size=-size)
+        while size > 8 and font.measure(text) > available:
+            size -= 1
+            font.configure(size=-size)
+        if font.measure(text) > available:
+            while text and font.measure(text + "...") > available:
+                text = text[:-1]
+            text += "..."
         self.canvas.create_text(
-            x, y, text=str(text), anchor=anchor,
+            x, y, text=text, anchor=anchor,
             font=("Consolas", -size), fill=color,
         )
 

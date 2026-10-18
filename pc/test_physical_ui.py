@@ -1,6 +1,7 @@
 import json
 import tempfile
 import unittest
+from unittest.mock import patch
 from pathlib import Path
 
 from control_ranges import CONTROL_SPECS
@@ -100,6 +101,17 @@ class FakeCanvas:
 
     def create_polygon(self, *args, **kwargs):
         self.calls.append(("polygon", args, kwargs))
+
+
+class FakeFont:
+    def __init__(self, root, family, size):
+        self.size = size
+
+    def configure(self, size):
+        self.size = size
+
+    def measure(self, text):
+        return len(text) * abs(self.size) * 0.6
 
 
 def make_app() -> PhysicalDubSirenApp:
@@ -225,6 +237,9 @@ class PhysicalUiTests(unittest.TestCase):
         self.assertFalse(any(command.startswith("SET MODE") for command in app.commands))
 
     def test_text_display_preserves_home_parameters_overlay_and_menu(self):
+        font_patch = patch("panel_display.tkfont.Font", FakeFont)
+        font_patch.start()
+        self.addCleanup(font_patch.stop)
         self.assertEqual((DISPLAY_WIDTH, DISPLAY_HEIGHT), (320, 172))
         display = object.__new__(PanelDisplay)
         display.canvas = FakeCanvas()
@@ -526,6 +541,44 @@ class PhysicalUiTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             with self.assertRaises(OSError):
                 save_panel_config(Path(directory), sample_settings())
+
+    def test_failed_replace_preserves_previous_configuration(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "panel.json"
+            save_panel_config(path, sample_settings())
+            before = path.read_bytes()
+            changed = sample_settings()
+            changed["potBehavior"] = "JUMP"
+            with patch("physical_ui.os.replace", side_effect=OSError("disk failure")):
+                with self.assertRaisesRegex(OSError, "disk failure"):
+                    save_panel_config(path, changed)
+            self.assertEqual(path.read_bytes(), before)
+            self.assertEqual(list(path.parent.glob("*.tmp")), [])
+
+    def test_malformed_nested_configuration_reports_error(self):
+        invalid = []
+        for key, value in (("profiles", []), ("profiles", {"CLASSIC": []}),
+                           ("encoder", {"holdTurn": "LIVE_PITCH", "step": True, "range": 12})):
+            settings = sample_settings()
+            settings[key] = value
+            invalid.append(settings)
+        settings = sample_settings()
+        settings["profiles"]["CLASSIC"]["pots"][0]["target"] = []
+        invalid.append(settings)
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "panel.json"
+            for data in invalid:
+                path.write_text(json.dumps(data), encoding="utf-8")
+                with self.subTest(data=data), self.assertRaises(PanelConfigError):
+                    load_panel_config(path)
+
+    def test_schema_migration_save_failure_is_reported(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "panel.json"
+            path.write_text(json.dumps(sample_settings()), encoding="utf-8")
+            with patch("physical_ui.os.replace", side_effect=OSError("read-only")):
+                with self.assertRaisesRegex(PanelConfigError, "read-only"):
+                    load_panel_config(path)
 
     def test_reload_uses_disk_after_failed_migration_and_clears_old_errors(self):
         app = make_app()

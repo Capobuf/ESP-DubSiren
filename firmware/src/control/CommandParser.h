@@ -24,11 +24,17 @@ public:
     void setPhysicalEncoderPressed(bool down) { physicalEncoder_ = down; performance_.setEncoderPressed(down || remoteEncoder_); }
     void setRemoteEncoderPressed(bool down) { remoteEncoder_ = down; performance_.setEncoderPressed(down || physicalEncoder_); }
     void resetRemoteInputs() {
-        for (unsigned pad = 1; pad <= 4; ++pad) setRemotePad(pad, false);
-        setRemoteEncoderPressed(false);
         bool physicalActive = physicalEncoder_;
         for (bool down : physicalPads_) physicalActive |= down;
-        if (!physicalActive) performance_.resetMomentaries();
+        if (!physicalActive) {
+            for (bool &down : remotePads_) down = false;
+            remoteEncoder_ = false;
+            performance_.resetMomentaries();
+            return;
+        }
+        for (unsigned pad = 1; pad <= 4; ++pad) setRemotePad(pad, false);
+        remoteEncoder_ = false;
+        performance_.setEncoderPressed(physicalEncoder_, !physicalEncoder_);
     }
     bool physicalTrigger() const {
         const auto profile = profileIndex(controls_.snapshot().profile);

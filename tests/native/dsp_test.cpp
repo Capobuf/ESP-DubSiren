@@ -1856,7 +1856,57 @@ void testPhysicalAndRemoteOwnership() {
     assert(parser.parse("PAD 1 0")); assert(!store.snapshot().trigger);
 }
 
+void testPanelValidationAndCancelledClicks() {
+    ControlStore store;
+    CommandParser parser(store);
+    const char *invalid[] = {
+        "PANEL ENCODER LIVE_PITCH 257 268", "PANEL ENCODER LIVE_PITCH 1 268",
+        "PANEL ENCODER LIVE_PITCH 4294967297 12",
+        "PANEL BUTTON EXTENDED 1 SOUND CLASSIC 256 0",
+        "PANEL BUTTON EXTENDED 4294967297 SOUND CLASSIC 0 0",
+        "PANEL POT CLASSIC 1 RANGE 100", "PANEL POT CLASSIC 1 MODE UNKNOWN",
+        "PANEL POT CLASSIC 1 TARGET UNKNOWN", "PANEL BEHAVIOR UNKNOWN",
+        "PANEL BUTTON CLASSIC 1 ACTION UNKNOWN", "PANEL UNKNOWN"
+    };
+    for (const char *command : invalid) {
+        const unsigned revision = parser.panelSettingsRevision();
+        assert(parser.parse("PANEL BEGIN"));
+        assert(parser.parse("PANEL POT CLASSIC 1 TARGET NONE"));
+        assert(!parser.parse(command));
+        assert(!parser.parse("PANEL COMMIT"));
+        assert(parser.panelSettingsRevision() == revision);
+        assert(parser.panelSettings().profiles[0].pots[0].target == PotTarget::Pitch);
+    }
+    PanelSettings corrupt = factoryPanelSettings();
+    corrupt.profiles[0].pots[0].mode = static_cast<PotMode>(255);
+    assert(!parser.applyPanelSettings(corrupt));
+    corrupt = factoryPanelSettings();
+    corrupt.profiles[1].pots[0].zones[0] = NAN;
+    assert(!parser.applyPanelSettings(corrupt));
+    corrupt = factoryPanelSettings();
+    corrupt.profiles[0].buttons[0].sound = static_cast<PanelSound>(255);
+    assert(!parser.applyPanelSettings(corrupt));
+
+    assert(parser.parse("ENCODER_SWITCH 1"));
+    assert(parser.parse("PANEL_RESET"));
+    assert(strcmp(parser.displayModeName(), "HOME") == 0);
+    assert(parser.setPhysicalPad(1, true));
+    assert(parser.parse("ENCODER_SWITCH 1"));
+    assert(parser.parse("PANEL_RESET"));
+    assert(store.snapshot().trigger);
+    assert(strcmp(parser.displayModeName(), "HOME") == 0);
+    assert(parser.setPhysicalPad(1, false));
+    assert(parser.parse("ENCODER_SWITCH 1"));
+    assert(parser.parse("ENCODER_SWITCH 0"));
+    assert(strcmp(parser.displayModeName(), "MENU") == 0);
+    assert(parser.parse("POT 3 0"));
+    assert(strstr(parser.menuFooter(), "ECHO LEVEL") != nullptr);
+    assert(parser.parse("ENCODER_ROTATE NEXT"));
+    assert(strcmp(parser.menuFooter(), "TURN SELECT / PUSH OPEN") == 0);
+}
+
 int main() {
+    testPanelValidationAndCancelledClicks();
     testPhysicalAndRemoteOwnership();
     testPadMemories();
     testPerformanceMenu();

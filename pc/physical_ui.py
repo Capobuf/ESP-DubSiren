@@ -1,6 +1,7 @@
 import json
 import math
 import os
+import tempfile
 import tkinter as tk
 from pathlib import Path
 from tkinter import ttk
@@ -65,7 +66,13 @@ def _validated_panel_config(data: object) -> dict:
         data = json.loads(json.dumps(data))
         data["schema"] = 2
         data["patches"] = [[0] * 23 for _ in range(4)]
-        for button in data.get("profiles", {}).get("CLASSIC", {}).get("buttons", []):
+        profiles = data.get("profiles")
+        if not isinstance(profiles, dict) or not isinstance(profiles.get("CLASSIC"), dict):
+            raise PanelConfigError("panel.json is missing Classic profile settings")
+        buttons = profiles["CLASSIC"].get("buttons")
+        if not isinstance(buttons, list):
+            raise PanelConfigError("panel.json is missing Classic button settings")
+        for button in buttons:
             if isinstance(button, dict) and button.get("action") in ("ECHO LOOP", "ECHO SPIN"):
                 button["action"] = "NONE"
     if (not isinstance(data, dict) or type(data.get("schema")) is not int
@@ -81,8 +88,9 @@ def _validated_panel_config(data: object) -> dict:
     if (
         not isinstance(encoder, dict)
         or encoder.get("holdTurn") not in ("OFF", "LIVE_PITCH")
-        or not isinstance(encoder.get("step"), int)
-        or not isinstance(encoder.get("range"), int)
+        or type(encoder.get("step")) is not int
+        or type(encoder.get("range")) is not int
+        or not 1 <= encoder["step"] <= 12
         or not 1 <= encoder["step"] <= encoder["range"] <= 24
     ):
         raise PanelConfigError("panel.json has invalid encoder settings")
@@ -110,26 +118,28 @@ def _validated_panel_config(data: object) -> dict:
         if not isinstance(buttons, list) or len(buttons) != 4:
             raise PanelConfigError(f"panel.json {profile_name} must contain four buttons")
         for pot in pots:
-            if not isinstance(pot, dict) or pot.get("target") not in allowed_targets[profile_name]:
+            if (not isinstance(pot, dict) or not isinstance(pot.get("target"), str)
+                    or pot["target"] not in allowed_targets[profile_name]):
                 raise PanelConfigError(f"panel.json has an invalid {profile_name} pot target")
             if pot.get("mode") not in ("CONTINUOUS", "ZONES"):
                 raise PanelConfigError("panel.json has an invalid pot mode")
             values = (pot.get("min"), pot.get("max"))
             zones = pot.get("zones")
-            if (not all(isinstance(value, (int, float)) and math.isfinite(value) for value in values)
+            if (not all(type(value) in (int, float) and math.isfinite(value) for value in values)
                     or values[0] >= values[1]
                     or not isinstance(zones, list) or len(zones) != 3
-                    or not all(isinstance(value, (int, float)) and math.isfinite(value) for value in zones)):
+                    or not all(type(value) in (int, float) and math.isfinite(value) for value in zones)):
                 raise PanelConfigError("panel.json has invalid pot ranges")
             if pot["mode"] == "ZONES":
                 if (profile_name != "CLASSIC" or pot["target"] not in ("PITCH", "RATE")
                         or not zones[0] < zones[1] < zones[2]):
                     raise PanelConfigError("panel.json has invalid zone values")
         for button in buttons:
-            if not isinstance(button, dict) or button.get("action") not in allowed_actions:
+            if (not isinstance(button, dict) or not isinstance(button.get("action"), str)
+                    or button["action"] not in allowed_actions):
                 raise PanelConfigError("panel.json has an invalid button action")
-            if (button.get("sound") not in allowed_sounds
-                    or not isinstance(button.get("variant"), int)
+            if (not isinstance(button.get("sound"), str) or button["sound"] not in allowed_sounds
+                    or type(button.get("variant")) is not int or button["variant"] < 0
                     or not isinstance(button.get("latch"), bool)):
                 raise PanelConfigError("panel.json has invalid Play Sound data")
             if (profile_name == "CLASSIC" and button["action"] == "PLAY SOUND" and
@@ -198,7 +208,7 @@ def load_panel_config(path: Path) -> dict | None:
         if data.get("schema") == 1:
             save_migrated_panel_config(path, validated)
         return validated
-    except PanelConfigError as exc:
+    except (PanelConfigError, OSError) as exc:
         raise PanelConfigError(f"{exc}: {path}") from exc
 
 
@@ -206,7 +216,16 @@ def save_panel_config(path: Path, settings: dict) -> None:
     payload = json.loads(json.dumps(_validated_panel_config(settings)))
     payload.pop("revision", None)
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+    temporary = None
+    try:
+        with tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", dir=path.parent,
+                                         prefix=path.name + ".", suffix=".tmp", delete=False) as stream:
+            temporary = Path(stream.name)
+            stream.write(json.dumps(payload, indent=2) + "\n")
+        os.replace(temporary, path)
+    finally:
+        if temporary is not None:
+            temporary.unlink(missing_ok=True)
 
 
 def panel_settings_commands(settings: dict) -> list[str]:

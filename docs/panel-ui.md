@@ -26,11 +26,19 @@ Classic Home shows symbolic and physical values together, for example
 from C++ STATUS, including hysteresis; Python does not implement a second
 selector or any DSP.
 
-The shallow menu contains Profile, Pots, Buttons, Encoder, Reset Defaults and
-Back. Submenus expose only applicable fields and the controller supplies the
+The root menu contains Sound, Mod, Echo, Setup and Back. Setup contains Profile,
+Pots, Buttons, Encoder, Reset Defaults and Back. Submenus expose only applicable
+fields and the controller supplies the
 page title, ordered rows, labels, values and footer to both renderers. Moving a
 pot while Menu is open updates the footer without replacing the menu. Reset
 Defaults requires an explicit YES confirmation.
+
+The pot footer yields to the navigation hint on the next encoder turn/click.
+Target descriptors own range limits, mapping and numeric units/formatting.
+Both renderers fit long text within the safe width; firmware Extended overlays
+use the controller's title (including Pickup and Live Pitch) instead of a
+fixed Tune label. Text sizing is presentation only; the C++ content remains
+authoritative.
 
 In Extended Home, free encoder rotation cycles the selected pad's waveform
 variant. Holding physical BTN1 while turning adjusts Depth in 0.05-octave steps,
@@ -63,6 +71,13 @@ loads and save failures. VirtualESP stores the same logical schema in
 silently ignored. A real device is authoritative on connection: the PC adopts
 STATUS and never pushes a profile, mapping or stale local default. No pressed
 state, gate, live transpose or other transient state is restored from disk.
+
+Malformed configuration commands invalidate an entire staged restore, including
+syntax errors. Integer fields are checked before narrowing and corrupt enum or
+non-finite values are rejected on load. Host saves use a temporary file and an
+atomic replacement, preserving the previous file if replacement fails. Migration
+I/O failures are surfaced as configuration errors. Focus loss cancels an encoder
+click rather than opening/committing a menu; physically held inputs retain ownership.
 
 Older VirtualESP files containing only four `pads` are migrated on connection.
 The controller supplies the default pots, Classic buttons and encoder settings;

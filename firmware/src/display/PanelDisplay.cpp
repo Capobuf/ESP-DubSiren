@@ -135,8 +135,11 @@ void PanelDisplay::renderHome(const ControlState &state, bool linked) {
     if (focus_ != Focus::None) {
         const char *labels[] = {"", "TUNE", "RATE", "DEPTH", "ECHO LEVEL",
             "ECHO TIME", "ECHO FEEDBACK", "FILTER", "MASTER"};
-        drawText(16, 111, String(labels[static_cast<unsigned>(focus_)]) +
-                 " " + overlayValue_, 2, kAmber);
+        tft_.fillRect(10, 61, 300, 72, kBlack);
+        tft_.drawRect(10, 61, 300, 72, kChartreuseDim);
+        drawText(22, 68, overlayLabel_.length()
+            ? overlayLabel_ : labels[static_cast<unsigned>(focus_)], 1, kMuted);
+        drawText(22, 92, overlayValue_, 3, kOffWhite);
     }
     String status = controller_.persistenceStatus();
     if (!status.length()) {
@@ -232,9 +235,17 @@ bool PanelDisplay::captureOverlay(const ControlState &before,
 
 void PanelDisplay::drawText(int16_t x, int16_t y, const String &text,
                             uint8_t size, uint16_t color) {
+    // The built-in GFX font advances six pixels per character at size one.
+    const unsigned available = x < 304 ? 304 - x : 0;
+    while (size > 1 && text.length() * 6 * size > available) --size;
+    String fitted = text;
+    const unsigned capacity = available / (6 * size);
+    if (fitted.length() > capacity) {
+        fitted = capacity > 3 ? fitted.substring(0, capacity - 3) + "..." : "";
+    }
     tft_.setTextWrap(false);
     tft_.setTextSize(size);
     tft_.setTextColor(color);
     tft_.setCursor(x, y);
-    tft_.print(text);
+    tft_.print(fitted);
 }

@@ -49,6 +49,8 @@ struct TargetDescriptor {
     float defaultMax;
     MappingType mapping;
     bool zones;
+    const char *valueFormat;
+    float displayScale;
 };
 
 struct PotConfig {
@@ -101,27 +103,27 @@ inline unsigned profileIndex(PerformanceProfile profile) {
 inline const TargetDescriptor *targetDescriptor(PotTarget target) {
     static constexpr TargetDescriptor descriptors[] = {
         {PotTarget::None, "NONE", 0.0f, 1.0f, 0.0f, 1.0f,
-         MappingType::Linear, false},
+         MappingType::Linear, false, "%.2f", 1.0f},
         {PotTarget::Pitch, "PITCH", 30.0f, 9000.0f, 80.0f, 1600.0f,
-         MappingType::Logarithmic, true},
+         MappingType::Logarithmic, true, "%.0f Hz", 1.0f},
         {PotTarget::Rate, "RATE", 0.05f, 20.0f, 0.15f, 20.0f,
-         MappingType::Logarithmic, true},
+         MappingType::Logarithmic, true, "%.2f Hz", 1.0f},
         {PotTarget::LfoDepth, "LFO DEPTH", 0.0f, 2.0f, 0.0f, 2.0f,
-         MappingType::Linear, false},
+         MappingType::Linear, false, "%.2f oct", 1.0f},
         {PotTarget::EchoLevel, "ECHO LEVEL", 0.0f, 1.0f, 0.0f, 1.0f,
-         MappingType::Linear, false},
+         MappingType::Linear, false, "%.0f%%", 100.0f},
         {PotTarget::EchoTime, "ECHO TIME", 50.0f, 1000.0f, 50.0f, 1000.0f,
-         MappingType::Logarithmic, false},
+         MappingType::Logarithmic, false, "%.0f ms", 1.0f},
         {PotTarget::EchoFeedback, "ECHO FEEDBACK", 0.0f, 1.05f, 0.0f, 1.05f,
-         MappingType::Power, false},
+         MappingType::Power, false, "%.0f%%", 100.0f},
         {PotTarget::EchoFilter, "ECHO FILTER", -1.0f, 1.0f, -1.0f, 1.0f,
-         MappingType::Bipolar, false},
+         MappingType::Bipolar, false, "%+.0f%%", 100.0f},
         {PotTarget::Decay, "DECAY", 0.0f, 3000.0f, 0.0f, 1500.0f,
-         MappingType::Power, false},
+         MappingType::Power, false, "%.0f ms", 1.0f},
         {PotTarget::SweepAmount, "SWEEP AMOUNT", 0.0f, 1.0f, 0.0f, 1.0f,
-         MappingType::Linear, false},
+         MappingType::Linear, false, "%.0f%%", 100.0f},
         {PotTarget::SweepTime, "SWEEP TIME", 50.0f, 3000.0f, 50.0f, 3000.0f,
-         MappingType::Power, false},
+         MappingType::Power, false, "%.0f ms", 1.0f},
     };
     const unsigned index = static_cast<unsigned>(target);
     return index < static_cast<unsigned>(PotTarget::Count)
@@ -210,7 +212,9 @@ inline bool finiteRange(const PotConfig &config) {
 
 inline bool validatePotConfig(PerformanceProfile profile,
                               const PotConfig &config) {
-    if (!targetSupported(profile, config.target) || !finiteRange(config)) return false;
+    if (!targetSupported(profile, config.target) || !finiteRange(config) ||
+        config.mode > PotMode::Zones) return false;
+    for (float zone : config.zones) if (!isfinite(zone)) return false;
     const TargetDescriptor *descriptor = targetDescriptor(config.target);
     if (config.mode == PotMode::Zones) {
         if (!descriptor->zones ||
@@ -232,7 +236,9 @@ inline bool validatePotConfig(PerformanceProfile profile,
 
 inline bool validateButtonConfig(PerformanceProfile profile,
                                  const ButtonConfig &config) {
-    if (config.action >= ButtonAction::Count || config.latch > 1) return false;
+    if (config.action >= ButtonAction::Count || config.latch > 1 ||
+        config.sound >= PanelSound::Count ||
+        config.variant >= panelSoundVariantCount(config.sound)) return false;
     if (profile == PerformanceProfile::Classic &&
         (config.action == ButtonAction::EchoLoop || config.action == ButtonAction::EchoSpin)) return false;
     if (config.action != ButtonAction::PlaySound) return true;
