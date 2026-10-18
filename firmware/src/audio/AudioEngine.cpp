@@ -29,8 +29,6 @@ AudioEngine::AudioEngine()
       noiseState_(0x6d2b79f5u), previousMode_(SirenMode::Sine1),
       currentMode_(SirenMode::Sine1), modeTransitionRemaining_(0),
       modeInitialized_(false), previousTrigger_(false), previousHold_(false),
-      capturedActivationSequence_(0), pendingActivationRead_(0),
-      pendingActivationWrite_(0), pendingActivationCount_(0),
       eventGateRemaining_(0) {}
 
 void AudioEngine::begin() {
@@ -66,8 +64,41 @@ float AudioEngine::nextGunshot(float envelopeLevel) {
     return shaped * envelopeLevel * PerformanceConfig::kGunshotOutputGain;
 }
 
-void AudioEngine::render(const ControlState &controls, int16_t *output,
-                         size_t count) {
+void AudioEngine::render(const ControlState &controls, int16_t *output, size_t count) {
+    if (count == 0) return;
+    uint32_t unseen = controls.activationSequence - capturedActivationSequence_;
+    if (unseen > kActivationEventCapacity) {
+        droppedActivations_ += unseen - kActivationEventCapacity;
+        unseen = kActivationEventCapacity;
+    }
+    const uint32_t firstSequence = controls.activationSequence - unseen;
+    capturedActivationSequence_ = controls.activationSequence;
+    if (unseen == 0) {
+        renderSegment(controls, nullptr, output, count);
+        return;
+    }
+    // Play the captured batch in this block, preserving relative press intervals.
+    // Never turn a stalled controller/overflow into a delayed multi-block roll.
+    const uint32_t firstTime = controls.activationEvents[firstSequence % kActivationEventCapacity].timestampUs;
+    size_t cursor = 0;
+    for (uint32_t n = 0; n < unseen; ++n) {
+        const ActivationEvent &event = controls.activationEvents[(firstSequence + n) % kActivationEventCapacity];
+        size_t end = count;
+        if (n + 1 < unseen) {
+            const auto &next = controls.activationEvents[(firstSequence + n + 1) % kActivationEventCapacity];
+            end = static_cast<size_t>((uint64_t(next.timestampUs - firstTime) * Config::kSampleRate) / 1000000);
+            if (end > count) end = count;
+        }
+        // Simultaneous events follow monophonic last-note priority.
+        if (end <= cursor) { ++droppedActivations_; continue; }
+        renderSegment(controls, &event, output + cursor, end - cursor);
+        ++renderedActivations_;
+        cursor = end;
+    }
+}
+
+void AudioEngine::renderSegment(const ControlState &controls, const ActivationEvent *event,
+                                int16_t *output, size_t count) {
     delay_.setParameters(controls.delayMs, controls.highPassHz,
                          controls.lowPassHz, Config::kSampleRate, controls.echoFilterFlat);
     const bool classic = controls.profile == PerformanceProfile::Classic;
@@ -92,31 +123,8 @@ void AudioEngine::render(const ControlState &controls, int16_t *output,
     if (controls.echoCut) echoCutWet_.reset(0.0f);
     echoCutWet_.setTarget(controls.echoCut ? 0.0f : 1.0f);
     masterVolume_.setTarget(controls.masterVolume);
-    uint32_t unseenActivations =
-        controls.activationSequence - capturedActivationSequence_;
-    if (unseenActivations > kActivationEventCapacity) {
-        capturedActivationSequence_ =
-            controls.activationSequence - kActivationEventCapacity;
-        unseenActivations = kActivationEventCapacity;
-    }
-    for (uint32_t offset = 1; offset <= unseenActivations; ++offset) {
-        if (pendingActivationCount_ == kPendingActivationCapacity) break;
-        const uint32_t sequence = capturedActivationSequence_ + offset;
-        pendingActivations_[pendingActivationWrite_] = controls.activationEvents[
-            (sequence - 1) % kActivationEventCapacity];
-        pendingActivationWrite_ =
-            (pendingActivationWrite_ + 1) % kPendingActivationCapacity;
-        ++pendingActivationCount_;
-    }
-    capturedActivationSequence_ = controls.activationSequence;
-    ActivationEvent activation;
-    const bool queuedActivation = pendingActivationCount_ > 0;
-    if (queuedActivation) {
-        activation = pendingActivations_[pendingActivationRead_];
-        pendingActivationRead_ =
-            (pendingActivationRead_ + 1) % kPendingActivationCapacity;
-        --pendingActivationCount_;
-    }
+    const bool queuedActivation = event != nullptr;
+    const ActivationEvent activation = event ? *event : ActivationEvent{};
     const SirenMode requestedMode = classic
         ? (controls.mode < SirenMode::Lickshot ? controls.mode : SirenMode::Sine1)
         : (queuedActivation ? activation.mode : controls.mode);
@@ -140,12 +148,10 @@ void AudioEngine::render(const ControlState &controls, int16_t *output,
     const bool holdEdge = !previousHold_ && controls.hold;
     const bool activationEdge = triggerEvent || holdEdge;
     if (activationEdge) sweepEnvelope_.trigger();
-    // Only Extended preserves sub-block taps as queued notes. Classic follows the gate.
-    if (classic) {
-        eventGateRemaining_ = 0;
-        pendingActivationCount_ = 0;
-        pendingActivationRead_ = pendingActivationWrite_;
-    } else if (triggerEvent) eventGateRemaining_ = Config::kBlockSamples;
+    // A zero-duration tap has a finite minimum gate; releases still use 3 ms in Classic.
+    if (triggerEvent) eventGateRemaining_ = classic
+        ? static_cast<unsigned>(PerformanceConfig::kGateAttackMs * Config::kSampleRate * .001f)
+        : Config::kBlockSamples;
     if (triggerEvent && requestedMode == SirenMode::Syndrum) {
         syndrumEnvelope_.trigger();
     }
@@ -244,7 +250,7 @@ void AudioEngine::render(const ControlState &controls, int16_t *output,
         const bool eventGate = eventGateRemaining_ > 0;
         if (eventGateRemaining_ > 0) --eventGateRemaining_;
         const float envelopeLevel = tonal
-            ? (classic ? envelope_.nextGate(controls.trigger || controls.hold, Config::kSampleRate)
+            ? (classic ? envelope_.nextGate(controls.trigger || controls.hold || eventGate, Config::kSampleRate)
                        : envelope_.next(controls.trigger || controls.hold || eventGate, decayMs,
                                         Config::kSampleRate))
             : 0.0f;

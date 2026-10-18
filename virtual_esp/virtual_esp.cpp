@@ -58,6 +58,10 @@ VIRTUAL_ESP_API const char *virtual_esp_firmware_version() {
     return Config::kFirmwareVersion;
 }
 
+VIRTUAL_ESP_API unsigned virtual_esp_dropped_activations() {
+    return ready() ? engine->droppedActivations() : 0;
+}
+
 VIRTUAL_ESP_API int virtual_esp_protocol_version() {
     return Config::kProtocolVersion;
 }

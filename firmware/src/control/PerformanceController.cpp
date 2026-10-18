@@ -248,6 +248,7 @@ bool PerformanceController::setPad(unsigned padNumber, bool pressed) {
         consumed_[index] = false;
         pressOrder_[index] = nextOrder_++;
         if (button.action == ButtonAction::Hold) holdToggle_ = !holdToggle_;
+        else if (button.action == ButtonAction::Trigger) captureActivation(state);
         else if (button.action == ButtonAction::EchoLoop) state.echoLoop = !state.echoLoop;
         else if (button.action == ButtonAction::PlaySound) {
             selectedPad_ = index;

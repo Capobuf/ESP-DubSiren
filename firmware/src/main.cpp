@@ -26,6 +26,7 @@ PanelDisplay panelDisplay(controls, commandParser);
 std::atomic<bool> streamEnabled{false};
 std::atomic<OutputMode> outputMode{OutputMode::Both};
 std::atomic<uint32_t> lastRenderUs{0};
+std::atomic<uint32_t> droppedActivations{0};
 std::atomic<uint32_t> maximumRenderUs{0};
 std::atomic<uint32_t> lastCycleUs{0};
 std::atomic<uint32_t> maximumCycleUs{0};
@@ -191,6 +192,7 @@ void sendStatus() {
         "\",\"renderUs\":" + lastRenderUs.load(std::memory_order_relaxed) +
         ",\"maxRenderUs\":" +
         maximumRenderUs.load(std::memory_order_relaxed) +
+        ",\"droppedActivations\":" + droppedActivations.load(std::memory_order_relaxed) +
         ",\"cycleUs\":" + lastCycleUs.load(std::memory_order_relaxed) +
         ",\"maxCycleUs\":" +
         maximumCycleUs.load(std::memory_order_relaxed) +
@@ -298,6 +300,7 @@ void audioTask(void *) {
         const ControlState snapshot = controls.snapshot();
         const uint32_t renderStartUs = micros();
         engine.render(snapshot, block, Config::kBlockSamples);
+        droppedActivations.store(engine.droppedActivations(), std::memory_order_relaxed);
         const uint32_t renderUs = micros() - renderStartUs;
         lastRenderUs.store(renderUs, std::memory_order_relaxed);
         updateMaximum(maximumRenderUs, renderUs);

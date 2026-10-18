@@ -131,6 +131,8 @@ class VirtualTransport:
         library.virtual_esp_render.restype = ctypes.c_int
         library.virtual_esp_firmware_version.argtypes = []
         library.virtual_esp_firmware_version.restype = ctypes.c_char_p
+        library.virtual_esp_dropped_activations.argtypes = []
+        library.virtual_esp_dropped_activations.restype = ctypes.c_uint
         library.virtual_esp_protocol_version.argtypes = []
         library.virtual_esp_protocol_version.restype = ctypes.c_int
         library.virtual_esp_sample_rate.argtypes = []
@@ -312,6 +314,7 @@ class VirtualTransport:
             "output": "PC",
             "i2sReady": False,
             "virtual": True,
+            "droppedActivations": self._lib.virtual_esp_dropped_activations(),
             "panel": {
                 "revision": self._lib.virtual_esp_panel_revision(),
                 "settings": settings,
