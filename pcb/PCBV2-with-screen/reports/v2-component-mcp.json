@@ -1,9 +1,0 @@
-{
-  "content": [
-    {
-      "text": "{\"error\":{\"kind\":\"wrong_document\",\"open_documents\":[\"\\\\\\\\?\\\\C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\ESP-DubSiren.kicad_pcb\"],\"requested\":\"C:/Users/dot/Documents/ESP-DubSiren/pcb/v2/ESP-DubSiren-V2.kicad_pcb\"},\"message\":\"requested board 'C:/Users/dot/Documents/ESP-DubSiren/pcb/v2/ESP-DubSiren-V2.kicad_pcb' is not open in KiCad (open boards: \\\\\\\\?\\\\C:\\\\Users\\\\dot\\\\Documents\\\\ESP-DubSiren\\\\pcb\\\\ESP-DubSiren.kicad_pcb). Konnect did not read or modify another board.\"}",
-      "type": "text"
-    }
-  ],
-  "isError": true
-}

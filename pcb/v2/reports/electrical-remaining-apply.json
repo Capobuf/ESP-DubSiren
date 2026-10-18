@@ -1,9 +1,0 @@
-{
-  "content": [
-    {
-      "text": "{\"changes\":[{\"changed_domains\":[\"pads\",\"graphics\",\"attributes\",\"metadata\"],\"library_id\":\"ESP-DubSiren-V2-Electrical:CK_PTS636SM43SMTR_LFS\",\"preserved\":{\"instance_overrides\":true,\"kiid\":true,\"layer\":true,\"locked\":true,\"pad_nets\":true,\"position\":true,\"rotation\":true,\"symbol_path\":true},\"reference\":\"SW900\"}],\"coverage\":{\"atomicity\":\"single_kicad_undo_commit\",\"changed\":{\"applied\":1,\"planned\":1},\"conflicts\":{\"applied\":0,\"planned\":0},\"selected\":{\"applied\":1,\"planned\":1},\"skipped_unlinked\":{\"applied\":0,\"planned\":0},\"transport\":\"live_kicad_ipc\",\"unchanged\":{\"applied\":0,\"planned\":0}},\"diagnostics\":[],\"plan_revision\":\"e904c70efa2db49b4e4ccd13d50129b23660f300eb85f3748279f63752987f8c\",\"status\":\"applied\",\"undo\":\"Ctrl-Z reverses the whole footprint library update.\"}",
-      "type": "text"
-    }
-  ],
-  "isError": false
-}

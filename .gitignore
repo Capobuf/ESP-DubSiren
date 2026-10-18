@@ -8,6 +8,11 @@ __pycache__/
 *.kicad_prl
 **/.history/
 ~*.lck
+*-backups/
+
+# FreeCAD automatic backup copies
+*.FCBak
+*.FCStd1
 
 # Native VirtualESP build output
 virtual_esp/bin/

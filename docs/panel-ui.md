@@ -82,7 +82,8 @@ and GPIO14 backlight held high. Initialization is `init(172, 320)` with
 rotation 1 (320x172), as specified in the
 [Adafruit guide](https://learn.adafruit.com/adafruit-1-47-round-rectangle-tft-display/arduino-wiring-test).
 The library supplies the centered panel offsets. Physical operation remains
-unverified; the V2 PCB connection and mounting are not yet implemented.
+unverified; the [current PCB](../hardware/README.md) is a draft, and its final
+routing and mounting remain pending issue #14.
 
 Rendering runs from `loop()`, never from `audioTask`. Home and Menu redraw on
 state changes, at most once every 100 ms; temporary parameter text expires

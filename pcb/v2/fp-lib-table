@@ -1,5 +1,0 @@
-(fp_lib_table
-  (version 7)
-
-  (lib (name "ESP-DubSiren-V2-Electrical") (type "KiCad") (uri "${KIPRJMOD}/footprints/ESP-DubSiren-V2-Electrical.pretty") (options "") (descr ""))
-  (lib (name "ESP-DubSiren-V2-Mechanical") (type "KiCad") (uri "${KIPRJMOD}/footprints/ESP-DubSiren-V2-Mechanical.pretty") (options "") (descr "")))
