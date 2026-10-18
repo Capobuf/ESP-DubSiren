@@ -5,6 +5,39 @@ I file originali spostati mantengono il contenuto; studi, rendering e report del
 revisioni eliminate sono recuperabili dallo storico Git. I datasheet specifici
 per ciascun riferimento sono indicati anche in [BOM.csv](BOM.csv).
 
+## Audit conclusivo della posa meccanica
+
+La [conclusione #14](../cad/issue14-mechanical-conclusion.md) e
+`active_study.mechanical_conclusion` nel JSON riportano la verifica della
+registrazione dello STEP Hammond, delle aperture e degli appoggi. La scocca
+coincide con l'originale su 708 vertici e 414 facce; la sonda ora include
+anche encoder, display e quattro pulsanti, assenti nella precedente sonda.
+
+Il disegno NRJ-NUT-B documenta la flangia Ø17,45 e l'appoggio piano.
+Le facce posteriori dello STEP Hammond sono inclinate di 1°. Nel modello
+rigido questa differenza produce un vuoto inevitabile 0…0,304591 mm al primo
+contatto: la copertura del foro non certifica il serraggio. Compensatori e
+spianature sono alternative quotate, non modifiche applicate o accessori scelti.
+
+**PEC11R-4120F-S0018:** pagina 2 del PEC11R, variante `4xxxF-Sxxxx`, corpo
+assiale 6,5 mm; pagina 3, L20 → boccola LB7 e flat F10; dado2 e rondella0,5 mm.
+Con F.Cu Z24,3: spalla Z30,8, boccola Z37,8, punta Z50,8. Il supporto interno
+necessario alla spalla è nominalmente1 mm. Le forme aggiunte sono inviluppi
+assiali; non uno STEP completo o una registrazione verificata dei terminali.
+
+**SAK-023:** pagina1 quota7,1±0,08 mm dal fondo vano albero alla gonna e1,1±0,08 mm
+di sporgenza inferiore dell'inserto. Ne segue la gonna nominale minima Z43,7,
+9,9 mm sopra il tetto. Il disegno specifica albero Ø5,96…5,98 e piatto4,46…4,48;
+non garantisce l'intero campo Bourns Ø6±0,1 e piatto4,5±0,05. Nessun componente
+è stato sostituito o rilavorato. Per Cliff, la quota12,5 termina su uno scalino
+interno e non è stata scambiata per la profondità totale del foro; il riferimento
+Cliff5 A/F differisce dal piatto PTV4,5 con tolleranza negativa.
+
+I valori0,5 mm dei compensatori e del gioco gonna nelle alternative sono
+**parametri di progetto esplicitamente proposti**, non quote dei produttori.
+Filetto utile, accessori reali, tolleranze, resistenza e percorso completo
+richiedono verifica dopo la scelta. Le due quote fisiche display restano `null`.
+
 | Uso | Fonte conservata / autorità |
 |---|---|
 | Contenitore confermato dall'utente nella #14 | [STEP originale Hammond 29830PSLA](../cad/sources/Hammond_29830PSLA.stp); [disegno originale, rev. 03.01.2024](../cad/sources/Hammond_29830PSLA.pdf), [fonte Hammond](https://www.hammfg.com/files/parts/pdf/29830PSLA.pdf) |

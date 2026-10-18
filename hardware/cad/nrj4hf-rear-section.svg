@@ -1032,14 +1032,14 @@
    <g fill="none" font-family="Segoe UI" font-size="31.75" font-style="normal" font-weight="400" stroke="#000000" stroke-linecap="round" stroke-linejoin="bevel" stroke-opacity="1" stroke-width="7" transform="matrix(1,0,0,1,800,610)">
     <path d="M281.71,-47.45 L280.02,-47.45" fill-rule="evenodd" vector-effect="none"/>
    </g>
-   <g fill="none" font-family="Segoe UI" font-size="31.75" font-style="normal" font-weight="400" stroke="#000000" stroke-linecap="square" stroke-linejoin="bevel" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,920.016,86)">
+   <g fill="none" font-family="Segoe UI" font-size="31.75" font-style="normal" font-weight="400" stroke="#000000" stroke-linecap="square" stroke-linejoin="bevel" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,843.102,86)">
     <text fill="#000000" fill-opacity="1" font-family="osifont" font-size="54" font-style="normal" font-weight="400" stroke="none" x="4" xml:space="preserve" y="75.1094">NRJ4HF / Hammond 29830PSLA</text>
    </g>
-   <g fill="none" font-family="Segoe UI" font-size="31.75" font-style="normal" font-weight="400" stroke="#000000" stroke-linecap="square" stroke-linejoin="bevel" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,920.016,86)">
-    <text fill="#000000" fill-opacity="1" font-family="osifont" font-size="54" font-style="normal" font-weight="400" stroke="none" x="4" xml:space="preserve" y="165.109">PROPOSTA CAD X12.5 - GATE B NON VALIDATO</text>
+   <g fill="none" font-family="Segoe UI" font-size="31.75" font-style="normal" font-weight="400" stroke="#000000" stroke-linecap="square" stroke-linejoin="bevel" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,843.102,86)">
+    <text fill="#000000" fill-opacity="1" font-family="osifont" font-size="54" font-style="normal" font-weight="400" stroke="none" x="4" xml:space="preserve" y="165.109">POSA FINALE: APPOGGIO RIGIDO JACK NON CONFORME</text>
    </g>
-   <g fill="none" font-family="Segoe UI" font-size="31.75" font-style="normal" font-weight="400" stroke="#ffffff" stroke-linecap="square" stroke-linejoin="bevel" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,920.016,86)">
-    <text fill="#ffffff" fill-opacity="1" font-family="Segoe UI" font-size="31.75" font-style="normal" font-weight="400" stroke="none" x="1112.69" xml:space="preserve" y="165.109"/>
+   <g fill="none" font-family="Segoe UI" font-size="31.75" font-style="normal" font-weight="400" stroke="#ffffff" stroke-linecap="square" stroke-linejoin="bevel" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,843.102,86)">
+    <text fill="#ffffff" fill-opacity="1" font-family="Segoe UI" font-size="31.75" font-style="normal" font-weight="400" stroke="none" x="1266.52" xml:space="preserve" y="165.109"/>
    </g>
    <g fill="none" font-family="Segoe UI" font-size="31.75" font-style="normal" font-weight="400" stroke="#000000" stroke-linecap="square" stroke-linejoin="bevel" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,359.336,919)">
     <text fill="#000000" fill-opacity="1" font-family="osifont" font-size="37" font-style="normal" font-weight="400" stroke="none" x="4" xml:space="preserve" y="52.7188">POSTERIORE +Y | coordinate in mm</text>
@@ -1218,44 +1218,44 @@
    <g fill="none" font-family="Segoe UI" font-size="31.75" font-style="normal" font-weight="400" stroke="#000000" stroke-linecap="round" stroke-linejoin="bevel" stroke-opacity="1" stroke-width="7" transform="matrix(1,0,0,1,2240,610)">
     <path d="M212.316,235.8 L224.545,235.8" fill-rule="evenodd" vector-effect="none"/>
    </g>
-   <g fill="none" font-family="Segoe UI" font-size="31.75" font-style="normal" font-weight="400" stroke="#000000" stroke-linecap="square" stroke-linejoin="bevel" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,1824.84,929.5)">
-    <text fill="#000000" fill-opacity="1" font-family="osifont" font-size="35" font-style="normal" font-weight="400" stroke="none" x="4" xml:space="preserve" y="50.0938">SEZIONE X=12,5 | Z dal fondo esterno</text>
+   <g fill="none" font-family="Segoe UI" font-size="31.75" font-style="normal" font-weight="400" stroke="#000000" stroke-linecap="square" stroke-linejoin="bevel" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,1783.25,901.5)">
+    <text fill="#000000" fill-opacity="1" font-family="osifont" font-size="40" font-style="normal" font-weight="400" stroke="none" x="4" xml:space="preserve" y="56.6719">SEZIONE X12,5 | quote Z dal fondo</text>
    </g>
-   <g fill="none" font-family="Segoe UI" font-size="31.75" font-style="normal" font-weight="400" stroke="#000000" stroke-linecap="square" stroke-linejoin="bevel" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,1824.84,929.5)">
-    <text fill="#000000" fill-opacity="1" font-family="osifont" font-size="35" font-style="normal" font-weight="400" stroke="none" x="4" xml:space="preserve" y="109.094">Battuta pot Z31,80: F.Cu24,30 / B.Cu22,70</text>
+   <g fill="none" font-family="Segoe UI" font-size="31.75" font-style="normal" font-weight="400" stroke="#000000" stroke-linecap="square" stroke-linejoin="bevel" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,1783.25,901.5)">
+    <text fill="#000000" fill-opacity="1" font-family="osifont" font-size="40" font-style="normal" font-weight="400" stroke="none" x="4" xml:space="preserve" y="123.672">Battuta pot31,8; PCB24,3 /22,7</text>
    </g>
-   <g fill="none" font-family="Segoe UI" font-size="31.75" font-style="normal" font-weight="400" stroke="#000000" stroke-linecap="square" stroke-linejoin="bevel" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,1824.84,929.5)">
-    <text fill="#000000" fill-opacity="1" font-family="osifont" font-size="35" font-style="normal" font-weight="400" stroke="none" x="4" xml:space="preserve" y="168.094">Asse jack16,20; corpo Z10,00...22,70; pin fino26,70</text>
+   <g fill="none" font-family="Segoe UI" font-size="31.75" font-style="normal" font-weight="400" stroke="#000000" stroke-linecap="square" stroke-linejoin="bevel" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,1783.25,901.5)">
+    <text fill="#000000" fill-opacity="1" font-family="osifont" font-size="40" font-style="normal" font-weight="400" stroke="none" x="4" xml:space="preserve" y="190.672">Jack: asse16,2; corpo10...22,7; pin26,7</text>
    </g>
-   <g fill="none" font-family="Segoe UI" font-size="31.75" font-style="normal" font-weight="400" stroke="#000000" stroke-linecap="square" stroke-linejoin="bevel" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,1824.84,929.5)">
-    <text fill="#000000" fill-opacity="1" font-family="osifont" font-size="35" font-style="normal" font-weight="400" stroke="none" x="4" xml:space="preserve" y="227.094">Parete lungo asse2,0003 mm; inclinazione1 grado</text>
+   <g fill="none" font-family="Segoe UI" font-size="31.75" font-style="normal" font-weight="400" stroke="#000000" stroke-linecap="square" stroke-linejoin="bevel" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,1783.25,901.5)">
+    <text fill="#000000" fill-opacity="1" font-family="osifont" font-size="40" font-style="normal" font-weight="400" stroke="none" x="4" xml:space="preserve" y="257.672">Parete2,0003 mm; inclinazione1 grado</text>
    </g>
-   <g fill="none" font-family="Segoe UI" font-size="31.75" font-style="normal" font-weight="400" stroke="#000000" stroke-linecap="square" stroke-linejoin="bevel" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,1824.84,929.5)">
-    <text fill="#000000" fill-opacity="1" font-family="osifont" font-size="35" font-style="normal" font-weight="400" stroke="none" x="4" xml:space="preserve" y="286.094">Spalla Y58,000: serraggio posteriore NON VALIDATO</text>
+   <g fill="none" font-family="Segoe UI" font-size="31.75" font-style="normal" font-weight="400" stroke="#000000" stroke-linecap="square" stroke-linejoin="bevel" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,1783.25,901.5)">
+    <text fill="#000000" fill-opacity="1" font-family="osifont" font-size="40" font-style="normal" font-weight="400" stroke="none" x="4" xml:space="preserve" y="324.672">Appoggio anulare rigido senza fessure: NO</text>
    </g>
-   <g fill="none" font-family="Segoe UI" font-size="31.75" font-style="normal" font-weight="400" stroke="#000000" stroke-linecap="square" stroke-linejoin="bevel" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,1824.84,929.5)">
-    <text fill="#000000" fill-opacity="1" font-family="osifont" font-size="35" font-style="normal" font-weight="400" stroke="none" x="4" xml:space="preserve" y="345.094">I dadi frontali fissano PCB tramite i potenziometri</text>
+   <g fill="none" font-family="Segoe UI" font-size="31.75" font-style="normal" font-weight="400" stroke="#000000" stroke-linecap="square" stroke-linejoin="bevel" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,1783.25,901.5)">
+    <text fill="#000000" fill-opacity="1" font-family="osifont" font-size="40" font-style="normal" font-weight="400" stroke="none" x="4" xml:space="preserve" y="391.672">Foro D12: copertura2,725; non prova appoggio</text>
    </g>
-   <g fill="none" font-family="Segoe UI" font-size="31.75" font-style="normal" font-weight="400" stroke="#000000" stroke-linecap="square" stroke-linejoin="bevel" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,1824.84,929.5)">
-    <text fill="#000000" fill-opacity="1" font-family="osifont" font-size="35" font-style="normal" font-weight="400" stroke="none" x="4" xml:space="preserve" y="404.094">Display: due quote fisiche ancora da verificare</text>
+   <g fill="none" font-family="Segoe UI" font-size="31.75" font-style="normal" font-weight="400" stroke="#000000" stroke-linecap="square" stroke-linejoin="bevel" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,1783.25,901.5)">
+    <text fill="#000000" fill-opacity="1" font-family="osifont" font-size="40" font-style="normal" font-weight="400" stroke="none" x="4" xml:space="preserve" y="458.672">Display: due quote fisiche restano null</text>
    </g>
-   <g fill="none" font-family="Segoe UI" font-size="31.75" font-style="normal" font-weight="400" stroke="#ffffff" stroke-linecap="square" stroke-linejoin="bevel" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,1824.84,929.5)">
-    <text fill="#ffffff" fill-opacity="1" font-family="Segoe UI" font-size="31.75" font-style="normal" font-weight="400" stroke="none" x="709.828" xml:space="preserve" y="404.094"/>
+   <g fill="none" font-family="Segoe UI" font-size="31.75" font-style="normal" font-weight="400" stroke="#ffffff" stroke-linecap="square" stroke-linejoin="bevel" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,1783.25,901.5)">
+    <text fill="#ffffff" fill-opacity="1" font-family="Segoe UI" font-size="31.75" font-style="normal" font-weight="400" stroke="none" x="670.484" xml:space="preserve" y="458.672"/>
    </g>
-   <g fill="none" font-family="Segoe UI" font-size="31.75" font-style="normal" font-weight="400" stroke="#000000" stroke-linecap="square" stroke-linejoin="bevel" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,692.766,1472)">
-    <text fill="#000000" fill-opacity="1" font-family="osifont" font-size="40" font-style="normal" font-weight="400" stroke="none" x="4" xml:space="preserve" y="56.6719">Battuta pot sul tetto interno: F.Cu Z24,30. Fori frontali D10, jack D12.</text>
+   <g fill="none" font-family="Segoe UI" font-size="31.75" font-style="normal" font-weight="400" stroke="#000000" stroke-linecap="square" stroke-linejoin="bevel" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,774.172,1472)">
+    <text fill="#000000" fill-opacity="1" font-family="osifont" font-size="40" font-style="normal" font-weight="400" stroke="none" x="4" xml:space="preserve" y="56.6719">Dado jack rigido: primo contatto Y60.335853; gap opposto0.304591 mm.</text>
    </g>
-   <g fill="none" font-family="Segoe UI" font-size="31.75" font-style="normal" font-weight="400" stroke="#000000" stroke-linecap="square" stroke-linejoin="bevel" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,692.766,1472)">
-    <text fill="#000000" fill-opacity="1" font-family="osifont" font-size="40" font-style="normal" font-weight="400" stroke="none" x="4" xml:space="preserve" y="123.672">Proposte solo CAD per J2 e MASTER; KiCad resta invariato. Percorso NON VALIDATO.</text>
+   <g fill="none" font-family="Segoe UI" font-size="31.75" font-style="normal" font-weight="400" stroke="#000000" stroke-linecap="square" stroke-linejoin="bevel" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,774.172,1472)">
+    <text fill="#000000" fill-opacity="1" font-family="osifont" font-size="40" font-style="normal" font-weight="400" stroke="none" x="4" xml:space="preserve" y="123.672">Una traslazione non elimina1 grado fra le normali. Compensazione da scegliere.</text>
    </g>
-   <g fill="none" font-family="Segoe UI" font-size="31.75" font-style="normal" font-weight="400" stroke="#000000" stroke-linecap="square" stroke-linejoin="bevel" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,692.766,1472)">
-    <text fill="#000000" fill-opacity="1" font-family="osifont" font-size="40" font-style="normal" font-weight="400" stroke="none" x="4" xml:space="preserve" y="190.672">Parete 1 grado: dislivello sul dado jack 0,305 mm; serraggio senza fessure NON VALIDATO.</text>
+   <g fill="none" font-family="Segoe UI" font-size="31.75" font-style="normal" font-weight="400" stroke="#000000" stroke-linecap="square" stroke-linejoin="bevel" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,774.172,1472)">
+    <text fill="#000000" fill-opacity="1" font-family="osifont" font-size="40" font-style="normal" font-weight="400" stroke="none" x="4" xml:space="preserve" y="190.672">Encoder L20 + SAK: gonna minima Z43.7, gap9.9 mm; spalla sotto tetto1 mm.</text>
    </g>
-   <g fill="none" font-family="Segoe UI" font-size="31.75" font-style="normal" font-weight="400" stroke="#000000" stroke-linecap="square" stroke-linejoin="bevel" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,692.766,1472)">
-    <text fill="#000000" fill-opacity="1" font-family="osifont" font-size="40" font-style="normal" font-weight="400" stroke="none" x="4" xml:space="preserve" y="257.672">Display: spessore PCB e quota vetro da verificare sul pezzo. NON FORARE.</text>
+   <g fill="none" font-family="Segoe UI" font-size="31.75" font-style="normal" font-weight="400" stroke="#000000" stroke-linecap="square" stroke-linejoin="bevel" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,774.172,1472)">
+    <text fill="#000000" fill-opacity="1" font-family="osifont" font-size="40" font-style="normal" font-weight="400" stroke="none" x="4" xml:space="preserve" y="257.672">Percorso completo e display aperti. Alternative quotate nel report; NON FORARE.</text>
    </g>
-   <g fill="none" font-family="Segoe UI" font-size="31.75" font-style="normal" font-weight="400" stroke="#ffffff" stroke-linecap="square" stroke-linejoin="bevel" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,692.766,1472)">
-    <text fill="#ffffff" fill-opacity="1" font-family="Segoe UI" font-size="31.75" font-style="normal" font-weight="400" stroke="none" x="1307.22" xml:space="preserve" y="257.672"/>
+   <g fill="none" font-family="Segoe UI" font-size="31.75" font-style="normal" font-weight="400" stroke="#ffffff" stroke-linecap="square" stroke-linejoin="bevel" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,774.172,1472)">
+    <text fill="#ffffff" fill-opacity="1" font-family="Segoe UI" font-size="31.75" font-style="normal" font-weight="400" stroke="none" x="1404.38" xml:space="preserve" y="257.672"/>
    </g>
   </g>
  </g>

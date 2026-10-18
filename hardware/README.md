@@ -1,12 +1,43 @@
 # ESP-DubSiren — hardware
 
-**PR #17 integrata: J2 è Neutrik NRJ4HF. Nuova proposta di posizione nel solo CAD; Gate B NON VALIDATO. Nessun PCB fabbricabile.**
+**PR #17 integrata: J2 è Neutrik NRJ4HF. Conclusione #14: appoggio jack senza fessure incompatibile con la posa rigida corrente; percorso completo non dimostrato. Nessun PCB fabbricabile.**
+
+- [Conclusione meccanica e alternative quotate](cad/issue14-mechanical-conclusion.md).
+- [Sezione encoder e SAK-023](cad/issue14-encoder-section.svg), [anteprima](cad/issue14-encoder-section.png).
+- [Controllo riproducibile via FreeCAD MCP](cad/issue14-mechanical-check.py).
+
+## Esito dell'analisi conclusiva
+
+La parete posteriore e l'appoggio del dado jack differiscono di 1°. Portando
+il dado al primo contatto, il vuoto opposto resta **0,304591 mm**: una traslazione
+non elimina la differenza fra le normali. Nel modello rigido, il requisito di
+appoggio anulare diretto senza fessure è quindi **incompatibile**, indipendentemente
+dal percorso d'ingresso. Non si presume che il dado in plastica si deformi.
+Il report quota due strategie da approvare: compensatori inclinati oppure
+appoggi locali lavorati nella scocca. Nessuna è stata applicata.
+
+L'audit ha rilevato sei aperture mancanti nella sonda di collisione: encoder,
+display e quattro pulsanti. La sonda corrente comprende tutte le aperture
+dello sketch e conserva scocca, labbro e colonne originali. La ricerca locale
+con tre traslazioni, pitch, roll e yaw trova candidati che la verifica nativa
+respinge per interferenza USB. **Non è una prova globale d'impossibilità 6DOF.**
+Il report distingue i dati mancanti dal lavoro CAD ancora da completare.
+
+Lo stack encoder ora rappresentato mette la punta PEC11R L20 a **Z50,8**.
+La SAK-023 ha 7,1 mm fra gonna e fondo vano albero: la gonna può scendere
+nominalmente solo a **Z43,7**, cioè **9,9 mm sopra il pannello**. Inoltre la
+spalla encoder rimane 1 mm sotto il tetto: il suo dado richiede un appoggio
+interno che non carichi la PCB fuori dalla battuta dei pot. Il report quota
+rilavorazione dell'albero o una manopola con vano più profondo, senza scegliere
+una sostituzione. Il display conserva entrambe le quote fisiche `null`.
+
+## File del progetto
 
 - [Progetto KiCad](kicad/ESP-DubSiren.kicad_pro), [schema](kicad/ESP-DubSiren.kicad_sch), [PCB](kicad/ESP-DubSiren.kicad_pcb).
 - [Assieme FreeCAD modificabile](cad/assembly.FCStd): Hammond originale, proposta pannello Gate A e studio posteriore NRJ4HF.
 - [Posteriore e sezione con quote](cad/nrj4hf-rear-section.svg), [anteprima](cad/nrj4hf-rear-section.png), [vista interna](cad/nrj4hf-inside.png), [misure e limiti](cad/nrj4hf-validation.json).
-- [Vista dall'alto con gli inviluppi dei corpi pot](cad/nrj4hf-top-screening.png): controllo parziale di interferenza, non assieme completo.
-- [Sonda di inserimento a +5° con foro D12](cad/nrj4hf-insertion-probe.png): naso blu, boccole arancio, interferenze rosse; non è una posa di montaggio ammessa.
+- [Vista dall'alto con pot ed encoder](cad/nrj4hf-top-screening.png): assieme parziale; il cerchio rosso indica la quota minima della gonna SAK, non una manopola completa.
+- [Sonda storica a +5° con foro D12](cad/nrj4hf-insertion-probe.png): naso blu, boccole arancio, interferenze rosse; precedente alle aperture complete, non una posa di montaggio ammessa.
 - [Pannello Gate A e dima cartacea 1:1](cad/gate-a-panel.pdf), [SVG](cad/gate-a-panel.svg), [anteprima](cad/gate-a-preview.png). Stampare al 100%, verificare la barra da 50 mm; **non forare**.
 - [BOM elettronica](docs/BOM.csv), [fonti e accessorio NRJ-NUT-B](docs/sources.md), [originali CAD](cad/sources/).
 
@@ -75,7 +106,10 @@ La copertura in proiezione non dimostra l'assenza di fessure. La parete posterio
 inclinata di 1° produce **0,3046 mm di dislivello** sotto la flangia rigida del
 dado jack. Nella posa corrente spalla jack–scocca distano circa 0,0698 mm,
 dado–scocca circa 0,00915 mm. Serrando non si può presumere una deformazione
-innocua o spostare la PCB dalla battuta dei pot. **Serraggio posteriore NON VALIDATO.**
+innocua o spostare la PCB dalla battuta dei pot. Il successivo audit dimostra
+che il contatto anulare diretto senza fessure è **impossibile nel modello rigido**:
+al primo contatto Y60,335853 il vuoto varia fra 0 e 0,304591 mm. La conformità
+del serraggio reale richiede una strategia di compensazione o dati di deformazione.
 
 ## Inserimento del blocco rigido
 
@@ -86,7 +120,8 @@ cilindri M9 × 5. Sono stati aggiunti gli alberi mancanti: L20 dalla spalla,
 15 mm sopra la boccola, inviluppo massimo Ø6. D-flat e smussi sono omessi:
 una collisione di questi inviluppi non prova da sola un impedimento reale.
 
-Le sonde seguenti ruotano attorno all'asse X passante per
+Le sonde storiche seguenti, precedenti all'inclusione delle aperture di encoder,
+display e pulsanti, ruotano attorno all'asse X passante per
 P=(12,5;59,183404867;16,2), senza traslazioni, nella posa aggiornata:
 
 | Angolo | Jack–scocca mm³ | Sei boccole–scocca mm³ | USB–scocca mm³ |
@@ -120,18 +155,13 @@ da base e asse trasformati, evitando il falso zero OCC osservato sulle copie
 ruotate. `historical_baseline` conserva esplicitamente la posa F.Cu23,8 e
 le precedenti prove Ø9,2/Ø9,5/Ø10: non sono risultati della posa corrente.
 
-Per superare il blocco, le possibilità da valutare, in ordine di impatto, sono:
-
-1. Mantenere i componenti e il frontale, cercando una diversa traiettoria 3D
-   e registrazione delle interfacce posteriori; fattibilità ancora da dimostrare.
-2. Studiare maggiore gioco o un profilo diverso delle aperture, verificando
-   copertura dei caps e appoggio dei dadi; Ø10 non basta nelle fasi provate.
-3. Se i vincoli restano incompatibili, concordare componenti posteriori o
-   sequenza differenti. Una deroga al blocco unico richiede conferma.
-
-Nessuna di queste alternative è una soluzione già validata. Non è stata
-introdotta una sostituzione di componenti, una tasca nella scocca o una dima STL.
-Il display rimane indipendentemente aperto sulle due quote fisiche indicate sotto.
+La [conclusione](cad/issue14-mechanical-conclusion.md) aggiunge una ricerca
+locale con traslazioni e rotazioni combinate, la prova del difetto di appoggio
+finale e alternative posteriori/encoder quotate. Il primo campione del candidato
+interpolato a pitch0,025°, roll−0,000052° e yaw0,011948° interseca la USB di
+0,00423248 mm³; trasformazioni complete nel JSON. Il candidato è respinto,
+senza generalizzare a ogni traiettoria. Nessuna alternativa è già validata o
+applicata; nessuna sostituzione, tasca o dima STL. Il display resta aperto.
 
 ## Controlli e limiti del progetto
 
