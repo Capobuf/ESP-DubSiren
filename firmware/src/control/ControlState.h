@@ -79,6 +79,9 @@ struct ControlState {
     float lickshotPunchOctaves = 2.0f;
     float lickshotPitchMs = 70.0f;
     float decayMs = PerformanceConfig::kExtendedDecayMs;
+    float dryToneHz = 19000.0f;
+    float filterContourOctaves = 0.0f;
+    float filterContourMs = 150.0f;
     float sweepAmount = 0.0f;
     float sweepMs = 650.0f;
     SyndrumWave syndrumWave = SyndrumWave::Sine;

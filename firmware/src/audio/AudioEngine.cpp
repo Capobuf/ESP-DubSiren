@@ -32,6 +32,10 @@ AudioEngine::AudioEngine()
       eventGateRemaining_(0) {}
 
 void AudioEngine::begin() {
+    dryToneHz_.configure(10.0f, Config::kSampleRate);
+    contourOctaves_.configure(10.0f, Config::kSampleRate);
+    dryFilterMix_.configure(5.0f, Config::kSampleRate);
+    dryFilter_.setLowPass(19000.0f, Config::kSampleRate, .7071f);
     delay_.begin(360.0f, 60.0f, 7000.0f, Config::kSampleRate, true);
     tuneHz_.configure(PerformanceConfig::kTuneMs, Config::kSampleRate);
     depthOctaves_.configure(PerformanceConfig::kDepthMs, Config::kSampleRate);
@@ -102,6 +106,9 @@ void AudioEngine::renderSegment(const ControlState &controls, const ActivationEv
     delay_.setParameters(controls.delayMs, controls.highPassHz,
                          controls.lowPassHz, Config::kSampleRate, controls.echoFilterFlat);
     const bool classic = controls.profile == PerformanceProfile::Classic;
+    dryToneHz_.setTarget(controls.dryToneHz);
+    contourOctaves_.setTarget(controls.filterContourOctaves);
+    dryFilterMix_.setTarget(!classic && (controls.dryToneHz < 19000.0f || controls.filterContourOctaves != 0.0f) ? 1.0f : 0.0f);
     const int pitchIndex = static_cast<int>(controls.classicPitch);
     const int modulationIndex = static_cast<int>(controls.classicModulation);
     tuneHz_.setTarget(classic && !controls.classicPitchUsesTune
@@ -153,7 +160,7 @@ void AudioEngine::renderSegment(const ControlState &controls, const ActivationEv
         queuedActivation;
     const bool holdEdge = !previousHold_ && controls.hold;
     const bool activationEdge = triggerEvent || holdEdge;
-    if (activationEdge) sweepEnvelope_.trigger();
+    if (activationEdge) { sweepEnvelope_.trigger(); filterContour_.trigger(); }
     if (activationEdge && lickshotTransient) {
         lickshotEnvelope_.trigger();
         lickshotRollPhase_ = 0.0f;
@@ -239,6 +246,7 @@ void AudioEngine::renderSegment(const ControlState &controls, const ActivationEv
             if (lickshotRollPhase_ >= 1.0f) {
                 lickshotRollPhase_ -= 1.0f;
                 lickshotEnvelope_.trigger();
+                filterContour_.trigger();
             }
         }
         const float lickshotPitch = lickshotTransient
@@ -320,6 +328,18 @@ void AudioEngine::renderSegment(const ControlState &controls, const ActivationEv
         }
         if (modeTransitionRemaining_ > 0) --modeTransitionRemaining_;
         if (classic && envelopeLevel == 0.0f) dry = 0.0f;
+        const float contour = filterContour_.next(controls.filterContourMs, Config::kSampleRate);
+        const float tone = dryToneHz_.next();
+        const float contourAmount = contourOctaves_.next();
+        if (dryFilterCountdown_-- == 0) {
+            const float cutoff = fmaxf(50.0f, fminf(19000.0f, tone * exp2f(contourAmount * contour)));
+            dryFilter_.setLowPass(cutoff, Config::kSampleRate, .7071f);
+            dryFilterCountdown_ = 47;
+        }
+        float filterMix = dryFilterMix_.next();
+        if (dryFilterMix_.target() == 0.0f && filterMix < .00001f) dryFilterMix_.reset(filterMix = 0.0f);
+        const float filteredDry = dryFilter_.process(dry);
+        if (!classic && filterMix > 0.0f) dry += (filteredDry - dry) * filterMix;
         lastDry_ = dry;
 
         const float wet = delay_.process(dry, feedback, echoLoop,
