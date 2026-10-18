@@ -11,7 +11,7 @@ public:
     static constexpr unsigned kDisplayHeight = 172;
 
     enum class DisplayMode : uint8_t { Home, Menu };
-    enum class MenuPage : uint8_t { Root, Pots, Pot, Buttons, Button, Encoder, Reset };
+    enum class MenuPage : uint8_t { Root, Setup, Sound, Mod, Echo, Pots, Pot, Buttons, Button, Encoder, Reset };
 
     explicit PerformanceController(ControlStore &controls);
 
@@ -95,6 +95,12 @@ private:
         Low, Middle, High, Minimum, Maximum,
         Button1, Button2, Button3, Button4, Action, Sound, Variant, Latch,
         HoldTurn, Step, Range, Confirm,
+        SoundPage, ModPage, EchoPage, SetupPage, SelectedPad, Voice,
+        Tune, Rate, Depth, Decay, Sweep, SweepTime, DrumSweep,
+        Length, Punch, PitchTime, Tone, Contour, ContourTime,
+        Shape, Modulation, Retrigger, ClassicRate,
+        EchoLevel, EchoTime, Feedback, Filter, Color, Loop, Spin, Cut,
+
     };
     struct MenuRowView {
         Row row;
@@ -120,6 +126,8 @@ private:
     void openMenu();
     void pressMenuItem();
     void editMenuItem(Row item, int direction);
+    static float *soundValue(ControlState &state, Row row, float &minimum, float &maximum, float &step);
+    void addSoundValue(const ControlState &state, Row row, const char *key, const char *label, const char *unit) const;
     void normalizeMenuIndex();
     void setMenuPage(MenuPage page);
     void rebuildMenuView() const;
@@ -154,6 +162,8 @@ private:
     unsigned selectedPot_ = 0;
     unsigned selectedButton_ = 0;
     unsigned currentPad_ = 0;
+    PanelSound appliedSound_ = PanelSound::Count;
+    unsigned appliedVariant_ = 255;
     int activePad_ = -1;
     bool encoderPressed_ = false;
     bool modifierUsed_ = false;
@@ -164,7 +174,7 @@ private:
     uint8_t menuIndex_ = 0;
     bool menuEditing_ = false;
     bool resetConfirmed_ = false;
-    mutable MenuRowView menuRows_[12] = {};
+    mutable MenuRowView menuRows_[24] = {};
     mutable unsigned menuRowCount_ = 0;
     mutable char menuTitleBuffer_[32] = "SETTINGS";
     mutable char menuFooterBuffer_[48] = "TURN SELECT / PUSH OPEN";

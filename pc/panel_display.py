@@ -68,6 +68,10 @@ class PanelDisplay(ttk.Frame):
             status = [f"PLAY P{current_pad}"]
             if hold:
                 status.append("HOLD")
+            if params.get("ECHO_CUT"):
+                status.append("CUT")
+            if params.get("ECHO_SPIN"):
+                status.append("SPIN")
             if echo_loop:
                 status.append("LOOP")
             if connected:
@@ -75,9 +79,9 @@ class PanelDisplay(ttk.Frame):
         self._text(16, 149, " / ".join(status), 11, AMBER)
 
     def render_overlay(self, title: str, value: str) -> None:
-        self.canvas.delete("all")
-        self._text(16, 40, title, 14, MUTED)
-        self._text(16, 80, value.replace("UP PICKUP", "↑ PICKUP").replace(
+        self.canvas.create_rectangle(10, 60, 310, 133, fill=BLACK, outline=MUTED)
+        self._text(16, 64, title, 14, MUTED)
+        self._text(16, 90, value.replace("UP PICKUP", "↑ PICKUP").replace(
             "DOWN PICKUP", "↓ PICKUP"), 24, ACCENT)
 
     def render_menu(

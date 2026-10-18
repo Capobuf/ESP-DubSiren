@@ -156,6 +156,10 @@ class VirtualTransportTests(unittest.TestCase):
         self.assertEqual(display["menuIndex"], 0)
         self.assertFalse(display["editing"])
 
+        for _ in range(3):
+            self.transport.send("ENCODER_ROTATE NEXT")
+        self.transport.send("ENCODER_SWITCH 1")
+        self.transport.send("ENCODER_SWITCH 0")
         self.transport.send("ENCODER_ROTATE NEXT")
         self.assertEqual(self.statuses[-1]["panel"]["display"]["menuIndex"], 1)
         self.transport.send("ENCODER_SWITCH 1")
@@ -241,7 +245,7 @@ class VirtualTransportTests(unittest.TestCase):
         self.transport.send("POT 3 0")
         display = self.statuses[-1]["panel"]["display"]
         self.assertEqual(display["mode"], "MENU")
-        self.assertEqual(display["title"], "SETTINGS")
+        self.assertEqual(display["title"], "PERFORMANCE")
         self.assertIn("ECHO LEVEL", display["footer"])
 
     def test_classic_default_selectors_buttons_and_audio_release(self):

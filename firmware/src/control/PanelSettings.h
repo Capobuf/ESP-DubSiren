@@ -36,7 +36,7 @@ enum class ButtonAction : uint8_t {
     EchoSpin,
     Count,
 };
-enum class PanelSound : uint8_t { Classic, TwoTone, Lickshot, Ping, Count };
+enum class PanelSound : uint8_t { Classic, TwoTone, Lickshot, Ping, Gunshot, TestTone, Count };
 enum class EncoderHoldAction : uint8_t { Off, LivePitch };
 enum class MappingType : uint8_t { Linear, Logarithmic, Power, Bipolar };
 
@@ -145,7 +145,7 @@ inline const char *buttonActionName(ButtonAction action) {
 }
 
 inline const char *panelSoundName(PanelSound sound) {
-    static const char *names[] = {"CLASSIC", "TWO TONE", "LICKSHOT", "PING"};
+    static const char *names[] = {"CLASSIC", "TWO TONE", "LICKSHOT", "PING", "GUNSHOT", "TEST TONE"};
     const unsigned index = static_cast<unsigned>(sound);
     return index < static_cast<unsigned>(PanelSound::Count) ? names[index]
                                                              : "UNKNOWN";
@@ -157,13 +157,15 @@ inline unsigned panelSoundVariantCount(PanelSound sound) {
         case PanelSound::TwoTone: return 3;
         case PanelSound::Lickshot: return 5;
         case PanelSound::Ping: return 3;
+        case PanelSound::Gunshot: return 1;
+        case PanelSound::TestTone: return 1;
         case PanelSound::Count: break;
     }
     return 0;
 }
 
 inline bool panelSoundSupportsLatch(PanelSound sound) {
-    return sound != PanelSound::Ping && sound != PanelSound::Count;
+    return sound != PanelSound::Ping && sound != PanelSound::Gunshot && sound != PanelSound::Count;
 }
 
 inline const char *panelSoundVariantName(PanelSound sound, unsigned variant) {
@@ -178,6 +180,8 @@ inline const char *panelSoundVariantName(PanelSound sound, unsigned variant) {
         case PanelSound::TwoTone: return twoTone[variant];
         case PanelSound::Lickshot: return lickshot[variant];
         case PanelSound::Ping: return ping[variant];
+        case PanelSound::Gunshot: return "NOISE";
+        case PanelSound::TestTone: return "TEST TONE";
         case PanelSound::Count: break;
     }
     return "UNKNOWN";
@@ -216,9 +220,12 @@ inline bool validatePotConfig(PerformanceProfile profile,
 inline bool validateButtonConfig(PerformanceProfile profile,
                                  const ButtonConfig &config) {
     if (config.action >= ButtonAction::Count || config.latch > 1) return false;
+    if (profile == PerformanceProfile::Classic &&
+        (config.action == ButtonAction::EchoLoop || config.action == ButtonAction::EchoSpin)) return false;
     if (config.action != ButtonAction::PlaySound) return true;
     if (profile == PerformanceProfile::Classic &&
-        (config.sound != PanelSound::Classic || config.variant >= 2)) return false;
+        !((config.sound == PanelSound::Classic && config.variant < 2) ||
+          ((config.sound == PanelSound::TwoTone || config.sound == PanelSound::TestTone) && config.variant == 0))) return false;
     return config.sound < PanelSound::Count &&
         config.variant < panelSoundVariantCount(config.sound) &&
         (!config.latch || panelSoundSupportsLatch(config.sound));

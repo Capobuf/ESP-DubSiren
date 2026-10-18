@@ -140,7 +140,9 @@ void PanelDisplay::renderHome(const ControlState &state, bool linked) {
     }
     String status = controller_.persistenceStatus();
     if (!status.length()) {
-        if (controller_.padHold(controller_.currentPad())) status += "HOLD ";
+        if (state.hold) status += "HOLD ";
+        if (state.echoCut) status += "CUT ";
+        if (state.echoSpin) status += "SPIN ";
         if (state.echoLoop) status += "LOOP ";
         if (linked) status += "LINK";
     }
@@ -217,7 +219,7 @@ bool PanelDisplay::captureOverlay(const ControlState &before,
     }
     const bool flagChanged = before.echoLoop != after.echoLoop ||
         before.profile != after.profile || before.mode != after.mode ||
-        before.hold != after.hold || before.echoCut != after.echoCut;
+        before.hold != after.hold || before.echoCut != after.echoCut || before.echoSpin != after.echoSpin;
     if (focus != Focus::None && controller_.displayMode() ==
                                   PerformanceController::DisplayMode::Home) {
         focus_ = focus;

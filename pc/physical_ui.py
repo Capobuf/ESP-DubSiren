@@ -91,7 +91,7 @@ def _validated_panel_config(data: object) -> dict:
     }
     allowed_actions = {"NONE", "TRIGGER", "PLAY SOUND", "HOLD", "MOD UP",
                        "MOD DOWN", "ECHO CUT", "ECHO LOOP", "ECHO SPIN"}
-    allowed_sounds = {"CLASSIC", "TWO TONE", "LICKSHOT", "PING"}
+    allowed_sounds = {"CLASSIC", "TWO TONE", "LICKSHOT", "PING", "GUNSHOT", "TEST TONE"}
     for profile_name in ("CLASSIC", "EXTENDED"):
         profile = profiles.get(profile_name)
         if not isinstance(profile, dict):
@@ -126,7 +126,8 @@ def _validated_panel_config(data: object) -> dict:
                     or not isinstance(button.get("latch"), bool)):
                 raise PanelConfigError("panel.json has invalid Play Sound data")
             if (profile_name == "CLASSIC" and button["action"] == "PLAY SOUND" and
-                    (button["sound"] != "CLASSIC" or button["variant"] >= 2)):
+                    not ((button["sound"] == "CLASSIC" and button["variant"] < 2) or
+                         (button["sound"] in ("TWO TONE", "TEST TONE") and button["variant"] == 0))):
                 raise PanelConfigError("panel.json has an unsupported Classic sound")
     return data
 
@@ -901,6 +902,9 @@ class PhysicalDubSirenApp(DubSirenApp):
             return
         if self.overlay_token is not None:
             self.root.after_cancel(self.overlay_token)
+        self.overlay_token = None
+        self._refresh_display()
+        self._active_overlay = (title, value)
         self.display.render_overlay(title, value)
         self.overlay_token = self.root.after(
             900,
@@ -914,9 +918,6 @@ class PhysicalDubSirenApp(DubSirenApp):
     def _refresh_display(self) -> None:
         if not hasattr(self, "display"):
             return
-        if self.overlay_token is not None:
-            return
-
         display = self.panel_state.get("display", DEFAULT_PANEL_STATE["display"])
         if display.get("mode") == "HOME" and display.get("profile", "CLASSIC") == "CLASSIC":
             params = dict(self.parameter_values, PROFILE="CLASSIC",
@@ -945,10 +946,11 @@ class PhysicalDubSirenApp(DubSirenApp):
                 pad["sound"],
                 pad["variant"],
                 depth,
-                current_pad["hold"],
+                bool(display.get("hold")),
                 bool(display.get("echoLoop")),
                 self.transport.connected,
-                self.parameter_values,
+                dict(self.parameter_values, ECHO_CUT=display.get("echoCut", False),
+                     ECHO_SPIN=display.get("echoSpin", False)),
                 str(display.get("filter", "CUSTOM")),
             )
         else:
@@ -966,6 +968,9 @@ class PhysicalDubSirenApp(DubSirenApp):
                 str(display.get("title", "SETTINGS")),
                 str(display.get("footer", "")),
             )
+
+        if display.get("mode") == "HOME" and self.overlay_token is not None:
+            self.display.render_overlay(*self._active_overlay)
 
     def _send_parameter(
         self,

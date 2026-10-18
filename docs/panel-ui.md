@@ -100,3 +100,21 @@ backlight, but not `SPI_MOSI` or `SPI_SCK`. J3 must be revised or another
 explicit physical connection must be defined. No KiCad source was changed in
 this software/UI revision, and operation on real display hardware remains
 unverified.
+
+## Menu performance (#10)
+
+Il click da Home apre SOUND, MOD, ECHO, SETUP, BACK. Tre righe visibili con
+scroll; SETUP conserva la configurazione precedente. SOUND sceglie pad, famiglia
+e variante e offre solo i parametri applicabili (inclusi Length/Punch, Tone e
+Contour). MOD espone forma, on/off, Rate, Depth e Retrigger per le voci che li
+usano. ECHO espone Level/Time/Feedback/Filter/Color e Loop, con Cut/Spin come
+stati momentanei di sola lettura. Classic non propone Loop/Spin.
+
+Gunshot e Test Tone sono ora famiglie Play Sound; gli indici precedenti restano
+invariati. Test Tone e Two Tone sono assegnabili anche in Classic. BTN1+turn
+regola Depth solo se BTN1 è Trigger o Play Sound. I parametri del suono corrente
+restano al nuovo trigger dello stesso pad; cambiare famiglia applica i default.
+Decay TAU indica la costante esponenziale preesistente, non il tempo al silenzio.
+Le modifiche sonore sono live e il click termina l'editing (DONE); il salvataggio
+della patch è una funzione separata. Home mantiene Hold/Cut/Spin/Loop fuori
+dall'area degli overlay. Leggibilità ST7789 da verificare sull'hardware.

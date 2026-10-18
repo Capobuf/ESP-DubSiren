@@ -236,6 +236,8 @@ VIRTUAL_ESP_API float virtual_esp_depth() {
     return ready() ? controls->snapshot().lfoDepthOctaves : 0.0f;
 }
 
+VIRTUAL_ESP_API int virtual_esp_echo_spin() { return ready() && controls->snapshot().echoSpin; }
+
 VIRTUAL_ESP_API int virtual_esp_echo_loop() {
     return ready() && controls->snapshot().echoLoop ? 1 : 0;
 }

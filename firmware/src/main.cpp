@@ -244,6 +244,7 @@ void sendStatus() {
         ",\"filter\":\"" + filterValue + "\"" +
         ",\"master\":" + String(displayState.masterVolume, 4) +
         ",\"depth\":" + String(displayState.lfoDepthOctaves, 4) +
+        ",\"echoSpin\":" + (displayState.echoSpin ? "true" : "false") +
         ",\"echoLoop\":" + (displayState.echoLoop ? "true" : "false") +
         "}}}";
     usbSink.writeStatus(json.c_str(), json.length());
