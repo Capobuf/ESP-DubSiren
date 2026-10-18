@@ -27,6 +27,12 @@ private:
     LickshotEnvelope lickshotEnvelope_;
     float lickshotRollPhase_ = 0.0f;
     OneShotEnvelope sweepEnvelope_;
+    OneShotEnvelope filterContour_;
+    Biquad dryFilter_;
+    SmoothedParameter dryToneHz_{19000.0f};
+    SmoothedParameter contourOctaves_{0.0f};
+    SmoothedParameter dryFilterMix_{0.0f};
+    unsigned dryFilterCountdown_ = 0;
     OneShotEnvelope syndrumEnvelope_;
     OneShotEnvelope gunshotEnvelope_;
     OnePoleLowPass gunshotFilter_;

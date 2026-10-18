@@ -192,3 +192,19 @@ Le nuove articolazioni non usano il LFO per ampiezza/pitch e non azzerano l'echo
 HORN resta selezionato al nuovo colpo se richiamato come variante del pad.
 
 Restano da verificare ascolto sul riddim e costo DSP massimo sull'ESP.
+
+### Tone e Contour dry Extended (#8)
+
+`SET DRY_TONE_HZ 200..19000` imposta un passa-basso dry assoluto a due poli
+(Q 0,7071). `SET FILTER_CONTOUR_OCT -4..4` sposta il cutoff al trigger e
+`SET FILTER_CONTOUR_MS 10..3000` determina il ritorno esponenziale a Tone.
+Il rilascio non riavvia o azzera Contour: prosegue durante la coda. Ogni colpo
+ROLL lo riattiva. Quantità positiva apre il filtro all'attacco, negativa lo
+chiude; il cutoff è limitato a 50..19000 Hz. Nessuna variazione intenzionale del pitch.
+
+Tone 19000 e Contour zero escludono lo stadio (default). Classic lo ignora.
+Il filtro usa Biquad già presente, aggiornamento coefficienti ogni millisecondo,
+parametri smussati e crossfade del bypass; Sweep conserva il significato sul pitch.
+Non è stato aggiunto gain per compensare automaticamente le armoniche rimosse:
+la taratura comparata delle voci e l'ascolto restano da validare, insieme al
+budget hardware e all'aliasing nelle combinazioni estreme.

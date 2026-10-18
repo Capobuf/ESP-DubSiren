@@ -153,6 +153,11 @@ bool CommandParser::parse(const String &rawCommand) {
             if (name == "LICKSHOT_LENGTH_MS") state.lickshotLengthMs = clampValue(value, 20.0f, 1000.0f);
             else if (name == "LICKSHOT_PUNCH_OCT") state.lickshotPunchOctaves = clampValue(value, 0.0f, 3.0f);
             else state.lickshotPitchMs = clampValue(value, 10.0f, 300.0f);
+        } else if (name == "DRY_TONE_HZ" || name == "FILTER_CONTOUR_OCT" || name == "FILTER_CONTOUR_MS") {
+            if (state.profile != PerformanceProfile::Extended) return false;
+            if (name == "DRY_TONE_HZ") state.dryToneHz = clampValue(value, 200.0f, 19000.0f);
+            else if (name == "FILTER_CONTOUR_OCT") state.filterContourOctaves = clampValue(value, -4.0f, 4.0f);
+            else state.filterContourMs = clampValue(value, 10.0f, 3000.0f);
         } else if (name == "MASTER") {
             state.masterVolume = clampValue(value, 0.0f, 1.0f);
         } else {

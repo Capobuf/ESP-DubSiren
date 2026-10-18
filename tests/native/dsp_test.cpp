@@ -1696,7 +1696,48 @@ void testLickshotArticulations() {
     }
 }
 
+void testDryToneAndContour() {
+    float highEnergy[3] = {};
+    for (int version = 0; version < 3; ++version) {
+        auto engine = std::make_unique<AudioEngine>(); engine->begin();
+        ControlState state; state.profile = PerformanceProfile::Extended;
+        state.mode = SirenMode::Square; state.modulationEnabled = false;
+        state.tuneHz = 220; state.echoLevel = 0;
+        state.dryToneHz = version == 0 ? 19000 : 500;
+        state.filterContourOctaves = version == 2 ? 4 : 0;
+        state.filterContourMs = 3000;
+        int16_t block[4800];
+        for (int i = 0; i < 10; ++i) engine->render(state, block, 4800);
+        state.trigger = true;
+        engine->render(state, block, 4800);
+        engine->render(state, block, 4800);
+        assert(fabsf(estimateFrequency(block, 4800) - 220) < 4);
+        double dc = 0, real = 0, imag = 0, fundamentalReal = 0, fundamentalImag = 0;
+        for (int i = 0; i < 4800; ++i) {
+            real += block[i] * cos(TWO_PI * 1100 * i / kRate);
+            imag += block[i] * sin(TWO_PI * 1100 * i / kRate);
+            fundamentalReal += block[i] * cos(TWO_PI * 220 * i / kRate);
+            fundamentalImag += block[i] * sin(TWO_PI * 220 * i / kRate);
+            dc += block[i];
+        }
+        highEnergy[version] = hypot(real, imag) / hypot(fundamentalReal, fundamentalImag);
+        assert(fabs(dc / 4799) < 200);
+    }
+    assert(highEnergy[1] < highEnergy[0] * .5f);
+    assert(highEnergy[2] > highEnergy[1] * 3);
+    auto a = std::make_unique<AudioEngine>(), b = std::make_unique<AudioEngine>();
+    a->begin(); b->begin();
+    ControlState neutral, edited; neutral.trigger = edited.trigger = true;
+    edited.dryToneHz = 200; edited.filterContourOctaves = 4;
+    int16_t left[480], right[480];
+    for (int i = 0; i < 100; ++i) {
+        a->render(neutral, left, 480); b->render(edited, right, 480);
+        assert(memcmp(left, right, sizeof(left)) == 0);
+    }
+}
+
 int main() {
+    testDryToneAndContour();
     testLickshotArticulations();
     testTwoTonePitchTrajectories();
     testShortTriggerEvents();
