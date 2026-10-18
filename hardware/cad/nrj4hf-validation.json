@@ -15,15 +15,15 @@
     "rotation_deg": 90,
     "side": "B.Cu",
     "bbox": [
-      10.57,
+      6.07,
       33.699999999999996,
       9.5,
-      26.32,
+      21.82,
       66.85000009999999,
       26.200000000000003
     ],
     "axis_xz": [
-      17,
+      12.5,
       15.7
     ],
     "nose_direction": [
@@ -35,7 +35,7 @@
       {
         "pin": "T",
         "cad": [
-          24.23,
+          19.73,
           41.05,
           22.200000000000003
         ]
@@ -43,7 +43,7 @@
       {
         "pin": "TN",
         "cad": [
-          12.8,
+          8.3,
           41.05,
           22.200000000000003
         ]
@@ -51,7 +51,7 @@
       {
         "pin": "S",
         "cad": [
-          24.23,
+          19.73,
           53.75,
           22.2
         ]
@@ -59,12 +59,17 @@
       {
         "pin": "SN",
         "cad": [
-          12.8,
+          8.3,
           53.75,
           22.2
         ]
       }
-    ]
+    ],
+    "cad_proposal_pcb_equivalent": [
+      82.23,
+      20.34
+    ],
+    "placement_status": "CAD proposal only; current KiCad J2 unchanged. Translation -4.5mm X from PR17 placement."
   },
   "J1": {
     "pcb_position": [
@@ -82,10 +87,10 @@
   },
   "nut": {
     "bbox": [
-      8.275,
+      3.7750000000000004,
       60.345,
       6.975,
-      25.725,
+      21.225,
       65.095,
       24.424999999999997
     ],
@@ -108,17 +113,20 @@
     "bottom_inside_z": 2.1,
     "lid_shape_distance": 3.7,
     "lid_collision_mm3": 0.0,
-    "tolerance_status": "Full stack tolerance budget not established; nominal margins only."
+    "tolerance_status": "Full stack tolerance budget not established; nominal margins only.",
+    "required_nominal_stack": 22.8,
+    "pcb_top_minimum": 16.9,
+    "pcb_top_maximum": 23.8
   },
   "rear_wall": {
     "axis_intersections": [
       [
-        17.0,
+        12.5,
         58.19198007126637,
         15.7
       ],
       [
-        17.0,
+        12.5,
         60.192284727354206,
         15.7
       ]
@@ -126,19 +134,19 @@
     "thickness_along_axis": 2.0003046560878346,
     "inclination_deg": 1,
     "hole_diameter_nominal": 11.2,
-    "hole_tolerance": "not assigned; nominal bore and nose have zero radial clearance",
+    "hole_tolerance": "Manufacturer drawing specifies D11.2. Simplified STEP has a smooth D11.2 cylinder; zero model clearance is not a measured fit of the real thread. Production fit not validated.",
     "body_to_original_shell_distance": 0.07851018992929486
   },
   "static": {
-    "jack_usb_distance": 23.6,
+    "jack_usb_distance": 19.1,
     "jack_usb_collision_mm3": 0.0,
     "jack_shell_after_proposed_apertures_mm3": 0.0,
     "usb_shell_after_proposed_apertures_mm3": 0.0,
     "nut_shell_distance": 0.00041976720477888567,
     "nut_shell_collision_mm3": 0.0,
-    "nut_usb_distance": 21.608299689226506,
+    "nut_usb_distance": 17.158818203327133,
     "jack_DAC_PCB_projected_gap_y": 10.650000000000002,
-    "jack_MASTER_body_projected_gap_x": 44.07
+    "jack_MASTER_body_projected_gap_x": 39.57
   },
   "not_validated": [
     "full board outline and supports",
@@ -146,7 +154,8 @@
     "cable overmolds and insertion tooling",
     "continuous insertion of complete populated PCB",
     "nut clamping without stressing PCB/connector against inclined wall",
-    "production hole tolerances"
+    "production hole tolerances",
+    "CAD proposal X12.5 not transferred to KiCad; complete pot model incl. pins/clips missing"
   ],
   "sources": {
     "Neutrik_NRJ4HF.stp": "8b5f78a35e5709bd035e986a685bfd23a52f0d9367bee910e5a4af54b1efa105",
@@ -164,7 +173,8 @@
       22.285
     ],
     "note": "Exporter adds 0.05 model offset and 0.035 copper; normalize mounting plane, do not change J2 offset.",
-    "symmetric_difference_volume_mm3": 0
+    "symmetric_difference_volume_mm3": 0,
+    "scope": "Historical verification for PR17/current saved PCB only. Current CAD proposal differs by -4.5mm in X; not yet synchronized to KiCad."
   },
   "erc": {
     "errors": 0,
@@ -187,5 +197,63 @@
     },
     "added_geometry_findings": [],
     "removed_geometry_findings": []
+  },
+  "baseline_commit": "9bfcf66 (merged in PR17 as aafeeba)",
+  "front_pot_screening": {
+    "method": "Conservative existing F.Fab rectangular body envelope12x13.4mm extruded7.5mm from nominal PCB top. Not a complete pot model; excludes pins/clips/cavities and tolerances.",
+    "sources": [
+      "Bourns-PTV-PTT.pdf page2",
+      "Bourns_PTV111-3.kicad_mod F.Fab read through Konnect"
+    ],
+    "centers": [
+      [
+        -28,
+        42
+      ],
+      [
+        0,
+        42
+      ],
+      [
+        28,
+        42
+      ],
+      [
+        -28,
+        -15
+      ],
+      [
+        0,
+        -15
+      ],
+      [
+        28,
+        -15
+      ]
+    ],
+    "baseline_jack_envelope_common_mm3": 5.7747778282192055,
+    "baseline_common_bbox": [
+      22,
+      40.3,
+      23.8,
+      24.98,
+      45.7,
+      26.2
+    ],
+    "cad_translation": [
+      -4.5,
+      0,
+      0
+    ],
+    "proposed_common_mm3": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "proposed_min_distance": 1.5199999999999996,
+    "status": "PASS nominal body-envelope screen only; pin/clip/full assembly check pending"
   }
 }

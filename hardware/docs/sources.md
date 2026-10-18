@@ -53,3 +53,15 @@ invece dalla libreria KiCad installata `Connector_USB.3dshapes/USB_C_Receptacle_
 MASTER e DAC sono rappresentati solo dalle proiezioni dichiarate in assieme.
 Gli hash dei quattro originali Neutrik e le misure sono in
 [nrj4hf-validation.json](../cad/nrj4hf-validation.json).
+
+La prosecuzione dopo il merge della PR #17 introduce una proposta **nel solo CAD**:
+traslazione J2 di −4,5 mm lungo X, asse X12,5. Il modello nel PCB mantiene la
+posizione della PR #17; il precedente confronto STEP è riferito a quella posa.
+Gli inviluppi frontali PTV111-3 sono proiezioni F.Fab 12 × 13,4 mm del footprint
+del progetto, lette con Konnect, estruse per i 7,5 mm del corpo nel disegno Bourns.
+Non sono STEP originali e non includono piedini, clip, cavità o tolleranze.
+Il loro uso è limitato allo screening conservativo delle interferenze.
+
+Per il display, la [pagina Adafruit 5393](https://www.adafruit.com/product/5393)
+riporta 5,4 mm complessivi, senza separare PCB, vetro e componenti posteriori:
+questa quota non è stata trasformata in un'altezza del vetro presunta.

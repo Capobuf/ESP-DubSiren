@@ -1,10 +1,11 @@
 # ESP-DubSiren — hardware
 
-**J2 sostituito con Neutrik NRJ4HF. Gate B NON VALIDATO: PR #17 in bozza per verifica dell'utente. Nessun PCB fabbricabile.**
+**PR #17 integrata: J2 è Neutrik NRJ4HF. Nuova proposta di posizione nel solo CAD; Gate B NON VALIDATO. Nessun PCB fabbricabile.**
 
 - [Progetto KiCad](kicad/ESP-DubSiren.kicad_pro), [schema](kicad/ESP-DubSiren.kicad_sch), [PCB](kicad/ESP-DubSiren.kicad_pcb).
 - [Assieme FreeCAD modificabile](cad/assembly.FCStd): Hammond originale, proposta pannello Gate A e studio posteriore NRJ4HF.
 - [Posteriore e sezione con quote](cad/nrj4hf-rear-section.svg), [anteprima](cad/nrj4hf-rear-section.png), [vista interna](cad/nrj4hf-inside.png), [misure e limiti](cad/nrj4hf-validation.json).
+- [Vista dall'alto con gli inviluppi dei corpi pot](cad/nrj4hf-top-screening.png): controllo parziale di interferenza, non assieme completo.
 - [Pannello Gate A e dima cartacea 1:1](cad/gate-a-panel.pdf), [SVG](cad/gate-a-panel.svg), [anteprima](cad/gate-a-preview.png). Stampare al 100%, verificare la barra da 50 mm; **non forare**.
 - [BOM elettronica](docs/BOM.csv), [fonti e accessorio NRJ-NUT-B](docs/sources.md), [originali CAD](cad/sources/).
 
@@ -31,29 +32,46 @@ Il riferimento provvisorio lega CAD e PCB con Xcad=Xpcb−62,5, Ycad=61,39−Ypc
 F.Cu a Z23,8 e B.Cu a Z22,2, spessore nominale 1,6 mm. L'origine Z è il fondo esterno.
 Questo riferimento allinea le interfacce posteriori; **non certifica il placement della PCB completa rispetto al Gate A**.
 
-Lo STEP Neutrik originale è allineato ai quattro pad e orientato verso +Y nel CAD.
-Centri dei pad nel riferimento CAD: T=(24,23;41,05), TN=(12,80;41,05),
-S=(24,23;53,75), SN=(12,80;53,75), tutti sul piano Z22,2.
-L'esportazione STEP nativa di J2 coincide con la forma FreeCAD (differenza volumetrica zero),
-normalizzando il piano di appoggio dell'esportatore da Z−0,085 a Z22,2.
-Questo scarto di riferimento comprende l'offset del modello nell'esportatore e il rame;
-non è stato aggiunto un offset al modello di J2.
+Lo STEP Neutrik originale è orientato verso +Y. La nuova proposta CAD sposta
+il jack di **−4,5 mm lungo X**, portando l'asse da X17 a **X12,5**, per liberare
+i piedini dall'inviluppo del potenziometro frontale in alto a destra.
+Centri dei pin nel CAD proposto: T=(19,73;41,05), TN=(8,30;41,05),
+S=(19,73;53,75), SN=(8,30;53,75), tutti sul piano Z22,2.
+La posizione equivalente sulla PCB sarebbe **(82,23;20,34)**: non è stata
+trasferita a KiCad, che conserva il placement della PR #17 fino alla verifica meccanica.
+Il confronto STEP con differenza volumetrica zero della PR #17 resta un'evidenza
+storica della posa precedente, non una dichiarazione di allineamento della nuova proposta.
+
+I sei oggetti `FrontPotEnvelope` riprendono la proiezione F.Fab 12 × 13,4 mm
+del footprint PTV111-3 e la profondità del corpo di 7,5 mm dal disegno Bourns.
+Sono **inviluppi conservativi**, privi dei dettagli di cavità, piedini e clip,
+non modelli completi dei potenziometri. Nella posa precedente lo STEP del jack
+intersecava l'inviluppo in alto a destra per 5,775 mm³, fra Z23,8 e Z26,2.
+La traslazione proposta porta il volume comune a zero e la distanza minima
+a 1,52 mm nominali; non certifica il montaggio del componente reale.
+Il layout frontale Gate A rimane invariato.
 
 | Verifica | Esito | Misura / evidenza |
 |---|---|---|
 | Collegamenti elettrici | PASS | T→OUTL/AUDIO_MONO; S→GND; TN/SN e OUTR NC; ERC 0 errori e 0 warning |
 | Altezza del jack | PASS nominale; tolleranze NON VALIDATE | Corpo 12,7 mm; Z9,5…22,2; piedini fino a Z26,2; margine nominale 6,9 mm sul budget precedente 19,6; distanza reale dal fondo 3,7 mm |
-| Allineamento posteriore | PASS nominale; foro NON VALIDATO | Asse X17 / Z15,7; parete 2,0003 mm lungo asse, inferiore a 3 mm; inclinazione 1 grado; D11,2 nominale senza gioco assegnato |
-| Interferenza USB-C | PASS statico; cavi NON VALIDATI | Distanza fra solidi jack e USB 23,6 mm; volume comune zero; inviluppo dado–USB 21,608 mm |
-| MASTER e vicini | NON VALIDATO | Gap proiettati: MASTER 44,07 mm lungo X; PCB DAC 10,65 mm lungo Y. Mancano verifica completa di albero/manopola, altezza DAC e correlazione del placement frontale |
+| Allineamento posteriore | PASS nominale; foro NON VALIDATO | Asse proposto X12,5 / Z15,7; parete 2,0003 mm lungo asse, inferiore a 3 mm; inclinazione 1 grado; D11,2 da disegno Neutrik |
+| Interferenza USB-C | PASS statico; cavi NON VALIDATI | Distanza fra solidi jack e USB 19,1 mm; volume comune zero; inviluppo dado–USB 17,108 mm |
+| Piedini jack e corpi pot frontali | PASS del solo screening nominale | Nessuna intersezione con i sei inviluppi; distanza minima 1,52 mm. Piedini/clip dei pot e tolleranze non inclusi |
+| MASTER e vicini | NON VALIDATO | Gap proiettati: MASTER 39,57 mm lungo X; PCB DAC 10,65 mm lungo Y. Mancano verifica completa di albero/manopola, altezza DAC e componenti frontali completi |
 | Inserimento PCB | NON VALIDATO | Sagoma, supporti e assieme popolato completo non definiti; nessun percorso continuo dimostrato |
 | Fissaggio tramite dado | NON VALIDATO | Inviluppo D17,45 x 4,75; dislivello della parete sul dado 0,305 mm; filettatura, accesso utensile e serraggio senza sforzi da verificare |
 
 La cavità nominale resta 29,7 mm. Il nuovo corpo risolve il deficit di altezza del precedente RCA
 nella posa diagnostica, ma **6,9 mm è un margine nominale**, non un bilancio completo di tolleranze
 PCB/pot/connettore. Il corpo è a soli **0,0785 mm dalla parete originale** nella posa scelta:
-non è una riserva di produzione adeguatamente dimostrata. Il foro D11,2 nominale coincide con
-il diametro nominale della boccola; il gioco di montaggio deve ancora essere assegnato.
+non è una riserva di produzione adeguatamente dimostrata. Il disegno Neutrik prescrive
+il foro D11,2; lo STEP semplifica la filettatura in un cilindro liscio D11,2.
+Il gioco nullo fra queste geometrie non dimostra il gioco reale del filetto nel foro:
+non giustifica da solo un allargamento arbitrario. Accoppiamento e serraggio restano da verificare.
+Le formule attive di `GateBHeight` usano ora il jack da 12,7 mm: stack nominale
+22,8 mm, intervallo teorico F.Cu Z16,9…23,8 e margine 6,9 mm.
+Questi numeri descrivono il solo bilancio assiale, non includono tutti gli ostacoli del box.
 
 La scocca e il fondo Hammond originali non sono stati tagliati o sostituiti. L'oggetto
 `RearAperturesStudy`, nascosto nella vista 3D, è una sola sonda diagnostica con aperture ipotetiche,
@@ -68,7 +86,7 @@ fittizi e non è stata generata una dima 3D/STL non validata.
 
 ## Controlli e limiti del progetto
 
-Verifica del 18 ottobre 2026: ERC senza errori o warning. Il confronto DRC prima/dopo conserva
+Verifica elettrica della PR #17, 18 ottobre 2026: ERC senza errori o warning. Il confronto DRC prima/dopo conserva
 117 segnalazioni geometriche (stesse categorie e coppie di oggetti), 68 segnalazioni di parità
 schema/PCB e passa da 161 a 160 connessioni non instradate. Totale 346→345 (errori 170→169,
 warning 176 invariati). J2 mantiene la segnalazione di differenza dalla libreria; il modello originale
@@ -81,6 +99,13 @@ encoder con Same Sky SAK-023 e quattro pulsanti a passo 22 mm; Cliff K85M per il
 I keycap hanno una riserva di progetto 20 x 20 mm, non una misura verificata.
 L'utente ha autorizzato lo studio Gate B mantenendo il layout provvisorio. Display a filo,
 componenti completi, tolleranze e montaggio restano da validare. Nessuna approvazione automatica del Gate B.
+Per la sezione del display mancano lo spessore reale della PCB del modulo e la quota
+della superficie del vetro rispetto alla faccia superiore della PCB. Lo spessore totale
+5,4 mm pubblicato da Adafruit non separa queste quote né gli ingombri posteriori.
+La verifica fisica è stata richiesta; nessuna quota del vetro è stata inventata.
+La proposta CAD è stata salvata e riaperta: forme OCC valide, volume comune nullo
+fra J2 e i sei inviluppi, distanza minima 1,52 mm riprodotta. Tavola SVG/PNG
+controllata visivamente. Nessuna nuova verifica ERC/DRC: i file KiCad non sono cambiati.
 
 ## Evidenze storiche
 
@@ -90,6 +115,8 @@ e le [misure precedenti](cad/gate-b-height-check.json) documentano il deficit di
 Sono evidenze storiche, non una variante attiva. La precedente richiesta di doppia uscita RCA L/R
 è superata dalla scelta mono NRJ4HF; non resta alcuna correzione OUTL→L / OUTR→R da implementare.
 
-La [PR #17](https://github.com/Capobuf/ESP-DubSiren/pull/17) resta in bozza e la
-[issue #14](https://github.com/Capobuf/ESP-DubSiren/issues/14) aperta. Richiesto feedback sulle viste CAD
-prima dell'approvazione del Gate B. Nessun routing, Gerber o merge eseguito.
+La [PR #17](https://github.com/Capobuf/ESP-DubSiren/pull/17) è stata integrata su `main`
+con il commit `aafeeba`. La [issue #14](https://github.com/Capobuf/ESP-DubSiren/issues/14)
+resta aperta: il merge della sostituzione non approva automaticamente il Gate B.
+La prosecuzione sul branch `codex/issue-14-jack-fit` modifica CAD e documentazione;
+schema, PCB e firmware conservano il contenuto integrato dalla PR #17.
