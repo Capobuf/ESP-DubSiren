@@ -7,18 +7,6 @@ namespace {
 constexpr uint8_t kAudioPacket = 0x01;
 constexpr uint8_t kStatusPacket = 0x02;
 
-bool writeAll(const uint8_t *bytes, size_t length) {
-    const uint32_t deadline = millis() + 500;
-    size_t written = 0;
-    while (written < length) {
-        written += Serial.write(bytes + written, length - written);
-        if (written == length) break;
-        if (static_cast<int32_t>(millis() - deadline) >= 0) return false;
-        vTaskDelay(1);
-    }
-    return true;
-}
-
 #pragma pack(push, 1)
 struct PacketHeader {
     uint8_t magic[2];
@@ -66,16 +54,19 @@ bool UsbPcmSink::writeStatus(const char *payload, size_t length) {
 
 bool UsbPcmSink::writePacket(uint8_t type, const uint8_t *payload,
                              size_t length, uint32_t sequence) {
-    if (mutex_ == nullptr ||
-        xSemaphoreTake(mutex_, pdMS_TO_TICKS(500)) != pdTRUE) {
-        return false;
-    }
-
+    if (mutex_ == nullptr || length + sizeof(PacketHeader) > sizeof(packetBuffer_) ||
+        !Serial.isConnected() || xSemaphoreTake(mutex_, 0) != pdTRUE) return false;
     const PacketHeader header{{'D', 'S'}, Config::kProtocolVersion, type,
                               static_cast<uint16_t>(length), sequence};
-    const bool headerWritten = writeAll(
-        reinterpret_cast<const uint8_t *>(&header), sizeof(header));
-    const bool payloadWritten = headerWritten && writeAll(payload, length);
+    const size_t total = sizeof(header) + length;
+    // Reserve enough free driver space before writing one complete packet.
+    // With our mutex held, no other packet writer can consume that space.
+    bool written = false;
+    if (Serial.availableForWrite() >= static_cast<int>(total)) {
+        memcpy(packetBuffer_, &header, sizeof(header));
+        memcpy(packetBuffer_ + sizeof(header), payload, length);
+        written = Serial.write(packetBuffer_, total) == total;
+    }
     xSemaphoreGive(mutex_);
-    return headerWritten && payloadWritten;
+    return written;
 }

@@ -20,4 +20,5 @@ private:
     SemaphoreHandle_t mutex_;
     uint32_t audioSequence_;
     uint32_t statusSequence_;
+    uint8_t packetBuffer_[8192];
 };

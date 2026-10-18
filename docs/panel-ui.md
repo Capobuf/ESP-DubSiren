@@ -57,7 +57,7 @@ profile changes. Switching profile clears gates and Hold. Pot commands keep
 one 25 ms timer per control, flush periodically and send the final position
 on release.
 
-The ESP32 stores schema-1 `PanelSettings` in Preferences/NVS and reports corrupt
+The ESP32 stores schema-2 `PanelSettings` (with schema-1 migration) in Preferences/NVS and reports corrupt
 loads and save failures. VirtualESP stores the same logical schema in
 `%APPDATA%/ESP-DubSiren/panel.json`; invalid files are surfaced instead of
 silently ignored. A real device is authoritative on connection: the PC adopts
@@ -67,7 +67,7 @@ state, gate, live transpose or other transient state is restored from disk.
 Older VirtualESP files containing only four `pads` are migrated on connection.
 The controller supplies the default pots, Classic buttons and encoder settings;
 saved sounds and variants become Extended Play Sound button assignments.
-The original file is preserved as `panel.legacy.json` before saving schema 1.
+The original file is preserved as `panel.legacy.json` before saving schema 2.
 Microsoft Store Python may redirect the AppData file into its package's
 `LocalCache/Roaming/ESP-DubSiren` directory.
 

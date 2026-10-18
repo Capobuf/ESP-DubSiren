@@ -188,7 +188,7 @@ An AUDIO payload is always 960 bytes: 480 signed int16 mono PCM samples at
 48,000 Hz. A STATUS payload is UTF-8 JSON. `HELLO` currently returns:
 
 ```json
-{"name":"DubSiren","protocol":1,"sampleRate":48000,"blockSamples":480,"firmware":"0.9.0","output":"BOTH","i2sReady":true,"panel":{"revision":1,"settings":{"schema":1,"potBehavior":"PICKUP"},"persistenceStatus":"","display":{"width":320,"height":172,"mode":"HOME","menuIndex":0,"editing":false,"title":"SETTINGS","rows":[{"key":"PROFILE","label":"PROFILE","value":"CLASSIC"}],"profile":"CLASSIC","voice":"SINE 1","pitch":"MID","pitchMode":"ZONES","rate":"MID","rateMode":"ZONES","tuneHz":392.0,"rateHz":0.7,"liveTranspose":0}}}
+{"name":"DubSiren","protocol":1,"sampleRate":48000,"blockSamples":480,"firmware":"0.9.0","output":"BOTH","i2sReady":true,"panel":{"revision":1,"settings":{"schema":2,"potBehavior":"PICKUP"},"persistenceStatus":"","display":{"width":320,"height":172,"mode":"HOME","menuIndex":0,"editing":false,"title":"PERFORMANCE","rows":[{"key":"PROFILE","label":"PROFILE","value":"CLASSIC"}],"profile":"CLASSIC","voice":"SINE 1","pitch":"MID","pitchMode":"ZONES","rate":"MID","rateMode":"ZONES","tuneHz":392.0,"rateHz":0.7,"liveTranspose":0}}}
 ```
 
 Timing zeros above are placeholders, not measured performance. `renderUs` is the
@@ -207,7 +207,7 @@ and Extended tuneHz/rateHz. Firmware sends an updated STATUS packet when control
 or menu state changes. These are additive status/command changes: existing
 commands, packet framing, and protocol version 1 remain compatible.
 
-In firmware 0.9.0, `panel.settings` contains the complete schema-1 persistent
+In firmware 0.9.0, `panel.settings` contains the complete schema-2 persistent
 panel configuration and its revision. `panel.display.rows` contains ordered
 objects with controller-owned `key`, `label` and already-formatted `value`,
 plus `title`, `footer` and `overlay`. Renderers consume these strings rather
@@ -218,3 +218,11 @@ and `liveTranspose` are included for connection reconstruction.
 There is no CRC because USB is the reliable transport. The Python parser scans
 again for `DS` after invalid data or lost framing and rejects AUDIO payloads of
 the wrong length.
+
+## Revisione uso autonomo (#12)
+
+`STREAM 0|1` controlla ora solo il PCM USB. `LOCAL_AUDIO 0|1` controlla
+l'abilitazione locale (default ON); la destinazione OUTPUT resta applicabile.
+Stop Audio/Disconnect del client interrompono il flusso USB, non sono un mute
+generale della macchina. Per silenziare I2S usare LOCAL_AUDIO 0 oppure OUTPUT PC.
+Le nuove metriche e la configurazione del pannello sono in [standalone](standalone.md).

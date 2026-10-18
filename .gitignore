@@ -20,3 +20,6 @@ virtual_esp/bin/
 # Reproducible baseline audio captures
 artifacts/baseline/
 artifacts/echo-decay/*.wav
+
+# Reproducible offline listening comparisons
+artifacts/offline-issues-5-12/*.wav
