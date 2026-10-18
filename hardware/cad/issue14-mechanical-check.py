@@ -1,6 +1,11 @@
 """Run inside FreeCAD via MCP execute_python or the Python console.
 
 exec(compile(open(PATH, encoding='utf-8').read(), PATH, 'exec'))
+Current geometric study (no optimizer):
+_result_ = vertical_insertion_sweep(App.getDocument('assembly'))
+_result_ = manual_insertion_hits(App.getDocument('assembly'), manual_insertion_pose(1))
+
+Historical studies, retained for reference rather than rerun:
 _result_ = audit(App.getDocument('assembly'))
 _result_ = search_engaged_phase(App.getDocument('assembly'))
 _result_ = solution_study(App.getDocument('assembly'))  # CAD-only proposal
@@ -441,3 +446,131 @@ def prepare_study_view(doc, section=None):
     Gui.activeDocument().activeView().setCameraOrientation(orientation)
     Gui.activeDocument().activeView().fitAll()
     Gui.updateGui()
+
+
+# Geometric insertion study: independent of the historical numerical searches.
+def nominal_insertion_shapes(doc):
+    """One nominal configuration; no hardware, knobs or custom supports."""
+    shapes = moving_shapes(doc)
+    for name in ('EncoderSupport', 'JackInnerCompensator', 'MasterInnerCompensator'):
+        shapes.pop(name)
+    for name, shape in shapes.items():
+        obj = doc.getObject(name)
+        if 'BeforeCompensation' in obj.PropertiesList:
+            shape.Placement = obj.BeforeCompensation
+    return shapes
+
+
+def manual_insertion_pose(angle=0, dy=0, dz=0):
+    """Trial rotation about a reference point, not an assumed physical hinge.
+
+    The independent Y/Z translations permit another disengagement order.
+    All represented components receive this same rigid transformation.
+    """
+    reference = App.Vector(0, 59.18340486684618, 16.2)
+    rotation = App.Rotation(App.Vector(1, 0, 0), angle)
+    return App.Placement(reference - rotation.multVec(reference)
+                         + App.Vector(0, dy, dz), rotation)
+
+
+def manual_insertion_hits(doc, placement, names=None):
+    shapes = nominal_insertion_shapes(doc)
+    shell = full_probe(doc)
+    result = {}
+    for name in (shapes if names is None else names):
+        # Baking the transform avoids an OCC false-zero common observed with
+        # rotated Location-only cylinders (encoder at 4.1 degrees).
+        shape = shapes[name].transformGeometry(placement.toMatrix())
+        common = shape.common(shell)
+        if common.Volume > 1e-6:
+            result[name] = {'common_mm3': common.Volume,
+                            'common_valid': common.isValid()}
+    return result
+
+
+def vertical_insertion_sweep(doc, travel=55):
+    """Exact continuous swept prisms for the subset without rear connectors.
+
+    This is stronger than sampling poses. The DAC remains a keep-in volume,
+    not a claim that its undocumented physical stack has been checked.
+    """
+    shapes = nominal_insertion_shapes(doc)
+    shell = full_probe(doc)
+    excluded = ('J2_NRJ4HF', 'J1_USB4085', 'MasterBodyEnvelope',
+                'MasterBushing', 'MasterShaftEnvelope')
+    result = {}
+    for name, shape in shapes.items():
+        if name in excluded:
+            continue
+        b = shape.BoundBox
+        if name == 'CandidatePCB':
+            face = min(shape.Faces, key=lambda f: f.CenterOfMass.z).copy()
+            face.translate(App.Vector(0, 0, -travel))
+            swept = face.extrude(App.Vector(0, 0, travel + 1.6))
+        elif name.startswith(('FrontPotBushing', 'FrontShaft')) or name in (
+                'EncoderBushingEnvelope', 'EncoderShaftEnvelope'):
+            swept = Part.makeCylinder(b.XLength / 2, b.ZLength + travel,
+                App.Vector((b.XMin+b.XMax)/2, (b.YMin+b.YMax)/2, b.ZMin-travel))
+        else:
+            swept = Part.makeBox(b.XLength, b.YLength, b.ZLength + travel,
+                                App.Vector(b.XMin, b.YMin, b.ZMin-travel))
+        distance = swept.distToShape(shell)
+        result[name] = {'common_mm3': swept.common(shell).Volume,
+                        'clearance_mm': distance[0], 'valid': swept.isValid()}
+        if name == 'CandidatePCB':
+            result[name]['closest_points_mm'] = [
+                [list(a), list(b)] for a, b in distance[1]]
+    return {'travel_mm': travel, 'excluded': list(excluded), 'objects': result,
+            'scope': 'Continuous vertical subset path only; NOT full assembly'}
+
+
+def build_manual_insertion_views(doc):
+    """Preserve the compensated study and create editable rigid pose compounds."""
+    optional = doc.getObject('OptionalCompensation') or doc.addObject(
+        'App::DocumentObjectGroup', 'OptionalCompensation')
+    optional.Label = 'OPZIONALE NASCOSTO: studio compensato e ferramenta'
+    for name in ('J2_NRJ4HF', 'MasterBodyEnvelope', 'MasterBushing', 'MasterShaftEnvelope'):
+        obj = doc.getObject(name)
+        if 'CompensatedPlacement' not in obj.PropertiesList:
+            obj.addProperty('App::PropertyPlacement', 'CompensatedPlacement', 'Study')
+            obj.CompensatedPlacement = obj.Placement
+        saved = obj.Shape.copy()
+        saved.Placement = obj.CompensatedPlacement
+        _feature(doc, 'Optional' + name, saved, 'Compensato: ' + name,
+                 optional, (0.7, 0.65, 0.5))
+        obj.Placement = obj.BeforeCompensation
+    for name in ('JackInnerCompensator', 'MasterInnerCompensator', 'JackOuterCover',
+                 'MasterOuterCover', 'JackSolutionNut', 'MasterSolutionNut',
+                 'EncoderSupport', 'EncoderHardware') + tuple('PotHardware'+str(i) for i in range(1,7)):
+        optional.addObject(doc.getObject(name))
+    group = doc.getObject('ManualInsertion') or doc.addObject(
+        'App::DocumentObjectGroup', 'ManualInsertion')
+    group.Label = 'Inserimento geometrico: gruppo completo NON ANCORA DIMOSTRATO'
+    sources = nominal_insertion_shapes(doc)
+    subset = list(vertical_insertion_sweep_names(sources))
+    specifications = [('SubsetEntry', -55), ('SubsetShafts', -20.1),
+                      ('SubsetBushings', -5.1), ('SubsetEngaged', -2), ('SubsetSeated', 0)]
+    for name, dz in specifications:
+        obj = doc.getObject(name) or doc.addObject('Part::Compound', name)
+        obj.Links = [doc.getObject(n) for n in subset]
+        obj.Placement = manual_insertion_pose(dz=dz)
+        obj.Label = 'SOLO SOTTOGRUPPO: dZ ' + str(dz) + ' mm; posteriori esclusi'
+        group.addObject(obj)
+    for name, angle in [('FullSeated', 0), ('FullTrial1deg', 1),
+                        ('FullTrial2deg', 2), ('FullTrial4deg', 4.1)]:
+        obj = doc.getObject(name) or doc.addObject('Part::Compound', name)
+        obj.Links = [doc.getObject(n) for n in sources]
+        obj.Placement = manual_insertion_pose(angle)
+        obj.Label = ('FINALE nominale' if angle == 0 else 'BLOCCATO: tentativo ' + str(angle) + ' gradi')
+        group.addObject(obj)
+    doc.recompute()
+    for obj in optional.Group:
+        obj.ViewObject.Visibility = False
+    optional.ViewObject.Visibility = False
+    return group
+
+
+def vertical_insertion_sweep_names(shapes):
+    excluded = {'J2_NRJ4HF', 'J1_USB4085', 'MasterBodyEnvelope',
+                'MasterBushing', 'MasterShaftEnvelope'}
+    return (name for name in shapes if name not in excluded)

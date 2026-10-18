@@ -1,5 +1,5 @@
 {
-  "active_study": {
+  "compensated_study_e8e5a74": {
     "status": "INCOMPLETE: closed apertures; full insertion NOT verified. Annular clamp and candidate PCB implemented for review.",
     "user_constraint": "No full-side or bottom-open slots. Rejected study removed, not delivered.",
     "datum_rule": "I potenziometri frontali dettano la battuta della PCB: spalla contro interno scocca, serrata dai dadi esterni. Nessun distanziale fittizio tra corpo pot e scocca.",
@@ -3449,5 +3449,326 @@
         }
       }
     }
+  },
+  "active_study": {
+    "status": "NON ANCORA DIMOSTRATO: full populated assembly insertion",
+    "source_commit": "e8e5a74",
+    "configuration": "Nominal jack/master BeforeCompensation; 33 objects; no knobs, nuts or custom supports",
+    "continuous_subset": {
+      "travel_mm": 55,
+      "excluded": [
+        "J2_NRJ4HF",
+        "J1_USB4085",
+        "MasterBodyEnvelope",
+        "MasterBushing",
+        "MasterShaftEnvelope"
+      ],
+      "objects": {
+        "EncoderBodyEnvelope": {
+          "common_mm3": 0.0,
+          "clearance_mm": 1.0,
+          "valid": true
+        },
+        "EncoderBushingEnvelope": {
+          "common_mm3": 0.0,
+          "clearance_mm": 0.10000000000000142,
+          "valid": true
+        },
+        "EncoderShaftEnvelope": {
+          "common_mm3": 0.0,
+          "clearance_mm": 0.5999999999999938,
+          "valid": true
+        },
+        "CandidatePCB": {
+          "common_mm3": 0.0,
+          "clearance_mm": 0.2505905841592912,
+          "valid": true,
+          "closest_points_mm": [
+            [
+              [
+                -40.2043965296984,
+                53.35472416436192,
+                24.3
+              ],
+              [
+                -40.396898218762736,
+                53.51514223858219,
+                24.302186787628226
+              ]
+            ],
+            [
+              [
+                40.2043965296984,
+                -53.35472416436192,
+                24.3
+              ],
+              [
+                40.396898218762736,
+                -53.51514223858219,
+                24.302186787628226
+              ]
+            ],
+            [
+              [
+                -40.2043965296984,
+                -53.35472416436192,
+                24.3
+              ],
+              [
+                -40.396898218762736,
+                -53.51514223858219,
+                24.302186787628226
+              ]
+            ],
+            [
+              [
+                40.2043965296984,
+                53.35472416436192,
+                24.3
+              ],
+              [
+                40.396898218762736,
+                53.51514223858219,
+                24.302186787628226
+              ]
+            ]
+          ]
+        },
+        "ESP32Envelope": {
+          "common_mm3": 0.0,
+          "clearance_mm": 9.099999999999998,
+          "valid": true
+        },
+        "DACKeeIn": {
+          "common_mm3": 0.0,
+          "clearance_mm": 9.099999999999998,
+          "valid": true
+        },
+        "FrontPotEnvelope1": {
+          "common_mm3": 0.0,
+          "clearance_mm": 0.0,
+          "valid": true
+        },
+        "FrontPotEnvelope2": {
+          "common_mm3": 0.0,
+          "clearance_mm": 0.0,
+          "valid": true
+        },
+        "FrontPotEnvelope3": {
+          "common_mm3": 0.0,
+          "clearance_mm": 0.0,
+          "valid": true
+        },
+        "FrontPotEnvelope4": {
+          "common_mm3": 0.0,
+          "clearance_mm": 0.0,
+          "valid": true
+        },
+        "FrontPotEnvelope5": {
+          "common_mm3": 0.0,
+          "clearance_mm": 0.0,
+          "valid": true
+        },
+        "FrontPotEnvelope6": {
+          "common_mm3": 0.0,
+          "clearance_mm": 0.0,
+          "valid": true
+        },
+        "FrontPotBushing1": {
+          "common_mm3": 0.0,
+          "clearance_mm": 0.4999999999999954,
+          "valid": true
+        },
+        "FrontPotBushing2": {
+          "common_mm3": 0.0,
+          "clearance_mm": 0.49999998892253744,
+          "valid": true
+        },
+        "FrontPotBushing3": {
+          "common_mm3": 0.0,
+          "clearance_mm": 0.4999999999999954,
+          "valid": true
+        },
+        "FrontPotBushing4": {
+          "common_mm3": 0.0,
+          "clearance_mm": 0.49999999999999856,
+          "valid": true
+        },
+        "FrontPotBushing5": {
+          "common_mm3": 0.0,
+          "clearance_mm": 0.49999999999999784,
+          "valid": true
+        },
+        "FrontPotBushing6": {
+          "common_mm3": 0.0,
+          "clearance_mm": 0.4999999999999977,
+          "valid": true
+        },
+        "FrontShaft1": {
+          "common_mm3": 0.0,
+          "clearance_mm": 1.9999999999999953,
+          "valid": true
+        },
+        "FrontShaft2": {
+          "common_mm3": 0.0,
+          "clearance_mm": 1.9999999889225353,
+          "valid": true
+        },
+        "FrontShaft3": {
+          "common_mm3": 0.0,
+          "clearance_mm": 1.9999999999999953,
+          "valid": true
+        },
+        "FrontShaft4": {
+          "common_mm3": 0.0,
+          "clearance_mm": 1.9999999999999947,
+          "valid": true
+        },
+        "FrontShaft5": {
+          "common_mm3": 0.0,
+          "clearance_mm": 1.9999999999999962,
+          "valid": true
+        },
+        "FrontShaft6": {
+          "common_mm3": 0.0,
+          "clearance_mm": 1.9999999999999982,
+          "valid": true
+        },
+        "CherryEnvelope1": {
+          "common_mm3": 0.0,
+          "clearance_mm": 2.3849999999999945,
+          "valid": true
+        },
+        "CherryEnvelope2": {
+          "common_mm3": 0.0,
+          "clearance_mm": 2.3849999999999945,
+          "valid": true
+        },
+        "CherryEnvelope3": {
+          "common_mm3": 0.0,
+          "clearance_mm": 2.3849999999999945,
+          "valid": true
+        },
+        "CherryEnvelope4": {
+          "common_mm3": 0.0,
+          "clearance_mm": 2.3849999999999945,
+          "valid": true
+        }
+      },
+      "scope": "Continuous vertical subset path only; NOT full assembly"
+    },
+    "poses": {
+      "subset_dz_mm": [
+        -55,
+        -20.1,
+        -5.1,
+        -2,
+        0
+      ],
+      "rotation_reference_yz_mm": [
+        59.18340486684618,
+        16.2
+      ],
+      "reference_note": "Trial coordinate reference, not a required physical hinge",
+      "full_static": "33 represented objects: zero common volume at the nominal final pose",
+      "full_trial_degrees": [
+        1,
+        2,
+        4.1
+      ],
+      "full_trial_status": "BLOCKED; isolated poses do not certify transitions",
+      "additional_interpolation": "Not completed after OCC stall; excluded from evidence"
+    },
+    "measures_mm": {
+      "pcb_y_trial": {
+        "minus_0_39_common_mm3": 0,
+        "minus_0_40_common_mm3": 0.011722935792504162
+      },
+      "pot_radial_clearance": {
+        "shaft": 2,
+        "bushing": 0.5
+      },
+      "horizontal_rear_release": {
+        "jack": 8.764495824435137,
+        "master_shaft": 19.80801992837302,
+        "usb_envelope": 1.9302053828705397
+      },
+      "lower_0_4": {
+        "usb_lower_penetration": 0.4
+      },
+      "lower_0_5": {
+        "usb_lower_penetration": 0.5,
+        "jack_radial_penetration_approx": 0.1
+      },
+      "pitch_1": {
+        "encoder_radial_penetration": 0.214929,
+        "usb_vertical_penetration_approx": 0.018
+      },
+      "pitch_2": {
+        "rear_pot_radial_penetration": 0.127821,
+        "front_pot_radial_penetration": 0.162565,
+        "encoder_radial_penetration": 0.545497
+      },
+      "pitch_4": {
+        "jack_body_normal_penetration": 0.1427,
+        "master_body_normal_penetration": 0.352044
+      },
+      "pitch_4_1": {
+        "rear_pot_radial_penetration": 0.817215,
+        "encoder_radial_penetration": 1.291622,
+        "front_bushing_zmax": 31.765095,
+        "rear_bushing_zmax": 35.840449
+      },
+      "local_placement_trial": {
+        "inward_y": 0.5,
+        "pitch_deg": 4,
+        "jack_body_common_mm3": 0,
+        "master_body_common_mm3": 0,
+        "applied": false,
+        "pcb_pad_compatibility": "not established; remaining collisions make this insufficient"
+      },
+      "method": "Finite native shapes; radial excess from local roof-slab tessellation at 0.002 mm deflection; normal penetration against known rear plane. Screening, not certified tolerance."
+    },
+    "changed_dimensions": {
+      "jack_shoulder_y": [
+        57.819795,
+        58
+      ],
+      "master_shoulder_y": [
+        57.819795,
+        58
+      ]
+    },
+    "unchanged_apertures_mm": {
+      "pot_diameter": 10,
+      "encoder_diameter": 7.2,
+      "jack_diameter": 12,
+      "master_diameter": 10,
+      "usb": [
+        8.94,
+        3.45
+      ]
+    },
+    "local_single_hole_angle_deg": {
+      "shaft": 42.65017409567593,
+      "bushing": 16.74188992446538,
+      "scope": "Centred axis in 2 mm panel, not an assembly angle limit"
+    },
+    "minimum_assembly_angle_deg": {
+      "subset": 0,
+      "full": null
+    },
+    "OCC_location_warning": {
+      "encoder_at_4_1_deg_location_common_mm3": 0,
+      "baked_common_mm3": 16.47454373045796,
+      "use": "Baked transforms used for reported inclined collision witnesses"
+    },
+    "excluded": [
+      "Display PCB thickness and PCB-to-glass distance",
+      "DAC physical stack/retention; keep-in only",
+      "Unrepresented clips, terminals and solder",
+      "Antenna cable and previously unregistered electronics"
+    ],
+    "constraints": "No open slots, no new compensation, no original shell edits, no KiCad changes; no full-assembly feasibility claim"
   }
 }

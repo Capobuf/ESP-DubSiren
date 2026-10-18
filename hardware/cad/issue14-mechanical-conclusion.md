@@ -1,175 +1,86 @@
-# Issue 14 — studio aggiornato con aperture posteriori chiuse
+# Issue 14 — inserimento geometrico
 
-18 ottobre 2026. PR #18, stesso branch e unico [assembly.FCStd](assembly.FCStd).
+**NON ANCORA DIMOSTRATO per il gruppo completo.** PCB candidata e potenziometri passano verticalmente dal fondo. I connettori posteriori impediscono quella sequenza; la manovra inclinata incontra anche boccole posteriori ed encoder. Non è una dimostrazione di impossibilità di altre manovre. PR #18, 18 ottobre 2026; dati di partenza e8e5a74.
 
-**Il percorso completo d'inserimento non è ancora verificato. Le asole aperte
-fino al fondo sono state respinte dall'utente e rimosse dal CAD, dagli script
-e dalle viste consegnate. Non costituiscono una soluzione proposta.**
+## Configurazione
 
-Sono implementati una correzione della simulazione, una sagoma PCB candidata,
-gli ingombri significativi disponibili e una nuova soluzione nominale di
-appoggio posteriore con compensatori anulari. Il lavoro risolve il precedente
-deficit assiale MASTER nel modello nominale, ma non soddisfa ancora tutti i
-criteri di accettazione del montaggio. Nessuna foratura o lavorazione autorizzata.
+Nell'unico [assembly.FCStd](assembly.FCStd), jack e MASTER sono ripristinati alle posizioni nominali precedenti alla compensazione. Il gruppo **ManualInsertion** contiene composti FreeCAD nativi collegati alle sorgenti, con un'unica trasformazione rigida per posa. **InsertionGeometry** contiene le sezioni. Dadi, manopole, compensatori e appoggio custom encoder sono esclusi dall'inserimento. **OptionalCompensation**, nascosto, conserva componenti compensati e ferramenta; le vecchie sezioni sono nascoste. Scocca originale intatta.
 
-## A. Risultato consigliato e limiti
+Gruppo completo: **33 oggetti rappresentati**. Sottogruppo: 28, escludendo jack, USB e i tre oggetti MASTER. Il DAC è soltanto una riserva volumetrica. Restano mancanti spessore PCB e distanza PCB-vetro del display 5393, stack/fissaggio reale DAC, terminali/clip non rappresentati, saldature, cavo antenna e altri ingombri già esclusi. Il montaggio completamente popolato non è validato.
 
-Conservare i fori chiusi e i componenti acquistati. La proposta utile da esaminare
-è il serraggio con compensatori interni/esterni a 1°: il compensatore esterno
-MASTER **sostituisce** la rondella piana, anziché aggiungersi al vecchio stack.
-L'arretramento dei due componenti è 0,180205 mm; le sei spalle pot e la PCB
-rimangono alle quote acquisite. I compensatori sono componenti custom da
-approvare, non accessori commerciali già selezionati.
+## Geometria prima del movimento
 
-Non consiglio di forare o trasferire questa sagoma a KiCad: manca il percorso
-completo. Non ho dimostrato l'impossibilità di ogni moto 6DOF e non la deduco
-dall'esito negativo delle ricerche locali. Non presento alternative non verificate
-come soluzioni realizzabili.
+| Misura nominale | Risultato |
+|---|---|
+| PCB 86 × 112 × 1,6, angoli smussati | Passa verticalmente; distanza minima **0,2506 mm** dalle quattro zone delle colonne, vicino a X±40,204 / Y±53,355 / Z24,3 |
+| Apertura inferiore a Z4 | Ingombro libero centrale 91,492 × 116,792; colonne/nervature restringono gli angoli, quindi non è un rettangolo completamente libero |
+| Arretramento Y della PCB in posa finale | −0,39 mm senza intersezione; −0,40 introduce un piccolo contatto agli angoli. Limite relativo a questa posa |
+| Pot: corpo / boccola / albero | Corpo Z24,3…31,8; Ø9 Z31,8…36,8; Ø6 Z36,8…51,8; foro Ø10; pannello Z31,8…33,8 |
+| Disimpegno verticale pot | Boccole completamente sotto il pannello oltre 5 mm; alberi oltre 20 mm |
+| Gioco radiale pot | Boccola **0,5 mm**, albero **2 mm**; cilindri limitati alle lunghezze fisiche |
+| Inclinazione locale nel solo foro pot | Asse centrabile in un pannello da 2 mm: circa 16,74° per Ø9, 42,65° per Ø6, dalla relazione r/cos(a) + tan(a) ≤ 5. Non sono angoli consentiti all'intero assieme |
+| Arretramento orizzontale per liberare la parete interna | Jack circa **8,76 mm**, punta MASTER **19,81 mm**, inviluppo bocca USB circa **1,93 mm**. Corse complete di disimpegno, non giochi dei fori |
 
-## B. Modifiche prima/dopo
+Le corse posteriori usano la parete interna già nota Y + tan(1°) Z = 58,4660. Nessun nuovo studio di appoggio sulla parete inclinata.
 
-| Elemento | Baseline | Studio attuale | Stato |
-|---|---|---|---|
-| Sei fori pot | Ø10 | Ø10, centri invariati | Conservati |
-| Encoder | Ø7,2 | Ø7,2 | Conservato |
-| Jack / MASTER | Ø12 / Ø10 chiusi | Ø12 / Ø10 chiusi | Conservati; nessuna asola |
-| USB | 8,94×3,45 | Invariata nel CAD attivo | Gioco funzionale ancora da assegnare |
-| Spalle jack e MASTER Y | 58 | 57,819795 | Proposta CAD, non KiCad |
-| Spalle pot / F.Cu / B.Cu | 31,8 / 24,3 / 22,7 | Invariate | Battuta pot conservata |
-| Compensatori | Esempio min0,5 non implementato | Anulari min0,25 implementati | Parametro progettuale da approvare |
-| MASTER esterno | Dado2 + rondella0,5 + compensatore | Dado2 sul compensatore-rondella | Recupera0,5 mm; residuo nominale0,203 |
-| Encoder interno | Vuoto1 mm | Anello Ø12/Ø7,2 ×1 | Appoggio CAD, non distanziale pot |
-| PCB | Solo piano | Ottagono 1,6 mm | Sagoma candidata senza forature |
+| XY: PCB blu e ostacoli sotto Z24,3 | Y-Z: pot a X0 |
+|---|---|
+| ![Passaggio inferiore](issue14-insertion-xy.png) | ![Corpo, boccola e albero](issue14-insertion-pot-section.png) |
 
-Vertici PCB XY in mm: (−38;−56), (38;−56), (43;−50), (43;50), (38;56),
-(−38;56), (−43;50), (−43;−50). Ingombro massimo86×112, non rettangolare.
-Nessuna modifica di sagoma/placement è stata trasferita al progetto KiCad.
+| Y-Z jack, X12,5 | Y-Z MASTER, X−31 | Y-Z USB, X−17,5 |
+|---|---|---|
+| ![Jack](issue14-insertion-jack-section.png) | ![MASTER](issue14-insertion-master-section.png) | ![USB](issue14-insertion-usb-section.png) |
 
-Per USB il disegno GCT RevB conservato quota8,94 con tolleranza generale X.XX
-±0,20: **9,14 mm è soltanto il limite per la larghezza massima del componente**.
-La larghezza produttiva deve soddisfare
-`W ≥ 9,14 + 2(gioco funzionale + errore placement + errore taglio)`.
-I termini mancanti non sono stati inventati. Non è quindi dichiarato un minimo
-comprensivo di un gioco di montaggio che non è ancora definito. Gli aumenti
-USB usati nella ricerca sono sonde diagnostiche, non nuove quote da forare.
+## Cinque pose: percorso verificato SOLO senza connettori posteriori
 
-## C. Simulazione corretta e prova disponibile
+Tenere il sottogruppo orizzontale, centrare gli angoli smussati tra le colonne e sollevare verticalmente. **Queste viste non sono istruzioni valide per montare la PCB completamente popolata.** La mezza scocca è una sezione visiva; le collisioni sono controllate sulla scocca intera.
 
-La funzione esistente `search_engaged_phase` ora include boccole **e alberi
-finiti**, verifica anche i cerchi terminali e attiva i vincoli delle generatrici
-soltanto lungo il segmento fisico. Un valore negativo di
-`generator_phase_min_mm` non respinge più automaticamente una posa. Restano
-variabili tutte e tre le traslazioni, pitch, roll e yaw.
+| Posa rispetto alla battuta | Vista |
+|---|---|
+| 1 — ingresso dal fondo, ΔZ −55 mm | ![Ingresso del sottogruppo](issue14-insertion-subsetentry.png) |
+| 2 — punte appena sotto il pannello, ΔZ −20,1 mm | ![Ingresso degli alberi](issue14-insertion-subsetshafts.png) |
+| 3 — alberi impegnati, boccole ancora sotto, ΔZ −5,1 mm | ![Solo alberi nei fori](issue14-insertion-subsetbushings.png) |
+| 4 — boccole impegnate, ΔZ −2 mm | ![Impegno boccole](issue14-insertion-subsetengaged.png) |
+| 5 — battuta dei sei pot, ΔZ 0 | ![Battuta del sottogruppo](issue14-insertion-subsetseated.png) |
 
-Il candidato a pitch1°, traslazione(−0,276246;+0,113847;−0,196604) mm,
-roll−0,047836°, yaw+0,350408°, con sonda USB9,54×4,05, non mostra collisioni
-nei solidi controllati nella **singola posa**. Non prova un percorso continuo.
+**Tutti gli spostamenti intermedi sono verificati:** i volumi spazzati lungo i 55 mm sono prismi e cilindri allungati, confrontati con la scocca in OCC. Nessuna intersezione volumetrica per i 28 oggetti. Non dipende da pose isolate o dal passo di campionamento. Distanze minime: PCB 0,2506; boccole pot 0,5; alberi pot 2; encoder 0,1; CHERRY 2,385 mm. Contatto finale delle spalle intenzionale. Angolo minimo del sottogruppo: **0°**.
 
-A pitch2°, traslazione(−0,081617;+0,206327;+0,341818), roll−0,619436°,
-yaw+0,359821°, il controllo OCC trova:
+## Gruppo completo: interferenze e disimpegno
 
-| Oggetti contro scocca forata | Intersezione mm³ |
-|---|---:|
-| Jack NRJ4HF | 5,083347 |
-| Boccola encoder | 1,814715 |
-| Corpo pot3 (inviluppo conservativo) | 2,711960 |
-| Boccola pot1 / pot2 | 1,450201 / 0,006233 |
-| Boccola pot4 / pot5 | 2,081650 / 0,174748 |
+La rotazione di prova usa l'asse X e il riferimento Y59,1834 / Z16,2, vicino all'asse jack. È una scelta per contenere lo spostamento del jack in questo tentativo, **non un perno fisico imposto**. Provati anche abbassamento puro, arretramento puro e inclinazione opposta con abbassamento. Nessuna ricerca 6DOF o flessione PCB.
 
-Le forme comuni sono valide; gli operandi invertiti riproducono i volumi.
-L'allargamento USB da solo non risolve **questo candidato**. Non è una prova
-di impossibilità generale e non giustifica allargare i fori frontali alla cieca.
+| Fase / posa | Misura in mm | Interpretazione / correzione locale |
+|---|---|---|
+| A — battuta, 0° | Nessuna intersezione dei 33 oggetti; USB senza gioco funzionale | Posa statica, non prova d'inserimento |
+| B — abbassa 0,4 | USB: penetrazione inferiore **0,40** | Occorrerebbe almeno 0,40 in basso per questa sola posa |
+| B — abbassa 0,5 | Jack: circa **0,10** oltre il gioco radiale; USB **0,50** | Il contatto jack è modesto; correggerlo non libera le boccole pot |
+| B — inclina +1° | Encoder: penetrazione radiale **0,215**; USB circa **0,018** | Recuperi locali possibili, insufficienti a completare il movimento |
+| C — +2° | Boccole pot: **0,128** fila Y42, **0,163** fila Y−15; encoder **0,545** | I pot richiederebbero pochi decimi, l'encoder è già un ostacolo maggiore |
+| C — +4° | Corpi jack / MASTER contro parete: **0,143 / 0,352** nella normale | Arretrare entrambi di 0,5 elimina questi due contatti nella posa; restano pot ed encoder |
+| C — +4,1° | Boccole Y−15 libere: Zmax **31,765**; solo alberi nei loro fori | La differenza Ø6/Ø9 è effettivamente sfruttata |
+| C — +4,1° | Boccole Y42: penetrazione radiale **0,817**; encoder **1,292**; boccole posteriori Zmax **35,840** | Sequenza bloccata. Richiederebbe localmente almeno Ø11,635 e Ø9,784: **non applicati né proposti come soluzione** |
+| Alternativa: arretra 0,5 a 0° | Encoder **0,40** radiale; primi contatti PCB/colonne | Recuperare pochi centesimi sulla PCB non fornisce le corse posteriori di 8,76 / 19,81 mm |
+| Alternativa: arretra 2 a 0° | Pot **1,50**, encoder **1,90**, PCB contro colonne | Non risolve il disimpegno posteriore |
+| Alternativa: −1°, abbassamento 1,1 rispetto al riferimento pot | Jack, USB e MASTER interferiscono; spigoli dei corpi pot anteriori circa **0,012** sopra battuta | Il contatto minimo dei pot non è il motivo di arresto; persistono i posteriori |
+| D — uscita dal fondo del gruppo completo | Nessun collegamento verificato dalla posa C all'uscita | Angolo minimo per il gruppo completo **non determinato** |
 
-È stata eseguita anche una ricerca diagnostica limitata con potØ13, encoderØ11,
-jackØ16,45, MASTERØ13, USB libera di5 mm per lato, traslazioni±15 mm e
-roll/yaw±5°. Sono dimensioni di screening, **mai applicate al CAD**. Emerge
-un candidato locale a4°; da8° il margine necessario ottimizzato è negativo
-(−0,538 mm). Nessun percorso completo trovato; ricerca fermata senza proseguire
-indefinitamente. I risultati grezzi restano nel JSON con i limiti espliciti.
+Penetrazioni radiali ricavate dalle sezioni finite nel pannello con discretizzazione locale OCC; i millesimi servono al confronto, non definiscono tolleranze produttive. Boccole e corpi metallici/plastici sono trattati rigidi; scocca plastica e PCB non sono deformate. Nessun esito è basato sul solo volume comune. I centesimi sono segnalati, non usati automaticamente per fermare lo studio. Nessun carico su saldature è giustificato.
 
-La sequenza iniziale → impegno posteriore → raddrizzamento → battuta non viene
-illustrata come riuscita: mancherebbe la verifica delle transizioni richiesta.
-L'immagine storica d'inserimento resta una diagnostica precedente, non una prova
-corrente. Le nuove viste mostrano esclusivamente la posa finale e il serraggio.
+![Tentativo completo a 4,1°: BLOCCATO](issue14-insertion-blocked.png)
 
-### Sagoma e copertura dei solidi
+## Quote effettivamente cambiate
 
-Aggiunti PCB candidata, inviluppi CHERRY15,63×15,63×18,5 (3,3 sotto PCB dal
-layout MX, 15,2 sopra), ESP32-1U con massimi18,4×19,6×3,35 e XY U1 restituiti
-da Konnect, e riserva DAC30,48×20,32 a Z10…22,7. Quest'ultima è uno spazio
-progettuale, **non lo spessore fisico del breakout**. I dati sono dai documenti
-conservati; non sono stati inventati modelli dettagliati mancanti.
-
-Restano esclusi stack fisico display/DAC, fissaggi DAC, clip/terminali pot ed
-encoder non rappresentati, eccedenze di saldatura, cavo antenna, RESET/BOOT e
-altri gruppi non registrati. I loro placement PCB esistenti non sono automaticamente
-compatibili con la nuova sagoma. Il blocco completamente popolato resta NON VALIDATO.
-
-Nella posa finale i 36 solidi inclusi sono validi e non intersecano la scocca
-con aperture chiuse. Questo controllo statico non certifica il movimento.
-
-## D. Serraggio e copertura
-
-| Quota nominale mm | Jack | MASTER |
+| Quota | Studio compensato precedente | Inserimento nominale attivo |
 |---|---:|---:|
-| Compensatore interno min…max | 0,250…0,471679 | 0,250…0,541500 |
-| Compensatore esterno min…max | 0,250…0,554591 | 0,250…0,494371 |
-| Piano appoggio dado Y | 60,585853 | 60,616835 |
-| Naso/boccola oltre appoggio | 6,083942 | 2,202959 |
-| Dado: ingombro assiale | 4,75 | 2,00 |
-| Residuo oltre dado | 1,333942 | **0,202959** |
+| Spalla jack Y | 57,819795 | **58,000000** |
+| Spalla MASTER Y, corpo/boccola/albero solidali | 57,819795 | **58,000000** |
 
-Il residuo jack è riferito alla punta del naso, non alla filettatura utile.
-Il minimo0,25 è un parametro progettuale: non è una prestazione certificata
-del materiale. Il deficit MASTER precedente è eliminato nominalmente usando
-il dado M9×0,75 SW11×2 del riferimento reale Alps RKZ00023UA senza la sua
-rondella piana; l'anello inclinato esterno svolge la funzione di rondella.
-Tolleranze, materiale, coppia e resistenza restano da verificare.
+Nessun foro o contorno PCB cambiato. L'arretramento diagnostico di 0,5 mm non è applicato; compatibilità con pad/fissaggio non validata. Non risolvendo il percorso, non giustifica una modifica al layout. Nessuna nuova apertura richiede una nuova verifica di copertura della ferramenta/manopole.
 
-Il carico nominale segue corpo → compensatore interno → scocca → compensatore
-esterno → dado. Non si usa il dado per tirare la PCB fuori dalla battuta dei pot.
-Il contatto piano del dado è rappresentato nelle sezioni native modificabili.
-Il controllo OCC dei quattro compensatori contro la scocca e dei due dadi
-contro i compensatori esterni restituisce volume comune nullo e distanza
-inferiore a 0,000001 mm: contatto nominale senza compenetrazione.
+## Verifica e limiti
 
-![Jack, sezione con compensatori anulari](issue14-jack-clamp.png)
-![MASTER, compensatore esterno al posto della rondella](issue14-master-clamp.png)
+Dati in **nrj4hf-validation.json** e nell'oggetto **InsertionGeometryResults**. Le pose inclinate usano trasformazioni incorporate nelle forme: OCC aveva restituito un falso zero sulla boccola encoder a 4,1° usando solo Placement; il controllo incorporato trova 16,475 mm³. L'ulteriore campionamento diagnostico inclinato, interrotto da un blocco OCC, **non è usato come prova**. La prova continua del sottogruppo era già conclusa e ne è indipendente.
 
-| Gruppo | Copertura estetica | Appoggio nominale | Fissaggio definitivo |
-|---|---|---|---|
-| Pot + Davies1100 | PASS in proiezione, baseline conservata | PASS dimensionale con rondellaØ14/Ø9,1×0,5 e dadoSW11×2; residuo0,5 | NON VALIDATO: accessorio da approvare, tolleranze/coppia e incavo manopola |
-| Jack + NRJ-NUT-B | PASS in proiezione sul foroØ12 | PASS geometrico con compensatori | NON VALIDATO: filetto utile e resistenza degli appoggi |
-| MASTER + CliffK85M | PASS in proiezione; posizione assiale NON VALIDATA | PASS dimensionale con compensatore-rondella e dado2; residuo0,203 | NON VALIDATO: incavoCliffØ12 contro diagonaleSW11≈12,70, piatto4,5/5AF e tolleranze |
-| Encoder + SAK023 | PASS in proiezione; gonna ancora9,9 sopra pannello | PASS nominale con appoggio interno1; ferramenta PEC11R e residuo1,5 | NON VALIDATO: accoppiamento, tolleranze; quota estetica rialzata da accettare |
+Per riprodurre soltanto la prova continua, caricare issue14-mechanical-check.py nella console FreeCAD, chiamare **vertical_insertion_sweep(App.ActiveDocument)** e verificare che ogni common_mm3 sia inferiore a 1e-6. Nessuna vecchia ricerca da rilanciare.
 
-Per encoder è implementato soltanto l'appoggio interno1 mm, mantenendo albero
-e manopola acquistati integri. Questo impedisce il recupero forzato del vuoto,
-**non abbassa la gonna SAK**. Le due quote fisiche display restano sconosciute.
-
-## E. Stato della consegna e decisioni
-
-Non è disponibile una soluzione d'inserimento verificata che soddisfi tutti i
-vincoli attuali. Non chiedo di approvare lavorazioni sulla base di questo risultato.
-La proposta anelli/sagoma è esaminabile, ma non va trasferita a produzione o KiCad.
-L'altezza SAK9,9 richiede una scelta estetica; per chiudere il display rimangono
-necessari spessore fisico PCB e distanza PCB-vetro.
-
-Riproduzione nella console FreeCAD, assieme aperto:
-
-```python
-from pathlib import Path
-p = Path(App.ActiveDocument.FileName).with_name('issue14-mechanical-check.py')
-exec(compile(p.read_text(encoding='utf-8'), str(p), 'exec'))
-s = search_engaged_phase(App.ActiveDocument, usb_margin=0.3, angles=[0,1,2,4,6,8,12,16])
-r = local_pose_check(App.ActiveDocument, s, angle=2)
-```
-
-La ricerca locale dura circa15 secondi sulla macchina di lavoro. Non è un test
-pass/fail del montaggio completo. `solution_study` rigenera i solidi della proposta
-nel solo assieme e modifica il documento. Nel JSON, lo studio precedente è
-conservato in `historical_baseline.before_closed_aperture_study`.
-Nessun merge, chiusura issue14, nuova PR, routing, firmware, KiCad o STL.
-
-
-La baseline del commit8dc4981 è conservata nel JSON e nello storico Git; non è stata rieseguita.
+Assieme salvato e riaperto; geometrie e collegamenti verificati. Nessun merge, modifica KiCad, routing, firmware o lavorazione. **Verificare queste viste prima di qualunque trasferimento a KiCad; il percorso del gruppo completo resta da dimostrare.**
