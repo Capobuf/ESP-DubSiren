@@ -62,6 +62,14 @@ Il layout frontale Gate A rimane invariato.
 | Inserimento PCB | NON VALIDATO | Sagoma, supporti e assieme popolato completo non definiti; nessun percorso continuo dimostrato |
 | Fissaggio tramite dado | NON VALIDATO | Inviluppo D17,45 x 4,75; dislivello della parete sul dado 0,305 mm; filettatura, accesso utensile e serraggio senza sforzi da verificare |
 
+La posa CAD attuale **non rappresenta un serraggio verificato**. La spalla del
+jack è sul piano Y58 e la faccia interna del dado su Y60,345: separazione 2,345 mm
+contro 2,000305 mm di parete lungo l'asse. Lo scarto fra i piani è 0,344695 mm.
+La parete inclinata lascia distanze variabili: sul corpo, da circa 0,079 a 0,300 mm;
+sull'inviluppo del dado, da circa 0,00042 a 0,305 mm. I valori sono geometria nominale,
+non una previsione di deformazione o di tenuta. Non sono stati introdotti spessori,
+rondelle o elasticità presunte per dichiarare il serraggio riuscito.
+
 La cavità nominale resta 29,7 mm. Il nuovo corpo risolve il deficit di altezza del precedente RCA
 nella posa diagnostica, ma **6,9 mm è un margine nominale**, non un bilancio completo di tolleranze
 PCB/pot/connettore. Il corpo è a soli **0,0785 mm dalla parete originale** nella posa scelta:
@@ -84,6 +92,18 @@ contemporaneo di jack/USB/MASTER → raddrizzamento → fissaggio → dado ester
 supporti e ingombri completi per provare un percorso continuo. Non sono definiti angoli o traslazioni
 fittizi e non è stata generata una dima 3D/STL non validata.
 
+È stata aggiunta una **verifica parziale indipendente dal display**: sei cilindri
+M9 × 5 mm rappresentano le sole boccole dei potenziometri, con base Z31,3;
+le aperture frontali D9,2 sono quelle proposte al Gate A. La sonda
+`MountingAperturesProbe` è una copia diagnostica della scocca, non modifica l'originale.
+Nella posa finale jack e boccole non intersecano questa sonda. Traslando il gruppo
+di 0,2 mm verso il fondo, il jack interseca la scocca per 4,480 mm³; arretrandolo
+di 0,2 mm lungo −Y, le boccole la intersecano per 7,347 mm³.
+Queste due prove escludono soltanto i movimenti rettilinei testati nel modello
+nominale ridotto: **non dimostrano che un percorso inclinato sia impossibile**.
+Il filetto semplificato del jack e i giochi ancora da verificare limitano ulteriormente
+la prova. Nessuna sequenza completa è stata approvata.
+
 ## Controlli e limiti del progetto
 
 Verifica elettrica della PR #17, 18 ottobre 2026: ERC senza errori o warning. Il confronto DRC prima/dopo conserva
@@ -99,10 +119,15 @@ encoder con Same Sky SAK-023 e quattro pulsanti a passo 22 mm; Cliff K85M per il
 I keycap hanno una riserva di progetto 20 x 20 mm, non una misura verificata.
 L'utente ha autorizzato lo studio Gate B mantenendo il layout provvisorio. Display a filo,
 componenti completi, tolleranze e montaggio restano da validare. Nessuna approvazione automatica del Gate B.
-Per la sezione del display mancano lo spessore reale della PCB del modulo e la quota
-della superficie del vetro rispetto alla faccia superiore della PCB. Lo spessore totale
-5,4 mm pubblicato da Adafruit non separa queste quote né gli ingombri posteriori.
-La verifica fisica è stata richiesta; nessuna quota del vetro è stata inventata.
+Per la sezione del display, **entrambe le quote restano da verificare sul componente
+reale**: spessore PCB e distanza fra faccia superiore della PCB e superficie del vetro.
+Il file Eagle originale conservato (`73022f6`) usa `layerSetup=(1*16)`,
+`mtIsolate=1.5mm` e `mtCopper=0.035mm` per lato: **1,57 mm è soltanto lo stackup
+CAD nominale**, non uno spessore fisico certificato. Non viene usato per fissare
+l'altezza del modulo nell'assieme. I 5,4 mm complessivi pubblicati da Adafruit
+non separano le due quote né gli ingombri posteriori. Il relativo accoppiamento
+verticale display/PCB/contenitore rimane NON DEFINITIVO; nessuna quota del vetro
+è stata inventata. In `nrj4hf-validation.json` le due quote fisiche sono `null`.
 La proposta CAD è stata salvata e riaperta: forme OCC valide, volume comune nullo
 fra J2 e i sei inviluppi, distanza minima 1,52 mm riprodotta. Tavola SVG/PNG
 controllata visivamente. Nessuna nuova verifica ERC/DRC: i file KiCad non sono cambiati.

@@ -255,5 +255,111 @@
     ],
     "proposed_min_distance": 1.5199999999999996,
     "status": "PASS nominal body-envelope screen only; pin/clip/full assembly check pending"
+  },
+  "display_vertical_coupling": {
+    "status": "NON VALIDATO; both dimensions require real-component verification",
+    "physical_pcb_thickness_mm": null,
+    "pcb_top_to_glass_mm": null,
+    "nominal_eagle_stackup_mm": 1.57,
+    "nominal_stackup_source": {
+      "revision": "73022f63a4b82117093ff5c250c119b6720005df",
+      "file": "sources/adafruit-5393/Adafruit 1.47in 320x172 Round Rectangle TFT.brd",
+      "layerSetup": "(1*16)",
+      "dielectric_mm": 1.5,
+      "copper_per_active_layer_mm": 0.035
+    },
+    "scope": "Nominal CAD data only; not used as certified physical thickness or to infer glass height. Overall module5.4mm cannot separate PCB/glass/rear parts."
+  },
+  "clamping_geometry": {
+    "status": "CAD pose is not a validated tightened mounting",
+    "jack_shoulder_y": 58,
+    "nut_bearing_y": 60.345,
+    "parallel_reference_plane_separation": 2.345,
+    "wall_thickness_along_axis": 2.0003046560878346,
+    "reference_plane_excess_over_wall": 0.3446953439121656,
+    "wall_samples": [
+      {
+        "z": 6.975,
+        "inner_wall_y": 58.344275512765066,
+        "outer_wall_y": 60.3445801688529,
+        "inner_reference_gap": 0.3442755127650656,
+        "outer_reference_gap": 0.0004198311470986482
+      },
+      {
+        "z": 9.5,
+        "inner_wall_y": 58.30020147382132,
+        "outer_wall_y": 60.30050612990915,
+        "inner_reference_gap": 0.3002014738213177,
+        "outer_reference_gap": 0.0444938700908466
+      },
+      {
+        "z": 15.7,
+        "inner_wall_y": 58.19198007126637,
+        "outer_wall_y": 60.192284727354206,
+        "inner_reference_gap": 0.1919800712663715,
+        "outer_reference_gap": 0.15271527264579277
+      },
+      {
+        "z": 22.2,
+        "inner_wall_y": 58.07852214923295,
+        "outer_wall_y": 60.07882680532079,
+        "inner_reference_gap": 0.07852214923295264,
+        "outer_reference_gap": 0.26617319467921163
+      },
+      {
+        "z": 24.425,
+        "inner_wall_y": 58.03968462976767,
+        "outer_wall_y": 60.03998928585551,
+        "inner_reference_gap": 0.03968462976767029,
+        "outer_reference_gap": 0.3050107141444869
+      }
+    ],
+    "caution": "Reference gaps sampled on planes, not claimed contact at the center of the bore. No elastic deformation, thread engagement or additional washers assumed."
+  },
+  "partial_insertion_probes": {
+    "scope": "Jack and six nominal M9x5 bushing cylinders only. Does not include full populated PCB or display; cannot validate or exclude a complete tilted path. Thread is simplified by source STEP. Two straight translation probes only.",
+    "bushing_base_z": 31.3,
+    "bushing_diameter": 9,
+    "bushing_length": 5,
+    "pot_hole_diameter": 9.2,
+    "jack_hole_diameter": 11.2,
+    "sources": [
+      "Bourns-PTV-PTT.pdf page2 PTV111-3",
+      "Gate A front bore proposal",
+      "Neutrik_NRJ4HF.pdf"
+    ],
+    "poses": [
+      {
+        "pose": "final",
+        "translation_mm": [
+          0,
+          0,
+          0
+        ],
+        "jack_shell_common_mm3": 0.0,
+        "front_bushings_shell_common_mm3": 0.0
+      },
+      {
+        "pose": "vertical_withdrawal",
+        "translation_mm": [
+          0,
+          0,
+          -0.2
+        ],
+        "jack_shell_common_mm3": 4.480444286744898,
+        "front_bushings_shell_common_mm3": 0.0
+      },
+      {
+        "pose": "rear_connector_retraction",
+        "translation_mm": [
+          0,
+          -0.2,
+          0
+        ],
+        "jack_shell_common_mm3": 0.0,
+        "front_bushings_shell_common_mm3": 7.347395016982416
+      }
+    ],
+    "conclusion": "Final nominal partial pose clear; both tested straight withdrawal motions interfere. Complete insertion remains unverified."
   }
 }

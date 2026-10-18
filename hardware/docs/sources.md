@@ -65,3 +65,13 @@ Il loro uso è limitato allo screening conservativo delle interferenze.
 Per il display, la [pagina Adafruit 5393](https://www.adafruit.com/product/5393)
 riporta 5,4 mm complessivi, senza separare PCB, vetro e componenti posteriori:
 questa quota non è stata trasformata in un'altezza del vetro presunta.
+Nel file Eagle conservato alla revisione `73022f63a4b82117093ff5c250c119b6720005df`,
+`layerSetup=(1*16)`, `mtIsolate=1.5mm` e `mtCopper=0.035mm` per lato danno
+1,57 mm di **stackup CAD nominale**. Conferma della fonte segnalata dall'utente,
+non certificazione dello spessore prodotto. Spessore PCB fisico e quota PCB-vetro
+restano entrambi da misurare; non guidano l'accoppiamento verticale definitivo.
+
+Le boccole frontali sono cilindri nominali M9 × 5 dal disegno Bourns PTV/PTT,
+pagina 2, estrusi sopra il piano frontale nominale del corpo a Z31,3. La filettatura
+e i componenti completi non sono modellati. Sono usate soltanto per due sonde
+rettilinee parziali di montaggio, senza dimostrazione del percorso inclinato completo.
