@@ -180,7 +180,7 @@ bool CommandParser::parse(const String &rawCommand) {
             if (value && !state.trigger) {
                 recordActivation(state);
             }
-            state.trigger = value;
+            state.trigger = value || physicalTrigger();
         } else if (name == "HOLD") {
             state.hold = value;
         } else if (name == "MOD_UP") {
@@ -351,7 +351,7 @@ bool CommandParser::parsePanelCommand(const String &command) {
         return false;
     }
     if (command == "PANEL_RESET") {
-        performance_.resetMomentaries();
+        resetRemoteInputs();
         return true;
     }
     if (command == "PAD_HOLD_TOGGLE") {
@@ -361,7 +361,7 @@ bool CommandParser::parsePanelCommand(const String &command) {
     if (command.startsWith("ENCODER_SWITCH ")) {
         bool pressed;
         if (!parseBool(command.substring(15), pressed)) return false;
-        performance_.setEncoderPressed(pressed);
+        setRemoteEncoderPressed(pressed);
         return true;
     }
     if (command.startsWith("ENCODER_ROTATE ")) {
@@ -419,7 +419,7 @@ bool CommandParser::parsePanelCommand(const String &command) {
         if (!parseFloat(arguments.substring(0, separator), pad) ||
             pad != static_cast<int>(pad) ||
             !parseBool(arguments.substring(separator + 1), pressed)) return false;
-        return performance_.setPad(static_cast<unsigned>(pad), pressed);
+        return setRemotePad(static_cast<unsigned>(pad), pressed);
     }
     return false;
 }

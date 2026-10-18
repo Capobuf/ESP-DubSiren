@@ -10,6 +10,36 @@ public:
     explicit CommandParser(ControlStore &controls)
         : controls_(controls), performance_(controls) {}
     bool parse(const String &command);
+    bool setPhysicalPad(unsigned pad, bool down) {
+        if (pad < 1 || pad > 4) return false;
+        physicalPads_[pad - 1] = down;
+        return performance_.setPad(pad, down || remotePads_[pad - 1]);
+    }
+    bool setRemotePad(unsigned pad, bool down) {
+        if (pad < 1 || pad > 4) return false;
+        remotePads_[pad - 1] = down;
+        return performance_.setPad(pad, down || physicalPads_[pad - 1]);
+    }
+    bool setPhysicalPot(unsigned pot, float position) { return performance_.setPot(pot, position); }
+    void setPhysicalEncoderPressed(bool down) { physicalEncoder_ = down; performance_.setEncoderPressed(down || remoteEncoder_); }
+    void setRemoteEncoderPressed(bool down) { remoteEncoder_ = down; performance_.setEncoderPressed(down || physicalEncoder_); }
+    void resetRemoteInputs() {
+        for (unsigned pad = 1; pad <= 4; ++pad) setRemotePad(pad, false);
+        setRemoteEncoderPressed(false);
+        bool physicalActive = physicalEncoder_;
+        for (bool down : physicalPads_) physicalActive |= down;
+        if (!physicalActive) performance_.resetMomentaries();
+    }
+    bool physicalTrigger() const {
+        const auto profile = profileIndex(controls_.snapshot().profile);
+        for (unsigned i = 0; i < 4; ++i) {
+            const auto action = performance_.settings().profiles[profile].buttons[i].action;
+            if (physicalPads_[i] && (action == ButtonAction::Trigger || action == ButtonAction::PlaySound)) return true;
+        }
+        return false;
+    }
+    void rotatePhysicalEncoder(int direction) { performance_.rotateEncoder(direction); }
+    void notifyPhysicalMaster() { performance_.notifyControlsChanged(); }
 
     unsigned panelRevision() const { return performance_.revision(); }
     unsigned panelMenuRevision() const { return performance_.menuRevision(); }
@@ -29,7 +59,7 @@ public:
         return performance_.menuItemValue(index);
     }
     const char *menuTitle() const { return performance_.menuTitle(); }
-    const char *menuFooter() const { return performance_.menuFooter(); }
+    const char *menuFooter() const { return deviceStatus_[0] ? deviceStatus_ : performance_.menuFooter(); }
     const char *overlayTitle() const { return performance_.overlayTitle(); }
     const char *overlayValue() const { return performance_.overlayValue(); }
     unsigned selectedPad() const { return performance_.selectedPad(); }
@@ -59,8 +89,13 @@ public:
     void setPersistenceStatus(const char *status) {
         performance_.setPersistenceStatus(status);
     }
+    void setDeviceStatus(const char *status) {
+        if (strcmp(deviceStatus_, status) == 0) return;
+        snprintf(deviceStatus_, sizeof(deviceStatus_), "%s", status);
+        performance_.notifyControlsChanged();
+    }
     const char *persistenceStatus() const {
-        return performance_.persistenceStatus();
+        return deviceStatus_[0] ? deviceStatus_ : performance_.persistenceStatus();
     }
     const char *buttonActionNameFor(PerformanceProfile profile,
                                     unsigned button) const {
@@ -89,6 +124,9 @@ private:
     static bool parsePanelSoundName(const char *text, PanelSound &sound);
     bool parsePanelCommand(const String &command);
 
+    bool physicalPads_[4] = {}, remotePads_[4] = {};
+    bool physicalEncoder_ = false, remoteEncoder_ = false;
+    char deviceStatus_[40] = {};
     ControlStore &controls_;
     PerformanceController performance_;
 };

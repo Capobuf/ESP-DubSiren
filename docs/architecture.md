@@ -158,7 +158,8 @@ An Extended pad activation updates the mode-specific configuration and an eight-
 activation ring in one `ControlStore` write. The audio engine transfers unseen
 events into the current block, preserving relative microsecond press intervals.
 There is no multi-block backlog: the ring retains the newest eight events;
-overwritten or simultaneous/superseded events increment `droppedActivations`.
+overwritten, stale (outside the newest block-sized timestamp window), or
+simultaneous/superseded events increment `droppedActivations`.
 The first captured event starts at the block boundary. A zero-duration Classic
 tap receives a 2 ms minimum gate and the usual 3 ms release; Extended keeps
 its 10 ms minimum gate and exponential/one-shot tails. Hardware input latency,
@@ -196,7 +197,8 @@ The PC has no oscillator, LFO, envelope, delay or filter implementation.
 
 ## Output routing
 
-`STREAM 0` disables both audio destinations without stopping USB control.
+`STREAM 0` disables USB PCM without stopping local I2S or USB control.
+`LOCAL_AUDIO 0` disables local I2S; it defaults to enabled after successful initialization.
 `STREAM 1` sends the same rendered block according to the atomic output mode:
 
 ```text

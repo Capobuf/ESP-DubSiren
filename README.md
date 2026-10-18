@@ -193,3 +193,12 @@ gli offset del pannello sono gestiti dalla libreria.
 Il funzionamento del display sull'hardware reale e l'integrazione del firmware
 con la scheda definitiva restano da verificare. La pulizia hardware della #15
 non modifica firmware, collegamenti elettrici o pinout.
+
+## Firmware per il pannello autonomo (issue #5-#12)
+
+La revisione aggiunge articolazioni Lickshot, Tone/Contour, Echo Color,
+menu Sound/Mod/Echo/Setup e quattro memorie Extended con SAVE/RECALL.
+Vedi [controlli](docs/controls.md), [menu e memorie](docs/panel-ui.md) e
+[pinout, build autonoma e verifiche hardware pendenti](docs/standalone.md).
+`STREAM 0` interrompe soltanto USB; `LOCAL_AUDIO 0` silenzia l'uscita locale.
+Le nuove tarature sonore richiedono ascolto e misure sull'ESP.

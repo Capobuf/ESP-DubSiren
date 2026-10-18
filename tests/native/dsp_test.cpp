@@ -1630,6 +1630,11 @@ void testShortTriggerEvents() {
     int16_t block[480]; engine->render(state, block, 480);
     assert(engine->droppedActivations() == 4);
     assert(engine->renderedActivations() == 8);
+    for (unsigned i = 0; i < 8; ++i) recordActivation(state, 200000 + i * 10000);
+    engine->render(state, block, 480);
+    assert(engine->renderedActivations() == 9 && engine->droppedActivations() == 11);
+    engine->render(state, block, 480);
+    assert(engine->renderedActivations() == 9);
 }
 
 void testTwoTonePitchTrajectories() {
@@ -1837,7 +1842,22 @@ void testPadMemories() {
     assert(restored.panelSettings().patches[0].state.tuneHz == 220);
 }
 
+void testPhysicalAndRemoteOwnership() {
+    ControlStore store; CommandParser parser(store);
+    assert(parser.setPhysicalPad(1, true));
+    const auto sequence = store.snapshot().activationSequence;
+    assert(parser.parse("PAD 1 1")); assert(parser.parse("PAD 1 0"));
+    assert(store.snapshot().trigger);
+    assert(parser.parse("PANEL_RESET")); assert(parser.parse("TRIGGER 0"));
+    assert(store.snapshot().trigger && store.snapshot().activationSequence == sequence);
+    assert(parser.setPhysicalPad(1, false)); assert(!store.snapshot().trigger);
+    assert(parser.parse("PAD 1 1")); assert(parser.setPhysicalPad(1, true));
+    assert(parser.setPhysicalPad(1, false)); assert(store.snapshot().trigger);
+    assert(parser.parse("PAD 1 0")); assert(!store.snapshot().trigger);
+}
+
 int main() {
+    testPhysicalAndRemoteOwnership();
     testPadMemories();
     testPerformanceMenu();
     testColoredEchoDecay();

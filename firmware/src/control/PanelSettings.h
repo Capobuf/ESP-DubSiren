@@ -248,6 +248,7 @@ inline bool validateSoundPatch(const SoundPatch &patch) {
     if (patch.valid > 1) return false;
     if (!patch.valid) return true;
     const SoundState &s = patch.state;
+    if (s.modulationEnabled > 1 || s.retrigger > 1 || s.voicingV2 > 1) return false;
     if (patch.sound >= PanelSound::Count || patch.variant >= panelSoundVariantCount(patch.sound) ||
         static_cast<unsigned>(s.mode) >= static_cast<unsigned>(SirenMode::Count) ||
         static_cast<unsigned>(s.lfoShape) > static_cast<unsigned>(LfoShape::Manual) ||

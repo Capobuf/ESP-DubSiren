@@ -80,6 +80,7 @@ void PerformanceController::setProfile(PerformanceProfile profile) {
     state.modUp = state.modDown = state.echoCut = state.echoSpin = false;
     state.liveTransposeSemitones = 0;
     state.profile = profile;
+    appliedSound_ = PanelSound::Count;
     if (profile == PerformanceProfile::Classic) {
         if (state.mode >= SirenMode::Lickshot) state.mode = SirenMode::Sine1;
         state.tuneHz = classicPitchHz(static_cast<unsigned>(state.classicPitch));

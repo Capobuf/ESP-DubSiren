@@ -1,0 +1,305 @@
+{
+  "sampleRate": 48000,
+  "commonActiveRms": 4915.0,
+  "normalization": "RMS of samples above 1% of each raw peak; no clipping",
+  "listeningValidated": false,
+  "hardwareValidated": false,
+  "files": [
+    {
+      "name": "lickshot-shot-2hz-release1",
+      "rawPeak": 14876,
+      "rawActiveRms": 5000.160133701567,
+      "rawMean": -0.133625,
+      "gain": 0.9829685187225146,
+      "normalizedPeak": 14623
+    },
+    {
+      "name": "lickshot-shot-2hz-release200",
+      "rawPeak": 14876,
+      "rawActiveRms": 5000.160133701567,
+      "rawMean": -0.133625,
+      "gain": 0.9829685187225146,
+      "normalizedPeak": 14623
+    },
+    {
+      "name": "lickshot-roll-2hz-release200",
+      "rawPeak": 14958,
+      "rawActiveRms": 4951.734365884047,
+      "rawMean": -1.5061527777777777,
+      "gain": 0.9925815152490538,
+      "normalizedPeak": 14847
+    },
+    {
+      "name": "lickshot-roll-8hz-release200",
+      "rawPeak": 14984,
+      "rawActiveRms": 4942.564973783275,
+      "rawMean": -1.0904583333333333,
+      "gain": 0.9944229415436141,
+      "normalizedPeak": 14900
+    },
+    {
+      "name": "lickshot-horn-2hz-release200",
+      "rawPeak": 15201,
+      "rawActiveRms": 12804.070783381603,
+      "rawMean": -4.639423611111111,
+      "gain": 0.38386229529277327,
+      "normalizedPeak": 5835
+    },
+    {
+      "name": "lickshot-close-hits",
+      "rawPeak": 14974,
+      "rawActiveRms": 5481.188017019026,
+      "rawMean": -1.0546805555555556,
+      "gain": 0.8967034126067162,
+      "normalizedPeak": 13427
+    },
+    {
+      "name": "two-tone-classic",
+      "rawPeak": 14802,
+      "rawActiveRms": 11790.313991175011,
+      "rawMean": -27.30070138888889,
+      "gain": 0.41686760875739626,
+      "normalizedPeak": 6170
+    },
+    {
+      "name": "two-tone-triangle",
+      "rawPeak": 14780,
+      "rawActiveRms": 11786.07914236913,
+      "rawMean": -28.745319444444444,
+      "gain": 0.41701739320002834,
+      "normalizedPeak": 6164
+    },
+    {
+      "name": "two-tone-square",
+      "rawPeak": 14823,
+      "rawActiveRms": 11785.738705132195,
+      "rawMean": -27.092180555555554,
+      "gain": 0.4170294389659024,
+      "normalizedPeak": 6182
+    },
+    {
+      "name": "tone-sine1-80hz-19000",
+      "rawPeak": 17167,
+      "rawActiveRms": 10280.793106314492,
+      "rawMean": -51.82584722222222,
+      "gain": 0.47807595670621883,
+      "normalizedPeak": 8207
+    },
+    {
+      "name": "tone-sine1-80hz-700",
+      "rawPeak": 17512,
+      "rawActiveRms": 10226.580187034431,
+      "rawMean": -50.517583333333334,
+      "gain": 0.4806103223276327,
+      "normalizedPeak": 8416
+    },
+    {
+      "name": "tone-sine1-220hz-19000",
+      "rawPeak": 16992,
+      "rawActiveRms": 10281.595805922241,
+      "rawMean": -55.71361111111111,
+      "gain": 0.4780386325991282,
+      "normalizedPeak": 8123
+    },
+    {
+      "name": "tone-sine1-220hz-700",
+      "rawPeak": 17880,
+      "rawActiveRms": 9876.290183171814,
+      "rawMean": -47.53151388888889,
+      "gain": 0.49765649943889423,
+      "normalizedPeak": 8898
+    },
+    {
+      "name": "tone-sine1-1600hz-19000",
+      "rawPeak": 16958,
+      "rawActiveRms": 10231.04981911311,
+      "rawMean": -54.556805555555556,
+      "gain": 0.48040035840877787,
+      "normalizedPeak": 8147
+    },
+    {
+      "name": "tone-sine1-1600hz-700",
+      "rawPeak": 3160,
+      "rawActiveRms": 1782.703030141169,
+      "rawMean": 0.32895138888888886,
+      "gain": 2.7570492207054755,
+      "normalizedPeak": 8712
+    },
+    {
+      "name": "tone-sine2-80hz-19000",
+      "rawPeak": 19282,
+      "rawActiveRms": 8948.221195929978,
+      "rawMean": -72.69061111111111,
+      "gain": 0.549271178302515,
+      "normalizedPeak": 10591
+    },
+    {
+      "name": "tone-sine2-80hz-700",
+      "rawPeak": 19843,
+      "rawActiveRms": 8858.082208581265,
+      "rawMean": -69.69200694444444,
+      "gain": 0.5548605086593794,
+      "normalizedPeak": 11010
+    },
+    {
+      "name": "tone-sine2-220hz-19000",
+      "rawPeak": 19193,
+      "rawActiveRms": 8948.18062390907,
+      "rawMean": -75.12115277777778,
+      "gain": 0.5492736687575771,
+      "normalizedPeak": 10542
+    },
+    {
+      "name": "tone-sine2-220hz-700",
+      "rawPeak": 20015,
+      "rawActiveRms": 8387.974339976734,
+      "rawMean": -57.24602083333333,
+      "gain": 0.5859579203259262,
+      "normalizedPeak": 11728
+    },
+    {
+      "name": "tone-sine2-1600hz-19000",
+      "rawPeak": 19197,
+      "rawActiveRms": 8872.535214926678,
+      "rawMean": -73.40855555555555,
+      "gain": 0.5539566629987861,
+      "normalizedPeak": 10634
+    },
+    {
+      "name": "tone-sine2-1600hz-700",
+      "rawPeak": 2504,
+      "rawActiveRms": 1335.31961110411,
+      "rawMean": -0.3096111111111111,
+      "gain": 3.6807667311468815,
+      "normalizedPeak": 9217
+    },
+    {
+      "name": "tone-square-80hz-19000",
+      "rawPeak": 14822,
+      "rawActiveRms": 10848.279234820317,
+      "rawMean": -8.856451388888889,
+      "gain": 0.45306724629875444,
+      "normalizedPeak": 6715
+    },
+    {
+      "name": "tone-square-80hz-700",
+      "rawPeak": 15388,
+      "rawActiveRms": 10784.414411568576,
+      "rawMean": -8.492618055555555,
+      "gain": 0.45575029041239534,
+      "normalizedPeak": 7013
+    },
+    {
+      "name": "tone-square-220hz-19000",
+      "rawPeak": 14490,
+      "rawActiveRms": 10846.145389225501,
+      "rawMean": -13.44070138888889,
+      "gain": 0.45315638170243716,
+      "normalizedPeak": 6566
+    },
+    {
+      "name": "tone-square-220hz-700",
+      "rawPeak": 15460,
+      "rawActiveRms": 10414.313477975526,
+      "rawMean": -11.439263888888888,
+      "gain": 0.4719466156261165,
+      "normalizedPeak": 7296
+    },
+    {
+      "name": "tone-square-1600hz-19000",
+      "rawPeak": 14361,
+      "rawActiveRms": 10798.631995869986,
+      "rawMean": -13.664118055555555,
+      "gain": 0.45515024513102925,
+      "normalizedPeak": 6536
+    },
+    {
+      "name": "tone-square-1600hz-700",
+      "rawPeak": 3343,
+      "rawActiveRms": 1976.0415911767286,
+      "rawMean": -0.2287986111111111,
+      "gain": 2.4872958251213366,
+      "normalizedPeak": 8315
+    },
+    {
+      "name": "tone-lickshot-80hz-19000",
+      "rawPeak": 15484,
+      "rawActiveRms": 11780.727473017008,
+      "rawMean": 2.903326388888889,
+      "gain": 0.4172068330463877,
+      "normalizedPeak": 6460
+    },
+    {
+      "name": "tone-lickshot-80hz-700",
+      "rawPeak": 15687,
+      "rawActiveRms": 11729.604339176953,
+      "rawMean": 2.9335833333333334,
+      "gain": 0.4190252166975376,
+      "normalizedPeak": 6573
+    },
+    {
+      "name": "tone-lickshot-220hz-19000",
+      "rawPeak": 15201,
+      "rawActiveRms": 11784.141096917872,
+      "rawMean": -2.208638888888889,
+      "gain": 0.4170859767866758,
+      "normalizedPeak": 6340
+    },
+    {
+      "name": "tone-lickshot-220hz-700",
+      "rawPeak": 16205,
+      "rawActiveRms": 11395.680309654916,
+      "rawMean": -1.8857916666666668,
+      "gain": 0.43130378059445895,
+      "normalizedPeak": 6989
+    },
+    {
+      "name": "tone-lickshot-1600hz-19000",
+      "rawPeak": 15115,
+      "rawActiveRms": 11756.084072879676,
+      "rawMean": -2.246625,
+      "gain": 0.41808139253941734,
+      "normalizedPeak": 6319
+    },
+    {
+      "name": "tone-lickshot-1600hz-700",
+      "rawPeak": 3656,
+      "rawActiveRms": 2183.263554250142,
+      "rawMean": 0.18709027777777779,
+      "gain": 2.2512169868049177,
+      "normalizedPeak": 8230
+    },
+    {
+      "name": "contour--3",
+      "rawPeak": 17884,
+      "rawActiveRms": 7522.072919666108,
+      "rawMean": -12.79326388888889,
+      "gain": 0.6534103102284428,
+      "normalizedPeak": 11686
+    },
+    {
+      "name": "contour-3",
+      "rawPeak": 17119,
+      "rawActiveRms": 8729.691756915532,
+      "rawMean": -23.161944444444444,
+      "gain": 0.5630210248954564,
+      "normalizedPeak": 9638
+    },
+    {
+      "name": "echo-color-0",
+      "rawPeak": 22251,
+      "rawActiveRms": 5876.173957461481,
+      "rawMean": -135.48993055555556,
+      "gain": 0.8364286073864446,
+      "normalizedPeak": 18611
+    },
+    {
+      "name": "echo-color-1",
+      "rawPeak": 27132,
+      "rawActiveRms": 6991.974492050922,
+      "rawMean": 10.544458333333333,
+      "gain": 0.7029487887273895,
+      "normalizedPeak": 19072
+    }
+  ]
+}

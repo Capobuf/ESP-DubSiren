@@ -74,11 +74,16 @@ void AudioEngine::render(const ControlState &controls, int16_t *output, size_t c
         droppedActivations_ += unseen - kActivationEventCapacity;
         unseen = kActivationEventCapacity;
     }
-    const uint32_t firstSequence = controls.activationSequence - unseen;
+    uint32_t firstSequence = controls.activationSequence - unseen;
     capturedActivationSequence_ = controls.activationSequence;
     if (unseen == 0) {
         renderSegment(controls, nullptr, output, count);
         return;
+    }
+    const uint32_t newestTime = controls.activationEvents[(controls.activationSequence - 1) % kActivationEventCapacity].timestampUs;
+    const uint32_t windowUs = static_cast<uint32_t>(count * 1000000ull / Config::kSampleRate);
+    while (unseen > 1 && newestTime - controls.activationEvents[firstSequence % kActivationEventCapacity].timestampUs >= windowUs) {
+        ++firstSequence; --unseen; ++droppedActivations_;
     }
     // Play the captured batch in this block, preserving relative press intervals.
     // Never turn a stalled controller/overflow into a delayed multi-block roll.
