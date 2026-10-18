@@ -1,0 +1,65 @@
+Reference,Value,Quantity,Footprint,MPN,Manufacturer,Datasheet,DNP,Purchasable,Notes
+C1,22u,1,Capacitor_SMD:C_0805_2012Metric,CL21A226MPCLRNC,Samsung,,,yes,Componente dello schema provvisorio; validazione hardware pendente
+C2,100n,1,Capacitor_SMD:C_0603_1608Metric,CL10B104KO8NNNC,Samsung,,,yes,Componente dello schema provvisorio; validazione hardware pendente
+C3,22u,1,Capacitor_SMD:C_0805_2012Metric,CL21A226MPCLRNC,Samsung,,,yes,Componente dello schema provvisorio; validazione hardware pendente
+C4,100n,1,Capacitor_SMD:C_0603_1608Metric,CL10B104KO8NNNC,Samsung,,,yes,Componente dello schema provvisorio; validazione hardware pendente
+C5,22u,1,Capacitor_SMD:C_0805_2012Metric,CL21A226MPCLRNC,Samsung,,,yes,Componente dello schema provvisorio; validazione hardware pendente
+C6,100n,1,Capacitor_SMD:C_0603_1608Metric,CL10B104KO8NNNC,Samsung,,,yes,Componente dello schema provvisorio; validazione hardware pendente
+C7,1u,1,Capacitor_SMD:C_0603_1608Metric,CL10B105MO8NNWC,Samsung,,,yes,Componente dello schema provvisorio; validazione hardware pendente
+C8,100n,1,Capacitor_SMD:C_0603_1608Metric,CL10B104KO8NNNC,Samsung,,,yes,Componente dello schema provvisorio; validazione hardware pendente
+C9,100n,1,Capacitor_SMD:C_0603_1608Metric,CL10B104KO8NNNC,Samsung,,,yes,Componente dello schema provvisorio; validazione hardware pendente
+C10,1u,1,Capacitor_SMD:C_0603_1608Metric,CL10B105MO8NNWC,Samsung,https://product.samsungsem.com/mlcc/CL10B105MO8NNW.do,,yes,Componente dello schema provvisorio; validazione hardware pendente
+C11,10n C0G 50V,1,Capacitor_SMD:C_0603_1608Metric,GRM1885C1H103JA01D,Murata,https://search.murata.co.jp/Ceramy/image/img/A01X/G101/ENG/GRM1885C1H103JA01-01A.pdf,,yes,Componente dello schema provvisorio; validazione hardware pendente
+D1,SMF5.0A,1,Diode_SMD:D_SOD-123F,SMF5.0A_R1_00001,PANJIT,https://www.panjit.com.cn/upload/datasheet/SMF5.0A_SERIES.pdf,,yes,Componente dello schema provvisorio; validazione hardware pendente
+F1,1.1A PTC,1,ESP-DubSiren-V2-Electrical:Bel_0ZCG0110CF2B_1812,0ZCG0110CF2B,Bel,https://www.belfuse.com/resources/datasheets/circuitprotection/ds-cp-0zcg-series.pdf,,yes,Componente dello schema provvisorio; validazione hardware pendente
+J1,USB4085-GF-A,1,Connector_USB:USB_C_Receptacle_GCT_USB4085,USB4085-GF-A,GCT,https://az.y-ic.com/datasheet/e9/USB4085-GF-A.pdf,,yes,Componente dello schema provvisorio; validazione hardware pendente
+J2,RCJ-2123,1,ESP-DubSiren-V2-Mechanical:SameSky_RCJ-2123,RCJ-2123,Same Sky,https://www.sameskydevices.com/product/resource/rcj-21.pdf,,yes,Componente dello schema provvisorio; validazione hardware pendente
+R1,10,1,Resistor_SMD:R_0603_1608Metric,NRC06J100TRF,NIC,,,yes,Componente dello schema provvisorio; validazione hardware pendente
+R2,22,1,Resistor_SMD:R_0603_1608Metric,RC0603JR-0722RL,Yageo,,,yes,Componente dello schema provvisorio; validazione hardware pendente
+R3,22,1,Resistor_SMD:R_0603_1608Metric,RC0603JR-0722RL,Yageo,,,yes,Componente dello schema provvisorio; validazione hardware pendente
+R4,5.1k,1,Resistor_SMD:R_0603_1608Metric,AC0603FR-075K1L,Yageo,,,yes,Componente dello schema provvisorio; validazione hardware pendente
+R5,5.1k,1,Resistor_SMD:R_0603_1608Metric,AC0603FR-075K1L,Yageo,,,yes,Componente dello schema provvisorio; validazione hardware pendente
+R6,10k,1,Resistor_SMD:R_0603_1608Metric,RC0603JR-0710KL,Yageo,,,yes,Componente dello schema provvisorio; validazione hardware pendente
+R7,10k,1,Resistor_SMD:R_0603_1608Metric,RC0603JR-0710KL,Yageo,,,yes,Componente dello schema provvisorio; validazione hardware pendente
+R8,4.7k,1,Resistor_SMD:R_0603_1608Metric,RC0603FR-074K7L,Yageo,,,yes,Componente dello schema provvisorio; validazione hardware pendente
+R9,4.7k,1,Resistor_SMD:R_0603_1608Metric,RC0603FR-074K7L,Yageo,,,yes,Componente dello schema provvisorio; validazione hardware pendente
+R10,4.7k,1,Resistor_SMD:R_0603_1608Metric,RC0603FR-074K7L,Yageo,,,yes,Componente dello schema provvisorio; validazione hardware pendente
+R11,4.7k,1,Resistor_SMD:R_0603_1608Metric,RC0603FR-074K7L,Yageo,,,yes,Componente dello schema provvisorio; validazione hardware pendente
+R12,4.7k,1,Resistor_SMD:R_0603_1608Metric,RC0603FR-074K7L,Yageo,,,yes,Componente dello schema provvisorio; validazione hardware pendente
+R13,4.7k,1,Resistor_SMD:R_0603_1608Metric,RC0603FR-074K7L,Yageo,,,yes,Componente dello schema provvisorio; validazione hardware pendente
+R14,4.7k,1,Resistor_SMD:R_0603_1608Metric,RC0603FR-074K7L,Yageo,,,yes,Componente dello schema provvisorio; validazione hardware pendente
+R15,10k,1,Resistor_SMD:R_0603_1608Metric,RC0603JR-0710KL,Yageo,,,yes,Componente dello schema provvisorio; validazione hardware pendente
+R16,10k,1,Resistor_SMD:R_0603_1608Metric,RC0603JR-0710KL,Yageo,,,yes,Componente dello schema provvisorio; validazione hardware pendente
+R17,10k,1,Resistor_SMD:R_0603_1608Metric,RC0603JR-0710KL,Yageo,,,yes,Componente dello schema provvisorio; validazione hardware pendente
+R18,10k,1,Resistor_SMD:R_0603_1608Metric,RC0603JR-0710KL,Yageo,,,yes,Componente dello schema provvisorio; validazione hardware pendente
+R19,10k,1,Resistor_SMD:R_0603_1608Metric,RC0603JR-0710KL,Yageo,,,yes,Componente dello schema provvisorio; validazione hardware pendente
+R20,10k,1,Resistor_SMD:R_0603_1608Metric,RC0603JR-0710KL,Yageo,,,yes,Componente dello schema provvisorio; validazione hardware pendente
+R21,10k,1,Resistor_SMD:R_0603_1608Metric,RC0603JR-0710KL,Yageo,,,yes,Componente dello schema provvisorio; validazione hardware pendente
+RV1,20k PTV111-3420A-B203,1,ESP-DubSiren-V2-Mechanical:Bourns_PTV111-3,PTV111-3420A-B203,Bourns,https://bourns.com/docs/product-datasheets/ptvptt.pdf,,yes,Componente dello schema provvisorio; validazione hardware pendente
+RV2,20k PTV111-3420A-B203,1,ESP-DubSiren-V2-Mechanical:Bourns_PTV111-3,PTV111-3420A-B203,Bourns,https://bourns.com/docs/product-datasheets/ptvptt.pdf,,yes,Componente dello schema provvisorio; validazione hardware pendente
+RV3,20k PTV111-3420A-B203,1,ESP-DubSiren-V2-Mechanical:Bourns_PTV111-3,PTV111-3420A-B203,Bourns,https://bourns.com/docs/product-datasheets/ptvptt.pdf,,yes,Componente dello schema provvisorio; validazione hardware pendente
+RV4,20k PTV111-3420A-B203,1,ESP-DubSiren-V2-Mechanical:Bourns_PTV111-3,PTV111-3420A-B203,Bourns,https://bourns.com/docs/product-datasheets/ptvptt.pdf,,yes,Componente dello schema provvisorio; validazione hardware pendente
+RV5,20k PTV111-3420A-B203,1,ESP-DubSiren-V2-Mechanical:Bourns_PTV111-3,PTV111-3420A-B203,Bourns,https://bourns.com/docs/product-datasheets/ptvptt.pdf,,yes,Componente dello schema provvisorio; validazione hardware pendente
+RV6,20k PTV111-3420A-B203,1,ESP-DubSiren-V2-Mechanical:Bourns_PTV111-3,PTV111-3420A-B203,Bourns,https://bourns.com/docs/product-datasheets/ptvptt.pdf,,yes,Componente dello schema provvisorio; validazione hardware pendente
+RV7,10k PTV111-1420A-B103,1,ESP-DubSiren-V2-Mechanical:Bourns_PTV111-1,PTV111-1420A-B103,Bourns,https://bourns.com/docs/product-datasheets/ptvptt.pdf,,yes,Componente dello schema provvisorio; validazione hardware pendente
+SW1,MX2A-11NW,1,Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB,MX2A-11NW,CHERRY,https://www.mouser.com/PCN/CHERRY_MX1A_11NW_EOL.pdf,,yes,Componente dello schema provvisorio; validazione hardware pendente
+SW2,MX2A-11NW,1,Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB,MX2A-11NW,CHERRY,https://www.mouser.com/PCN/CHERRY_MX1A_11NW_EOL.pdf,,yes,Componente dello schema provvisorio; validazione hardware pendente
+SW3,MX2A-11NW,1,Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB,MX2A-11NW,CHERRY,https://www.mouser.com/PCN/CHERRY_MX1A_11NW_EOL.pdf,,yes,Componente dello schema provvisorio; validazione hardware pendente
+SW4,MX2A-11NW,1,Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB,MX2A-11NW,CHERRY,https://www.mouser.com/PCN/CHERRY_MX1A_11NW_EOL.pdf,,yes,Componente dello schema provvisorio; validazione hardware pendente
+SW5,RESET,1,ESP-DubSiren-V2-Electrical:CK_PTS636SM43SMTR_LFS,PTS636SM43SMTR LFS,C&K/Littelfuse,https://www.ckswitches.com/media/2779/pts636.pdf,,yes,Componente dello schema provvisorio; validazione hardware pendente
+SW6,BOOT,1,ESP-DubSiren-V2-Electrical:CK_PTS636SM43SMTR_LFS,PTS636SM43SMTR LFS,C&K/Littelfuse,https://www.ckswitches.com/media/2779/pts636.pdf,,yes,Componente dello schema provvisorio; validazione hardware pendente
+SW7,PEC11R-4120F-S0018,1,ESP-DubSiren-V2-Mechanical:Bourns_PEC11R-4120F-S0018,PEC11R-4120F-S0018,Bourns,https://www.bourns.com/docs/product-datasheets/pec11r.pdf,,yes,Componente dello schema provvisorio; validazione hardware pendente
+TP1,+5V,1,TestPoint:TestPoint_Pad_D1.0mm,PCB test pad,PCB,,,no,Test pad PCB; non acquistabile
+TP2,+3V3,1,TestPoint:TestPoint_Pad_D1.0mm,PCB test pad,PCB,,,no,Test pad PCB; non acquistabile
+TP3,GND,1,TestPoint:TestPoint_Pad_D1.0mm,PCB test pad,PCB,,,no,Test pad PCB; non acquistabile
+TP4,ADC_MUX,1,TestPoint:TestPoint_Pad_D1.0mm,PCB test pad,PCB,,,no,Test pad PCB; non acquistabile
+TP5,AUDIO_MONO,1,TestPoint:TestPoint_Pad_D1.0mm,PCB test pad,PCB,,,no,Test pad PCB; non acquistabile
+TP6,UART_TX,1,TestPoint:TestPoint_Pad_D1.0mm,PCB test pad,PCB,,,no,Test pad PCB; non acquistabile
+TP7,UART_RX,1,TestPoint:TestPoint_Pad_D1.0mm,PCB test pad,PCB,,,no,Test pad PCB; non acquistabile
+U1,ESP32-S3-WROOM-1U-N16R8,1,ESP-DubSiren-V2-Electrical:Espressif_ESP32-S3-WROOM-1U,ESP32-S3-WROOM-1U-N16R8,Espressif,https://www.espressif.com/sites/default/files/documentation/esp32-s3-wroom-1_wroom-1u_datasheet_en.pdf,,yes,Componente dello schema provvisorio; validazione hardware pendente
+U2,MPM3612GLQ-33-Z,1,ESP-DubSiren-V2-Electrical:MPS_MPM3612GLQ-33_LGA-8-1EP_3x3mm,MPM3612GLQ-33-Z,MPS,https://www.monolithicpower.com/en/documentview/productdocument/index/version/2/document_type/Datasheet/lang/en/sku/MPM3612GLQ-33/document_id/11833/,,yes,Componente dello schema provvisorio; validazione hardware pendente
+U3,74HC4051D,1,Package_SO:SOIC-16_3.9x9.9mm_P1.27mm,74HC4051D,Toshiba,https://toshiba.semicon-storage.com/us/semiconductor/product/general-purpose-logic-ics/detail.74HC4051D.html,,yes,Componente dello schema provvisorio; validazione hardware pendente
+U4,USBLC6-2SC6,1,Package_TO_SOT_SMD:SOT-23-6,USBLC6-2SC6,SLKOR,https://www.slkoric.com/upload/file/1782371251_7008.PDF,,yes,Componente dello schema provvisorio; validazione hardware pendente
+U5,Adafruit 5393,1,ESP-DubSiren-V2-Mechanical:Adafruit_5393_DisplayFace,5393,Adafruit,https://learn.adafruit.com/adafruit-1-47-round-rectangle-tft-display?view=all,,yes,Componente dello schema provvisorio; validazione hardware pendente
+U6,Adafruit 6250,1,ESP-DubSiren-V2-Mechanical:Adafruit_6250_ComponentFace,6250,Adafruit,https://learn.adafruit.com/adafruit-pcm510x-i2s-dac?view=all,,yes,Componente dello schema provvisorio; validazione hardware pendente
+U7,TPS22918DBVR,1,Package_TO_SOT_SMD:SOT-23-6,TPS22918DBVR,Texas Instruments,https://www.ti.com/lit/ds/symlink/tps22918.pdf,,yes,Componente dello schema provvisorio; validazione hardware pendente
