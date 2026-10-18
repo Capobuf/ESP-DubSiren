@@ -1,0 +1,31 @@
+{
+  "state": "FAIL_OPPOSITE_FACES_WITH_MARGINS",
+  "cavity_mm": 29.7,
+  "required_mm": 30.6,
+  "deficit_mm": 0.9000000000000021,
+  "pcb_top_min_z": 24.700000000000003,
+  "pcb_top_max_z": 23.8,
+  "rca_z_range_at_max_pcb_top": [
+    1.7000000000000002,
+    26.4
+  ],
+  "original_lid_collision_mm3": 6.314246999034782,
+  "original_lid_collision_bbox": "BoundBox (-1.62481, 47, 1.7, 1.62481, 54.2, 2.1)",
+  "no_margin_total_mm": 29.6,
+  "no_margin_nominal_slack_mm": 0.1,
+  "RCA_height_general_tolerance_plus_mm": 0.3,
+  "no_margin_slack_with_only_RCA_plus_tolerance_mm": -0.2,
+  "alternative_RCA_max_height_including_tolerances_mm": 19.6,
+  "alternative_pot_body_max_height_including_tolerances_mm": 6.6,
+  "third_option": "Same-face placement needs separate shaft/keycap/mounting audit; not ruled out or validated",
+  "not_done": [
+    "full assembly",
+    "display flush section",
+    "insertion path",
+    "drilling jig",
+    "KiCad changes"
+  ],
+  "scope": "Actual RCA and original lid only. Pot gauge illustrates height; PCB datum is not an outline. RCA XY diagnostic, not approved placement.",
+  "normalized_rca_bbox": "X[-13.7,13.7],Y[-5,13.3],Z[-4.2,20.5] mm from exact source before view tessellation",
+  "bbox_method": "optimalBoundingBox(useTriangulation=False, useShapeTolerance=False)"
+}

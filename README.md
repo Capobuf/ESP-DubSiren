@@ -168,9 +168,10 @@ L'unico progetto hardware è in [hardware/README.md](hardware/README.md):
 ESP32-S3-WROOM-1U, DAC Adafruit 6250 e display Adafruit 5393.
 Il **KiCad è provvisorio, senza routing né bordo definitivo: nessun PCB
 fabbricabile**. La [issue #14](https://github.com/Capobuf/ESP-DubSiren/issues/14)
-è al Gate A: [pannello quotato e dima cartacea 1:1](hardware/cad/gate-a-panel.pdf)
-in attesa di riscontro. Assieme completo, sagoma PCB, inserimento e dima 3D
-restano da validare; il PDF non autorizza la foratura.
+è in fase B con [pannello provvisorio](hardware/cad/gate-a-panel.pdf):
+la [verifica Z](hardware/cad/gate-b-height-check.pdf) rileva un deficit di 0,9 mm
+nello stack con RCA e potenziometri su facce opposte. Assieme completo,
+sagoma PCB, inserimento e dima 3D restano da validare; i PDF non autorizzano la foratura.
 
 Il firmware configura il 5393 con `init(172, 320)` e rotazione landscape,
 ottenendo un'area runtime di 320×172. Usa lo SPI hardware esistente:
