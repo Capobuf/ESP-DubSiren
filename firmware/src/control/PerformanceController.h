@@ -20,7 +20,7 @@ public:
     void notifyExternalChange(PotTarget target);
     bool setPad(unsigned padNumber, bool pressed);
     bool setPot(unsigned potNumber, float position);
-    void setEncoderPressed(bool pressed);
+    void setEncoderPressed(bool pressed, bool cancelClick = false);
     void rotateEncoder(int direction);
     void resetMomentaries();
 
@@ -53,6 +53,7 @@ public:
     bool beginSettingsTransaction();
     bool commitSettingsTransaction();
     void cancelSettingsTransaction();
+    bool rejectSettingsChange();
     bool applySettings(const PanelSettings &settings);
     void resetDefaults();
 
@@ -141,7 +142,6 @@ private:
     void updateZoneFlags(ControlState &state) const;
     void acceptSettingsCandidate(const PanelSettings &candidate,
                                  bool resetPotPickup = false);
-    bool rejectSettingsChange();
     void resetPickup();
     float currentTargetNormalized(const PotConfig &config,
                                   const ControlState &state) const;

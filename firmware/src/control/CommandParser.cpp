@@ -24,7 +24,10 @@ bool CommandParser::parse(const String &rawCommand) {
         command.startsWith("PAD_CONFIG ") ||
         command.startsWith("ENCODER_SWITCH ") ||
         command.startsWith("ENCODER_ROTATE ") || command == "PANEL_RESET") {
-        return parsePanelCommand(command);
+        const bool accepted = parsePanelCommand(command);
+        // Syntax failures must poison a staged restore just like validation failures.
+        if (!accepted && command.startsWith("PANEL ")) performance_.rejectSettingsChange();
+        return accepted;
     }
     ControlState state = controls_.snapshot();
 
@@ -224,14 +227,15 @@ bool CommandParser::parse(const String &rawCommand) {
 }
 
 bool CommandParser::parsePanelCommand(const String &command) {
+    // Nine-character integer fields cannot overflow a 32-bit unsigned scan.
     if (command.startsWith("PANEL SAVE ") || command.startsWith("PANEL RECALL ")) {
         unsigned pad; char extra; char action[12];
-        if (sscanf(command.c_str(), "PANEL %11s %u %c", action, &pad, &extra) != 2) return false;
+        if (sscanf(command.c_str(), "PANEL %11s %9u %c", action, &pad, &extra) != 2) return false;
         return strcmp(action, "SAVE") == 0 ? performance_.savePad(pad) : performance_.recallPad(pad);
     }
     if (command.startsWith("PANEL PATCH ")) {
         unsigned pad; int offset = 0;
-        if (sscanf(command.c_str(), "PANEL PATCH %u %n", &pad, &offset) != 1 || !offset) return false;
+        if (sscanf(command.c_str(), "PANEL PATCH %9u %n", &pad, &offset) != 1 || !offset) return false;
         const char *cursor = command.c_str() + offset;
         float values[kSoundPatchValueCount];
         for (float &value : values) {
@@ -249,7 +253,7 @@ bool CommandParser::parsePanelCommand(const String &command) {
         unsigned pot = 0;
         float position = 0.0f;
         char extra = 0;
-        if (sscanf(command.c_str(), "POT %u %f %c", &pot, &position, &extra) != 2)
+        if (sscanf(command.c_str(), "POT %9u %f %c", &pot, &position, &extra) != 2)
             return false;
         return performance_.setPot(pot, position);
     }
@@ -273,7 +277,7 @@ bool CommandParser::parsePanelCommand(const String &command) {
         char actionText[20] = {};
         unsigned step = 0, range = 0;
         char extra = 0;
-        if (sscanf(command.c_str(), "PANEL ENCODER %19s %u %u %c",
+        if (sscanf(command.c_str(), "PANEL ENCODER %19s %9u %9u %c",
                    actionText, &step, &range, &extra) != 3) return false;
         EncoderHoldAction action;
         if (strcmp(actionText, "OFF") == 0) action = EncoderHoldAction::Off;
@@ -285,12 +289,12 @@ bool CommandParser::parsePanelCommand(const String &command) {
         char profileText[12] = {}, field[12] = {}, valueText[24] = {};
         unsigned pot = 0;
         PerformanceProfile profile;
-        if (sscanf(command.c_str(), "PANEL POT %11s %u %11s",
+        if (sscanf(command.c_str(), "PANEL POT %11s %9u %11s",
                    profileText, &pot, field) != 3 ||
             !parseProfileName(profileText, profile)) return false;
         if (strcmp(field, "TARGET") == 0) {
             char extra = 0;
-            if (sscanf(command.c_str(), "PANEL POT %11s %u TARGET %23s %c",
+            if (sscanf(command.c_str(), "PANEL POT %11s %9u TARGET %23s %c",
                        profileText, &pot, valueText, &extra) != 3) return false;
             PotTarget target;
             return parsePotTargetName(valueText, target) &&
@@ -298,7 +302,7 @@ bool CommandParser::parsePanelCommand(const String &command) {
         }
         if (strcmp(field, "MODE") == 0) {
             char extra = 0;
-            if (sscanf(command.c_str(), "PANEL POT %11s %u MODE %23s %c",
+            if (sscanf(command.c_str(), "PANEL POT %11s %9u MODE %23s %c",
                        profileText, &pot, valueText, &extra) != 3) return false;
             if (strcmp(valueText, "CONTINUOUS") == 0)
                 return performance_.configurePotMode(profile, pot, PotMode::Continuous);
@@ -309,14 +313,14 @@ bool CommandParser::parsePanelCommand(const String &command) {
         if (strcmp(field, "RANGE") == 0) {
             float minimum = 0.0f, maximum = 0.0f;
             char extra = 0;
-            if (sscanf(command.c_str(), "PANEL POT %11s %u RANGE %f %f %c",
+            if (sscanf(command.c_str(), "PANEL POT %11s %9u RANGE %f %f %c",
                        profileText, &pot, &minimum, &maximum, &extra) != 4) return false;
             return performance_.configurePotRange(profile, pot, minimum, maximum);
         }
         if (strcmp(field, "ZONES") == 0) {
             float low = 0.0f, middle = 0.0f, high = 0.0f;
             char extra = 0;
-            if (sscanf(command.c_str(), "PANEL POT %11s %u ZONES %f %f %f %c",
+            if (sscanf(command.c_str(), "PANEL POT %11s %9u ZONES %f %f %f %c",
                        profileText, &pot, &low, &middle, &high, &extra) != 5) return false;
             return performance_.configurePotZones(profile, pot, low, middle, high);
         }
@@ -326,12 +330,12 @@ bool CommandParser::parsePanelCommand(const String &command) {
         char profileText[12] = {}, field[12] = {}, valueText[24] = {};
         unsigned button = 0;
         PerformanceProfile profile;
-        if (sscanf(command.c_str(), "PANEL BUTTON %11s %u %11s",
+        if (sscanf(command.c_str(), "PANEL BUTTON %11s %9u %11s",
                    profileText, &button, field) != 3 ||
             !parseProfileName(profileText, profile)) return false;
         if (strcmp(field, "ACTION") == 0) {
             char extra = 0;
-            if (sscanf(command.c_str(), "PANEL BUTTON %11s %u ACTION %23s %c",
+            if (sscanf(command.c_str(), "PANEL BUTTON %11s %9u ACTION %23s %c",
                        profileText, &button, valueText, &extra) != 3) return false;
             ButtonAction action;
             return parseButtonActionName(valueText, action) &&
@@ -340,7 +344,7 @@ bool CommandParser::parsePanelCommand(const String &command) {
         if (strcmp(field, "SOUND") == 0) {
             unsigned variant = 0, latch = 0;
             char extra = 0;
-            if (sscanf(command.c_str(), "PANEL BUTTON %11s %u SOUND %23s %u %u %c",
+            if (sscanf(command.c_str(), "PANEL BUTTON %11s %9u SOUND %23s %9u %9u %c",
                        profileText, &button, valueText, &variant, &latch, &extra) != 5 ||
                 latch > 1) return false;
             PanelSound sound;

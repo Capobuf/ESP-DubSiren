@@ -73,6 +73,62 @@ class VirtualTransportTests(unittest.TestCase):
             self.transport.send(f"PANEL RECALL {pad}")
             self.assertAlmostEqual(self.statuses[-1]["panel"]["display"]["tuneHz"], 220 * pad)
 
+    def test_all_panel_menu_pages_fit_real_tk_canvas(self):
+        import tkinter as tk
+        from panel_display import PanelDisplay
+        try:
+            root = tk.Tk()
+        except tk.TclError as exc:
+            self.skipTest(f"Tk display unavailable: {exc}")
+        root.withdraw()
+        self.addCleanup(root.destroy)
+        renderer = PanelDisplay(root)
+
+        def display():
+            return self.statuses[-1]["panel"]["display"]
+
+        def click():
+            self.transport.send("ENCODER_SWITCH 1")
+            self.transport.send("ENCODER_SWITCH 0")
+
+        def select(key):
+            rows = display()["rows"]
+            target = next(i for i, row in enumerate(rows) if row["key"] == key)
+            for _ in range((target - display()["menuIndex"]) % len(rows)):
+                self.transport.send("ENCODER_ROTATE NEXT")
+            click()
+
+        def assert_bounds():
+            for item in renderer.canvas.find_all():
+                bounds = renderer.canvas.bbox(item)
+                self.assertIsNotNone(bounds)
+                left, top, right, bottom = bounds
+                self.assertTrue(8 <= left < right <= 312, bounds)
+                self.assertTrue(0 <= top < bottom <= 162, bounds)
+
+        paths = [[], ["SOUND"], ["MOD"], ["ECHO"], ["SETUP"],
+                 ["SETUP", "POTS"], ["SETUP", "BUTTONS"],
+                 ["SETUP", "ENCODER"], ["SETUP", "RESET_DEFAULTS"]]
+        paths += [["SETUP", "POTS", f"POT_{i}"] for i in range(1, 7)]
+        paths += [["SETUP", "BUTTONS", f"BTN_{i}"] for i in range(1, 5)]
+        for profile in ("CLASSIC", "EXTENDED"):
+            self.transport.send(f"SET PROFILE {profile}")
+            for path in paths:
+                with self.subTest(profile=profile, path=path):
+                    while display()["mode"] == "MENU":
+                        select("BACK")
+                    click()
+                    for key in path:
+                        select(key)
+                    view = display()
+                    for index in range(len(view["rows"])):
+                        renderer.render_menu([(r["label"], r["value"]) for r in view["rows"]],
+                                             index, False, view["title"], view["footer"])
+                        assert_bounds()
+        renderer.canvas.delete("all")
+        renderer.render_overlay("PITCH", "DOWN PICKUP - HIGH - 9000 Hz")
+        assert_bounds()
+
     def test_shared_dsp_controls_audio_transients_and_reconnect(self):
         self.assertEqual(len(self.statuses), 1)
         self.assertTrue(self.statuses[0]["virtual"])
