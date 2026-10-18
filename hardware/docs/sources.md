@@ -50,7 +50,7 @@ Il file standard della libreria 3D KiCad non era disponibile nell'installazione.
 Il dado nel CAD è solo un inviluppo conservativo D17,45 x 4,75 mm (chiave 15),
 non uno STEP originale né una simulazione della filettatura. Il modello USB proviene
 invece dalla libreria KiCad installata `Connector_USB.3dshapes/USB_C_Receptacle_GCT_USB4085.step`.
-MASTER e DAC sono rappresentati solo dalle proiezioni dichiarate in assieme.
+Il DAC resta una proiezione dichiarata. Il MASTER ha ora inviluppi conservativi da Bourns, con placement CAD proposto e non trasferito a KiCad.
 Gli hash dei quattro originali Neutrik e le misure sono in
 [nrj4hf-validation.json](../cad/nrj4hf-validation.json).
 
@@ -72,7 +72,7 @@ non certificazione dello spessore prodotto. Spessore PCB fisico e quota PCB-vetr
 restano entrambi da misurare; non guidano l'accoppiamento verticale definitivo.
 
 Le boccole frontali sono cilindri nominali M9 × 5 dal disegno Bourns PTV/PTT,
-pagina 2, estrusi sopra il piano frontale nominale del corpo a Z31,3. La filettatura
+pagina 2, estrusi sopra la spalla del corpo a Z31,8, in battuta contro la scocca. La filettatura
 e i componenti completi non sono modellati. Sono usate per sonde rettilinee e
 inclinate parziali, senza dimostrazione del percorso completo. I cilindri inclinati
 sono ricostruiti da base e asse trasformati; la controverifica tramite punti interni
@@ -95,3 +95,12 @@ dado M9 × 0,75 SW11 spesso 2 mm e rondella D14/D9,1 spessa 0,5 mm;
 non prova che siano gli accessori forniti con i potenziometri Bourns.
 Copertura nominale del foro e compatibilità assiale della ferramenta sono
 distinte nel report; nessun acquisto o sostituzione automatica della ferramenta.
+
+Il disegno Bourns PTV/PTT conservato, rev09/23 pagina2, quota L dalla spalla
+alla punta dell’albero: L20 per i codici acquistati. La boccola occupa i primi
+5 mm; gli inviluppi degli alberi aggiunti occupano i successivi15 mm a Ø6
+massimo. Non riproducono D-flat e smussi. Il corpo MASTER PTV111-1 usa
+l’asse10 mm sopra la PCB; la registrazione proposta è descritta nel README.
+La posa corrente elimina il margine fittizio0,5 mm davanti ai corpi pot: la
+PCB è fermata dalle loro spalle contro il tetto interno, come richiesto
+dall’utente. F.CuZ24,3 deriva dal corpo nominale7,5 mm, non da una misura fisica.

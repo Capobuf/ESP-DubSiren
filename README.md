@@ -172,8 +172,10 @@ fabbricabile**. La [issue #14](https://github.com/Capobuf/ESP-DubSiren/issues/14
 la PR #17 ha sostituito il RCA con il jack Neutrik NRJ4HF, eliminando il precedente
 deficit nominale di altezza. Lo [studio meccanico aggiornato](hardware/README.md)
 propone una posizione CAD che libera i piedini del jack dagli inviluppi dei potenziometri.
-Assieme completo,
-sagoma PCB, inserimento e dima 3D restano da validare; i PDF non autorizzano la foratura.
+La battuta è ora determinata dai potenziometri: F.Cu nominale Z24,3; fori frontali Ø10.
+La rotazione provata incontra interferenze e il serraggio posteriore non è validato.
+Assieme completo, sagoma PCB, percorso continuo e dima 3D restano da validare;
+i PDF non autorizzano la foratura.
 
 Il firmware configura il 5393 con `init(172, 320)` e rotazione landscape,
 ottenendo un'area runtime di 320×172. Usa lo SPI hardware esistente:

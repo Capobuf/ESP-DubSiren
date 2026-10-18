@@ -1,261 +1,437 @@
 {
-  "frame": {
-    "cad_x": "pcb_x-62.5",
-    "cad_y": "61.39-pcb_y",
-    "pcb_top_z": 23.8,
-    "pcb_bottom_z": 22.2,
-    "pcb_thickness_nominal": 1.6,
-    "status": "provisional rear-interface frame; not a validated full-board placement"
-  },
-  "J2": {
-    "pcb_position": [
-      86.73,
-      20.34
-    ],
-    "rotation_deg": 90,
-    "side": "B.Cu",
-    "bbox": [
-      6.07,
-      33.699999999999996,
-      9.5,
-      21.82,
-      66.85000009999999,
-      26.200000000000003
-    ],
-    "axis_xz": [
-      12.5,
-      15.7
-    ],
-    "nose_direction": [
-      0,
-      1,
-      0
-    ],
-    "step_pin_centers": [
-      {
-        "pin": "T",
-        "cad": [
-          19.73,
-          41.05,
-          22.200000000000003
-        ]
-      },
-      {
-        "pin": "TN",
-        "cad": [
-          8.3,
-          41.05,
-          22.200000000000003
-        ]
-      },
-      {
-        "pin": "S",
-        "cad": [
-          19.73,
-          53.75,
-          22.2
-        ]
-      },
-      {
-        "pin": "SN",
-        "cad": [
-          8.3,
-          53.75,
-          22.2
-        ]
+  "active_study": {
+    "status": "GATE B NON VALIDATO; nessun percorso completo certificato",
+    "datum_rule": "I potenziometri frontali dettano la battuta della PCB: spalla contro interno scocca, serrata dai dadi esterni. Nessun distanziale fittizio tra corpo pot e scocca.",
+    "frame": {
+      "cad_x": "pcb_x-62.5",
+      "cad_y": "61.39-pcb_y",
+      "pot_shoulder_z_mm": 31.8,
+      "pcb_top_z_mm": 24.3,
+      "pcb_bottom_z_mm": 22.7,
+      "pcb_thickness_nominal_mm": 1.6,
+      "status": "Nominale da disegno Bourns; non misurato sul pezzo; nessuna sagoma PCB finale"
+    },
+    "holes": {
+      "front_pots_mm": 10,
+      "rear_jack_mm": 12,
+      "rear_master_mm": 10,
+      "status": "Sonde e dima cartacea aggiornate; non autorizzazione alla foratura"
+    },
+    "front_stop": {
+      "pot_body_height_mm": 7.5,
+      "bushing_length_mm": 5,
+      "bushing_external_projection_mm": 3,
+      "reference_washer_plus_nut_mm": 2.5,
+      "reference_remaining_axial_mm": 0.5,
+      "hardware_scope": "Esempio dimensionale Alps NON selezionato; filetti utili, tolleranze e serraggio reale non verificati",
+      "body_contact_distances_mm": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "shaft_envelopes": {
+      "shoulder_to_tip_mm": 20,
+      "portion_above_bushing_mm": 15,
+      "diameter_max_mm": 6,
+      "scope": "Inviluppi conservativi; D-flat e smussi omessi; collisioni di questi inviluppi non provano da sole impossibilita fisica",
+      "source": "sources/Bourns-PTV-PTT.pdf pagina 2, rev09/23"
+    },
+    "jack": {
+      "axis_x_mm": 12.5,
+      "axis_z_mm": 16.2,
+      "shoulder_y_mm": 58,
+      "body_z_min_mm": 10,
+      "body_z_max_mm": 22.7,
+      "pins_z_max_mm": 26.7
+    },
+    "master": {
+      "status": "Proposta CAD non approvata e non trasferita a KiCad",
+      "axis_x_mm": -31,
+      "axis_z_mm": 12.7,
+      "shoulder_y_mm": 58,
+      "pcb_equivalent_xy_mm": [
+        31.5,
+        10.89
+      ],
+      "body_envelope_mm": [
+        12,
+        7.5,
+        16.7
+      ],
+      "shaft_axis_from_BCu_mm": 10,
+      "body_to_usb_mm": 3.0299999999999976,
+      "body_to_shell_mm": 0.06978398671065851,
+      "static_body_shell_common_mm3": 0.0,
+      "scope": "Corpo conservativo, boccola M9 e albero massimo; clip/piedini e ferramenta non completi. Vecchia proiezione RV7 conservata nascosta come riferimento storico."
+    },
+    "fixed_pivot_samples": {
+      "samples": [
+        {
+          "pitch_deg": 0,
+          "jack_mm3": 0,
+          "bushings_mm3": 0,
+          "shaft_envelope_mm3": 0,
+          "usb_mm3": 0
+        },
+        {
+          "pitch_deg": 1,
+          "jack_mm3": 0,
+          "bushings_mm3": 0,
+          "shaft_envelope_mm3": 0,
+          "usb_mm3": 0.06043201157710899
+        },
+        {
+          "pitch_deg": 2,
+          "jack_mm3": 0,
+          "bushings_mm3": 5.142697522476418,
+          "shaft_envelope_mm3": 0,
+          "usb_mm3": 0.11625786962073816
+        },
+        {
+          "pitch_deg": 3,
+          "jack_mm3": 0.22917254077743854,
+          "bushings_mm3": 21.965795147925665,
+          "shaft_envelope_mm3": 0,
+          "usb_mm3": 0.16690008530302444
+        },
+        {
+          "pitch_deg": 5,
+          "jack_mm3": 4.748899248709848,
+          "bushings_mm3": 46.30748049793677,
+          "shaft_envelope_mm3": 0,
+          "usb_mm3": 0.25239254860248894
+        },
+        {
+          "pitch_deg": 10,
+          "jack_mm3": 19.695634704780367,
+          "bushings_mm3": 87.11586695019463,
+          "shaft_envelope_mm3": 76.27637820943603,
+          "usb_mm3": 0.3789151107784587
+        },
+        {
+          "pitch_deg": 15,
+          "jack_mm3": 36.740190412323756,
+          "bushings_mm3": 0.4870688529794728,
+          "shaft_envelope_mm3": 100.6678917917771,
+          "usb_mm3": 0.3987044277431552
+        }
+      ],
+      "front_body_contact_distances_mm": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "new_bushing_projection_mm": 3,
+      "pivot_mm": [
+        12.5,
+        59.18340486684618,
+        16.2
+      ]
+    },
+    "engaged_phase_necessary_bound": {
+      "rows": [
+        {
+          "pitch_deg": 0,
+          "bounds": [
+            {
+              "k_mm": -0.4,
+              "dy_max_mm": 0.07677664274013273,
+              "dz_mm": -0.4,
+              "axis_y_at_inner_roof_mm": 42.076776642740136,
+              "required_axis_y_min_mm": 41.5,
+              "shortfall_mm": -0.5767766427401355,
+              "bushing_z_range": [
+                31.400000000000002,
+                36.400000000000006
+              ],
+              "native_bushing_common_mm3": 0,
+              "native_jack_common_mm3": 0
+            },
+            {
+              "k_mm": 0.4,
+              "dy_max_mm": 0.06281259079755865,
+              "dz_mm": 0.4,
+              "axis_y_at_inner_roof_mm": 42.062812590797556,
+              "required_axis_y_min_mm": 41.5,
+              "shortfall_mm": -0.5628125907975559,
+              "bushing_z_range": [
+                32.2,
+                37.2
+              ],
+              "native_bushing_common_mm3": 0,
+              "native_jack_common_mm3": 0
+            }
+          ]
+        },
+        {
+          "pitch_deg": 1,
+          "bounds": [
+            {
+              "k_mm": -0.4,
+              "dy_max_mm": 0.1903568327371043,
+              "dz_mm": -0.396677309125044,
+              "axis_y_at_inner_roof_mm": 41.90851627721954,
+              "required_axis_y_min_mm": 41.50068547619758,
+              "shortfall_mm": -0.4078308010219587,
+              "bushing_z_range": [
+                31.101054969602068,
+                36.100293445384025
+              ],
+              "native_bushing_common_mm3": 0,
+              "native_jack_common_mm3": 0.013643004270052092
+            },
+            {
+              "k_mm": 0.4,
+              "dy_max_mm": 0.17639703405610394,
+              "dz_mm": 0.40307902168259435,
+              "axis_y_at_inner_roof_mm": 41.90851627721954,
+              "required_axis_y_min_mm": 41.50068547619758,
+              "shortfall_mm": -0.4078308010219587,
+              "bushing_z_range": [
+                31.900811300409703,
+                36.90004977619166
+              ],
+              "native_bushing_common_mm3": 0,
+              "native_jack_common_mm3": 0.013642881840030985
+            }
+          ]
+        },
+        {
+          "pitch_deg": 2,
+          "bounds": [
+            {
+              "k_mm": -0.4,
+              "dy_max_mm": 0.08196320201610333,
+              "dz_mm": -0.3971377819155901,
+              "axis_y_at_inner_roof_mm": 41.51285679453517,
+              "required_axis_y_min_mm": 41.5027429493447,
+              "shortfall_mm": -0.01011384519046743,
+              "bushing_z_range": [
+                30.79366693809407,
+                35.79062107318955
+              ],
+              "native_bushing_common_mm3": 0.12140094278732294,
+              "native_jack_common_mm3": 0.04312194432921132
+            },
+            {
+              "k_mm": 0.4,
+              "dy_max_mm": 0.06800765659667661,
+              "dz_mm": 0.4023748796996865,
+              "axis_y_at_inner_roof_mm": 41.52682084647774,
+              "required_axis_y_min_mm": 41.5027429493447,
+              "shortfall_mm": -0.024077897133039983,
+              "bushing_z_range": [
+                31.593179599709345,
+                36.59013373480482
+              ],
+              "native_bushing_common_mm3": 0.06291166675453763,
+              "native_jack_common_mm3": 0.04312218476805105
+            }
+          ]
+        },
+        {
+          "pitch_deg": 3,
+          "bounds": [
+            {
+              "k_mm": -0.4,
+              "dy_max_mm": -0.026691600409633903,
+              "dz_mm": -0.4013988475029793,
+              "axis_y_at_inner_roof_mm": 41.11112904367085,
+              "required_axis_y_min_mm": 41.50617555699064,
+              "shortfall_mm": 0.3950465133197909,
+              "bushing_z_range": [
+                30.477911969452325,
+                35.471059643225196
+              ],
+              "native_bushing_common_mm3": 5.427118554208904,
+              "native_jack_common_mm3": 0.0877835063194532
+            },
+            {
+              "k_mm": 0.4,
+              "dy_max_mm": -0.040642889974935585,
+              "dz_mm": 0.39786999639276865,
+              "axis_y_at_inner_roof_mm": 41.139065659264254,
+              "required_axis_y_min_mm": 41.50617555699064,
+              "shortfall_mm": 0.3671098977263867,
+              "bushing_z_range": [
+                31.27718081334807,
+                36.27032848712094
+              ],
+              "native_bushing_common_mm3": 5.0033410847685165,
+              "native_jack_common_mm3": 0.08778428052478393
+            }
+          ]
+        },
+        {
+          "pitch_deg": 4,
+          "bounds": [
+            {
+              "k_mm": -0.4,
+              "dy_max_mm": -0.13557410967736513,
+              "dz_mm": -0.40948026527181797,
+              "axis_y_at_inner_roof_mm": 40.702973851127275,
+              "required_axis_y_min_mm": 41.51098854136527,
+              "shortfall_mm": 0.8080146902379965,
+              "bushing_z_range": [
+                30.15386518835261,
+                35.14168543965173
+              ],
+              "native_bushing_common_mm3": 12.382112281620344,
+              "native_jack_common_mm3": 0.14865037717549223
+            },
+            {
+              "k_mm": 0.4,
+              "dy_max_mm": -0.14952113819711416,
+              "dz_mm": 0.38954446348771077,
+              "axis_y_at_inner_roof_mm": 40.744900074553705,
+              "required_axis_y_min_mm": 41.51098854136527,
+              "shortfall_mm": 0.7660884668115671,
+              "bushing_z_range": [
+                30.952889917112138,
+                35.94071016841126
+              ],
+              "native_bushing_common_mm3": 11.680598764086085,
+              "native_jack_common_mm3": 0.14864804988393943
+            }
+          ]
+        },
+        {
+          "pitch_deg": 5,
+          "bounds": [
+            {
+              "k_mm": -0.4,
+              "dy_max_mm": -0.24465072986777728,
+              "dz_mm": -0.4214041653867737,
+              "axis_y_at_inner_roof_mm": 40.28802021686094,
+              "required_axis_y_min_mm": 41.51718926894506,
+              "shortfall_mm": 1.2291690520841172,
+              "bushing_z_range": [
+                29.821600710740753,
+                34.802574201199484
+              ],
+              "native_bushing_common_mm3": 19.87568731314097,
+              "native_jack_common_mm3": 0.2269784936306104
+            },
+            {
+              "k_mm": 0.4,
+              "dy_max_mm": -0.258593489538987,
+              "dz_mm": 0.37737600120372905,
+              "axis_y_at_inner_roof_mm": 40.34396166641575,
+              "required_axis_y_min_mm": 41.51718926894506,
+              "shortfall_mm": 1.173227602529309,
+              "bushing_z_range": [
+                30.620380877331257,
+                35.60135436778999
+              ],
+              "native_bushing_common_mm3": 18.906450775460836,
+              "native_jack_common_mm3": 0.22697724597019353
+            }
+          ]
+        },
+        {
+          "pitch_deg": 10,
+          "bounds": [
+            {
+              "k_mm": -0.4,
+              "dy_max_mm": -0.7917616087580811,
+              "dz_mm": -0.5396089339131893,
+              "axis_y_at_inner_roof_mm": 38.09730816035319,
+              "required_axis_y_min_mm": 41.56941975348585,
+              "shortfall_mm": 3.4721115931326665,
+              "bushing_z_range": [
+                28.039525071836355,
+                32.96356383689739
+              ],
+              "native_bushing_common_mm3": 23.677136156409635,
+              "native_jack_common_mm3": 0.9272379940690945
+            },
+            {
+              "k_mm": 0.4,
+              "dy_max_mm": -0.805682814030425,
+              "dz_mm": 0.2579363819933155,
+              "axis_y_at_inner_roof_mm": 38.22401571261281,
+              "required_axis_y_min_mm": 41.56941975348585,
+              "shortfall_mm": 3.345404040873042,
+              "bushing_z_range": [
+                28.83707038774286,
+                33.7611091528039
+              ],
+              "native_bushing_common_mm3": 46.71781314521319,
+              "native_jack_common_mm3": 0.9272440094825802
+            }
+          ]
+        }
+      ],
+      "scope": "Condizioni necessarie ottimistiche nella fase in cui il naso attraversa il foro posteriore e la boccola attraversa il tetto. Rotazione X e traslazioni Y/Z; non prova globale 6DOF, non prova che ogni percorso debba attraversare questa fase a 3 gradi.",
+      "derivation": {
+        "pivot_mm": [
+          12.5,
+          59.18340486684618,
+          16.2
+        ],
+        "rotation": "R_x(alpha), positive angle raises rear and lowers front",
+        "rear_inner_wall": "w(z)=58.19198007126637-(z-15.7)*tan(1deg)",
+        "shoulder_vertices_before_rotation_mm": [
+          [
+            21.82,
+            58,
+            10
+          ],
+          [
+            21.82,
+            58,
+            22.7
+          ]
+        ],
+        "bushing_base_before_rotation_mm": [
+          0,
+          42,
+          31.8
+        ],
+        "k": "dz-tan(alpha)*dy; optimistic necessary bound -0.4<=k<=0.4 at rear-bore mid-plane",
+        "dy_bound": "min_i((w(C_i.z)-C_i.y-tan(1deg)*k)/(1+tan(1deg)*tan(alpha))), C_i=P+R_x(alpha)*(vertex_i-P)",
+        "dz": "tan(alpha)*dy+k",
+        "roof_axis_y": "B.y+dy-(31.8-B.z-dz)*tan(alpha), B=P+R_x(alpha)*(bushing_base-P)",
+        "required_min_axis_y": "42-5+4.5/cos(alpha)",
+        "maximization": "roof_axis_y increases with dy; set dy at upper bound and inspect both k endpoints, linear in k",
+        "phase_condition": "Bushing cylindrical section must traverse roof, without end-cap truncation. This condition holds at the tabulated 3deg/5deg optimistic endpoints. No claim for phases with bushing wholly below roof or for yaw/roll."
       }
+    },
+    "static_current": {
+      "jack_shell_common_mm3": 0.0,
+      "usb_shell_common_mm3": 0.0,
+      "front_bushings_shell_common_mm3": 0.0,
+      "jack_shoulder_shell_gap_mm": 0.06978398671065851,
+      "nut_shell_gap_mm": 0.009145970423422368
+    },
+    "clamping": {
+      "status": "NON VALIDATO; il dado del jack non deve forzare la PCB fuori dalla battuta dei pot",
+      "wall_angle_deg": 1,
+      "outer_nut_wedge_mm": 0.30459088299739684,
+      "jack_hole_radial_cover_centered_mm": 2.7249999999999996,
+      "front_hole_davies_cover_at_max_nominal_eccentricity_mm": 4.421875,
+      "master_hole_cliff_cover_at_max_nominal_eccentricity_mm": 1.5,
+      "master_hardware_note": "Incavo Cliff D12 contro diagonale dado SW11 circa12.70: accoppiamento assiale non dimostrato. Copertura foro non significa serraggio senza fessure."
+    },
+    "unresolved": [
+      "Percorso completo dal fondo con un unico blocco rigido popolato",
+      "Sagoma PCB effettiva e tutti gli ingombri significativi, inclusi pin/clip",
+      "Serraggio simultaneo jack e MASTER senza spostare la PCB dalla battuta dei pot",
+      "Ferramenta reale, accesso utensili, tolleranze e caps",
+      "Due quote fisiche display; accoppiamento verticale non definitivo"
     ],
-    "cad_proposal_pcb_equivalent": [
-      82.23,
-      20.34
-    ],
-    "placement_status": "CAD proposal only; current KiCad J2 unchanged. Translation -4.5mm X from PR17 placement."
-  },
-  "J1": {
-    "pcb_position": [
-      42.025,
-      10
-    ],
-    "bbox": [
-      -21.970000000000002,
-      50.83,
-      18.749999999999996,
-      -13.03,
-      60.0,
-      24.31
+    "alternatives_for_review_only": [
+      "Mantenere componenti e layout frontale: verificare una diversa traiettoria 3D o registrazione delle interfacce posteriori; non dimostrata praticabile",
+      "Studiare aperture con maggiore gioco o profilo, solo entro la copertura delle manopole e con appoggio dado verificato; nessuna misura finale proposta",
+      "Se i vincoli restano incompatibili, concordare componenti posteriori o sequenza di montaggio diversi; deroga al blocco unico solo con conferma"
     ]
-  },
-  "nut": {
-    "bbox": [
-      3.7750000000000004,
-      60.345,
-      6.975,
-      21.225,
-      65.095,
-      24.424999999999997
-    ],
-    "diameter": 17.45,
-    "thickness": 4.75,
-    "across_flats": 15,
-    "bearing_wedge_mm": 0.30459088299739684,
-    "thread_engagement": "not validated; no thread profile in source model"
-  },
-  "height": {
-    "cavity": 29.7,
-    "jack_body_from_BCu": 12.7,
-    "jack_pin_projection_from_BCu": 4,
-    "body_zmin": 9.5,
-    "pin_zmax": 26.2,
-    "previous_connector_height_budget": 19.6,
-    "nominal_budget_margin": 6.9,
-    "pcb_and_pot_tolerances": "not established",
-    "top_inside_z": 31.8,
-    "bottom_inside_z": 2.1,
-    "lid_shape_distance": 3.7,
-    "lid_collision_mm3": 0.0,
-    "tolerance_status": "Full stack tolerance budget not established; nominal margins only.",
-    "required_nominal_stack": 22.8,
-    "pcb_top_minimum": 16.9,
-    "pcb_top_maximum": 23.8
-  },
-  "rear_wall": {
-    "axis_intersections": [
-      [
-        12.5,
-        58.19198007126637,
-        15.7
-      ],
-      [
-        12.5,
-        60.192284727354206,
-        15.7
-      ]
-    ],
-    "thickness_along_axis": 2.0003046560878346,
-    "inclination_deg": 1,
-    "hole_diameter_nominal": 11.2,
-    "hole_tolerance": "Manufacturer D11.2; current user-authorized D12 diagnostic proposal. No production tolerance or actual thread fit validated.",
-    "body_to_original_shell_distance": 0.07851018992929486,
-    "hole_diameter_current_study": 12
-  },
-  "static": {
-    "jack_usb_distance": 19.1,
-    "jack_usb_collision_mm3": 0.0,
-    "jack_shell_after_proposed_apertures_mm3": 0.0,
-    "usb_shell_after_proposed_apertures_mm3": 0.0,
-    "nut_shell_distance": 0.00041976720477888567,
-    "nut_shell_collision_mm3": 0.0,
-    "nut_usb_distance": 17.158818203327133,
-    "jack_DAC_PCB_projected_gap_y": 10.650000000000002,
-    "jack_MASTER_body_projected_gap_x": 39.57
-  },
-  "not_validated": [
-    "full board outline and supports",
-    "complete component stack incl. MASTER and display",
-    "cable overmolds and insertion tooling",
-    "continuous insertion of complete populated PCB",
-    "nut clamping without stressing PCB/connector against inclined wall",
-    "production hole tolerances",
-    "CAD proposal X12.5 not transferred to KiCad; complete pot model incl. pins/clips missing"
-  ],
-  "sources": {
-    "Neutrik_NRJ4HF.stp": "8b5f78a35e5709bd035e986a685bfd23a52f0d9367bee910e5a4af54b1efa105",
-    "Neutrik_NRJ4HF.pdf": "3c39333f39831d59c846bd67729b7e2a1527ffe6e29409bf0982a854d0fad0dd",
-    "Neutrik_NRJ-NUT-B.pdf": "30d4148c336e4fda1fd911baf0cddbc42eacf842ba3eced24ab0a7f839204c28",
-    "Neutrik_Jacks_Circuits.pdf": "85c77ebbd8456219ca0f6a384d46b65fdd15ff769bf148ee3468736c7917e5ff"
-  },
-  "kicad_step_verification": {
-    "source": "Native kicad-cli export of saved J2, compared using FreeCAD OCC",
-    "export_mount_plane_z": -0.085,
-    "assembly_mount_plane_z": 22.2,
-    "registration_translation": [
-      -62.5,
-      61.39,
-      22.285
-    ],
-    "note": "Exporter adds 0.05 model offset and 0.035 copper; normalize mounting plane, do not change J2 offset.",
-    "symmetric_difference_volume_mm3": 0,
-    "scope": "Historical verification for PR17/current saved PCB only. Current CAD proposal differs by -4.5mm in X; not yet synchronized to KiCad."
-  },
-  "erc": {
-    "errors": 0,
-    "warnings": 0
-  },
-  "drc_comparison": {
-    "before": {
-      "design": 117,
-      "unconnected": 161,
-      "parity": 68,
-      "errors": 170,
-      "warnings": 176
-    },
-    "after": {
-      "design": 117,
-      "unconnected": 160,
-      "parity": 68,
-      "errors": 169,
-      "warnings": 176
-    },
-    "added_geometry_findings": [],
-    "removed_geometry_findings": []
-  },
-  "baseline_commit": "9bfcf66 (merged in PR17 as aafeeba)",
-  "front_pot_screening": {
-    "method": "Conservative existing F.Fab rectangular body envelope12x13.4mm extruded7.5mm from nominal PCB top. Not a complete pot model; excludes pins/clips/cavities and tolerances.",
-    "sources": [
-      "Bourns-PTV-PTT.pdf page2",
-      "Bourns_PTV111-3.kicad_mod F.Fab read through Konnect"
-    ],
-    "centers": [
-      [
-        -28,
-        42
-      ],
-      [
-        0,
-        42
-      ],
-      [
-        28,
-        42
-      ],
-      [
-        -28,
-        -15
-      ],
-      [
-        0,
-        -15
-      ],
-      [
-        28,
-        -15
-      ]
-    ],
-    "baseline_jack_envelope_common_mm3": 5.7747778282192055,
-    "baseline_common_bbox": [
-      22,
-      40.3,
-      23.8,
-      24.98,
-      45.7,
-      26.2
-    ],
-    "cad_translation": [
-      -4.5,
-      0,
-      0
-    ],
-    "proposed_common_mm3": [
-      0.0,
-      0.0,
-      0.0,
-      0.0,
-      0.0,
-      0.0
-    ],
-    "proposed_min_distance": 1.5199999999999996,
-    "status": "PASS nominal body-envelope screen only; pin/clip/full assembly check pending"
   },
   "display_vertical_coupling": {
     "status": "NON VALIDATO; both dimensions require real-component verification",
@@ -271,1152 +447,1430 @@
     },
     "scope": "Nominal CAD data only; not used as certified physical thickness or to infer glass height. Overall module5.4mm cannot separate PCB/glass/rear parts."
   },
-  "clamping_geometry": {
-    "status": "CAD pose is not a validated tightened mounting",
-    "jack_shoulder_y": 58,
-    "nut_bearing_y": 60.345,
-    "parallel_reference_plane_separation": 2.345,
-    "wall_thickness_along_axis": 2.0003046560878346,
-    "reference_plane_excess_over_wall": 0.3446953439121656,
-    "wall_samples": [
-      {
-        "z": 6.975,
-        "inner_wall_y": 58.344275512765066,
-        "outer_wall_y": 60.3445801688529,
-        "inner_reference_gap": 0.3442755127650656,
-        "outer_reference_gap": 0.0004198311470986482
+  "historical_baseline": {
+    "status": "SUPERATO come posa attiva: F.Cu23.8 e boccole31.3; misure conservate per tracciabilita, non applicare alla posa serrata corrente",
+    "source_commit": "8d53d4abb076dc9b6b75c4eb6bb110b78c1528cf",
+    "data": {
+      "frame": {
+        "cad_x": "pcb_x-62.5",
+        "cad_y": "61.39-pcb_y",
+        "pcb_top_z": 23.8,
+        "pcb_bottom_z": 22.2,
+        "pcb_thickness_nominal": 1.6,
+        "status": "provisional rear-interface frame; not a validated full-board placement"
       },
-      {
-        "z": 9.5,
-        "inner_wall_y": 58.30020147382132,
-        "outer_wall_y": 60.30050612990915,
-        "inner_reference_gap": 0.3002014738213177,
-        "outer_reference_gap": 0.0444938700908466
-      },
-      {
-        "z": 15.7,
-        "inner_wall_y": 58.19198007126637,
-        "outer_wall_y": 60.192284727354206,
-        "inner_reference_gap": 0.1919800712663715,
-        "outer_reference_gap": 0.15271527264579277
-      },
-      {
-        "z": 22.2,
-        "inner_wall_y": 58.07852214923295,
-        "outer_wall_y": 60.07882680532079,
-        "inner_reference_gap": 0.07852214923295264,
-        "outer_reference_gap": 0.26617319467921163
-      },
-      {
-        "z": 24.425,
-        "inner_wall_y": 58.03968462976767,
-        "outer_wall_y": 60.03998928585551,
-        "inner_reference_gap": 0.03968462976767029,
-        "outer_reference_gap": 0.3050107141444869
-      }
-    ],
-    "caution": "Reference gaps sampled on planes, not claimed contact at the center of the bore. No elastic deformation, thread engagement or additional washers assumed."
-  },
-  "partial_insertion_probes": {
-    "scope": "Historical D11.2 baseline: jack and six nominal M9x5 bushings only. Current CAD uses D12; refer to diameter12_study. No full populated PCB/display or complete tilted path.",
-    "bushing_base_z": 31.3,
-    "bushing_diameter": 9,
-    "bushing_length": 5,
-    "pot_hole_diameter": 9.2,
-    "jack_hole_diameter": 11.2,
-    "sources": [
-      "Bourns-PTV-PTT.pdf page2 PTV111-3",
-      "Gate A front bore proposal",
-      "Neutrik_NRJ4HF.pdf"
-    ],
-    "poses": [
-      {
-        "pose": "final",
-        "translation_mm": [
+      "J2": {
+        "pcb_position": [
+          86.73,
+          20.34
+        ],
+        "rotation_deg": 90,
+        "side": "B.Cu",
+        "bbox": [
+          6.07,
+          33.699999999999996,
+          9.5,
+          21.82,
+          66.85000009999999,
+          26.200000000000003
+        ],
+        "axis_xz": [
+          12.5,
+          15.7
+        ],
+        "nose_direction": [
           0,
-          0,
+          1,
           0
         ],
-        "jack_shell_common_mm3": 0.0,
-        "front_bushings_shell_common_mm3": 0.0
-      },
-      {
-        "pose": "vertical_withdrawal",
-        "translation_mm": [
-          0,
-          0,
-          -0.2
+        "step_pin_centers": [
+          {
+            "pin": "T",
+            "cad": [
+              19.73,
+              41.05,
+              22.200000000000003
+            ]
+          },
+          {
+            "pin": "TN",
+            "cad": [
+              8.3,
+              41.05,
+              22.200000000000003
+            ]
+          },
+          {
+            "pin": "S",
+            "cad": [
+              19.73,
+              53.75,
+              22.2
+            ]
+          },
+          {
+            "pin": "SN",
+            "cad": [
+              8.3,
+              53.75,
+              22.2
+            ]
+          }
         ],
-        "jack_shell_common_mm3": 4.480444286744898,
-        "front_bushings_shell_common_mm3": 0.0
-      },
-      {
-        "pose": "rear_connector_retraction",
-        "translation_mm": [
-          0,
-          -0.2,
-          0
+        "cad_proposal_pcb_equivalent": [
+          82.23,
+          20.34
         ],
-        "jack_shell_common_mm3": 0.0,
-        "front_bushings_shell_common_mm3": 7.347395016982416
-      }
-    ],
-    "conclusion": "Final nominal partial pose clear; both tested straight withdrawal motions interfere. Complete insertion remains unverified."
-  },
-  "inclined_insertion_check": {
-    "status": "D11.2 BASELINE: FAIL sampled nominal paths; superseded for current CAD hole by diameter12_study",
-    "method": "FreeCAD OCC via MCP. X-axis rotations about jack bore mid-wall point; optional translation along rotated jack axis. Exact analytic cylinder reconstructed from transformed base/axis for each pose. Nut installed afterwards and excluded.",
-    "pivot_mm": [
-      12.5,
-      59.19213239931029,
-      15.7
-    ],
-    "rotation_axis": [
-      1,
-      0,
-      0
-    ],
-    "nose": {
-      "diameter_mm": 11.2,
-      "length_mm": 7.85,
-      "base_mm": [
-        12.5,
-        58,
-        15.7
-      ],
-      "axis": [
-        0,
-        1,
-        0
-      ],
-      "source": "Smooth cylindrical portion of simplified Neutrik STEP, not physical thread diameter"
-    },
-    "pitch_samples": [
-      {
-        "pitch_deg": 0,
-        "nose_shell_common_mm3": 0
+        "placement_status": "CAD proposal only; current KiCad J2 unchanged. Translation -4.5mm X from PR17 placement."
       },
-      {
-        "pitch_deg": 0.1,
-        "nose_shell_common_mm3": 0.016813937966308146
+      "J1": {
+        "pcb_position": [
+          42.025,
+          10
+        ],
+        "bbox": [
+          -21.970000000000002,
+          50.83,
+          18.749999999999996,
+          -13.03,
+          60.0,
+          24.31
+        ]
       },
-      {
-        "pitch_deg": -0.1,
-        "nose_shell_common_mm3": 0.022843760025750726
+      "nut": {
+        "bbox": [
+          3.7750000000000004,
+          60.345,
+          6.975,
+          21.225,
+          65.095,
+          24.424999999999997
+        ],
+        "diameter": 17.45,
+        "thickness": 4.75,
+        "across_flats": 15,
+        "bearing_wedge_mm": 0.30459088299739684,
+        "thread_engagement": "not validated; no thread profile in source model"
       },
-      {
-        "pitch_deg": 0.5,
-        "nose_shell_common_mm3": 0.08685293332321109
+      "height": {
+        "cavity": 29.7,
+        "jack_body_from_BCu": 12.7,
+        "jack_pin_projection_from_BCu": 4,
+        "body_zmin": 9.5,
+        "pin_zmax": 26.2,
+        "previous_connector_height_budget": 19.6,
+        "nominal_budget_margin": 6.9,
+        "pcb_and_pot_tolerances": "not established",
+        "top_inside_z": 31.8,
+        "bottom_inside_z": 2.1,
+        "lid_shape_distance": 3.7,
+        "lid_collision_mm3": 0.0,
+        "tolerance_status": "Full stack tolerance budget not established; nominal margins only.",
+        "required_nominal_stack": 22.8,
+        "pcb_top_minimum": 16.9,
+        "pcb_top_maximum": 23.8
       },
-      {
-        "pitch_deg": -0.5,
-        "nose_shell_common_mm3": 0.11752178053299289
-      },
-      {
-        "pitch_deg": 1,
-        "nose_shell_common_mm3": 0.1808025209112678
-      },
-      {
-        "pitch_deg": -1,
-        "nose_shell_common_mm3": 0.2433549717704686
-      },
-      {
-        "pitch_deg": 2,
-        "nose_shell_common_mm3": 0.39099699324064474
-      },
-      {
-        "pitch_deg": -2,
-        "nose_shell_common_mm3": 0.49779737267933655
-      },
-      {
-        "pitch_deg": 5,
-        "nose_shell_common_mm3": 1.0920236321005443
-      },
-      {
-        "pitch_deg": -5,
-        "nose_shell_common_mm3": 1.2807544762551188
-      },
-      {
-        "pitch_deg": 10,
-        "nose_shell_common_mm3": 2.3441505331780794
-      },
-      {
-        "pitch_deg": -10,
-        "nose_shell_common_mm3": 2.786504918346136
-      },
-      {
-        "pitch_deg": 15,
-        "nose_shell_common_mm3": 4.004038265182922
-      },
-      {
-        "pitch_deg": -15,
-        "nose_shell_common_mm3": 4.789346013451443
-      }
-    ],
-    "coupled_samples": [
-      {
-        "pitch_deg": -2,
-        "axial_translation_mm": -0.1,
-        "nose_shell_common_mm3": 0.5215803491872002
-      },
-      {
-        "pitch_deg": -2,
-        "axial_translation_mm": -0.05,
-        "nose_shell_common_mm3": 0.5125552328245853
-      },
-      {
-        "pitch_deg": -2,
-        "axial_translation_mm": 0,
-        "nose_shell_common_mm3": 0.49779737267933655
-      },
-      {
-        "pitch_deg": -2,
-        "axial_translation_mm": 0.05,
-        "nose_shell_common_mm3": 0.48044234114332696
-      },
-      {
-        "pitch_deg": -1,
-        "axial_translation_mm": -0.1,
-        "nose_shell_common_mm3": 0.24346236316477388
-      },
-      {
-        "pitch_deg": -1,
-        "axial_translation_mm": -0.05,
-        "nose_shell_common_mm3": 0.24346236329077442
-      },
-      {
-        "pitch_deg": -1,
-        "axial_translation_mm": 0,
-        "nose_shell_common_mm3": 0.2433549717704686
-      },
-      {
-        "pitch_deg": -1,
-        "axial_translation_mm": 0.05,
-        "nose_shell_common_mm3": 0.23791339998334493
-      },
-      {
-        "pitch_deg": -0.5,
-        "axial_translation_mm": -0.1,
-        "nose_shell_common_mm3": 0.11752178060849872
-      },
-      {
-        "pitch_deg": -0.5,
-        "axial_translation_mm": -0.05,
-        "nose_shell_common_mm3": 0.11752178044622141
-      },
-      {
-        "pitch_deg": -0.5,
-        "axial_translation_mm": 0,
-        "nose_shell_common_mm3": 0.11752178053299289
-      },
-      {
-        "pitch_deg": -0.5,
-        "axial_translation_mm": 0.05,
-        "nose_shell_common_mm3": 0.11743393767730836
-      },
-      {
-        "pitch_deg": -0.1,
-        "axial_translation_mm": -0.1,
-        "nose_shell_common_mm3": 0.022843760011358683
-      },
-      {
-        "pitch_deg": -0.1,
-        "axial_translation_mm": -0.05,
-        "nose_shell_common_mm3": 0.02284375997109578
-      },
-      {
-        "pitch_deg": -0.1,
-        "axial_translation_mm": 0,
-        "nose_shell_common_mm3": 0.022843760025750726
-      },
-      {
-        "pitch_deg": -0.1,
-        "axial_translation_mm": 0.05,
-        "nose_shell_common_mm3": 0.022843759978236733
-      },
-      {
-        "pitch_deg": 0.1,
-        "axial_translation_mm": -0.1,
-        "nose_shell_common_mm3": 0.016813937883537022
-      },
-      {
-        "pitch_deg": 0.1,
-        "axial_translation_mm": -0.05,
-        "nose_shell_common_mm3": 0.016813938014603735
-      },
-      {
-        "pitch_deg": 0.1,
-        "axial_translation_mm": 0,
-        "nose_shell_common_mm3": 0.016813937966308146
-      },
-      {
-        "pitch_deg": 0.1,
-        "axial_translation_mm": 0.05,
-        "nose_shell_common_mm3": 0.01681393805545639
-      },
-      {
-        "pitch_deg": 0.5,
-        "axial_translation_mm": -0.1,
-        "nose_shell_common_mm3": 0.08685293335565447
-      },
-      {
-        "pitch_deg": 0.5,
-        "axial_translation_mm": -0.05,
-        "nose_shell_common_mm3": 0.08685293332070998
-      },
-      {
-        "pitch_deg": 0.5,
-        "axial_translation_mm": 0,
-        "nose_shell_common_mm3": 0.08685293332321109
-      },
-      {
-        "pitch_deg": 0.5,
-        "axial_translation_mm": 0.05,
-        "nose_shell_common_mm3": 0.08685293338059807
-      },
-      {
-        "pitch_deg": 1,
-        "axial_translation_mm": -0.1,
-        "nose_shell_common_mm3": 0.18080252070352287
-      },
-      {
-        "pitch_deg": 1,
-        "axial_translation_mm": -0.05,
-        "nose_shell_common_mm3": 0.1808025208828461
-      },
-      {
-        "pitch_deg": 1,
-        "axial_translation_mm": 0,
-        "nose_shell_common_mm3": 0.1808025209112678
-      },
-      {
-        "pitch_deg": 1,
-        "axial_translation_mm": 0.05,
-        "nose_shell_common_mm3": 0.1808025207588777
-      },
-      {
-        "pitch_deg": 2,
-        "axial_translation_mm": -0.1,
-        "nose_shell_common_mm3": 0.39099699320960113
-      },
-      {
-        "pitch_deg": 2,
-        "axial_translation_mm": -0.05,
-        "nose_shell_common_mm3": 0.39099699324349757
-      },
-      {
-        "pitch_deg": 2,
-        "axial_translation_mm": 0,
-        "nose_shell_common_mm3": 0.39099699324064474
-      },
-      {
-        "pitch_deg": 2,
-        "axial_translation_mm": 0.05,
-        "nose_shell_common_mm3": 0.39099699322002124
-      }
-    ],
-    "nose_only_sensitivity": {
-      "method": "Diagnostic diameter bisection, 17 iterations, common-volume threshold 1e-7 mm3; fresh analytic cylinder. Bore along +Y from (12.5,50,15.7), length20mm.",
-      "samples": [
-        {
-          "pitch_deg": 1,
-          "diameter_bracket_mm": [
-            11.233068847656249,
-            11.233090209960936
+      "rear_wall": {
+        "axis_intersections": [
+          [
+            12.5,
+            58.19198007126637,
+            15.7
+          ],
+          [
+            12.5,
+            60.192284727354206,
+            15.7
           ]
+        ],
+        "thickness_along_axis": 2.0003046560878346,
+        "inclination_deg": 1,
+        "hole_diameter_nominal": 11.2,
+        "hole_tolerance": "Manufacturer D11.2; current user-authorized D12 diagnostic proposal. No production tolerance or actual thread fit validated.",
+        "body_to_original_shell_distance": 0.07851018992929486,
+        "hole_diameter_current_study": 12
+      },
+      "static": {
+        "jack_usb_distance": 19.1,
+        "jack_usb_collision_mm3": 0.0,
+        "jack_shell_after_proposed_apertures_mm3": 0.0,
+        "usb_shell_after_proposed_apertures_mm3": 0.0,
+        "nut_shell_distance": 0.00041976720477888567,
+        "nut_shell_collision_mm3": 0.0,
+        "nut_usb_distance": 17.158818203327133,
+        "jack_DAC_PCB_projected_gap_y": 10.650000000000002,
+        "jack_MASTER_body_projected_gap_x": 39.57
+      },
+      "not_validated": [
+        "full board outline and supports",
+        "complete component stack incl. MASTER and display",
+        "cable overmolds and insertion tooling",
+        "continuous insertion of complete populated PCB",
+        "nut clamping without stressing PCB/connector against inclined wall",
+        "production hole tolerances",
+        "CAD proposal X12.5 not transferred to KiCad; complete pot model incl. pins/clips missing"
+      ],
+      "sources": {
+        "Neutrik_NRJ4HF.stp": "8b5f78a35e5709bd035e986a685bfd23a52f0d9367bee910e5a4af54b1efa105",
+        "Neutrik_NRJ4HF.pdf": "3c39333f39831d59c846bd67729b7e2a1527ffe6e29409bf0982a854d0fad0dd",
+        "Neutrik_NRJ-NUT-B.pdf": "30d4148c336e4fda1fd911baf0cddbc42eacf842ba3eced24ab0a7f839204c28",
+        "Neutrik_Jacks_Circuits.pdf": "85c77ebbd8456219ca0f6a384d46b65fdd15ff769bf148ee3468736c7917e5ff"
+      },
+      "kicad_step_verification": {
+        "source": "Native kicad-cli export of saved J2, compared using FreeCAD OCC",
+        "export_mount_plane_z": -0.085,
+        "assembly_mount_plane_z": 22.2,
+        "registration_translation": [
+          -62.5,
+          61.39,
+          22.285
+        ],
+        "note": "Exporter adds 0.05 model offset and 0.035 copper; normalize mounting plane, do not change J2 offset.",
+        "symmetric_difference_volume_mm3": 0,
+        "scope": "Historical verification for PR17/current saved PCB only. Current CAD proposal differs by -4.5mm in X; not yet synchronized to KiCad."
+      },
+      "erc": {
+        "errors": 0,
+        "warnings": 0
+      },
+      "drc_comparison": {
+        "before": {
+          "design": 117,
+          "unconnected": 161,
+          "parity": 68,
+          "errors": 170,
+          "warnings": 176
         },
-        {
-          "pitch_deg": 5,
-          "diameter_bracket_mm": [
-            11.399929809570313,
-            11.399951171875001
-          ]
+        "after": {
+          "design": 117,
+          "unconnected": 160,
+          "parity": 68,
+          "errors": 169,
+          "warnings": 176
         },
-        {
-          "pitch_deg": 15,
-          "diameter_bracket_mm": [
-            12.073654174804688,
-            12.073675537109374
+        "added_geometry_findings": [],
+        "removed_geometry_findings": []
+      },
+      "baseline_commit": "9bfcf66 (merged in PR17 as aafeeba)",
+      "front_pot_screening": {
+        "method": "Conservative existing F.Fab rectangular body envelope12x13.4mm extruded7.5mm from nominal PCB top. Not a complete pot model; excludes pins/clips/cavities and tolerances.",
+        "sources": [
+          "Bourns-PTV-PTT.pdf page2",
+          "Bourns_PTV111-3.kicad_mod F.Fab read through Konnect"
+        ],
+        "centers": [
+          [
+            -28,
+            42
+          ],
+          [
+            0,
+            42
+          ],
+          [
+            28,
+            42
+          ],
+          [
+            -28,
+            -15
+          ],
+          [
+            0,
+            -15
+          ],
+          [
+            28,
+            -15
           ]
+        ],
+        "baseline_jack_envelope_common_mm3": 5.7747778282192055,
+        "baseline_common_bbox": [
+          22,
+          40.3,
+          23.8,
+          24.98,
+          45.7,
+          26.2
+        ],
+        "cad_translation": [
+          -4.5,
+          0,
+          0
+        ],
+        "proposed_common_mm3": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "proposed_min_distance": 1.5199999999999996,
+        "status": "PASS nominal body-envelope screen only; pin/clip/full assembly check pending"
+      },
+      "display_vertical_coupling": {
+        "status": "NON VALIDATO; both dimensions require real-component verification",
+        "physical_pcb_thickness_mm": null,
+        "pcb_top_to_glass_mm": null,
+        "nominal_eagle_stackup_mm": 1.57,
+        "nominal_stackup_source": {
+          "revision": "73022f63a4b82117093ff5c250c119b6720005df",
+          "file": "sources/adafruit-5393/Adafruit 1.47in 320x172 Round Rectangle TFT.brd",
+          "layerSetup": "(1*16)",
+          "dielectric_mm": 1.5,
+          "copper_per_active_layer_mm": 0.035
+        },
+        "scope": "Nominal CAD data only; not used as certified physical thickness or to infer glass height. Overall module5.4mm cannot separate PCB/glass/rear parts."
+      },
+      "clamping_geometry": {
+        "status": "CAD pose is not a validated tightened mounting",
+        "jack_shoulder_y": 58,
+        "nut_bearing_y": 60.345,
+        "parallel_reference_plane_separation": 2.345,
+        "wall_thickness_along_axis": 2.0003046560878346,
+        "reference_plane_excess_over_wall": 0.3446953439121656,
+        "wall_samples": [
+          {
+            "z": 6.975,
+            "inner_wall_y": 58.344275512765066,
+            "outer_wall_y": 60.3445801688529,
+            "inner_reference_gap": 0.3442755127650656,
+            "outer_reference_gap": 0.0004198311470986482
+          },
+          {
+            "z": 9.5,
+            "inner_wall_y": 58.30020147382132,
+            "outer_wall_y": 60.30050612990915,
+            "inner_reference_gap": 0.3002014738213177,
+            "outer_reference_gap": 0.0444938700908466
+          },
+          {
+            "z": 15.7,
+            "inner_wall_y": 58.19198007126637,
+            "outer_wall_y": 60.192284727354206,
+            "inner_reference_gap": 0.1919800712663715,
+            "outer_reference_gap": 0.15271527264579277
+          },
+          {
+            "z": 22.2,
+            "inner_wall_y": 58.07852214923295,
+            "outer_wall_y": 60.07882680532079,
+            "inner_reference_gap": 0.07852214923295264,
+            "outer_reference_gap": 0.26617319467921163
+          },
+          {
+            "z": 24.425,
+            "inner_wall_y": 58.03968462976767,
+            "outer_wall_y": 60.03998928585551,
+            "inner_reference_gap": 0.03968462976767029,
+            "outer_reference_gap": 0.3050107141444869
+          }
+        ],
+        "caution": "Reference gaps sampled on planes, not claimed contact at the center of the bore. No elastic deformation, thread engagement or additional washers assumed."
+      },
+      "partial_insertion_probes": {
+        "scope": "Historical D11.2 baseline: jack and six nominal M9x5 bushings only. Current CAD uses D12; refer to diameter12_study. No full populated PCB/display or complete tilted path.",
+        "bushing_base_z": 31.3,
+        "bushing_diameter": 9,
+        "bushing_length": 5,
+        "pot_hole_diameter": 9.2,
+        "jack_hole_diameter": 11.2,
+        "sources": [
+          "Bourns-PTV-PTT.pdf page2 PTV111-3",
+          "Gate A front bore proposal",
+          "Neutrik_NRJ4HF.pdf"
+        ],
+        "poses": [
+          {
+            "pose": "final",
+            "translation_mm": [
+              0,
+              0,
+              0
+            ],
+            "jack_shell_common_mm3": 0.0,
+            "front_bushings_shell_common_mm3": 0.0
+          },
+          {
+            "pose": "vertical_withdrawal",
+            "translation_mm": [
+              0,
+              0,
+              -0.2
+            ],
+            "jack_shell_common_mm3": 4.480444286744898,
+            "front_bushings_shell_common_mm3": 0.0
+          },
+          {
+            "pose": "rear_connector_retraction",
+            "translation_mm": [
+              0,
+              -0.2,
+              0
+            ],
+            "jack_shell_common_mm3": 0.0,
+            "front_bushings_shell_common_mm3": 7.347395016982416
+          }
+        ],
+        "conclusion": "Final nominal partial pose clear; both tested straight withdrawal motions interfere. Complete insertion remains unverified."
+      },
+      "inclined_insertion_check": {
+        "status": "D11.2 BASELINE: FAIL sampled nominal paths; superseded for current CAD hole by diameter12_study",
+        "method": "FreeCAD OCC via MCP. X-axis rotations about jack bore mid-wall point; optional translation along rotated jack axis. Exact analytic cylinder reconstructed from transformed base/axis for each pose. Nut installed afterwards and excluded.",
+        "pivot_mm": [
+          12.5,
+          59.19213239931029,
+          15.7
+        ],
+        "rotation_axis": [
+          1,
+          0,
+          0
+        ],
+        "nose": {
+          "diameter_mm": 11.2,
+          "length_mm": 7.85,
+          "base_mm": [
+            12.5,
+            58,
+            15.7
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "source": "Smooth cylindrical portion of simplified Neutrik STEP, not physical thread diameter"
+        },
+        "pitch_samples": [
+          {
+            "pitch_deg": 0,
+            "nose_shell_common_mm3": 0
+          },
+          {
+            "pitch_deg": 0.1,
+            "nose_shell_common_mm3": 0.016813937966308146
+          },
+          {
+            "pitch_deg": -0.1,
+            "nose_shell_common_mm3": 0.022843760025750726
+          },
+          {
+            "pitch_deg": 0.5,
+            "nose_shell_common_mm3": 0.08685293332321109
+          },
+          {
+            "pitch_deg": -0.5,
+            "nose_shell_common_mm3": 0.11752178053299289
+          },
+          {
+            "pitch_deg": 1,
+            "nose_shell_common_mm3": 0.1808025209112678
+          },
+          {
+            "pitch_deg": -1,
+            "nose_shell_common_mm3": 0.2433549717704686
+          },
+          {
+            "pitch_deg": 2,
+            "nose_shell_common_mm3": 0.39099699324064474
+          },
+          {
+            "pitch_deg": -2,
+            "nose_shell_common_mm3": 0.49779737267933655
+          },
+          {
+            "pitch_deg": 5,
+            "nose_shell_common_mm3": 1.0920236321005443
+          },
+          {
+            "pitch_deg": -5,
+            "nose_shell_common_mm3": 1.2807544762551188
+          },
+          {
+            "pitch_deg": 10,
+            "nose_shell_common_mm3": 2.3441505331780794
+          },
+          {
+            "pitch_deg": -10,
+            "nose_shell_common_mm3": 2.786504918346136
+          },
+          {
+            "pitch_deg": 15,
+            "nose_shell_common_mm3": 4.004038265182922
+          },
+          {
+            "pitch_deg": -15,
+            "nose_shell_common_mm3": 4.789346013451443
+          }
+        ],
+        "coupled_samples": [
+          {
+            "pitch_deg": -2,
+            "axial_translation_mm": -0.1,
+            "nose_shell_common_mm3": 0.5215803491872002
+          },
+          {
+            "pitch_deg": -2,
+            "axial_translation_mm": -0.05,
+            "nose_shell_common_mm3": 0.5125552328245853
+          },
+          {
+            "pitch_deg": -2,
+            "axial_translation_mm": 0,
+            "nose_shell_common_mm3": 0.49779737267933655
+          },
+          {
+            "pitch_deg": -2,
+            "axial_translation_mm": 0.05,
+            "nose_shell_common_mm3": 0.48044234114332696
+          },
+          {
+            "pitch_deg": -1,
+            "axial_translation_mm": -0.1,
+            "nose_shell_common_mm3": 0.24346236316477388
+          },
+          {
+            "pitch_deg": -1,
+            "axial_translation_mm": -0.05,
+            "nose_shell_common_mm3": 0.24346236329077442
+          },
+          {
+            "pitch_deg": -1,
+            "axial_translation_mm": 0,
+            "nose_shell_common_mm3": 0.2433549717704686
+          },
+          {
+            "pitch_deg": -1,
+            "axial_translation_mm": 0.05,
+            "nose_shell_common_mm3": 0.23791339998334493
+          },
+          {
+            "pitch_deg": -0.5,
+            "axial_translation_mm": -0.1,
+            "nose_shell_common_mm3": 0.11752178060849872
+          },
+          {
+            "pitch_deg": -0.5,
+            "axial_translation_mm": -0.05,
+            "nose_shell_common_mm3": 0.11752178044622141
+          },
+          {
+            "pitch_deg": -0.5,
+            "axial_translation_mm": 0,
+            "nose_shell_common_mm3": 0.11752178053299289
+          },
+          {
+            "pitch_deg": -0.5,
+            "axial_translation_mm": 0.05,
+            "nose_shell_common_mm3": 0.11743393767730836
+          },
+          {
+            "pitch_deg": -0.1,
+            "axial_translation_mm": -0.1,
+            "nose_shell_common_mm3": 0.022843760011358683
+          },
+          {
+            "pitch_deg": -0.1,
+            "axial_translation_mm": -0.05,
+            "nose_shell_common_mm3": 0.02284375997109578
+          },
+          {
+            "pitch_deg": -0.1,
+            "axial_translation_mm": 0,
+            "nose_shell_common_mm3": 0.022843760025750726
+          },
+          {
+            "pitch_deg": -0.1,
+            "axial_translation_mm": 0.05,
+            "nose_shell_common_mm3": 0.022843759978236733
+          },
+          {
+            "pitch_deg": 0.1,
+            "axial_translation_mm": -0.1,
+            "nose_shell_common_mm3": 0.016813937883537022
+          },
+          {
+            "pitch_deg": 0.1,
+            "axial_translation_mm": -0.05,
+            "nose_shell_common_mm3": 0.016813938014603735
+          },
+          {
+            "pitch_deg": 0.1,
+            "axial_translation_mm": 0,
+            "nose_shell_common_mm3": 0.016813937966308146
+          },
+          {
+            "pitch_deg": 0.1,
+            "axial_translation_mm": 0.05,
+            "nose_shell_common_mm3": 0.01681393805545639
+          },
+          {
+            "pitch_deg": 0.5,
+            "axial_translation_mm": -0.1,
+            "nose_shell_common_mm3": 0.08685293335565447
+          },
+          {
+            "pitch_deg": 0.5,
+            "axial_translation_mm": -0.05,
+            "nose_shell_common_mm3": 0.08685293332070998
+          },
+          {
+            "pitch_deg": 0.5,
+            "axial_translation_mm": 0,
+            "nose_shell_common_mm3": 0.08685293332321109
+          },
+          {
+            "pitch_deg": 0.5,
+            "axial_translation_mm": 0.05,
+            "nose_shell_common_mm3": 0.08685293338059807
+          },
+          {
+            "pitch_deg": 1,
+            "axial_translation_mm": -0.1,
+            "nose_shell_common_mm3": 0.18080252070352287
+          },
+          {
+            "pitch_deg": 1,
+            "axial_translation_mm": -0.05,
+            "nose_shell_common_mm3": 0.1808025208828461
+          },
+          {
+            "pitch_deg": 1,
+            "axial_translation_mm": 0,
+            "nose_shell_common_mm3": 0.1808025209112678
+          },
+          {
+            "pitch_deg": 1,
+            "axial_translation_mm": 0.05,
+            "nose_shell_common_mm3": 0.1808025207588777
+          },
+          {
+            "pitch_deg": 2,
+            "axial_translation_mm": -0.1,
+            "nose_shell_common_mm3": 0.39099699320960113
+          },
+          {
+            "pitch_deg": 2,
+            "axial_translation_mm": -0.05,
+            "nose_shell_common_mm3": 0.39099699324349757
+          },
+          {
+            "pitch_deg": 2,
+            "axial_translation_mm": 0,
+            "nose_shell_common_mm3": 0.39099699324064474
+          },
+          {
+            "pitch_deg": 2,
+            "axial_translation_mm": 0.05,
+            "nose_shell_common_mm3": 0.39099699322002124
+          }
+        ],
+        "nose_only_sensitivity": {
+          "method": "Diagnostic diameter bisection, 17 iterations, common-volume threshold 1e-7 mm3; fresh analytic cylinder. Bore along +Y from (12.5,50,15.7), length20mm.",
+          "samples": [
+            {
+              "pitch_deg": 1,
+              "diameter_bracket_mm": [
+                11.233068847656249,
+                11.233090209960936
+              ]
+            },
+            {
+              "pitch_deg": 5,
+              "diameter_bracket_mm": [
+                11.399929809570313,
+                11.399951171875001
+              ]
+            },
+            {
+              "pitch_deg": 15,
+              "diameter_bracket_mm": [
+                12.073654174804688,
+                12.073675537109374
+              ]
+            }
+          ],
+          "scope": "Nose only at positive pitch; excludes body, front controls, USB, PCB, supports, tooling and tolerances. Derived sensitivity, NOT production hole specifications. No modeled aperture changed."
+        },
+        "boolean_countercheck": {
+          "point_mm": [
+            -28,
+            36.5,
+            32.8
+          ],
+          "inside_fresh_bushing": true,
+          "inside_shell": true,
+          "single_fresh_common_mm3": 25.726346038816207,
+          "original_rotated_cylinder_common_mm3": 0,
+          "recovery": "Reconstruct exact cylinders from transformed base and axis; unchanged cylinder volume. Do not use transformGeometry approximation."
+        },
+        "scope": "Nominal reduced probes. Smallest sampled tilt +/-0.1deg already interferes; all 32 coupled samples interfere. No exhaustive 6DOF search or real manufactured fit claim. Zero radial model clearance prevents a fully engaged nominal cylinder from tilting. Full assembly, tolerances, thread and tool access remain open.",
+        "display_dependency": "None; both physical display dimensions remain null"
+      },
+      "clamping_contact_check": {
+        "status": "NON VALIDATO: first edge contact only, no full-area rigid seating",
+        "jack_samples": [
+          {
+            "jack_delta_y_mm": 0,
+            "wall_distance_mm": 0.0,
+            "wall_common_mm3": 0.0,
+            "wall_distance_note": "Whole jack touches nominal D11.2 bore; not the shoulder-face gap"
+          },
+          {
+            "jack_delta_y_mm": 0.07852214923295264,
+            "wall_distance_mm": 0.0,
+            "wall_common_mm3": 0.0,
+            "wall_distance_note": "Whole jack touches nominal D11.2 bore; not the shoulder-face gap"
+          },
+          {
+            "jack_delta_y_mm": 0.08852214923295264,
+            "wall_distance_mm": 0.0,
+            "wall_common_mm3": 0.04511584478415817,
+            "wall_distance_note": "Whole jack touches nominal D11.2 bore; not the shoulder-face gap"
+          },
+          {
+            "jack_delta_y_mm": 0.1919800712663715,
+            "wall_distance_mm": 0.0,
+            "wall_common_mm3": 3.764035064032102,
+            "wall_distance_note": "Whole jack touches nominal D11.2 bore; not the shoulder-face gap"
+          }
+        ],
+        "nut_samples": [
+          {
+            "nut_delta_y_mm": 0,
+            "wall_distance_mm": 0.00041976720477888567,
+            "wall_common_mm3": 0.0
+          },
+          {
+            "nut_delta_y_mm": -0.0004198311470986482,
+            "wall_distance_mm": 3.552713678800501e-15,
+            "wall_common_mm3": 0.0
+          },
+          {
+            "nut_delta_y_mm": -0.010419831147098648,
+            "wall_distance_mm": 7.105427357601002e-15,
+            "wall_common_mm3": 0.009592561388577883
+          }
+        ],
+        "wall_bearing_angle_deg": 1,
+        "first_contact_shoulder_y_mm": 58.07852214923295,
+        "first_contact_nut_y_mm": 60.3445801688529,
+        "first_contact_plane_separation_mm": 2.2660580196199476,
+        "wall_axis_thickness_mm": 2.0003046560878346,
+        "remaining_reference_plane_excess_mm": 0.265753363532113,
+        "inner_gap_range_over_body_mm": [
+          0,
+          0.221679324588365
+        ],
+        "outer_gap_range_over_nut_mm": [
+          0,
+          0.304590882997397
+        ],
+        "scope": "Independent axial approach of jack and nut envelope. First contact derives from support-plane geometry and OCC distance. No full-assembly translation approved; no deformation, torque, thread engagement or tool access inferred.",
+        "shoulder_face_check_d12": [
+          {
+            "delta_y_mm": 0,
+            "shoulder_face_to_shell_distance_mm": 0.07851018992929486,
+            "jack_shell_common_mm3": 0
+          },
+          {
+            "delta_y_mm": 0.07852214923295264,
+            "shoulder_face_to_shell_distance_mm": 7.105427357601002e-15,
+            "jack_shell_common_mm3": 0
+          },
+          {
+            "delta_y_mm": 0.08852214923295264,
+            "shoulder_face_to_shell_distance_mm": 3.552713678800501e-15,
+            "jack_shell_common_mm3": 0.04506963229495604
+          }
+        ]
+      },
+      "diameter12_study": {
+        "status": "User-requested D12 study: nominal projected coverage PASS; complete insertion and gap-free clamping NOT VALIDATED",
+        "jack_hole_diameter_mm": 12,
+        "manufacturer_reference_hole_mm": 11.2,
+        "nominal_radial_clearance_mm": 0.4,
+        "coverage": {
+          "source": "Neutrik_NRJ-NUT-B.pdf ST-91213761, outer circular flange D17.45, thickness4.75, SW15; original drawing inspected",
+          "flange_diameter_mm": 17.45,
+          "centered_projected_radial_overlap_mm": 2.725,
+          "at_nominal_max_radial_offset_mm": 2.325,
+          "scope": "Projection along jack axis only; no proof of surface seating, actual tolerances or gap closure. Flange is circular; SW15 is wrench size, not flange diameter."
+        },
+        "nose_and_jack_samples": [
+          {
+            "pitch_deg": 0,
+            "translation_mm": [
+              0,
+              0,
+              0
+            ],
+            "nose_mm3": 0,
+            "jack_mm3": 0,
+            "bushings_mm3": 0
+          },
+          {
+            "pitch_deg": 0,
+            "translation_mm": [
+              0,
+              0,
+              -0.2
+            ],
+            "nose_mm3": 0,
+            "jack_mm3": 0,
+            "bushings_mm3": 0
+          },
+          {
+            "pitch_deg": 0,
+            "translation_mm": [
+              0,
+              0,
+              -0.4
+            ],
+            "nose_mm3": 0,
+            "jack_mm3": 0,
+            "bushings_mm3": 0
+          },
+          {
+            "pitch_deg": 0,
+            "translation_mm": [
+              0,
+              0,
+              -0.5
+            ],
+            "nose_mm3": 0.9876839686553465,
+            "jack_mm3": 0.9876839686578003,
+            "bushings_mm3": 0
+          },
+          {
+            "pitch_deg": 0.1,
+            "translation_mm": [
+              0,
+              0,
+              0
+            ],
+            "nose_mm3": 0,
+            "jack_mm3": 0,
+            "bushings_mm3": 0
+          },
+          {
+            "pitch_deg": 0.5,
+            "translation_mm": [
+              0,
+              0,
+              0
+            ],
+            "nose_mm3": 0,
+            "jack_mm3": 0,
+            "bushings_mm3": 3.0808896414432274
+          },
+          {
+            "pitch_deg": 1,
+            "translation_mm": [
+              0,
+              0,
+              0
+            ],
+            "nose_mm3": 0,
+            "jack_mm3": 0,
+            "bushings_mm3": 17.784183710766854
+          },
+          {
+            "pitch_deg": 2,
+            "translation_mm": [
+              0,
+              0,
+              0
+            ],
+            "nose_mm3": 0,
+            "jack_mm3": 0,
+            "bushings_mm3": 48.273801135866414
+          },
+          {
+            "pitch_deg": 5,
+            "translation_mm": [
+              0,
+              0,
+              0
+            ],
+            "nose_mm3": 0,
+            "jack_mm3": 4.478328090145,
+            "bushings_mm3": 75.54234152694846
+          },
+          {
+            "pitch_deg": 10,
+            "translation_mm": [
+              0,
+              0,
+              0
+            ],
+            "nose_mm3": 0,
+            "jack_mm3": 19.359905503063793,
+            "bushings_mm3": 67.51819378476316
+          },
+          {
+            "pitch_deg": 15,
+            "translation_mm": [
+              0,
+              0,
+              0
+            ],
+            "nose_mm3": 0.005676897521769985,
+            "jack_mm3": 36.3865721124086,
+            "bushings_mm3": 0
+          }
+        ],
+        "combined_samples": [
+          {
+            "pitch_deg": 0,
+            "translation_mm": [
+              0,
+              0,
+              0
+            ],
+            "common_mm3": {
+              "J2_NRJ4HF": 0,
+              "J1_USB4085": 0,
+              "bushings": 0
+            }
+          },
+          {
+            "pitch_deg": 0,
+            "translation_mm": [
+              0,
+              0,
+              -0.2
+            ],
+            "common_mm3": {
+              "J2_NRJ4HF": 0,
+              "J1_USB4085": 2.7071336938653774,
+              "bushings": 0
+            }
+          },
+          {
+            "pitch_deg": 0,
+            "translation_mm": [
+              0,
+              0,
+              -0.4
+            ],
+            "common_mm3": {
+              "J2_NRJ4HF": 0,
+              "J1_USB4085": 4.385321620201696,
+              "bushings": 0
+            }
+          },
+          {
+            "pitch_deg": 0.1,
+            "translation_mm": [
+              0,
+              0,
+              0
+            ],
+            "common_mm3": {
+              "J2_NRJ4HF": 0,
+              "J1_USB4085": 0.0061790333069997976,
+              "bushings": 0
+            }
+          },
+          {
+            "pitch_deg": 0.5,
+            "translation_mm": [
+              0,
+              0,
+              0
+            ],
+            "common_mm3": {
+              "J2_NRJ4HF": 0,
+              "J1_USB4085": 0.030694487204431724,
+              "bushings": 3.0808896414432274
+            }
+          },
+          {
+            "pitch_deg": 1,
+            "translation_mm": [
+              0,
+              0,
+              0
+            ],
+            "common_mm3": {
+              "J2_NRJ4HF": 0,
+              "J1_USB4085": 0.06043201157711143,
+              "bushings": 17.784183710766854
+            }
+          },
+          {
+            "pitch_deg": 2,
+            "translation_mm": [
+              0,
+              0,
+              0
+            ],
+            "common_mm3": {
+              "J2_NRJ4HF": 0,
+              "J1_USB4085": 0.11625786962074888,
+              "bushings": 48.273801135866414
+            }
+          },
+          {
+            "pitch_deg": 5,
+            "translation_mm": [
+              0,
+              0,
+              0
+            ],
+            "common_mm3": {
+              "J2_NRJ4HF": 4.478328090145,
+              "J1_USB4085": 0.2523925486023344,
+              "bushings": 75.54234152694846
+            }
+          },
+          {
+            "pitch_deg": 10,
+            "translation_mm": [
+              0,
+              0,
+              0
+            ],
+            "common_mm3": {
+              "J2_NRJ4HF": 19.359905503063793,
+              "J1_USB4085": 0.37891511077839046,
+              "bushings": 67.51819378476316
+            }
+          },
+          {
+            "pitch_deg": 15,
+            "translation_mm": [
+              0,
+              0,
+              0
+            ],
+            "common_mm3": {
+              "J2_NRJ4HF": 36.3865721124086,
+              "J1_USB4085": 0.39870442774293785,
+              "bushings": 0
+            }
+          },
+          {
+            "pitch_deg": 0.5,
+            "translation_mm": [
+              0,
+              0.1,
+              -0.4
+            ],
+            "common_mm3": {
+              "J2_NRJ4HF": 0.005884622320593513,
+              "J1_USB4085": 4.557787226966964,
+              "bushings": 0
+            }
+          },
+          {
+            "pitch_deg": 1,
+            "translation_mm": [
+              0,
+              0.2,
+              -0.3
+            ],
+            "common_mm3": {
+              "J2_NRJ4HF": 0.22609035578447495,
+              "J1_USB4085": 4.462625320000417,
+              "bushings": 0.5007829148459921
+            }
+          },
+          {
+            "pitch_deg": 2,
+            "translation_mm": [
+              0,
+              0.4,
+              -0.2
+            ],
+            "common_mm3": {
+              "J2_NRJ4HF": 17.732751611320644,
+              "J1_USB4085": 3.127717669228046,
+              "bushings": 9.059358670716481
+            }
+          }
+        ],
+        "shoulder_contacts": [
+          {
+            "delta_y_mm": 0,
+            "shoulder_face_to_shell_distance_mm": 0.07851018992929486,
+            "jack_shell_common_mm3": 0
+          },
+          {
+            "delta_y_mm": 0.07852214923295264,
+            "shoulder_face_to_shell_distance_mm": 7.105427357601002e-15,
+            "jack_shell_common_mm3": 0
+          },
+          {
+            "delta_y_mm": 0.08852214923295264,
+            "shoulder_face_to_shell_distance_mm": 3.552713678800501e-15,
+            "jack_shell_common_mm3": 0.04506963229495604
+          }
+        ],
+        "conclusion": "D12 removes several nominal nose collisions, but tested poses still interfere at USB minimum opening, front bushings and/or jack body. Original USB aperture has no validated clearance. Complete continuous path not demonstrated; no universal physical impossibility claimed.",
+        "clamping": "Wall inclination remains1deg. At first edge contact nut envelope has axial gap range0..0.304591mm over flange. D12 coverage does not remove this wedge. No gap-free real assembly claimed.",
+        "manufacturing_status": "D12 is a study proposal authorized by user, not a released drilling template. D11.2 results retained as baseline; current diagnostic apertures updated to D12.",
+        "saved_document_reopen_verification": {
+          "objects": 54,
+          "valid_shell": true,
+          "hole_radius_mm": [
+            6
+          ],
+          "final_common_jack_mm3": 0,
+          "pitch5_nose_mm3": 0,
+          "pitch5_jack_mm3": 4.478328090145,
+          "pitch5_bushings_mm3": 75.54234152110973,
+          "pitch5_usb_mm3": 0.2523925486023344,
+          "witness_in_bushing": true,
+          "witness_in_shell": true,
+          "invalid_shapes": [],
+          "display_status": "DA VERIFICARE SUL COMPONENTE REALE. Eagle nominal stackup is not a certified manufactured thickness.",
+          "display_glass_status": "DA VERIFICARE SUL COMPONENTE REALE. No verified PCB-top-to-glass dimension available.",
+          "D12_record": 12
         }
-      ],
-      "scope": "Nose only at positive pitch; excludes body, front controls, USB, PCB, supports, tooling and tolerances. Derived sensitivity, NOT production hole specifications. No modeled aperture changed."
-    },
-    "boolean_countercheck": {
-      "point_mm": [
-        -28,
-        36.5,
-        32.8
-      ],
-      "inside_fresh_bushing": true,
-      "inside_shell": true,
-      "single_fresh_common_mm3": 25.726346038816207,
-      "original_rotated_cylinder_common_mm3": 0,
-      "recovery": "Reconstruct exact cylinders from transformed base and axis; unchanged cylinder volume. Do not use transformGeometry approximation."
-    },
-    "scope": "Nominal reduced probes. Smallest sampled tilt +/-0.1deg already interferes; all 32 coupled samples interfere. No exhaustive 6DOF search or real manufactured fit claim. Zero radial model clearance prevents a fully engaged nominal cylinder from tilting. Full assembly, tolerances, thread and tool access remain open.",
-    "display_dependency": "None; both physical display dimensions remain null"
-  },
-  "clamping_contact_check": {
-    "status": "NON VALIDATO: first edge contact only, no full-area rigid seating",
-    "jack_samples": [
-      {
-        "jack_delta_y_mm": 0,
-        "wall_distance_mm": 0.0,
-        "wall_common_mm3": 0.0,
-        "wall_distance_note": "Whole jack touches nominal D11.2 bore; not the shoulder-face gap"
       },
-      {
-        "jack_delta_y_mm": 0.07852214923295264,
-        "wall_distance_mm": 0.0,
-        "wall_common_mm3": 0.0,
-        "wall_distance_note": "Whole jack touches nominal D11.2 bore; not the shoulder-face gap"
-      },
-      {
-        "jack_delta_y_mm": 0.08852214923295264,
-        "wall_distance_mm": 0.0,
-        "wall_common_mm3": 0.04511584478415817,
-        "wall_distance_note": "Whole jack touches nominal D11.2 bore; not the shoulder-face gap"
-      },
-      {
-        "jack_delta_y_mm": 0.1919800712663715,
-        "wall_distance_mm": 0.0,
-        "wall_common_mm3": 3.764035064032102,
-        "wall_distance_note": "Whole jack touches nominal D11.2 bore; not the shoulder-face gap"
+      "pot_hole_comparison": {
+        "status": "Comparison requested by user; D10 preferred study candidate, not released for drilling",
+        "scope": "Six front PTV111-3 bushings; MASTER PTV111-1 assessed only for nominal thread and cap projection, no full 3D pose",
+        "sources": [
+          "Bourns-PTV-PTT.pdf p2: PTV111-1 and PTV111-3 M9x0.75, nominal bushing length5",
+          "Davies-Catalog-Instrument-Knobs.pdf p24: 1100 skirt25/32in=19.84375mm",
+          "Cliff-K85M.pdf: outerD14, underside recessD12",
+          "Alps-RKZ00023UA-hardware.pdf: reference only, not selected/supplied hardware"
+        ],
+        "options": [
+          {
+            "hole_mm": 9.2,
+            "radial_nominal_clearance_mm": 0.09999999999999964,
+            "davies_projected_centered_overlap_mm": 5.321875,
+            "davies_projected_eccentric_overlap_mm": 5.221875000000001,
+            "cliff_projected_centered_overlap_mm": 2.4000000000000004,
+            "cliff_projected_eccentric_overlap_mm": 2.3000000000000007
+          },
+          {
+            "hole_mm": 9.5,
+            "radial_nominal_clearance_mm": 0.25,
+            "davies_projected_centered_overlap_mm": 5.171875,
+            "davies_projected_eccentric_overlap_mm": 4.921875,
+            "cliff_projected_centered_overlap_mm": 2.25,
+            "cliff_projected_eccentric_overlap_mm": 2
+          },
+          {
+            "hole_mm": 10,
+            "radial_nominal_clearance_mm": 0.5,
+            "davies_projected_centered_overlap_mm": 4.921875,
+            "davies_projected_eccentric_overlap_mm": 4.421875,
+            "cliff_projected_centered_overlap_mm": 2,
+            "cliff_projected_eccentric_overlap_mm": 1.5
+          }
+        ],
+        "samples": [
+          {
+            "hole_diameter_mm": 9.2,
+            "pitch_deg": 0,
+            "translation_mm": [
+              0,
+              0,
+              0
+            ],
+            "bushings_common_mm3": 0
+          },
+          {
+            "hole_diameter_mm": 9.2,
+            "pitch_deg": 0.1,
+            "translation_mm": [
+              0,
+              0,
+              0
+            ],
+            "bushings_common_mm3": 0
+          },
+          {
+            "hole_diameter_mm": 9.2,
+            "pitch_deg": 0.5,
+            "translation_mm": [
+              0,
+              0,
+              0
+            ],
+            "bushings_common_mm3": 3.0808896414432274
+          },
+          {
+            "hole_diameter_mm": 9.2,
+            "pitch_deg": 1,
+            "translation_mm": [
+              0,
+              0,
+              0
+            ],
+            "bushings_common_mm3": 17.784183710766854
+          },
+          {
+            "hole_diameter_mm": 9.2,
+            "pitch_deg": 2,
+            "translation_mm": [
+              0,
+              0,
+              0
+            ],
+            "bushings_common_mm3": 48.273801135866414
+          },
+          {
+            "hole_diameter_mm": 9.2,
+            "pitch_deg": 5,
+            "translation_mm": [
+              0,
+              0,
+              0
+            ],
+            "bushings_common_mm3": 75.54234152694846
+          },
+          {
+            "hole_diameter_mm": 9.2,
+            "pitch_deg": 0.5,
+            "translation_mm": [
+              0,
+              0.1,
+              -0.4
+            ],
+            "bushings_common_mm3": 0
+          },
+          {
+            "hole_diameter_mm": 9.2,
+            "pitch_deg": 1,
+            "translation_mm": [
+              0,
+              0.2,
+              -0.3
+            ],
+            "bushings_common_mm3": 0.5007829148459921
+          },
+          {
+            "hole_diameter_mm": 9.2,
+            "pitch_deg": 2,
+            "translation_mm": [
+              0,
+              0.4,
+              -0.2
+            ],
+            "bushings_common_mm3": 9.059358670716481
+          },
+          {
+            "hole_diameter_mm": 9.5,
+            "pitch_deg": 0,
+            "translation_mm": [
+              0,
+              0,
+              0
+            ],
+            "bushings_common_mm3": 0
+          },
+          {
+            "hole_diameter_mm": 9.5,
+            "pitch_deg": 0.1,
+            "translation_mm": [
+              0,
+              0,
+              0
+            ],
+            "bushings_common_mm3": 0
+          },
+          {
+            "hole_diameter_mm": 9.5,
+            "pitch_deg": 0.5,
+            "translation_mm": [
+              0,
+              0,
+              0
+            ],
+            "bushings_common_mm3": 0
+          },
+          {
+            "hole_diameter_mm": 9.5,
+            "pitch_deg": 1,
+            "translation_mm": [
+              0,
+              0,
+              0
+            ],
+            "bushings_common_mm3": 2.5536248561874064
+          },
+          {
+            "hole_diameter_mm": 9.5,
+            "pitch_deg": 2,
+            "translation_mm": [
+              0,
+              0,
+              0
+            ],
+            "bushings_common_mm3": 29.185982679286926
+          },
+          {
+            "hole_diameter_mm": 9.5,
+            "pitch_deg": 5,
+            "translation_mm": [
+              0,
+              0,
+              0
+            ],
+            "bushings_common_mm3": 65.11079598383975
+          },
+          {
+            "hole_diameter_mm": 9.5,
+            "pitch_deg": 0.5,
+            "translation_mm": [
+              0,
+              0.1,
+              -0.4
+            ],
+            "bushings_common_mm3": 0
+          },
+          {
+            "hole_diameter_mm": 9.5,
+            "pitch_deg": 1,
+            "translation_mm": [
+              0,
+              0.2,
+              -0.3
+            ],
+            "bushings_common_mm3": 0
+          },
+          {
+            "hole_diameter_mm": 9.5,
+            "pitch_deg": 2,
+            "translation_mm": [
+              0,
+              0.4,
+              -0.2
+            ],
+            "bushings_common_mm3": 0.037657317714135455
+          },
+          {
+            "hole_diameter_mm": 10,
+            "pitch_deg": 0,
+            "translation_mm": [
+              0,
+              0,
+              0
+            ],
+            "bushings_common_mm3": 0
+          },
+          {
+            "hole_diameter_mm": 10,
+            "pitch_deg": 0.1,
+            "translation_mm": [
+              0,
+              0,
+              0
+            ],
+            "bushings_common_mm3": 0
+          },
+          {
+            "hole_diameter_mm": 10,
+            "pitch_deg": 0.5,
+            "translation_mm": [
+              0,
+              0,
+              0
+            ],
+            "bushings_common_mm3": 0
+          },
+          {
+            "hole_diameter_mm": 10,
+            "pitch_deg": 1,
+            "translation_mm": [
+              0,
+              0,
+              0
+            ],
+            "bushings_common_mm3": 0
+          },
+          {
+            "hole_diameter_mm": 10,
+            "pitch_deg": 2,
+            "translation_mm": [
+              0,
+              0,
+              0
+            ],
+            "bushings_common_mm3": 5.6982833388140195
+          },
+          {
+            "hole_diameter_mm": 10,
+            "pitch_deg": 5,
+            "translation_mm": [
+              0,
+              0,
+              0
+            ],
+            "bushings_common_mm3": 48.60702207326597
+          },
+          {
+            "hole_diameter_mm": 10,
+            "pitch_deg": 0.5,
+            "translation_mm": [
+              0,
+              0.1,
+              -0.4
+            ],
+            "bushings_common_mm3": 0
+          },
+          {
+            "hole_diameter_mm": 10,
+            "pitch_deg": 1,
+            "translation_mm": [
+              0,
+              0.2,
+              -0.3
+            ],
+            "bushings_common_mm3": 0
+          },
+          {
+            "hole_diameter_mm": 10,
+            "pitch_deg": 2,
+            "translation_mm": [
+              0,
+              0.4,
+              -0.2
+            ],
+            "bushings_common_mm3": 0
+          }
+        ],
+        "hardware": {
+          "status": "Not validated; example reference only, not chosen automatically",
+          "reference": "Alps RKZ00023UA",
+          "nut_thread": "M9x0.75",
+          "nut_across_flats_mm": 11,
+          "nut_thickness_mm": 2,
+          "nut_derived_across_corners_mm": 12.701705922171765,
+          "washer_od_mm": 14,
+          "washer_id_mm": 9.1,
+          "washer_thickness_mm": 0.5,
+          "washer_projected_overlap_on_D10_mm": 2,
+          "front_bushing_above_panel_nominal_mm": 2.5,
+          "washer_plus_nut_mm": 2.5,
+          "notes": "No axial reserve with this example at current CAD pose. Actual hardware, chamfers, thread engagement, tool access and knob seating need verification. Reference hex corners about12.70mm exceed Cliff underside recessD12; do not claim this hardware fits inside the cap."
+        },
+        "conclusion": "D10 improves bushing clearance and is covered by both cap projections nominally. At+2deg fixed pivot, front bushings still interfere by5.698mm3; jack/USB constraints remain. No gap-free complete assembly approval.",
+        "cad_scope": "Separate hidden comparative probe in same assembly. Gate A sketch/PDF/SVG and existing D12 jack study retain front D9.2 baseline until complete mounting geometry is resolved; D10 candidate is explicit, not a second product layout.",
+        "analytic_zero_countercheck": [
+          {
+            "pitch_deg": 0.5,
+            "hole_diameter_mm": 9.5,
+            "minimum_radial_reserve_lower_bound_mm": 0.08904722361531281,
+            "method": "At both roof planes Z31.8/33.8: hole radius minus(abs tilted axis offset)+ellipse semi-axis4.5/cos(pitch). Conservative cross-section containment, independent of boolean zero."
+          },
+          {
+            "pitch_deg": 1,
+            "hole_diameter_mm": 10.0,
+            "minimum_radial_reserve_lower_bound_mm": 0.1720763061999646,
+            "method": "At both roof planes Z31.8/33.8: hole radius minus(abs tilted axis offset)+ellipse semi-axis4.5/cos(pitch). Conservative cross-section containment, independent of boolean zero."
+          }
+        ]
       }
-    ],
-    "nut_samples": [
-      {
-        "nut_delta_y_mm": 0,
-        "wall_distance_mm": 0.00041976720477888567,
-        "wall_common_mm3": 0.0
-      },
-      {
-        "nut_delta_y_mm": -0.0004198311470986482,
-        "wall_distance_mm": 3.552713678800501e-15,
-        "wall_common_mm3": 0.0
-      },
-      {
-        "nut_delta_y_mm": -0.010419831147098648,
-        "wall_distance_mm": 7.105427357601002e-15,
-        "wall_common_mm3": 0.009592561388577883
-      }
-    ],
-    "wall_bearing_angle_deg": 1,
-    "first_contact_shoulder_y_mm": 58.07852214923295,
-    "first_contact_nut_y_mm": 60.3445801688529,
-    "first_contact_plane_separation_mm": 2.2660580196199476,
-    "wall_axis_thickness_mm": 2.0003046560878346,
-    "remaining_reference_plane_excess_mm": 0.265753363532113,
-    "inner_gap_range_over_body_mm": [
-      0,
-      0.221679324588365
-    ],
-    "outer_gap_range_over_nut_mm": [
-      0,
-      0.304590882997397
-    ],
-    "scope": "Independent axial approach of jack and nut envelope. First contact derives from support-plane geometry and OCC distance. No full-assembly translation approved; no deformation, torque, thread engagement or tool access inferred.",
-    "shoulder_face_check_d12": [
-      {
-        "delta_y_mm": 0,
-        "shoulder_face_to_shell_distance_mm": 0.07851018992929486,
-        "jack_shell_common_mm3": 0
-      },
-      {
-        "delta_y_mm": 0.07852214923295264,
-        "shoulder_face_to_shell_distance_mm": 7.105427357601002e-15,
-        "jack_shell_common_mm3": 0
-      },
-      {
-        "delta_y_mm": 0.08852214923295264,
-        "shoulder_face_to_shell_distance_mm": 3.552713678800501e-15,
-        "jack_shell_common_mm3": 0.04506963229495604
-      }
-    ]
-  },
-  "diameter12_study": {
-    "status": "User-requested D12 study: nominal projected coverage PASS; complete insertion and gap-free clamping NOT VALIDATED",
-    "jack_hole_diameter_mm": 12,
-    "manufacturer_reference_hole_mm": 11.2,
-    "nominal_radial_clearance_mm": 0.4,
-    "coverage": {
-      "source": "Neutrik_NRJ-NUT-B.pdf ST-91213761, outer circular flange D17.45, thickness4.75, SW15; original drawing inspected",
-      "flange_diameter_mm": 17.45,
-      "centered_projected_radial_overlap_mm": 2.725,
-      "at_nominal_max_radial_offset_mm": 2.325,
-      "scope": "Projection along jack axis only; no proof of surface seating, actual tolerances or gap closure. Flange is circular; SW15 is wrench size, not flange diameter."
-    },
-    "nose_and_jack_samples": [
-      {
-        "pitch_deg": 0,
-        "translation_mm": [
-          0,
-          0,
-          0
-        ],
-        "nose_mm3": 0,
-        "jack_mm3": 0,
-        "bushings_mm3": 0
-      },
-      {
-        "pitch_deg": 0,
-        "translation_mm": [
-          0,
-          0,
-          -0.2
-        ],
-        "nose_mm3": 0,
-        "jack_mm3": 0,
-        "bushings_mm3": 0
-      },
-      {
-        "pitch_deg": 0,
-        "translation_mm": [
-          0,
-          0,
-          -0.4
-        ],
-        "nose_mm3": 0,
-        "jack_mm3": 0,
-        "bushings_mm3": 0
-      },
-      {
-        "pitch_deg": 0,
-        "translation_mm": [
-          0,
-          0,
-          -0.5
-        ],
-        "nose_mm3": 0.9876839686553465,
-        "jack_mm3": 0.9876839686578003,
-        "bushings_mm3": 0
-      },
-      {
-        "pitch_deg": 0.1,
-        "translation_mm": [
-          0,
-          0,
-          0
-        ],
-        "nose_mm3": 0,
-        "jack_mm3": 0,
-        "bushings_mm3": 0
-      },
-      {
-        "pitch_deg": 0.5,
-        "translation_mm": [
-          0,
-          0,
-          0
-        ],
-        "nose_mm3": 0,
-        "jack_mm3": 0,
-        "bushings_mm3": 3.0808896414432274
-      },
-      {
-        "pitch_deg": 1,
-        "translation_mm": [
-          0,
-          0,
-          0
-        ],
-        "nose_mm3": 0,
-        "jack_mm3": 0,
-        "bushings_mm3": 17.784183710766854
-      },
-      {
-        "pitch_deg": 2,
-        "translation_mm": [
-          0,
-          0,
-          0
-        ],
-        "nose_mm3": 0,
-        "jack_mm3": 0,
-        "bushings_mm3": 48.273801135866414
-      },
-      {
-        "pitch_deg": 5,
-        "translation_mm": [
-          0,
-          0,
-          0
-        ],
-        "nose_mm3": 0,
-        "jack_mm3": 4.478328090145,
-        "bushings_mm3": 75.54234152694846
-      },
-      {
-        "pitch_deg": 10,
-        "translation_mm": [
-          0,
-          0,
-          0
-        ],
-        "nose_mm3": 0,
-        "jack_mm3": 19.359905503063793,
-        "bushings_mm3": 67.51819378476316
-      },
-      {
-        "pitch_deg": 15,
-        "translation_mm": [
-          0,
-          0,
-          0
-        ],
-        "nose_mm3": 0.005676897521769985,
-        "jack_mm3": 36.3865721124086,
-        "bushings_mm3": 0
-      }
-    ],
-    "combined_samples": [
-      {
-        "pitch_deg": 0,
-        "translation_mm": [
-          0,
-          0,
-          0
-        ],
-        "common_mm3": {
-          "J2_NRJ4HF": 0,
-          "J1_USB4085": 0,
-          "bushings": 0
-        }
-      },
-      {
-        "pitch_deg": 0,
-        "translation_mm": [
-          0,
-          0,
-          -0.2
-        ],
-        "common_mm3": {
-          "J2_NRJ4HF": 0,
-          "J1_USB4085": 2.7071336938653774,
-          "bushings": 0
-        }
-      },
-      {
-        "pitch_deg": 0,
-        "translation_mm": [
-          0,
-          0,
-          -0.4
-        ],
-        "common_mm3": {
-          "J2_NRJ4HF": 0,
-          "J1_USB4085": 4.385321620201696,
-          "bushings": 0
-        }
-      },
-      {
-        "pitch_deg": 0.1,
-        "translation_mm": [
-          0,
-          0,
-          0
-        ],
-        "common_mm3": {
-          "J2_NRJ4HF": 0,
-          "J1_USB4085": 0.0061790333069997976,
-          "bushings": 0
-        }
-      },
-      {
-        "pitch_deg": 0.5,
-        "translation_mm": [
-          0,
-          0,
-          0
-        ],
-        "common_mm3": {
-          "J2_NRJ4HF": 0,
-          "J1_USB4085": 0.030694487204431724,
-          "bushings": 3.0808896414432274
-        }
-      },
-      {
-        "pitch_deg": 1,
-        "translation_mm": [
-          0,
-          0,
-          0
-        ],
-        "common_mm3": {
-          "J2_NRJ4HF": 0,
-          "J1_USB4085": 0.06043201157711143,
-          "bushings": 17.784183710766854
-        }
-      },
-      {
-        "pitch_deg": 2,
-        "translation_mm": [
-          0,
-          0,
-          0
-        ],
-        "common_mm3": {
-          "J2_NRJ4HF": 0,
-          "J1_USB4085": 0.11625786962074888,
-          "bushings": 48.273801135866414
-        }
-      },
-      {
-        "pitch_deg": 5,
-        "translation_mm": [
-          0,
-          0,
-          0
-        ],
-        "common_mm3": {
-          "J2_NRJ4HF": 4.478328090145,
-          "J1_USB4085": 0.2523925486023344,
-          "bushings": 75.54234152694846
-        }
-      },
-      {
-        "pitch_deg": 10,
-        "translation_mm": [
-          0,
-          0,
-          0
-        ],
-        "common_mm3": {
-          "J2_NRJ4HF": 19.359905503063793,
-          "J1_USB4085": 0.37891511077839046,
-          "bushings": 67.51819378476316
-        }
-      },
-      {
-        "pitch_deg": 15,
-        "translation_mm": [
-          0,
-          0,
-          0
-        ],
-        "common_mm3": {
-          "J2_NRJ4HF": 36.3865721124086,
-          "J1_USB4085": 0.39870442774293785,
-          "bushings": 0
-        }
-      },
-      {
-        "pitch_deg": 0.5,
-        "translation_mm": [
-          0,
-          0.1,
-          -0.4
-        ],
-        "common_mm3": {
-          "J2_NRJ4HF": 0.005884622320593513,
-          "J1_USB4085": 4.557787226966964,
-          "bushings": 0
-        }
-      },
-      {
-        "pitch_deg": 1,
-        "translation_mm": [
-          0,
-          0.2,
-          -0.3
-        ],
-        "common_mm3": {
-          "J2_NRJ4HF": 0.22609035578447495,
-          "J1_USB4085": 4.462625320000417,
-          "bushings": 0.5007829148459921
-        }
-      },
-      {
-        "pitch_deg": 2,
-        "translation_mm": [
-          0,
-          0.4,
-          -0.2
-        ],
-        "common_mm3": {
-          "J2_NRJ4HF": 17.732751611320644,
-          "J1_USB4085": 3.127717669228046,
-          "bushings": 9.059358670716481
-        }
-      }
-    ],
-    "shoulder_contacts": [
-      {
-        "delta_y_mm": 0,
-        "shoulder_face_to_shell_distance_mm": 0.07851018992929486,
-        "jack_shell_common_mm3": 0
-      },
-      {
-        "delta_y_mm": 0.07852214923295264,
-        "shoulder_face_to_shell_distance_mm": 7.105427357601002e-15,
-        "jack_shell_common_mm3": 0
-      },
-      {
-        "delta_y_mm": 0.08852214923295264,
-        "shoulder_face_to_shell_distance_mm": 3.552713678800501e-15,
-        "jack_shell_common_mm3": 0.04506963229495604
-      }
-    ],
-    "conclusion": "D12 removes several nominal nose collisions, but tested poses still interfere at USB minimum opening, front bushings and/or jack body. Original USB aperture has no validated clearance. Complete continuous path not demonstrated; no universal physical impossibility claimed.",
-    "clamping": "Wall inclination remains1deg. At first edge contact nut envelope has axial gap range0..0.304591mm over flange. D12 coverage does not remove this wedge. No gap-free real assembly claimed.",
-    "manufacturing_status": "D12 is a study proposal authorized by user, not a released drilling template. D11.2 results retained as baseline; current diagnostic apertures updated to D12.",
-    "saved_document_reopen_verification": {
-      "objects": 54,
-      "valid_shell": true,
-      "hole_radius_mm": [
-        6
-      ],
-      "final_common_jack_mm3": 0,
-      "pitch5_nose_mm3": 0,
-      "pitch5_jack_mm3": 4.478328090145,
-      "pitch5_bushings_mm3": 75.54234152110973,
-      "pitch5_usb_mm3": 0.2523925486023344,
-      "witness_in_bushing": true,
-      "witness_in_shell": true,
-      "invalid_shapes": [],
-      "display_status": "DA VERIFICARE SUL COMPONENTE REALE. Eagle nominal stackup is not a certified manufactured thickness.",
-      "display_glass_status": "DA VERIFICARE SUL COMPONENTE REALE. No verified PCB-top-to-glass dimension available.",
-      "D12_record": 12
     }
-  },
-  "pot_hole_comparison": {
-    "status": "Comparison requested by user; D10 preferred study candidate, not released for drilling",
-    "scope": "Six front PTV111-3 bushings; MASTER PTV111-1 assessed only for nominal thread and cap projection, no full 3D pose",
-    "sources": [
-      "Bourns-PTV-PTT.pdf p2: PTV111-1 and PTV111-3 M9x0.75, nominal bushing length5",
-      "Davies-Catalog-Instrument-Knobs.pdf p24: 1100 skirt25/32in=19.84375mm",
-      "Cliff-K85M.pdf: outerD14, underside recessD12",
-      "Alps-RKZ00023UA-hardware.pdf: reference only, not selected/supplied hardware"
-    ],
-    "options": [
-      {
-        "hole_mm": 9.2,
-        "radial_nominal_clearance_mm": 0.09999999999999964,
-        "davies_projected_centered_overlap_mm": 5.321875,
-        "davies_projected_eccentric_overlap_mm": 5.221875000000001,
-        "cliff_projected_centered_overlap_mm": 2.4000000000000004,
-        "cliff_projected_eccentric_overlap_mm": 2.3000000000000007
-      },
-      {
-        "hole_mm": 9.5,
-        "radial_nominal_clearance_mm": 0.25,
-        "davies_projected_centered_overlap_mm": 5.171875,
-        "davies_projected_eccentric_overlap_mm": 4.921875,
-        "cliff_projected_centered_overlap_mm": 2.25,
-        "cliff_projected_eccentric_overlap_mm": 2
-      },
-      {
-        "hole_mm": 10,
-        "radial_nominal_clearance_mm": 0.5,
-        "davies_projected_centered_overlap_mm": 4.921875,
-        "davies_projected_eccentric_overlap_mm": 4.421875,
-        "cliff_projected_centered_overlap_mm": 2,
-        "cliff_projected_eccentric_overlap_mm": 1.5
-      }
-    ],
-    "samples": [
-      {
-        "hole_diameter_mm": 9.2,
-        "pitch_deg": 0,
-        "translation_mm": [
-          0,
-          0,
-          0
-        ],
-        "bushings_common_mm3": 0
-      },
-      {
-        "hole_diameter_mm": 9.2,
-        "pitch_deg": 0.1,
-        "translation_mm": [
-          0,
-          0,
-          0
-        ],
-        "bushings_common_mm3": 0
-      },
-      {
-        "hole_diameter_mm": 9.2,
-        "pitch_deg": 0.5,
-        "translation_mm": [
-          0,
-          0,
-          0
-        ],
-        "bushings_common_mm3": 3.0808896414432274
-      },
-      {
-        "hole_diameter_mm": 9.2,
-        "pitch_deg": 1,
-        "translation_mm": [
-          0,
-          0,
-          0
-        ],
-        "bushings_common_mm3": 17.784183710766854
-      },
-      {
-        "hole_diameter_mm": 9.2,
-        "pitch_deg": 2,
-        "translation_mm": [
-          0,
-          0,
-          0
-        ],
-        "bushings_common_mm3": 48.273801135866414
-      },
-      {
-        "hole_diameter_mm": 9.2,
-        "pitch_deg": 5,
-        "translation_mm": [
-          0,
-          0,
-          0
-        ],
-        "bushings_common_mm3": 75.54234152694846
-      },
-      {
-        "hole_diameter_mm": 9.2,
-        "pitch_deg": 0.5,
-        "translation_mm": [
-          0,
-          0.1,
-          -0.4
-        ],
-        "bushings_common_mm3": 0
-      },
-      {
-        "hole_diameter_mm": 9.2,
-        "pitch_deg": 1,
-        "translation_mm": [
-          0,
-          0.2,
-          -0.3
-        ],
-        "bushings_common_mm3": 0.5007829148459921
-      },
-      {
-        "hole_diameter_mm": 9.2,
-        "pitch_deg": 2,
-        "translation_mm": [
-          0,
-          0.4,
-          -0.2
-        ],
-        "bushings_common_mm3": 9.059358670716481
-      },
-      {
-        "hole_diameter_mm": 9.5,
-        "pitch_deg": 0,
-        "translation_mm": [
-          0,
-          0,
-          0
-        ],
-        "bushings_common_mm3": 0
-      },
-      {
-        "hole_diameter_mm": 9.5,
-        "pitch_deg": 0.1,
-        "translation_mm": [
-          0,
-          0,
-          0
-        ],
-        "bushings_common_mm3": 0
-      },
-      {
-        "hole_diameter_mm": 9.5,
-        "pitch_deg": 0.5,
-        "translation_mm": [
-          0,
-          0,
-          0
-        ],
-        "bushings_common_mm3": 0
-      },
-      {
-        "hole_diameter_mm": 9.5,
-        "pitch_deg": 1,
-        "translation_mm": [
-          0,
-          0,
-          0
-        ],
-        "bushings_common_mm3": 2.5536248561874064
-      },
-      {
-        "hole_diameter_mm": 9.5,
-        "pitch_deg": 2,
-        "translation_mm": [
-          0,
-          0,
-          0
-        ],
-        "bushings_common_mm3": 29.185982679286926
-      },
-      {
-        "hole_diameter_mm": 9.5,
-        "pitch_deg": 5,
-        "translation_mm": [
-          0,
-          0,
-          0
-        ],
-        "bushings_common_mm3": 65.11079598383975
-      },
-      {
-        "hole_diameter_mm": 9.5,
-        "pitch_deg": 0.5,
-        "translation_mm": [
-          0,
-          0.1,
-          -0.4
-        ],
-        "bushings_common_mm3": 0
-      },
-      {
-        "hole_diameter_mm": 9.5,
-        "pitch_deg": 1,
-        "translation_mm": [
-          0,
-          0.2,
-          -0.3
-        ],
-        "bushings_common_mm3": 0
-      },
-      {
-        "hole_diameter_mm": 9.5,
-        "pitch_deg": 2,
-        "translation_mm": [
-          0,
-          0.4,
-          -0.2
-        ],
-        "bushings_common_mm3": 0.037657317714135455
-      },
-      {
-        "hole_diameter_mm": 10,
-        "pitch_deg": 0,
-        "translation_mm": [
-          0,
-          0,
-          0
-        ],
-        "bushings_common_mm3": 0
-      },
-      {
-        "hole_diameter_mm": 10,
-        "pitch_deg": 0.1,
-        "translation_mm": [
-          0,
-          0,
-          0
-        ],
-        "bushings_common_mm3": 0
-      },
-      {
-        "hole_diameter_mm": 10,
-        "pitch_deg": 0.5,
-        "translation_mm": [
-          0,
-          0,
-          0
-        ],
-        "bushings_common_mm3": 0
-      },
-      {
-        "hole_diameter_mm": 10,
-        "pitch_deg": 1,
-        "translation_mm": [
-          0,
-          0,
-          0
-        ],
-        "bushings_common_mm3": 0
-      },
-      {
-        "hole_diameter_mm": 10,
-        "pitch_deg": 2,
-        "translation_mm": [
-          0,
-          0,
-          0
-        ],
-        "bushings_common_mm3": 5.6982833388140195
-      },
-      {
-        "hole_diameter_mm": 10,
-        "pitch_deg": 5,
-        "translation_mm": [
-          0,
-          0,
-          0
-        ],
-        "bushings_common_mm3": 48.60702207326597
-      },
-      {
-        "hole_diameter_mm": 10,
-        "pitch_deg": 0.5,
-        "translation_mm": [
-          0,
-          0.1,
-          -0.4
-        ],
-        "bushings_common_mm3": 0
-      },
-      {
-        "hole_diameter_mm": 10,
-        "pitch_deg": 1,
-        "translation_mm": [
-          0,
-          0.2,
-          -0.3
-        ],
-        "bushings_common_mm3": 0
-      },
-      {
-        "hole_diameter_mm": 10,
-        "pitch_deg": 2,
-        "translation_mm": [
-          0,
-          0.4,
-          -0.2
-        ],
-        "bushings_common_mm3": 0
-      }
-    ],
-    "hardware": {
-      "status": "Not validated; example reference only, not chosen automatically",
-      "reference": "Alps RKZ00023UA",
-      "nut_thread": "M9x0.75",
-      "nut_across_flats_mm": 11,
-      "nut_thickness_mm": 2,
-      "nut_derived_across_corners_mm": 12.701705922171765,
-      "washer_od_mm": 14,
-      "washer_id_mm": 9.1,
-      "washer_thickness_mm": 0.5,
-      "washer_projected_overlap_on_D10_mm": 2,
-      "front_bushing_above_panel_nominal_mm": 2.5,
-      "washer_plus_nut_mm": 2.5,
-      "notes": "No axial reserve with this example at current CAD pose. Actual hardware, chamfers, thread engagement, tool access and knob seating need verification. Reference hex corners about12.70mm exceed Cliff underside recessD12; do not claim this hardware fits inside the cap."
-    },
-    "conclusion": "D10 improves bushing clearance and is covered by both cap projections nominally. At+2deg fixed pivot, front bushings still interfere by5.698mm3; jack/USB constraints remain. No gap-free complete assembly approval.",
-    "cad_scope": "Separate hidden comparative probe in same assembly. Gate A sketch/PDF/SVG and existing D12 jack study retain front D9.2 baseline until complete mounting geometry is resolved; D10 candidate is explicit, not a second product layout.",
-    "analytic_zero_countercheck": [
-      {
-        "pitch_deg": 0.5,
-        "hole_diameter_mm": 9.5,
-        "minimum_radial_reserve_lower_bound_mm": 0.08904722361531281,
-        "method": "At both roof planes Z31.8/33.8: hole radius minus(abs tilted axis offset)+ellipse semi-axis4.5/cos(pitch). Conservative cross-section containment, independent of boolean zero."
-      },
-      {
-        "pitch_deg": 1,
-        "hole_diameter_mm": 10.0,
-        "minimum_radial_reserve_lower_bound_mm": 0.1720763061999646,
-        "method": "At both roof planes Z31.8/33.8: hole radius minus(abs tilted axis offset)+ellipse semi-axis4.5/cos(pitch). Conservative cross-section containment, independent of boolean zero."
-      }
-    ]
   }
 }
