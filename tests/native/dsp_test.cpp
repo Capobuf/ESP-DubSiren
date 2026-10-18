@@ -1630,7 +1630,43 @@ void testShortTriggerEvents() {
     assert(engine->renderedActivations() == 8);
 }
 
+void testTwoTonePitchTrajectories() {
+    float frequency[3][10] = {};
+    const char *shapes[] = {"SET LFO_SHAPE CLASSIC", "SET LFO_SHAPE TRIANGLE", "SET LFO_SHAPE SQUARE"};
+    for (int route = 0; route < 2; ++route) {
+        for (unsigned variant = 0; variant < 3; ++variant) {
+            ControlStore store; CommandParser parser(store);
+            assert(parser.parse("SET PROFILE EXTENDED"));
+            assert(parser.parse("SET TUNE_HZ 220"));
+            assert(parser.parse("SET LFO_RATE_HZ 2"));
+            assert(parser.parse("SET ECHO_LEVEL 0"));
+            auto engine = std::make_unique<AudioEngine>(); engine->begin();
+            int16_t block[2400];
+            for (int i = 0; i < 20; ++i) engine->render(store.snapshot(), block, 2400);
+            if (route == 0) {
+                assert(parser.parse("SET MODE SQUARE")); assert(parser.parse(shapes[variant]));
+                assert(parser.parse("RETRIGGER 1")); assert(parser.parse("TRIGGER 1"));
+            } else {
+                char command[64]; snprintf(command, sizeof(command), "PAD_CONFIG 2 TWO_TONE %u 0", variant);
+                assert(parser.parse(command)); assert(parser.parse("PAD 2 1"));
+            }
+            for (int i = 0; i < 20; ++i) {
+                engine->render(store.snapshot(), block, 2400);
+                if (i >= 10) frequency[variant][i-10] = estimateFrequency(block, 2400);
+            }
+            assert(frequency[variant][4] > 350);
+            assert(frequency[variant][9] < 160);
+        }
+        // RC rises quickly and rounds off; triangle continues rising; square plateaus.
+        assert(frequency[0][1] > frequency[1][1] + 70);
+        assert(frequency[2][1] > frequency[0][1] + 30);
+        assert(frequency[1][4] > frequency[1][1] + 150);
+        assert(fabsf(frequency[2][4] - frequency[2][1]) < 10);
+    }
+}
+
 int main() {
+    testTwoTonePitchTrajectories();
     testShortTriggerEvents();
     testClassicAutomaticVoices();
     testSine1DynamicVoicing();
