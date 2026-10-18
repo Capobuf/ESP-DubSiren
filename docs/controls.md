@@ -180,13 +180,13 @@ manuale e MODULATION 0 esclude la modulazione.
 Le varianti 0 SAW DOWN e 1 ASYM DOWN conservano la sintesi precedente.
 Le nuove varianti 2 SHOT, 3 ROLL e 4 HORN sono selezionabili con PAD_CONFIG
 o dall'encoder. SHOT termina anche tenendo premuto; ROLL ripete a Rate Hz
-finchÈ gate/Hold sono attivi e rilascia in massimo 3 ms; HORN sostiene senza LFO.
+finch√© gate/Hold sono attivi e rilascia in massimo 3 ms; HORN sostiene senza LFO.
 Il pitch di SHOT/ROLL decade indipendentemente da Rate e dalla durata sonora.
 
 Comandi Extended: `SET LICKSHOT_MODE LEGACY|SHOT|ROLL|HORN`,
 `SET LICKSHOT_LENGTH_MS 20..1000`, `SET LICKSHOT_PUNCH_OCT 0..3`,
-`SET LICKSHOT_PITCH_MS 10..300`. Length Ë il tempo al silenzio, con attacco
-di 2 ms; Punch Ë la caduta iniziale in ottave; Pitch Ms Ë la costante di tempo
+`SET LICKSHOT_PITCH_MS 10..300`. Length √® il tempo al silenzio, con attacco
+di 2 ms; Punch √® la caduta iniziale in ottave; Pitch Ms √® la costante di tempo
 della caduta. Default 150 ms, 2 ottave, 70 ms: tarature iniziali da ascoltare.
 Le nuove articolazioni non usano il LFO per ampiezza/pitch e non azzerano l'echo.
 HORN resta selezionato al nuovo colpo se richiamato come variante del pad.
@@ -199,13 +199,13 @@ Restano da verificare ascolto sul riddim e costo DSP massimo sull'ESP.
 (Q 0,7071). `SET FILTER_CONTOUR_OCT -4..4` sposta il cutoff al trigger e
 `SET FILTER_CONTOUR_MS 10..3000` determina il ritorno esponenziale a Tone.
 Il rilascio non riavvia o azzera Contour: prosegue durante la coda. Ogni colpo
-ROLL lo riattiva. Quantit‡ positiva apre il filtro all'attacco, negativa lo
-chiude; il cutoff Ë limitato a 50..19000 Hz. Nessuna variazione intenzionale del pitch.
+ROLL lo riattiva. Quantit√† positiva apre il filtro all'attacco, negativa lo
+chiude; il cutoff √® limitato a 50..19000 Hz. Nessuna variazione intenzionale del pitch.
 
 Tone 19000 e Contour zero escludono lo stadio (default). Classic lo ignora.
-Il filtro usa Biquad gi‡ presente, aggiornamento coefficienti ogni millisecondo,
+Il filtro usa Biquad gi√† presente, aggiornamento coefficienti ogni millisecondo,
 parametri smussati e crossfade del bypass; Sweep conserva il significato sul pitch.
-Non Ë stato aggiunto gain per compensare automaticamente le armoniche rimosse:
+Non √® stato aggiunto gain per compensare automaticamente le armoniche rimosse:
 la taratura comparata delle voci e l'ascolto restano da validare, insieme al
 budget hardware e all'aliasing nelle combinazioni estreme.
 
@@ -215,7 +215,7 @@ budget hardware e all'aliasing nelle combinazioni estreme.
 Zero conserva la risposta neutra; aumentando Color si miscela il filtro nel
 ritorno anche in FLAT, il limite delle alte scende fino a 1500 Hz e il drive
 sale fino a tre volte il valore base, con compensazione della pendenza.
-Non c'Ë guadagno aggiuntivo del loop sotto il 100%; Loop conserva la copia
+Non c'√® guadagno aggiuntivo del loop sotto il 100%; Loop conserva la copia
 del materiale, Spin mantiene il feedback temporaneamente elevato.
 
 Echo Cut usa ora una rampa lineare di massimo 2 ms in entrambe le direzioni,

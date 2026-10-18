@@ -112,9 +112,34 @@ stati momentanei di sola lettura. Classic non propone Loop/Spin.
 
 Gunshot e Test Tone sono ora famiglie Play Sound; gli indici precedenti restano
 invariati. Test Tone e Two Tone sono assegnabili anche in Classic. BTN1+turn
-regola Depth solo se BTN1 Ë Trigger o Play Sound. I parametri del suono corrente
+regola Depth solo se BTN1 √® Trigger o Play Sound. I parametri del suono corrente
 restano al nuovo trigger dello stesso pad; cambiare famiglia applica i default.
 Decay TAU indica la costante esponenziale preesistente, non il tempo al silenzio.
 Le modifiche sonore sono live e il click termina l'editing (DONE); il salvataggio
-della patch Ë una funzione separata. Home mantiene Hold/Cut/Spin/Loop fuori
-dall'area degli overlay. Leggibilit‡ ST7789 da verificare sull'hardware.
+della patch √® una funzione separata. Home mantiene Hold/Cut/Spin/Loop fuori
+dall'area degli overlay. Leggibilit√† ST7789 da verificare sull'hardware.
+
+## Quattro memorie sonore Extended (#11)
+
+SOUND / SAVE PATCH salva la voce corrente nel pad selezionato; RECALL PATCH
+scarta le modifiche live e ripristina la memoria. Disponibili anche
+`PANEL SAVE 1..4` e `PANEL RECALL 1..4`. Un asterisco nel titolo SOUND indica
+una patch assente o modificata. Il retrigger dello stesso pad conserva gli edit
+live; passando a un altro pad si richiama la sua memoria salvata (se presente).
+Tornando al primo si perdono gli edit non salvati. Nessun autosave sonoro.
+
+La patch contiene voce/variante, Tune, Rate, Depth, Decay, Sweep, parametri
+Lickshot, Tone/Contour, Syndrum, modulazione, retrigger e voicing. Echo e Master
+restano globali; Recall non cancella il delay e riarma Pickup. Gli eventi audio
+catturano l'intero stato sonoro. Le memorie sono Extended.
+
+Schema 2: schema 1 mantiene mapping e varianti, con quattro memorie vuote.
+Le vecchie azioni Loop/Spin in Classic diventano NONE: non agivano sul DSP.
+Il file VirtualESP precedente viene conservato come `.legacy.json`; NVS legge
+il vecchio formato e scrive quello nuovo al prossimo salvataggio richiesto.
+Trigger, Hold, latch attivo, Loop e transpose non fanno parte della patch.
+
+STATUS include `settings.patches`, quattro vettori numerici versionati di 23
+campi, definiti da `soundPatchValue` in PanelSettings.h. Il ripristino VirtualESP
+usa `PANEL PATCH n <23 valori>` dentro PANEL BEGIN/COMMIT, validando il candidato
+prima di applicarlo. La persistenza NVS fisica resta da verificare al riavvio.

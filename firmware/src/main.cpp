@@ -74,7 +74,17 @@ String panelSettingsJson() {
         }
         json += "]}";
     }
-    json += "}}";
+    json += "},\"patches\":[";
+    for (unsigned pad = 0; pad < 4; ++pad) {
+        if (pad) json += ",";
+        json += "[";
+        for (unsigned field = 0; field < kSoundPatchValueCount; ++field) {
+            if (field) json += ",";
+            json += String(soundPatchValue(settings.patches[pad], field), 6);
+        }
+        json += "]";
+    }
+    json += "]}";
     return json;
 }
 
@@ -90,9 +100,14 @@ void loadPanelSettings() {
         return;
     }
     PanelSettings stored;
-    if (storedSize != sizeof(stored) ||
-        panelPreferences.getBytes("settings", &stored, sizeof(stored)) != sizeof(stored) ||
-        !commandParser.applyPanelSettings(stored)) {
+    bool loaded = false;
+    if (storedSize == sizeof(PanelSettingsV1)) {
+        PanelSettingsV1 legacy;
+        loaded = panelPreferences.getBytes("settings", &legacy, sizeof(legacy)) == sizeof(legacy) && migratePanelSettings(legacy, stored);
+    } else if (storedSize == sizeof(stored)) {
+        loaded = panelPreferences.getBytes("settings", &stored, sizeof(stored)) == sizeof(stored);
+    }
+    if (!loaded || !commandParser.applyPanelSettings(stored)) {
         commandParser.setPersistenceStatus("INVALID SAVED CONFIG");
         savedPanelSettingsRevision = commandParser.panelSettingsRevision();
         return;
@@ -282,7 +297,7 @@ void pollCommands() {
             handleCommand(commandBuffer);
             commandBuffer = "";
         } else if (value != '\r') {
-            if (commandBuffer.length() < 127) {
+            if (commandBuffer.length() < 511) {
                 commandBuffer += value;
             } else {
                 commandBuffer = "";
@@ -340,7 +355,7 @@ void setup() {
     // wait for USB during the audio task. Allocate the ring before CDC begins.
     Serial.setTxBufferSize(8192);
     Serial.begin(115200);
-    commandBuffer.reserve(128);
+    commandBuffer.reserve(512);
     usbSink.begin();
     i2sReady = i2sSink.begin();
     if (!i2sReady) {

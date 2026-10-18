@@ -224,6 +224,27 @@ bool CommandParser::parse(const String &rawCommand) {
 }
 
 bool CommandParser::parsePanelCommand(const String &command) {
+    if (command.startsWith("PANEL SAVE ") || command.startsWith("PANEL RECALL ")) {
+        unsigned pad; char extra; char action[12];
+        if (sscanf(command.c_str(), "PANEL %11s %u %c", action, &pad, &extra) != 2) return false;
+        return strcmp(action, "SAVE") == 0 ? performance_.savePad(pad) : performance_.recallPad(pad);
+    }
+    if (command.startsWith("PANEL PATCH ")) {
+        unsigned pad; int offset = 0;
+        if (sscanf(command.c_str(), "PANEL PATCH %u %n", &pad, &offset) != 1 || !offset) return false;
+        const char *cursor = command.c_str() + offset;
+        float values[kSoundPatchValueCount];
+        for (float &value : values) {
+            char *end;
+            value = strtof(cursor, &end);
+            if (cursor == end || !isfinite(value)) { performance_.cancelSettingsTransaction(); return false; }
+            cursor = end;
+        }
+        while (*cursor == ' ') ++cursor;
+        SoundPatch patch;
+        if (*cursor || !decodeSoundPatch(values, patch)) { performance_.cancelSettingsTransaction(); return false; }
+        return performance_.importPatch(pad, patch);
+    }
     if (command.startsWith("POT ")) {
         unsigned pot = 0;
         float position = 0.0f;

@@ -71,7 +71,14 @@ struct ProfilePanelSettings {
     ButtonConfig buttons[4];
 };
 
-struct PanelSettings {
+struct SoundPatch {
+    uint8_t valid = 0;
+    PanelSound sound = PanelSound::Classic;
+    uint8_t variant = 0;
+    SoundState state;
+};
+
+struct PanelSettingsV1 {
     static constexpr uint16_t kSchemaVersion = 1;
     uint16_t schemaVersion = kSchemaVersion;
     PotBehavior potBehavior = PotBehavior::Pickup;
@@ -79,6 +86,12 @@ struct PanelSettings {
     uint8_t encoderStepSemitones = 1;
     uint8_t encoderRangeSemitones = 12;
     ProfilePanelSettings profiles[2];
+};
+
+struct PanelSettings : PanelSettingsV1 {
+    static constexpr uint16_t kSchemaVersion = 2;
+    SoundPatch patches[4];
+    PanelSettings() { schemaVersion = kSchemaVersion; }
 };
 
 inline unsigned profileIndex(PerformanceProfile profile) {
@@ -231,6 +244,30 @@ inline bool validateButtonConfig(PerformanceProfile profile,
         (!config.latch || panelSoundSupportsLatch(config.sound));
 }
 
+inline bool validateSoundPatch(const SoundPatch &patch) {
+    if (patch.valid > 1) return false;
+    if (!patch.valid) return true;
+    const SoundState &s = patch.state;
+    if (patch.sound >= PanelSound::Count || patch.variant >= panelSoundVariantCount(patch.sound) ||
+        static_cast<unsigned>(s.mode) >= static_cast<unsigned>(SirenMode::Count) ||
+        static_cast<unsigned>(s.lfoShape) > static_cast<unsigned>(LfoShape::Manual) ||
+        static_cast<unsigned>(s.syndrumWave) > 2 || static_cast<unsigned>(s.lickshotArticulation) > 3) return false;
+    if (!isfinite(s.tuneHz) || s.tuneHz < 30.0f || s.tuneHz > 9000.0f) return false;
+    if (!isfinite(s.lfoRateHz) || s.lfoRateHz < 0.05f || s.lfoRateHz > 20.0f) return false;
+    if (!isfinite(s.lfoDepthOctaves) || s.lfoDepthOctaves < 0.0f || s.lfoDepthOctaves > 2.0f) return false;
+    if (!isfinite(s.decayMs) || s.decayMs < 0.0f || s.decayMs > 3000.0f) return false;
+    if (!isfinite(s.sweepAmount) || s.sweepAmount < 0.0f || s.sweepAmount > 1.0f) return false;
+    if (!isfinite(s.sweepMs) || s.sweepMs < 50.0f || s.sweepMs > 3000.0f) return false;
+    if (!isfinite(s.syndrumSweepOctaves) || s.syndrumSweepOctaves < -4.0f || s.syndrumSweepOctaves > 4.0f) return false;
+    if (!isfinite(s.lickshotLengthMs) || s.lickshotLengthMs < 20.0f || s.lickshotLengthMs > 1000.0f) return false;
+    if (!isfinite(s.lickshotPunchOctaves) || s.lickshotPunchOctaves < 0.0f || s.lickshotPunchOctaves > 3.0f) return false;
+    if (!isfinite(s.lickshotPitchMs) || s.lickshotPitchMs < 10.0f || s.lickshotPitchMs > 300.0f) return false;
+    if (!isfinite(s.dryToneHz) || s.dryToneHz < 200.0f || s.dryToneHz > 19000.0f) return false;
+    if (!isfinite(s.filterContourOctaves) || s.filterContourOctaves < -4.0f || s.filterContourOctaves > 4.0f) return false;
+    if (!isfinite(s.filterContourMs) || s.filterContourMs < 10.0f || s.filterContourMs > 3000.0f) return false;
+    return true;
+}
+
 inline bool validatePanelSettings(const PanelSettings &settings) {
     if (settings.schemaVersion != PanelSettings::kSchemaVersion ||
         settings.potBehavior > PotBehavior::Jump ||
@@ -246,6 +283,7 @@ inline bool validatePanelSettings(const PanelSettings &settings) {
         for (const ButtonConfig &button : settings.profiles[profile].buttons)
             if (!validateButtonConfig(value, button)) return false;
     }
+    for (const auto &patch : settings.patches) if (!validateSoundPatch(patch)) return false;
     return true;
 }
 
@@ -295,4 +333,106 @@ inline PanelSettings factoryPanelSettings() {
         extended.buttons[index].sound = sounds[index];
     }
     return settings;
+}
+
+inline bool migratePanelSettings(const PanelSettingsV1 &legacy, PanelSettings &result) {
+    if (legacy.schemaVersion != 1) return false;
+    static_cast<PanelSettingsV1 &>(result) = legacy;
+    result.schemaVersion = PanelSettings::kSchemaVersion;
+    for (auto &patch : result.patches) patch = SoundPatch{};
+    // These legacy Classic actions never affected audio; migration makes that explicit.
+    for (auto &button : result.profiles[0].buttons)
+        if (button.action == ButtonAction::EchoLoop || button.action == ButtonAction::EchoSpin)
+            button.action = ButtonAction::None;
+    return validatePanelSettings(result);
+}
+
+constexpr unsigned kSoundPatchValueCount = 23;
+inline float soundPatchValue(const SoundPatch &patch, unsigned index) {
+    switch (index) {
+        case 0: return static_cast<float>(patch.valid);
+        case 1: return static_cast<float>(patch.sound);
+        case 2: return static_cast<float>(patch.variant);
+        case 3: return static_cast<float>(patch.state.mode);
+        case 4: return static_cast<float>(patch.state.lfoShape);
+        case 5: return static_cast<float>(patch.state.syndrumWave);
+        case 6: return static_cast<float>(patch.state.lickshotArticulation);
+        case 7: return static_cast<float>(patch.state.modulationEnabled);
+        case 8: return static_cast<float>(patch.state.retrigger);
+        case 9: return static_cast<float>(patch.state.voicingV2);
+        case 10: return static_cast<float>(patch.state.tuneHz);
+        case 11: return static_cast<float>(patch.state.lfoRateHz);
+        case 12: return static_cast<float>(patch.state.lfoDepthOctaves);
+        case 13: return static_cast<float>(patch.state.decayMs);
+        case 14: return static_cast<float>(patch.state.sweepAmount);
+        case 15: return static_cast<float>(patch.state.sweepMs);
+        case 16: return static_cast<float>(patch.state.syndrumSweepOctaves);
+        case 17: return static_cast<float>(patch.state.lickshotLengthMs);
+        case 18: return static_cast<float>(patch.state.lickshotPunchOctaves);
+        case 19: return static_cast<float>(patch.state.lickshotPitchMs);
+        case 20: return static_cast<float>(patch.state.dryToneHz);
+        case 21: return static_cast<float>(patch.state.filterContourOctaves);
+        case 22: return static_cast<float>(patch.state.filterContourMs);
+        default: return 0;
+    }
+}
+
+inline bool decodeSoundPatch(const float *values, SoundPatch &patch) {
+    if (!isfinite(values[0])) return false;
+    if (values[0] < 0 || values[0] > 1 || floorf(values[0]) != values[0]) return false;
+    patch.valid = static_cast<uint8_t>(values[0]);
+    if (!isfinite(values[1])) return false;
+    if (values[1] < 0 || values[1] > 5 || floorf(values[1]) != values[1]) return false;
+    patch.sound = static_cast<PanelSound>(values[1]);
+    if (!isfinite(values[2])) return false;
+    if (values[2] < 0 || values[2] > 4 || floorf(values[2]) != values[2]) return false;
+    patch.variant = static_cast<uint8_t>(values[2]);
+    if (!isfinite(values[3])) return false;
+    if (values[3] < 0 || values[3] > 9 || floorf(values[3]) != values[3]) return false;
+    patch.state.mode = static_cast<SirenMode>(values[3]);
+    if (!isfinite(values[4])) return false;
+    if (values[4] < 0 || values[4] > 9 || floorf(values[4]) != values[4]) return false;
+    patch.state.lfoShape = static_cast<LfoShape>(values[4]);
+    if (!isfinite(values[5])) return false;
+    if (values[5] < 0 || values[5] > 2 || floorf(values[5]) != values[5]) return false;
+    patch.state.syndrumWave = static_cast<SyndrumWave>(values[5]);
+    if (!isfinite(values[6])) return false;
+    if (values[6] < 0 || values[6] > 3 || floorf(values[6]) != values[6]) return false;
+    patch.state.lickshotArticulation = static_cast<LickshotArticulation>(values[6]);
+    if (!isfinite(values[7])) return false;
+    if (values[7] < 0 || values[7] > 1 || floorf(values[7]) != values[7]) return false;
+    patch.state.modulationEnabled = static_cast<bool>(values[7]);
+    if (!isfinite(values[8])) return false;
+    if (values[8] < 0 || values[8] > 1 || floorf(values[8]) != values[8]) return false;
+    patch.state.retrigger = static_cast<bool>(values[8]);
+    if (!isfinite(values[9])) return false;
+    if (values[9] < 0 || values[9] > 1 || floorf(values[9]) != values[9]) return false;
+    patch.state.voicingV2 = static_cast<bool>(values[9]);
+    if (!isfinite(values[10])) return false;
+    patch.state.tuneHz = static_cast<float>(values[10]);
+    if (!isfinite(values[11])) return false;
+    patch.state.lfoRateHz = static_cast<float>(values[11]);
+    if (!isfinite(values[12])) return false;
+    patch.state.lfoDepthOctaves = static_cast<float>(values[12]);
+    if (!isfinite(values[13])) return false;
+    patch.state.decayMs = static_cast<float>(values[13]);
+    if (!isfinite(values[14])) return false;
+    patch.state.sweepAmount = static_cast<float>(values[14]);
+    if (!isfinite(values[15])) return false;
+    patch.state.sweepMs = static_cast<float>(values[15]);
+    if (!isfinite(values[16])) return false;
+    patch.state.syndrumSweepOctaves = static_cast<float>(values[16]);
+    if (!isfinite(values[17])) return false;
+    patch.state.lickshotLengthMs = static_cast<float>(values[17]);
+    if (!isfinite(values[18])) return false;
+    patch.state.lickshotPunchOctaves = static_cast<float>(values[18]);
+    if (!isfinite(values[19])) return false;
+    patch.state.lickshotPitchMs = static_cast<float>(values[19]);
+    if (!isfinite(values[20])) return false;
+    patch.state.dryToneHz = static_cast<float>(values[20]);
+    if (!isfinite(values[21])) return false;
+    patch.state.filterContourOctaves = static_cast<float>(values[21]);
+    if (!isfinite(values[22])) return false;
+    patch.state.filterContourMs = static_cast<float>(values[22]);
+    return validateSoundPatch(patch);
 }

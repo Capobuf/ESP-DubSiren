@@ -388,7 +388,7 @@ class PhysicalUiTests(unittest.TestCase):
             path = Path(directory) / "panel.json"
             save_panel_config(path, settings)
             loaded = load_panel_config(path)
-        self.assertEqual(loaded["schema"], 1)
+        self.assertEqual(loaded["schema"], 2)
         self.assertEqual(loaded["profiles"]["EXTENDED"]["buttons"][1]["variant"], 2)
         commands = panel_settings_commands(loaded)
         self.assertIn("PANEL POT CLASSIC 1 TARGET PITCH", commands)
@@ -439,7 +439,7 @@ class PhysicalUiTests(unittest.TestCase):
             app._saved_panel_config = load_panel_config(path)
             app._synchronize_controls()
             self.assertEqual(path.with_suffix(".legacy.json").read_bytes(), original)
-            self.assertEqual(load_panel_config(path)["schema"], 1)
+            self.assertEqual(load_panel_config(path)["schema"], 2)
         self.assertIn("PANEL BUTTON EXTENDED 2 SOUND TWO_TONE 1 0", app.commands)
         self.assertEqual(app.commands[-1], "PANEL COMMIT")
         self.assertIsNone(app._panel_config_error)
@@ -519,7 +519,7 @@ class PhysicalUiTests(unittest.TestCase):
             self.assertEqual(backup.read_bytes(), b"different backup")
         self.assertEqual(app.commands[-1], "PANEL COMMIT")
         self.assertTrue(app._virtual_restore_pending)
-        self.assertEqual(app._saved_panel_config["schema"], 1)
+        self.assertEqual(app._saved_panel_config["schema"], 2)
         self.assertIn("save failed", app._panel_io_error)
 
     def test_panel_configuration_save_failure_is_surfaced(self):

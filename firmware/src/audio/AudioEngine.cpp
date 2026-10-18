@@ -100,8 +100,10 @@ void AudioEngine::render(const ControlState &controls, int16_t *output, size_t c
     }
 }
 
-void AudioEngine::renderSegment(const ControlState &controls, const ActivationEvent *event,
+void AudioEngine::renderSegment(const ControlState &liveControls, const ActivationEvent *event,
                                 int16_t *output, size_t count) {
+    ControlState controls = liveControls;
+    if (event) static_cast<SoundState &>(controls) = *event;
     delay_.setParameters(controls.delayMs, controls.highPassHz,
                          controls.lowPassHz, Config::kSampleRate, controls.echoFilterFlat);
     const bool classic = controls.profile == PerformanceProfile::Classic;

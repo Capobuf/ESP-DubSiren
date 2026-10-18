@@ -50,6 +50,29 @@ class VirtualTransportTests(unittest.TestCase):
         self._assert_non_silent_audio()
         self.transport.send("TRIGGER 0")
 
+    def test_saved_patches_survive_file_and_core_restart(self):
+        import tempfile
+        from pathlib import Path
+        from physical_ui import save_panel_config, load_panel_config, panel_settings_commands
+        self.transport.send("SET PROFILE EXTENDED")
+        for pad in range(1, 5):
+            for command in (f"PAD {pad} 1", f"PAD {pad} 0", f"SET TUNE_HZ {220 * pad}",
+                            f"SET DECAY_MS {150 * pad}", f"PANEL SAVE {pad}"):
+                self.transport.send(command)
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "panel.json"
+            save_panel_config(path, self.statuses[-1]["panel"]["settings"])
+            settings = load_panel_config(path)
+        self.transport.disconnect()
+        self.transport.connect(VIRTUAL_DEVICE)
+        for command in panel_settings_commands(settings):
+            self.transport.send(command)
+        self.assertFalse(self.statuses[-1]["panel"]["display"]["hold"])
+        self.transport.send("SET PROFILE EXTENDED")
+        for pad in range(1, 5):
+            self.transport.send(f"PANEL RECALL {pad}")
+            self.assertAlmostEqual(self.statuses[-1]["panel"]["display"]["tuneHz"], 220 * pad)
+
     def test_shared_dsp_controls_audio_transients_and_reconnect(self):
         self.assertEqual(len(self.statuses), 1)
         self.assertTrue(self.statuses[0]["virtual"])

@@ -110,6 +110,14 @@ bool PerformanceController::parseSound(const String &text, PanelSound &sound) {
 void PerformanceController::applySound(ControlState &state, unsigned index,
                                        bool activate) {
     const bool samePad = currentPad_ == index;
+    const SoundPatch &patch = settings_.patches[index];
+    const bool restore = state.profile == PerformanceProfile::Extended && patch.valid &&
+        (!samePad || appliedSound_ == PanelSound::Count);
+    if (restore) {
+        auto &button = settings_.profiles[1].buttons[index];
+        button.sound = patch.sound; button.variant = patch.variant;
+    }
+    if (activate) soundLatchArmed_ = true;
     currentPad_ = index;
     const ControlState previous = state;
     const PerformanceProfile originalProfile = state.profile;
@@ -166,9 +174,75 @@ void PerformanceController::applySound(ControlState &state, unsigned index,
         state.decayMs = previous.decayMs;
         state.syndrumSweepOctaves = previous.syndrumSweepOctaves;
     }
+    if (restore) { static_cast<SoundState &>(state) = patch.state; resetPickup(); }
     appliedSound_ = config.sound;
     appliedVariant_ = variant;
     if (activate) captureActivation(state);
+}
+
+bool PerformanceController::savePad(unsigned padNumber) {
+    if (padNumber < 1 || padNumber > 4) return false;
+    const ControlState state = controls_.snapshot();
+    if (state.profile != PerformanceProfile::Extended) return false;
+    const auto &button = settings_.profiles[1].buttons[padNumber - 1];
+    if (button.action != ButtonAction::PlaySound) return false;
+    SoundPatch patch;
+    patch.valid = 1; patch.sound = button.sound; patch.variant = button.variant;
+    switch (state.mode) {
+        case SirenMode::Sine1: patch.sound = PanelSound::Classic; patch.variant = 0; break;
+        case SirenMode::Sine2: patch.sound = PanelSound::Classic; patch.variant = 1; break;
+        case SirenMode::Sonar: patch.sound = PanelSound::Classic; patch.variant = 2; break;
+        case SirenMode::Saw: patch.sound = PanelSound::Classic; patch.variant = 3; break;
+        case SirenMode::Triangle: patch.sound = PanelSound::Classic; patch.variant = 4; break;
+        case SirenMode::Square: patch.sound = PanelSound::TwoTone; patch.variant = state.lfoShape == LfoShape::Classic ? 0 : state.lfoShape == LfoShape::Triangle ? 1 : 2; break;
+        case SirenMode::Lickshot: patch.sound = PanelSound::Lickshot; patch.variant = state.lickshotArticulation == LickshotArticulation::Legacy ? (state.lfoShape == LfoShape::AsymDown ? 1 : 0) : static_cast<unsigned>(state.lickshotArticulation) + 1; break;
+        case SirenMode::Syndrum: patch.sound = PanelSound::Ping; patch.variant = static_cast<unsigned>(state.syndrumWave); break;
+        case SirenMode::Gunshot: patch.sound = PanelSound::Gunshot; patch.variant = 0; break;
+        case SirenMode::TestTone: patch.sound = PanelSound::TestTone; patch.variant = 0; break;
+        default: return false;
+    }
+    patch.state = state;
+    if (!validateSoundPatch(patch)) return false;
+    settings_.patches[padNumber - 1] = patch;
+    settings_.profiles[1].buttons[padNumber - 1].sound = patch.sound;
+    settings_.profiles[1].buttons[padNumber - 1].variant = patch.variant;
+    if (currentPad_ == padNumber - 1) { appliedSound_ = patch.sound; appliedVariant_ = patch.variant; }
+    ++settingsRevision_; changed(); return true;
+}
+
+bool PerformanceController::recallPad(unsigned padNumber) {
+    if (padNumber < 1 || padNumber > 4) return false;
+    const auto &patch = settings_.patches[padNumber - 1];
+    ControlState state = controls_.snapshot();
+    if (state.profile != PerformanceProfile::Extended || !patch.valid || !validateSoundPatch(patch)) return false;
+    auto &button = settings_.profiles[1].buttons[padNumber - 1];
+    if (button.action != ButtonAction::PlaySound) return false;
+    button.sound = patch.sound; button.variant = patch.variant;
+    static_cast<SoundState &>(state) = patch.state;
+    currentPad_ = selectedPad_ = padNumber - 1;
+    appliedSound_ = patch.sound; appliedVariant_ = patch.variant;
+    controls_.set(state); resetPickup(); changed(); return true;
+}
+
+bool PerformanceController::importPatch(unsigned padNumber, const SoundPatch &patch) {
+    if (padNumber < 1 || padNumber > 4 || !validateSoundPatch(patch)) return rejectSettingsChange();
+    PanelSettings candidate = settingsTransaction_ ? stagedSettings_ : settings_;
+    candidate.patches[padNumber - 1] = patch;
+    acceptSettingsCandidate(candidate); return true;
+}
+
+bool PerformanceController::patchDirty(unsigned padNumber) const {
+    if (padNumber < 1 || padNumber > 4) return false;
+    const auto &saved = settings_.patches[padNumber - 1];
+    if (!saved.valid) return true;
+    if (currentPad_ != padNumber - 1) return false;
+    SoundPatch live = saved;
+    live.state = controls_.snapshot();
+    const auto &button = settings_.profiles[1].buttons[padNumber - 1];
+    live.sound = button.sound; live.variant = button.variant;
+    for (unsigned i = 0; i < kSoundPatchValueCount; ++i)
+        if (soundPatchValue(live, i) != soundPatchValue(saved, i)) return true;
+    return false;
 }
 
 void PerformanceController::captureActivation(ControlState &state) {
@@ -219,7 +293,7 @@ void PerformanceController::updateGate(ControlState &state) {
     const unsigned soundIndex = activePad_ >= 0
         ? static_cast<unsigned>(activePad_) : currentPad_;
     const ButtonConfig &button = profile.buttons[soundIndex];
-    const bool soundLatch = button.action == ButtonAction::PlaySound &&
+    const bool soundLatch = soundLatchArmed_ && button.action == ButtonAction::PlaySound &&
         button.latch && panelSoundSupportsLatch(button.sound);
     state.hold = holdToggle_ || soundLatch;
     if (state.profile == PerformanceProfile::Extended && encoderPressed_ &&
@@ -536,6 +610,7 @@ void PerformanceController::rotateEncoder(int direction) {
 }
 
 void PerformanceController::resetMomentaries() {
+    soundLatchArmed_ = false;
     overlayTitle_[0] = '\0';
     overlayValue_[0] = '\0';
     for (unsigned index = 0; index < 4; ++index) {
@@ -966,7 +1041,7 @@ void PerformanceController::rebuildMenuView() const {
             addMenuRow(Row::Back, "BACK", "BACK");
             break;
         case MenuPage::Sound: {
-            snprintf(menuTitleBuffer_, sizeof(menuTitleBuffer_), "SOUND P%u", selectedPad_ + 1);
+            snprintf(menuTitleBuffer_, sizeof(menuTitleBuffer_), "SOUND P%u%s", selectedPad_ + 1, patchDirty(selectedPad_ + 1) ? " *" : "");
             if (state.profile == PerformanceProfile::Classic) {
                 addMenuRow(Row::Voice, "VOICE", "VOICE", modeName(state.mode));
             } else {
@@ -994,6 +1069,8 @@ void PerformanceController::rebuildMenuView() const {
                 addSoundValue(state, Row::Tone, "TONE", "DRY TONE", "Hz");
                 addSoundValue(state, Row::Contour, "CONTOUR", "FILTER CONTOUR", "oct");
                 addSoundValue(state, Row::ContourTime, "CONTOUR_TIME", "CONTOUR TAU", "ms");
+                addMenuRow(Row::SavePatch, "SAVE", "SAVE PATCH");
+                addMenuRow(Row::RecallPatch, "RECALL", "RECALL PATCH", settings_.patches[selectedPad_].valid ? "" : "EMPTY");
             }
             addMenuRow(Row::Back, "BACK", "BACK");
             break;
@@ -1155,6 +1232,8 @@ void PerformanceController::pressMenuItem() {
         changed();
         return;
     }
+    if (row == Row::SavePatch) { savePad(selectedPad_ + 1); return; }
+    if (row == Row::RecallPatch) { recallPad(selectedPad_ + 1); return; }
     if (row == Row::SoundPage) { selectedButton_ = selectedPad_; setMenuPage(MenuPage::Sound); }
     else if (row == Row::ModPage) setMenuPage(MenuPage::Mod);
     else if (row == Row::EchoPage) setMenuPage(MenuPage::Echo);
