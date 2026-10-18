@@ -73,5 +73,16 @@ restano entrambi da misurare; non guidano l'accoppiamento verticale definitivo.
 
 Le boccole frontali sono cilindri nominali M9 × 5 dal disegno Bourns PTV/PTT,
 pagina 2, estrusi sopra il piano frontale nominale del corpo a Z31,3. La filettatura
-e i componenti completi non sono modellati. Sono usate soltanto per due sonde
-rettilinee parziali di montaggio, senza dimostrazione del percorso inclinato completo.
+e i componenti completi non sono modellati. Sono usate per sonde rettilinee e
+inclinate parziali, senza dimostrazione del percorso completo. I cilindri inclinati
+sono ricostruiti da base e asse trasformati; la controverifica tramite punti interni
+è nel report, dopo aver rilevato un falso volume comune nullo su una forma ruotata.
+
+Il foro D12 della proposta corrente deriva dalla richiesta dell'utente, non dal
+disegno Neutrik, che indica D11,2. La flangia circolare D17,45 del disegno
+NRJ-NUT-B copre D12 con 2,725 mm radiali nominali a foro centrato; SW15 indica
+la chiave. Copertura in proiezione e appoggio senza fessure sono verifiche distinte:
+la parete Hammond inclinata di 1° lascia un dislivello di 0,305 mm sul dado.
+Non sono state ricavate coppie, deformazioni ammissibili o misure fisiche dalla
+sola geometria. I risultati D11,2 nel JSON sono un riferimento storico esplicito;
+le sonde native correnti e la tavola usano D12.

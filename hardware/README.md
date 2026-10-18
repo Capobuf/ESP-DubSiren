@@ -6,6 +6,7 @@
 - [Assieme FreeCAD modificabile](cad/assembly.FCStd): Hammond originale, proposta pannello Gate A e studio posteriore NRJ4HF.
 - [Posteriore e sezione con quote](cad/nrj4hf-rear-section.svg), [anteprima](cad/nrj4hf-rear-section.png), [vista interna](cad/nrj4hf-inside.png), [misure e limiti](cad/nrj4hf-validation.json).
 - [Vista dall'alto con gli inviluppi dei corpi pot](cad/nrj4hf-top-screening.png): controllo parziale di interferenza, non assieme completo.
+- [Sonda di inserimento a +5° con foro D12](cad/nrj4hf-insertion-probe.png): naso blu, boccole arancio, interferenze rosse; non è una posa di montaggio ammessa.
 - [Pannello Gate A e dima cartacea 1:1](cad/gate-a-panel.pdf), [SVG](cad/gate-a-panel.svg), [anteprima](cad/gate-a-preview.png). Stampare al 100%, verificare la barra da 50 mm; **non forare**.
 - [BOM elettronica](docs/BOM.csv), [fonti e accessorio NRJ-NUT-B](docs/sources.md), [originali CAD](cad/sources/).
 
@@ -55,12 +56,12 @@ Il layout frontale Gate A rimane invariato.
 |---|---|---|
 | Collegamenti elettrici | PASS | T→OUTL/AUDIO_MONO; S→GND; TN/SN e OUTR NC; ERC 0 errori e 0 warning |
 | Altezza del jack | PASS nominale; tolleranze NON VALIDATE | Corpo 12,7 mm; Z9,5…22,2; piedini fino a Z26,2; margine nominale 6,9 mm sul budget precedente 19,6; distanza reale dal fondo 3,7 mm |
-| Allineamento posteriore | PASS nominale; foro NON VALIDATO | Asse proposto X12,5 / Z15,7; parete 2,0003 mm lungo asse, inferiore a 3 mm; inclinazione 1 grado; D11,2 da disegno Neutrik |
+| Allineamento posteriore | PASS nominale; foro NON VALIDATO per produzione | Asse proposto X12,5 / Z15,7; parete 2,0003 mm lungo asse; inclinazione 1 grado. Studio aggiornato a D12 su richiesta dell'utente; D11,2 resta il riferimento Neutrik |
 | Interferenza USB-C | PASS statico; cavi NON VALIDATI | Distanza fra solidi jack e USB 19,1 mm; volume comune zero; inviluppo dado–USB 17,108 mm |
 | Piedini jack e corpi pot frontali | PASS del solo screening nominale | Nessuna intersezione con i sei inviluppi; distanza minima 1,52 mm. Piedini/clip dei pot e tolleranze non inclusi |
 | MASTER e vicini | NON VALIDATO | Gap proiettati: MASTER 39,57 mm lungo X; PCB DAC 10,65 mm lungo Y. Mancano verifica completa di albero/manopola, altezza DAC e componenti frontali completi |
-| Inserimento PCB | NON VALIDATO | Sagoma, supporti e assieme popolato completo non definiti; nessun percorso continuo dimostrato |
-| Fissaggio tramite dado | NON VALIDATO | Inviluppo D17,45 x 4,75; dislivello della parete sul dado 0,305 mm; filettatura, accesso utensile e serraggio senza sforzi da verificare |
+| Inserimento PCB | FAIL delle pose provate; percorso completo NON VALIDATO | D12 libera il naso in varie pose, ma restano interferenze USB/boccole/corpo jack. Sagoma, supporti e assieme completo non definiti |
+| Fissaggio tramite dado | Copertura D12 PASS nominale in proiezione; serraggio NON VALIDATO | Flangia D17,45: sovrapposizione radiale centrata 2,725 mm. Primo appoggio sul bordo; fessura assiale fino a 0,305 mm. Filettatura e accesso utensile da verificare |
 
 La posa CAD attuale **non rappresenta un serraggio verificato**. La spalla del
 jack è sul piano Y58 e la faccia interna del dado su Y60,345: separazione 2,345 mm
@@ -75,8 +76,10 @@ nella posa diagnostica, ma **6,9 mm è un margine nominale**, non un bilancio co
 PCB/pot/connettore. Il corpo è a soli **0,0785 mm dalla parete originale** nella posa scelta:
 non è una riserva di produzione adeguatamente dimostrata. Il disegno Neutrik prescrive
 il foro D11,2; lo STEP semplifica la filettatura in un cilindro liscio D11,2.
-Il gioco nullo fra queste geometrie non dimostra il gioco reale del filetto nel foro:
-non giustifica da solo un allargamento arbitrario. Accoppiamento e serraggio restano da verificare.
+Il gioco nullo fra queste geometrie non dimostra il gioco reale del filetto nel foro.
+Su richiesta dell'utente la proposta diagnostica
+usa ora D12, con le verifiche e i limiti descritti sotto. Accoppiamento e serraggio
+restano da verificare.
 Le formule attive di `GateBHeight` usano ora il jack da 12,7 mm: stack nominale
 22,8 mm, intervallo teorico F.Cu Z16,9…23,8 e margine 6,9 mm.
 Questi numeri descrivono il solo bilancio assiale, non includono tutti gli ostacoli del box.
@@ -89,11 +92,11 @@ MASTER e DAC sono solo proiezioni dichiarate. Non sono stati inventati modelli c
 
 Sequenza richiesta ancora da dimostrare: PCB popolata inserita inclinata dal fondo → ingresso
 contemporaneo di jack/USB/MASTER → raddrizzamento → fissaggio → dado esterno. Mancano sagoma,
-supporti e ingombri completi per provare un percorso continuo. Non sono definiti angoli o traslazioni
-fittizi e non è stata generata una dima 3D/STL non validata.
+supporti e ingombri completi per provare un percorso continuo. Gli angoli e le traslazioni
+provati sotto sono sonde diagnostiche, non una sequenza approvata. La dima 3D/STL non è pronta.
 
-È stata aggiunta una **verifica parziale indipendente dal display**: sei cilindri
-M9 × 5 mm rappresentano le sole boccole dei potenziometri, con base Z31,3;
+La prima **verifica parziale indipendente dal display**, conservata come riferimento D11,2, usa sei cilindri
+M9 × 5 mm che rappresentano le sole boccole dei potenziometri, con base Z31,3;
 le aperture frontali D9,2 sono quelle proposte al Gate A. La sonda
 `MountingAperturesProbe` è una copia diagnostica della scocca, non modifica l'originale.
 Nella posa finale jack e boccole non intersecano questa sonda. Traslando il gruppo
@@ -103,6 +106,79 @@ Queste due prove escludono soltanto i movimenti rettilinei testati nel modello
 nominale ridotto: **non dimostrano che un percorso inclinato sia impossibile**.
 Il filetto semplificato del jack e i giochi ancora da verificare limitano ulteriormente
 la prova. Nessuna sequenza completa è stata approvata.
+
+### Inserimento inclinato e foro D12 — studio attuale
+
+Le prove FreeCAD MCP ruotano i componenti attorno all'asse X passante per
+**(12,5; 59,192132; 15,7) mm**, a metà parete nel foro jack. Il dado è escluso
+dal movimento perché montabile dall'esterno dopo l'inserimento.
+Con D11,2 il naso cilindrico semplificato interseca la parete a tutti gli angoli
+campionati ±0,1°, ±0,5°, ±1°, ±2°, ±5°, ±10°, ±15°; anche 32 combinazioni
+di inclinazione e traslazione assiale falliscono. Questi dati restano nel JSON
+come riferimento precedente; non sono i risultati del foro attuale.
+
+**Su richiesta dell'utente il foro diagnostico è ora D12.** Il naso D11,2 dispone
+di 0,4 mm nominali per lato. È stata aggiornata l'unica proposta CAD e la tavola;
+gli originali Hammond restano intatti. Il foro D12 libera il naso fino a +10°
+nei campioni provati, ma non risolve le altre interferenze:
+
+| Posa rispetto al riferimento | Jack/scocca mm³ | Boccole/scocca mm³ | USB/scocca mm³ |
+|---|---:|---:|---:|
+| Finale | 0 | 0 | 0 |
+| Abbassamento Z−0,2 mm | 0 | 0 | 2,707 |
+| Inclinazione +0,5° | 0 | 3,081 | 0,031 |
+| Inclinazione +5° | 4,478 | 75,542 | 0,252 |
+| Inclinazione +15° | 36,387 | 0 | 0,399 |
+| +0,5°, Y+0,1 mm, Z−0,4 mm | 0,006 | 0 | 4,558 |
+
+L'apertura USB è ancora il solo inviluppo minimo, senza gioco validato: i suoi
+esiti non dimostrano un'impossibilità del componente reale. Anche le boccole
+sono cilindri nominali e il corpo jack proviene da uno STEP semplificato.
+I campioni escludono soltanto le pose e le famiglie di movimento provate;
+non costituiscono una ricerca esaustiva a sei gradi di libertà né la validazione
+di un percorso continuo dell'assieme completo.
+
+Il gruppo nativo `InclinedInsertionProbe`, nascosto nella posa finale, conserva
+la sonda +5° con D12: naso blu, boccole arancio, volumi di interferenza rossi.
+Un controllo indipendente ha individuato un falso volume comune nullo usando
+una boccola semplicemente ruotata. Le boccole sono state quindi ricostruite
+come cilindri analitici dalla base e dall'asse trasformati: il punto
+(−28; 36,5; 32,8) è interno sia alla prima boccola sia alla scocca e conferma
+l'interferenza a +5°. La sola validità OCC non è stata usata come prova di assenza
+di collisioni. Il report conserva metodo e controverifica.
+
+### Copertura del foro e serraggio senza fessure
+
+Il disegno originale NRJ-NUT-B mostra una **flangia circolare D17,45** e una
+chiave SW15. Su D12, la copertura radiale proiettata è **2,725 mm a foro centrato**,
+oppure 2,325 mm con eccentricità nominale di 0,4 mm. Quindi il bordo del foro
+è coperto nella proiezione lungo l'asse del jack; non si è usato il solo esagono
+SW15 come se fosse la flangia. Sono valori nominali, senza tolleranze di lavorazione.
+
+Questo non garantisce l'assenza di fessure sotto il dado. La parete è inclinata
+di 1° rispetto alle facce di appoggio: il jack raggiunge il primo contatto dopo
+**+Y0,078522 mm**, il dado dopo **−Y0,000420 mm**. Il primo appoggio avviene sul
+bordo, non su tutta la faccia. Nel modello rigido resta una variazione del gioco
+di **0…0,304591 mm** sul diametro del dado. Avanzare ancora 0,01 mm produce
+interferenza: circa 0,045 mm³ al corpo jack e 0,010 mm³ all'inviluppo del dado.
+Le distanze della spalla sono calcolate sulla sua faccia, non sull'intero jack
+che nel riferimento D11,2 tocca già il bordo del foro.
+
+Non sono state assunte deformazioni della plastica, coppie di serraggio,
+impegno del filetto o rondelle aggiuntive. Il requisito dell'utente — nessun
+vuoto visibile a montaggio concluso — **rimane da soddisfare**.
+
+Le due strade da valutare, in ordine di impatto, sono:
+
+1. Conservare componenti e D12, definire i giochi effettivi delle altre aperture
+   e studiare appoggi che compensino la parete di 1°, verificando poi nuovamente
+   il percorso completo. Non è ancora dimostrato che basti; nessun appoggio
+   aggiuntivo è stato progettato o approvato.
+2. Se il vincolo della PCB già popolata impedisce il percorso, concordare una
+   modifica del fissaggio/connettore o della sequenza di assemblaggio. È una
+   modifica ai vincoli della #14, non applicata automaticamente.
+
+Le dimensioni fisiche del display restano aperte e non partecipano a queste prove.
 
 ## Controlli e limiti del progetto
 
