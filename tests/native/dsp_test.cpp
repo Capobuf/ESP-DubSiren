@@ -1665,7 +1665,39 @@ void testTwoTonePitchTrajectories() {
     }
 }
 
+void testLickshotArticulations() {
+    for (unsigned variant = 2; variant <= 4; ++variant) {
+        ControlStore store; CommandParser parser(store);
+        assert(parser.parse("SET PROFILE EXTENDED"));
+        assert(parser.parse("SET ECHO_LEVEL 0"));
+        assert(parser.parse("SET LFO_RATE_HZ 4"));
+        char command[64]; snprintf(command, sizeof(command), "PAD_CONFIG 3 LICKSHOT %u 0", variant);
+        assert(parser.parse(command));
+        auto engine = std::make_unique<AudioEngine>(); engine->begin();
+        int16_t block[480];
+        for (int i = 0; i < 100; ++i) engine->render(store.snapshot(), block, 480);
+        assert(parser.parse("PAD 3 1"));
+        unsigned attacks = 0; bool previous = false;
+        for (int i = 0; i < 200; ++i) {
+            engine->render(store.snapshot(), block, 480);
+            const bool sounding = blockRms(block, 480) > 10;
+            if (sounding && !previous) ++attacks;
+            previous = sounding;
+            if (variant == 2 && i > 16) assert(!sounding);
+            if (variant == 4 && i > 10) assert(sounding);
+        }
+        assert(attacks == (variant == 3 ? 8 : 1));
+        assert(parser.parse("PAD 3 0"));
+        for (int i = 0; i < 150; ++i) engine->render(store.snapshot(), block, 480);
+        assert(parser.parse("PAD 3 1")); assert(parser.parse("PAD 3 0"));
+        engine->render(store.snapshot(), block, 480);
+        assert(blockRms(block, 480) > 10);
+        assert(static_cast<unsigned>(store.snapshot().lickshotArticulation) == variant-1);
+    }
+}
+
 int main() {
+    testLickshotArticulations();
     testTwoTonePitchTrajectories();
     testShortTriggerEvents();
     testClassicAutomaticVoices();

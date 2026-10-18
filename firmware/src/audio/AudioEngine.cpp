@@ -135,6 +135,12 @@ void AudioEngine::renderSegment(const ControlState &controls, const ActivationEv
     const float decayMs = queuedActivation
         ? activation.decayMs
         : controls.decayMs;
+    const auto articulation = queuedActivation ? activation.lickshotArticulation : controls.lickshotArticulation;
+    const bool articulatedLickshot = !classic && requestedMode == SirenMode::Lickshot && articulation != LickshotArticulation::Legacy;
+    const bool lickshotTransient = articulatedLickshot && articulation != LickshotArticulation::Horn;
+    const float lickshotLength = queuedActivation ? activation.lickshotLengthMs : controls.lickshotLengthMs;
+    const float lickshotPunch = queuedActivation ? activation.lickshotPunchOctaves : controls.lickshotPunchOctaves;
+    const float lickshotPitchMs = queuedActivation ? activation.lickshotPitchMs : controls.lickshotPitchMs;
     const bool manual = shape == LfoShape::Manual;
     const float bendTarget = classic || manual || controls.modUp == controls.modDown
                                  ? 0.0f
@@ -148,6 +154,10 @@ void AudioEngine::renderSegment(const ControlState &controls, const ActivationEv
     const bool holdEdge = !previousHold_ && controls.hold;
     const bool activationEdge = triggerEvent || holdEdge;
     if (activationEdge) sweepEnvelope_.trigger();
+    if (activationEdge && lickshotTransient) {
+        lickshotEnvelope_.trigger();
+        lickshotRollPhase_ = 0.0f;
+    }
     // A zero-duration tap has a finite minimum gate; releases still use 3 ms in Classic.
     if (triggerEvent) eventGateRemaining_ = classic
         ? static_cast<unsigned>(PerformanceConfig::kGateAttackMs * Config::kSampleRate * .001f)
@@ -223,7 +233,17 @@ void AudioEngine::renderSegment(const ControlState &controls, const ActivationEv
             ? lfo_.next(shape, effectiveRate, controls.modUp,
                         controls.modDown, Config::kSampleRate)
             : 0.0f;
-        const float modulation = tonal && modulationEnabled ? lfoValue : 0.0f;
+        if (lickshotTransient && articulation == LickshotArticulation::Roll &&
+            (controls.trigger || controls.hold)) {
+            lickshotRollPhase_ += rate / Config::kSampleRate;
+            if (lickshotRollPhase_ >= 1.0f) {
+                lickshotRollPhase_ -= 1.0f;
+                lickshotEnvelope_.trigger();
+            }
+        }
+        const float lickshotPitch = lickshotTransient
+            ? lickshotPunch * expf(-lickshotEnvelope_.ageMs(Config::kSampleRate) / lickshotPitchMs) : 0.0f;
+        const float modulation = tonal && modulationEnabled && !articulatedLickshot ? lfoValue : 0.0f;
         float frequencyTarget = tune;
         float oscillatorModulation = modulation;
         float frequencySmoothing = 0.0137929f;  // 1.5 ms RC at 48 kHz.
@@ -241,7 +261,7 @@ void AudioEngine::renderSegment(const ControlState &controls, const ActivationEv
                 tune * exp2f(performanceBend + livePitch + sweepPitch));
         } else if (tonal) {
             frequencyTarget = clampFrequency(
-                tune * exp2f(depth * modulation + performanceBend + livePitch + sweepPitch));
+                tune * exp2f(depth * modulation + performanceBend + livePitch + sweepPitch + lickshotPitch));
         }
         if (tonal) {
             oscillatorFrequencyHz_ +=
@@ -249,11 +269,14 @@ void AudioEngine::renderSegment(const ControlState &controls, const ActivationEv
         }
         const bool eventGate = eventGateRemaining_ > 0;
         if (eventGateRemaining_ > 0) --eventGateRemaining_;
-        const float envelopeLevel = tonal
+        float envelopeLevel = tonal
             ? (classic ? envelope_.nextGate(controls.trigger || controls.hold || eventGate, Config::kSampleRate)
                        : envelope_.next(controls.trigger || controls.hold || eventGate, decayMs,
                                         Config::kSampleRate))
             : 0.0f;
+        if (lickshotTransient) envelopeLevel = lickshotEnvelope_.next(lickshotLength,
+            articulation == LickshotArticulation::Roll && !(controls.trigger || controls.hold || eventGate),
+            Config::kSampleRate);
         float dry;
         const bool tonalTransition = modeTransitionRemaining_ > 0 && tonal &&
                                      isTonalMode(previousMode_);

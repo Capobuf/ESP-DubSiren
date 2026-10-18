@@ -17,6 +17,8 @@ enum class SirenMode {
     Count,
 };
 
+enum class LickshotArticulation { Legacy, Shot, Roll, Horn };
+
 enum class SyndrumWave {
     Sine,
     Triangle,
@@ -45,6 +47,10 @@ struct ActivationEvent {
     SirenMode mode = SirenMode::Sine1;
     LfoShape lfoShape = LfoShape::Classic;
     SyndrumWave syndrumWave = SyndrumWave::Sine;
+    LickshotArticulation lickshotArticulation = LickshotArticulation::Legacy;
+    float lickshotLengthMs = 150.0f;
+    float lickshotPunchOctaves = 2.0f;
+    float lickshotPitchMs = 70.0f;
     float decayMs = PerformanceConfig::kExtendedDecayMs;
     float syndrumSweepOctaves = 2.0f;
     bool modulationEnabled = true;
@@ -68,6 +74,10 @@ struct ControlState {
     LfoShape lfoShape = LfoShape::Classic;
     float lfoRateHz = 0.70f;
     float lfoDepthOctaves = 1.0f;
+    LickshotArticulation lickshotArticulation = LickshotArticulation::Legacy;
+    float lickshotLengthMs = 150.0f;
+    float lickshotPunchOctaves = 2.0f;
+    float lickshotPitchMs = 70.0f;
     float decayMs = PerformanceConfig::kExtendedDecayMs;
     float sweepAmount = 0.0f;
     float sweepMs = 650.0f;
@@ -119,6 +129,10 @@ inline void recordActivation(ControlState &state, uint32_t timestampUs = micros(
     event.timestampUs = timestampUs;
     event.lfoShape = state.lfoShape;
     event.syndrumWave = state.syndrumWave;
+    event.lickshotArticulation = state.lickshotArticulation;
+    event.lickshotLengthMs = state.lickshotLengthMs;
+    event.lickshotPunchOctaves = state.lickshotPunchOctaves;
+    event.lickshotPitchMs = state.lickshotPitchMs;
     event.decayMs = state.decayMs;
     event.syndrumSweepOctaves = state.syndrumSweepOctaves;
     event.modulationEnabled = state.modulationEnabled;

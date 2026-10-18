@@ -67,6 +67,13 @@ bool CommandParser::parse(const String &rawCommand) {
             state.rateZonesActive = true;
         } else if (name == "LFO_SHAPE") {
             if (!parseLfoShape(valueText, state.lfoShape)) return false;
+        } else if (name == "LICKSHOT_MODE") {
+            if (state.profile != PerformanceProfile::Extended) return false;
+            if (valueText == "LEGACY") state.lickshotArticulation = LickshotArticulation::Legacy;
+            else if (valueText == "SHOT") state.lickshotArticulation = LickshotArticulation::Shot;
+            else if (valueText == "ROLL") state.lickshotArticulation = LickshotArticulation::Roll;
+            else if (valueText == "HORN") state.lickshotArticulation = LickshotArticulation::Horn;
+            else return false;
         } else if (name == "SYNDRUM_WAVE") {
             if (!parseSyndrumWave(valueText, state.syndrumWave)) return false;
         } else if (name == "VOICING") {
@@ -141,6 +148,11 @@ bool CommandParser::parse(const String &rawCommand) {
         } else if (name == "LPF_HZ") {
             state.echoFilterFlat = false;
             state.lowPassHz = clampValue(value, 200.0f, 19000.0f);
+        } else if (name == "LICKSHOT_LENGTH_MS" || name == "LICKSHOT_PUNCH_OCT" || name == "LICKSHOT_PITCH_MS") {
+            if (state.profile != PerformanceProfile::Extended) return false;
+            if (name == "LICKSHOT_LENGTH_MS") state.lickshotLengthMs = clampValue(value, 20.0f, 1000.0f);
+            else if (name == "LICKSHOT_PUNCH_OCT") state.lickshotPunchOctaves = clampValue(value, 0.0f, 3.0f);
+            else state.lickshotPitchMs = clampValue(value, 10.0f, 300.0f);
         } else if (name == "MASTER") {
             state.masterVolume = clampValue(value, 0.0f, 1.0f);
         } else {

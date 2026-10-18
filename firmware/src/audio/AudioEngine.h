@@ -5,6 +5,7 @@
 
 #include "Delay.h"
 #include "Envelope.h"
+#include "LickshotEnvelope.h"
 #include "Lfo.h"
 #include "Oscillator.h"
 #include "AnalogDsp.h"
@@ -23,6 +24,8 @@ private:
     Oscillator oscillator_;
     Lfo lfo_;
     Envelope envelope_;
+    LickshotEnvelope lickshotEnvelope_;
+    float lickshotRollPhase_ = 0.0f;
     OneShotEnvelope sweepEnvelope_;
     OneShotEnvelope syndrumEnvelope_;
     OneShotEnvelope gunshotEnvelope_;

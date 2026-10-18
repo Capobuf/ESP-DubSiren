@@ -174,3 +174,21 @@ RC, Triangle e Square modulano il pitch con il valore continuo del LFO scelto.
 Il carrier resta quadrato; Classic conserva la commutazione discreta dei due livelli.
 Rate e Depth mantengono cadenza ed escursione nominale; Manual usa la curva
 manuale e MODULATION 0 esclude la modulazione.
+
+### Lickshot articolato (#5)
+
+Le varianti 0 SAW DOWN e 1 ASYM DOWN conservano la sintesi precedente.
+Le nuove varianti 2 SHOT, 3 ROLL e 4 HORN sono selezionabili con PAD_CONFIG
+o dall'encoder. SHOT termina anche tenendo premuto; ROLL ripete a Rate Hz
+finché gate/Hold sono attivi e rilascia in massimo 3 ms; HORN sostiene senza LFO.
+Il pitch di SHOT/ROLL decade indipendentemente da Rate e dalla durata sonora.
+
+Comandi Extended: `SET LICKSHOT_MODE LEGACY|SHOT|ROLL|HORN`,
+`SET LICKSHOT_LENGTH_MS 20..1000`, `SET LICKSHOT_PUNCH_OCT 0..3`,
+`SET LICKSHOT_PITCH_MS 10..300`. Length è il tempo al silenzio, con attacco
+di 2 ms; Punch è la caduta iniziale in ottave; Pitch Ms è la costante di tempo
+della caduta. Default 150 ms, 2 ottave, 70 ms: tarature iniziali da ascoltare.
+Le nuove articolazioni non usano il LFO per ampiezza/pitch e non azzerano l'echo.
+HORN resta selezionato al nuovo colpo se richiamato come variante del pad.
+
+Restano da verificare ascolto sul riddim e costo DSP massimo sull'ESP.
