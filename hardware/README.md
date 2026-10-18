@@ -59,9 +59,12 @@ possibile fallisca: la soluzione con componenti sulla stessa faccia resta da stu
 Il gruppo `GateBHeight` contiene il dual RCA originale e gli elementi diagnostici:
 il piano PCB non è una sagoma e il blocco pot è solo una rappresentazione della
 quota del corpo. La posizione XY del RCA non è un placement approvato.
-In base al punto 9 della #14, prima di cambiare componenti o disposizione
-serve scegliere una delle alternative riportate nel PDF: RCA più basso,
-potenziometri meno profondi oppure studio della configurazione sulla stessa faccia.
+Il 18 ottobre 2026 l'utente ha scelto di sostituire il Same Sky RCJ-2123
+con un connettore RCA più basso. Il ricambio è ancora da selezionare e validare;
+il CAD conserva il componente originale per documentare l'interferenza.
+Per la configurazione esaminata il budget in altezza del nuovo RCA è 19,6 mm,
+inclusa la sua tolleranza positiva; le tolleranze di PCB e potenziometri restano
+da aggiungere al bilancio. La scelta non approva ancora il Gate B.
 Il montaggio completo, il display a filo, il percorso d'inserimento e la dima 3D
 non sono validati. La correzione OUTL→L / OUTR→R del dual RCA è rinviata
 alla fase C, dopo il Gate B. Nessuno STL o assieme completo è dichiarato valido.
