@@ -134,6 +134,9 @@ void PerformanceController::applySound(ControlState &state, unsigned index,
             break;
         case PanelSound::Lickshot:
             state.mode = SirenMode::Lickshot;
+            state.lickshotArticulation = variant < 2 ? LickshotArticulation::Legacy
+                : variant == 2 ? LickshotArticulation::Shot
+                : variant == 3 ? LickshotArticulation::Roll : LickshotArticulation::Horn;
             state.lfoShape = variant == 0 ? LfoShape::SawDown : LfoShape::AsymDown;
             state.modulationEnabled = true;
             state.retrigger = true;
