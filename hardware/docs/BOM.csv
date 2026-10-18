@@ -13,7 +13,7 @@ C11,10n C0G 50V,1,Capacitor_SMD:C_0603_1608Metric,GRM1885C1H103JA01D,Murata,http
 D1,SMF5.0A,1,Diode_SMD:D_SOD-123F,SMF5.0A_R1_00001,PANJIT,https://www.panjit.com.cn/upload/datasheet/SMF5.0A_SERIES.pdf,,yes,Componente dello schema provvisorio; validazione hardware pendente
 F1,1.1A PTC,1,ESP-DubSiren-V2-Electrical:Bel_0ZCG0110CF2B_1812,0ZCG0110CF2B,Bel,https://www.belfuse.com/resources/datasheets/circuitprotection/ds-cp-0zcg-series.pdf,,yes,Componente dello schema provvisorio; validazione hardware pendente
 J1,USB4085-GF-A,1,Connector_USB:USB_C_Receptacle_GCT_USB4085,USB4085-GF-A,GCT,https://az.y-ic.com/datasheet/e9/USB4085-GF-A.pdf,,yes,Componente dello schema provvisorio; validazione hardware pendente
-J2,RCJ-2123,1,ESP-DubSiren-V2-Mechanical:SameSky_RCJ-2123,RCJ-2123,Same Sky,https://www.sameskydevices.com/product/resource/rcj-21.pdf,,yes,Componente dello schema provvisorio; validazione hardware pendente
+J2,NRJ4HF,1,Connector_Audio:Jack_6.35mm_Neutrik_NRJ4HF_Horizontal,NRJ4HF,Neutrik,https://www.neutrik.com/media/8561/download/st-nrj4hf.PDF?v=2,,yes,Mono TS: T=AUDIO_MONO OUTL; S=GND; TN/SN NC; dado NRJ-NUT-B x1 separato; Gate B non validato
 R1,10,1,Resistor_SMD:R_0603_1608Metric,NRC06J100TRF,NIC,,,yes,Componente dello schema provvisorio; validazione hardware pendente
 R2,22,1,Resistor_SMD:R_0603_1608Metric,RC0603JR-0722RL,Yageo,,,yes,Componente dello schema provvisorio; validazione hardware pendente
 R3,22,1,Resistor_SMD:R_0603_1608Metric,RC0603JR-0722RL,Yageo,,,yes,Componente dello schema provvisorio; validazione hardware pendente

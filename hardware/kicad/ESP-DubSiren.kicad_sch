@@ -5850,6 +5850,274 @@
 			)
 			(embedded_fonts no)
 		)
+		(symbol "Connector_Audio:AudioJack2_Switch"
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property "Reference" "J"
+				(at 0 11.43 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "AudioJack2_Switch"
+				(at 0 8.89 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 0 5.08 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 5.08 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Description" "Audio Jack, 2 Poles (Mono / TS), Switched Pole (Normalling)"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_keywords" "audio jack receptacle mono headphones phone TS connector"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_fp_filters" "Jack*"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol "AudioJack2_Switch_0_1"
+				(rectangle
+					(start -2.54 0)
+					(end -3.81 -2.54)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type outline)
+					)
+				)
+				(rectangle
+					(start 2.54 6.35)
+					(end -2.54 -3.81)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+			)
+			(symbol "AudioJack2_Switch_1_1"
+				(polyline
+					(pts
+						(xy 0 0)
+						(xy 0.635 -0.635)
+						(xy 1.27 0)
+						(xy 2.54 0)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0.635 4.826)
+						(xy 0.889 4.318)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 1.778 -0.254)
+						(xy 2.032 -0.762)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 2.54 5.08)
+						(xy -0.635 5.08)
+						(xy -0.635 0)
+						(xy -1.27 -0.635)
+						(xy -1.905 0)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 2.54 2.54)
+						(xy 0.635 2.54)
+						(xy 0.635 4.826)
+						(xy 0.381 4.318)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 2.54 -2.54)
+						(xy 1.778 -2.54)
+						(xy 1.778 -0.254)
+						(xy 1.524 -0.762)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(pin passive line
+					(at 5.08 5.08 180)
+					(length 2.54)
+					(name ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "S"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 5.08 2.54 180)
+					(length 2.54)
+					(name ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "SN"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 5.08 0 180)
+					(length 2.54)
+					(name ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "T"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 5.08 -2.54 180)
+					(length 2.54)
+					(name ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "TN"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
 	)
 	(no_connect
 		(at 313.69 83.82)
@@ -5952,12 +6220,16 @@
 		(uuid "26f260f1-ce9a-432d-adf8-3a65e9319de4")
 	)
 	(no_connect
-		(at 544.83 132.08)
-		(uuid "2bcfb45d-83b5-44a3-9b84-560f1b43efea")
-	)
-	(no_connect
 		(at 193.04 93.98)
 		(uuid "84a1575d-0731-4863-9bee-e79eae6f4b70")
+	)
+	(no_connect
+		(at 561.34 129.54)
+		(uuid "c24c4860-b18f-44cf-b813-2b8d987e8f27")
+	)
+	(no_connect
+		(at 561.34 124.46)
+		(uuid "497905d7-d081-4906-b1a1-0b27024b2013")
 	)
 	(wire
 		(pts
@@ -6591,13 +6863,6 @@
 	)
 	(wire
 		(pts
-			(xy 544.83 119.38)
-			(xy 539.75 119.38)
-		)
-		(uuid "1b5814d8-bb63-452f-80c6-ff04e2758477")
-	)
-	(wire
-		(pts
 			(xy 241.3 109.22)
 			(xy 236.22 109.22)
 		)
@@ -6855,6 +7120,13 @@
 		)
 		(uuid "5b44da92-3a63-4d2e-8428-9ffddd10d0f2")
 	)
+	(wire
+		(pts
+			(xy 561.34 127)
+			(xy 556.26 127)
+		)
+		(uuid "ffa500d0-184b-4ae5-acb3-490f43ad11cd")
+	)
 	(text "USB-C / input protection"
 		(at 20.32 15.24 0)
 		(effects
@@ -6983,15 +7255,15 @@
 		)
 		(uuid "d094d099-2314-40a2-9f07-99f1a6526ca9")
 	)
-	(text "X1 = mono out. X2 center unused. Both barrels grounded."
-		(at 492.76 175.26 0)
+	(text "PROTOTYPE - all controls populated; USB power policy and bench qualification pending"
+		(at 20.32 360.68 0)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
 			(justify left bottom)
 		)
-		(uuid "ddc2d740-9cf5-4127-b432-1bb8b0566b57")
+		(uuid "ea03b57d-4b36-4f16-b169-59c50b463ca5")
 	)
 	(label "ESP_EN"
 		(at 308.61 40.64 180)
@@ -7893,16 +8165,6 @@
 		)
 		(uuid "5fc1307e-8d1f-4478-a893-894316fc5199")
 	)
-	(label "AUDIO_MONO"
-		(at 539.75 119.38 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "070fc04f-1f78-4f8d-999b-ec14ca712194")
-	)
 	(label "ESP_EN"
 		(at 236.22 109.22 180)
 		(effects
@@ -8343,10 +8605,20 @@
 		)
 		(uuid "aedc7618-f39d-410f-be3f-682468275a23")
 	)
-  (text "PROTOTYPE - all controls populated; USB power policy and bench qualification pending"
-    (at 20.32 360.68 0)
+	(label "AUDIO_MONO"
+		(at 556.26 127 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "b8b137fa-7408-43c9-89e0-88d41833c0f0")
+	)
+  (text "J2: T = OUTL / AUDIO_MONO; S = GND; TN/SN unused. OUTR unused."
+    (at 492.76 175.26 0)
     (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid "ea03b57d-4b36-4f16-b169-59c50b463ca5")
+    (uuid "1b2bc6f1-ffd7-40ee-85be-ce39973764df")
   )
 	(symbol
 		(lib_id "ESP-DubSiren-V2:ESP32-S3-WROOM-1U-N16R8")
@@ -16219,30 +16491,30 @@
 		)
 	)
 	(symbol
-		(lib_id "ESP-DubSiren-V2:RCJ-2123")
-		(at 566.42 127 0)
+		(lib_id "Connector_Audio:AudioJack2_Switch")
+		(at 566.42 127 180)
 		(unit 1)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
 		(uuid "f727f866-3400-412d-b500-80456e99ba10")
 		(property "Reference" "J2"
-			(at 554.99 111.76 0)
+			(at 568.96 119.38 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
 			)
 		)
-		(property "Value" "RCJ-2123"
-			(at 554.99 144.78 0)
+		(property "Value" "NRJ4HF"
+			(at 568.96 135.89 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
 			)
 		)
-		(property "Footprint" "ESP-DubSiren-V2-Mechanical:SameSky_RCJ-2123"
+		(property "Footprint" "Connector_Audio:Jack_6.35mm_Neutrik_NRJ4HF_Horizontal"
 			(at 566.42 127 0)
 			(hide yes)
 			(effects
@@ -16251,7 +16523,7 @@
 				)
 			)
 		)
-		(property "Datasheet" "https://www.sameskydevices.com/product/resource/rcj-21.pdf"
+		(property "Datasheet" "https://www.neutrik.com/media/8561/download/st-nrj4hf.PDF?v=2"
 			(at 566.42 127 0)
 			(hide yes)
 			(effects
@@ -16278,7 +16550,7 @@
 				)
 			)
 		)
-		(property "MPN" "RCJ-2123"
+		(property "MPN" "NRJ4HF"
 			(at 566.42 127 0)
 			(hide yes)
 			(effects
@@ -16287,7 +16559,7 @@
 				)
 			)
 		)
-		(property "Manufacturer" "Same Sky"
+		(property "Manufacturer" "Neutrik"
 			(at 566.42 127 0)
 			(hide yes)
 			(effects
@@ -16598,128 +16870,6 @@
 			(project "ESP-DubSiren"
 				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
 					(reference "#PWR066")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "power:GND")
-		(at 544.83 124.46 0)
-		(unit 1)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "c37c41a0-b718-465a-8e5e-0f3f783313ad")
-		(property "Reference" "#PWR067"
-			(at 544.83 130.81 0)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "GND"
-			(at 544.83 128.27 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 544.83 124.46 0)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" ""
-			(at 544.83 124.46 0)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 544.83 124.46 0)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(instances
-			(project "ESP-DubSiren"
-				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
-					(reference "#PWR067")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "power:GND")
-		(at 544.83 137.16 0)
-		(unit 1)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "f518abe1-50a4-4e4f-ba46-bfda283f43d4")
-		(property "Reference" "#PWR068"
-			(at 544.83 143.51 0)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "GND"
-			(at 544.83 140.97 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 544.83 137.16 0)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" ""
-			(at 544.83 137.16 0)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 544.83 137.16 0)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(instances
-			(project "ESP-DubSiren"
-				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
-					(reference "#PWR068")
 					(unit 1)
 				)
 			)
@@ -18245,15 +18395,6 @@
 				)
 			)
 		)
-		(instances
-			(project "ESP-DubSiren"
-				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
-					(reference "SW4")
-					(unit 1)
-				)
-			)
-		)
-	
 		(property "MPN" "MX2A-11NW"
 			(at 515.62 259.08 0)
 			(hide yes)
@@ -18271,5 +18412,75 @@
 					(size 1.27 1.27)
 				)
 			)
-		))
+		)
+		(instances
+			(project "ESP-DubSiren"
+				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
+					(reference "SW4")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 561.34 132.08 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "6c47c80e-95d0-430e-abe9-7ffcc2ed275c")
+		(property "Reference" "#PWR067"
+			(at 561.34 138.43 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "GND"
+			(at 561.34 135.89 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 561.34 132.08 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 561.34 132.08 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 561.34 132.08 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "ESP-DubSiren"
+				(path "/2037f81d-e33e-4c09-903b-90b25af374ad"
+					(reference "#PWR067")
+					(unit 1)
+				)
+			)
+		)
+	)
 )
