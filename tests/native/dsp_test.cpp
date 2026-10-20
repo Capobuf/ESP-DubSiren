@@ -345,7 +345,7 @@ void testPanelDisplayState() {
     assert(parser.parse("ENCODER_SWITCH 0"));
     assert(strcmp(parser.displayModeName(), "MENU") == 0);
     assert(parser.menuIndex() == 0 && !parser.menuEditing());
-    assert(parser.menuItemCount() == 5);
+    assert(parser.menuItemCount() == 6);
     assert(strcmp(parser.menuTitle(), "PERFORMANCE") == 0);
     for (int i = 0; i < 3; ++i) assert(parser.parse("ENCODER_ROTATE NEXT"));
     assert(parser.parse("ENCODER_SWITCH 1")); assert(parser.parse("ENCODER_SWITCH 0"));
@@ -1905,7 +1905,199 @@ void testPanelValidationAndCancelledClicks() {
     assert(strcmp(parser.menuFooter(), "TURN SELECT / PUSH OPEN") == 0);
 }
 
+void testTapTempo() {
+    ControlStore store;
+    PerformanceController panel(store);
+    assert(panel.tapTempo(100000));
+    assert(!store.snapshot().tempo.known);
+    assert(!panel.tapTempo(150000));
+    assert(strstr(panel.overlayValue(), "IGNORED"));
+    assert(panel.tapTempo(600000));
+    assert(fabsf(store.snapshot().tempo.bpm - 120.0f) < .001f);
+    assert(panel.tapTempo(1110000));
+    assert(fabsf(store.snapshot().tempo.bpm - 60000000.0f / 505000) < .001f);
+    assert(panel.tapTempo(1600000));
+    assert(fabsf(store.snapshot().tempo.bpm - 120.0f) < .001f);
+    assert(panel.tapTempo(2100000));
+    assert(panel.tapTempo(2500000));
+    assert(fabsf(store.snapshot().tempo.bpm - 60000000.0f / 475000) < .001f);
+    assert(panel.tapTempo(5000001));  // Timeout starts a fresh sequence without changing tempo.
+    assert(strstr(panel.overlayValue(), "AGAIN"));
+    assert(panel.tapTempo(5400001));
+    assert(fabsf(store.snapshot().tempo.bpm - 150.0f) < .001f);
+    assert(panel.setTempoBpm(120));
+    assert(panel.tapTempo(UINT32_MAX - 249999u));
+    assert(panel.tapTempo(250000u));  // Unsigned timer rollover, exactly 500 ms.
+    assert(fabsf(store.snapshot().tempo.bpm - 120.0f) < .001f);
+    assert(!panel.setTempoBpm(NAN));
+    assert(!panel.setTempoBpm(29));
+    assert(!panel.setTempoBpm(301));
+    assert(store.snapshot().tempo.bpm == 120);
+    assert(panel.setTempoBpm(30));
+    assert(panel.tapTempo(0));
+    assert(panel.tapTempo(2000000));
+    assert(store.snapshot().tempo.bpm == 30);
+    assert(panel.setTempoBpm(300));
+    assert(panel.tapTempo(0));
+    assert(panel.tapTempo(200000));
+    assert(store.snapshot().tempo.bpm == 300);
+}
+
+void testTempoControls() {
+    ControlStore store;
+    CommandParser parser(store);
+    assert(parser.parse("TEMPO ECHO SYNC"));
+    assert(!tempoEchoAvailable(store.snapshot().tempo));
+    char value[64];
+    parser.formatCurrentValue(PotTarget::EchoTime, value, sizeof(value));
+    assert(strstr(value, "N/A HOLD"));
+    assert(parser.parse("TEMPO BPM 120"));
+    assert(parser.parse("TEMPO LFO SYNC"));
+    const char *divisions[] = {"1/4", "1/8", "1/8D", "1/8T"};
+    const float periods[] = {500, 250, 375, 500.0f / 3};
+    for (unsigned i = 0; i < 4; ++i) {
+        char command[48];
+        snprintf(command, sizeof(command), "TEMPO ECHO_DIV %s", divisions[i]);
+        assert(parser.parse(command));
+        snprintf(command, sizeof(command), "TEMPO LFO_DIV %s", divisions[i]);
+        assert(parser.parse(command));
+        const auto tempo = store.snapshot().tempo;
+        assert(fabsf(tempo.echoMs - periods[i]) < .001f);
+        assert(fabsf(tempo.lfoHz - 1000.0f / periods[i]) < .001f);
+    }
+    const auto before = store.snapshot();
+    for (const char *command : {"TEMPO BPM nan", "TEMPO BPM 120 extra", "TEMPO BPM 1e100",
+            "TEMPO BPM 0", "TEMPO BPM 301", "TEMPO ECHO ON", "TEMPO LFO_DIV 1/16",
+            "TEMPO ECHO_DIV 1/4 extra", "TEMPO UNKNOWN SYNC",
+            "SET DELAY_MS 100", "SET LFO_RATE_HZ 3", "SET CLASSIC_MOD MANUAL"}) {
+        assert(!parser.parse(command));
+        const auto after = store.snapshot();
+        assert(after.tempo.bpm == before.tempo.bpm);
+        assert(after.tempo.echoDivision == before.tempo.echoDivision);
+        assert(after.tempo.lfoDivision == before.tempo.lfoDivision);
+        assert(after.delayMs == before.delayMs && after.lfoRateHz == before.lfoRateHz);
+    }
+    assert(parser.parse("TEMPO BPM 30"));
+    const float previous = store.snapshot().tempo.echoMs;
+    assert(parser.parse("TEMPO ECHO_DIV 1/4"));
+    assert(!tempoEchoAvailable(store.snapshot().tempo));
+    assert(store.snapshot().tempo.echoMs == previous);
+    parser.formatCurrentValue(PotTarget::EchoTime, value, sizeof(value));
+    assert(strstr(value, "N/A HOLD"));
+    assert(parser.parse("TEMPO ECHO_DIV 1/8"));
+    assert(tempoEchoAvailable(store.snapshot().tempo));
+    assert(store.snapshot().tempo.echoMs == 1000);
+    assert(parser.parse("TEMPO BPM 120"));
+    assert(parser.parse("PANEL BEHAVIOR JUMP"));
+    assert(parser.parse("POT 4 0"));
+    assert(store.snapshot().tempo.echoDivision == TempoDivision::Quarter);
+    assert(parser.parse("POT 4 0.26"));
+    assert(store.snapshot().tempo.echoDivision == TempoDivision::Quarter);
+    assert(parser.parse("POT 4 0.30"));
+    assert(store.snapshot().tempo.echoDivision == TempoDivision::Eighth);
+    assert(parser.parse("POT 4 0.24"));
+    assert(store.snapshot().tempo.echoDivision == TempoDivision::Eighth);
+    assert(parser.parse("POT 2 1"));
+    assert(store.snapshot().tempo.lfoDivision == TempoDivision::TripletEighth);
+    assert(parser.parse("TEMPO ECHO FREE"));
+    assert(store.snapshot().tempo.lfoSync);
+    assert(store.snapshot().delayMs == 250);
+    assert(parser.parse("POT 4 0"));
+    assert(parser.pickupWaiting(4));
+    assert(store.snapshot().delayMs == 250);
+    assert(parser.parse("POT 4 1"));
+    assert(!parser.pickupWaiting(4));
+    assert(store.snapshot().delayMs == 1000);
+    assert(parser.parse("SET DELAY_MS 375"));
+
+    assert(parser.parse("PANEL BUTTON CLASSIC 4 ACTION TAP_TEMPO"));
+    const unsigned sequence = store.snapshot().activationSequence;
+    assert(parser.parse("PAD 4 1"));
+    const unsigned revision = parser.panelRevision();
+    assert(parser.parse("PAD 4 1"));
+    assert(parser.panelRevision() == revision);
+    assert(parser.parse("PAD 4 0"));
+    assert(strcmp(parser.overlayTitle(), "TAP TEMPO") == 0);
+    assert(strstr(parser.overlayValue(), "TAP AGAIN"));
+    assert(!store.snapshot().trigger && !store.snapshot().echoCut);
+    assert(store.snapshot().activationSequence == sequence);
+    ControlStore reboot;
+    CommandParser restored(reboot);
+    assert(restored.applyPanelSettings(parser.panelSettings()));
+    assert(restored.panelSettings().profiles[0].buttons[3].action == ButtonAction::TapTempo);
+    assert(!reboot.snapshot().tempo.known && !reboot.snapshot().tempo.lfoSync);
+
+    assert(parser.parse("SET PROFILE EXTENDED"));
+    assert(parser.parse("PANEL SAVE 1"));
+    assert(parser.parse("PANEL RECALL 1"));
+    assert(store.snapshot().tempo.lfoSync);
+    assert(parser.parse("TEMPO LFO FREE"));
+    const float freeRate = store.snapshot().lfoRateHz;
+    assert(parser.parse("POT 2 0"));
+    assert(parser.pickupWaiting(2));
+    assert(store.snapshot().lfoRateHz == freeRate);
+    assert(parser.parse("POT 2 1"));
+    assert(!parser.pickupWaiting(2));
+    assert(store.snapshot().lfoRateHz == 20);
+    assert(parser.parse("PANEL RESET_DEFAULTS"));
+    assert(!store.snapshot().tempo.echoSync && !store.snapshot().tempo.lfoSync);
+}
+
+void testTempoAudioContinuity() {
+    auto synced = std::make_unique<AudioEngine>();
+    auto reference = std::make_unique<AudioEngine>();
+    synced->begin(); reference->begin();
+    ControlState state;
+    state.hold = true;
+    state.tempo.known = state.tempo.echoSync = state.tempo.lfoSync = true;
+    state.classicRateUsesRate = true;
+    int16_t actual[480], expected[480];
+    bool tail = false;
+    for (unsigned block = 0; block < 260; ++block) {
+        if (block == 60) state.tempo.bpm = 180;
+        if (block == 100) {
+            state.tempo.echoDivision = TempoDivision::DottedEighth;
+            state.tempo.lfoDivision = TempoDivision::TripletEighth;
+        }
+        if (block == 160) state.hold = false;
+        updateTempoTiming(state.tempo);
+        auto free = state;
+        free.tempo.echoSync = free.tempo.lfoSync = false;
+        free.delayMs = state.tempo.echoMs;
+        free.lfoRateHz = state.tempo.lfoHz;
+        synced->render(state, actual, 480);
+        reference->render(free, expected, 480);
+        assert(memcmp(actual, expected, sizeof(actual)) == 0);
+        if (block > 165 && blockRms(actual, 480) > 10) tail = true;
+    }
+    assert(tail);
+
+    synced = std::make_unique<AudioEngine>();
+    reference = std::make_unique<AudioEngine>();
+    synced->begin(); reference->begin();
+    state = ControlState{};
+    state.profile = PerformanceProfile::Extended;
+    state.lfoShape = LfoShape::Triangle;
+    state.tempo.known = state.tempo.lfoSync = true;
+    state.retrigger = true;
+    state.echoLevel = 0;
+    for (unsigned block = 0; block < 120; ++block) {
+        state.trigger = block % 30 < 20;
+        updateTempoTiming(state.tempo);
+        auto free = state;
+        free.tempo.lfoSync = false;
+        free.lfoRateHz = state.tempo.lfoHz;
+        free.retrigger = false;
+        synced->render(state, actual, 480);
+        reference->render(free, expected, 480);
+        assert(memcmp(actual, expected, sizeof(actual)) == 0);
+    }
+}
+
 int main() {
+    testTapTempo();
+    testTempoControls();
+    testTempoAudioContinuity();
     testPanelValidationAndCancelledClicks();
     testPhysicalAndRemoteOwnership();
     testPadMemories();

@@ -17,6 +17,31 @@ T clampValue(T value, T minimum, T maximum) {
 bool CommandParser::parse(const String &rawCommand) {
     String command = rawCommand;
     command.trim();
+    if (command == "TAP_TEMPO") {
+        performance_.tapTempo();
+        return true;
+    }
+    if (command.startsWith("TEMPO ")) {
+        char target[12] = {}, value[16] = {}, extra;
+        if (sscanf(command.c_str(), "TEMPO %11s %15s %c", target, value, &extra) != 2) return false;
+        if (strcmp(target, "BPM") == 0) {
+            float bpm;
+            return parseFloat(String(value), bpm) && performance_.setTempoBpm(bpm);
+        }
+        const bool echo = strcmp(target, "ECHO") == 0 || strcmp(target, "ECHO_DIV") == 0;
+        if (strcmp(target, "ECHO") == 0 || strcmp(target, "LFO") == 0) {
+            if (strcmp(value, "FREE") == 0) return performance_.setTempoSync(echo, false);
+            if (strcmp(value, "SYNC") == 0) return performance_.setTempoSync(echo, true);
+        }
+        if (strcmp(target, "ECHO_DIV") == 0 || strcmp(target, "LFO_DIV") == 0) {
+            for (unsigned i = 0; i < 4; ++i) {
+                const auto division = static_cast<TempoDivision>(i);
+                if (strcmp(value, tempoDivisionName(division)) == 0)
+                    return performance_.setTempoDivision(echo, division);
+            }
+        }
+        return false;
+    }
     if (command.startsWith("POT ") || command.startsWith("PANEL ") ||
         command.startsWith("PAD ") || command.startsWith("PAD_SELECT ") ||
         command.startsWith("PAD_ASSIGN ") ||
@@ -39,6 +64,9 @@ bool CommandParser::parse(const String &rawCommand) {
         const String name = command.substring(4, separator);
         const String valueText = command.substring(separator + 1);
         float value = 0.0f;
+        if ((state.tempo.echoSync && name == "DELAY_MS") ||
+            (state.tempo.lfoSync && (name == "LFO_RATE_HZ" ||
+             name == "RATE_POSITION" || name == "CLASSIC_MOD"))) return false;
 
         if (name == "MODE") {
             if (!parseMode(valueText, state.mode)) return false;
@@ -523,6 +551,7 @@ bool CommandParser::parseButtonActionName(const char *text,
         {"MOD_UP", ButtonAction::ModUp}, {"MOD_DOWN", ButtonAction::ModDown},
         {"ECHO_CUT", ButtonAction::EchoCut}, {"ECHO_LOOP", ButtonAction::EchoLoop},
         {"ECHO_SPIN", ButtonAction::EchoSpin},
+        {"TAP_TEMPO", ButtonAction::TapTempo},
     };
     for (const Entry &entry : entries) {
         if (strcmp(text, entry.name) == 0) {

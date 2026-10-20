@@ -34,6 +34,7 @@ enum class ButtonAction : uint8_t {
     EchoCut,
     EchoLoop,
     EchoSpin,
+    TapTempo,
     Count,
 };
 enum class PanelSound : uint8_t { Classic, TwoTone, Lickshot, Ping, Gunshot, TestTone, Count };
@@ -153,7 +154,7 @@ inline const char *potBehaviorName(PotBehavior behavior) {
 
 inline const char *buttonActionName(ButtonAction action) {
     static const char *names[] = {"NONE", "TRIGGER", "PLAY SOUND", "HOLD",
-        "MOD UP", "MOD DOWN", "ECHO CUT", "ECHO LOOP", "ECHO SPIN"};
+        "MOD UP", "MOD DOWN", "ECHO CUT", "ECHO LOOP", "ECHO SPIN", "TAP TEMPO"};
     const unsigned index = static_cast<unsigned>(action);
     return index < static_cast<unsigned>(ButtonAction::Count) ? names[index]
                                                                : "UNKNOWN";

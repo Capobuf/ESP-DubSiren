@@ -109,6 +109,11 @@ void AudioEngine::renderSegment(const ControlState &liveControls, const Activati
                                 int16_t *output, size_t count) {
     ControlState controls = liveControls;
     if (event) static_cast<SoundState &>(controls) = *event;
+    if (controls.tempo.echoSync) controls.delayMs = controls.tempo.echoMs;
+    if (controls.tempo.lfoSync) {
+        controls.lfoRateHz = controls.tempo.lfoHz;
+        controls.classicRateUsesRate = true;
+    }
     delay_.setParameters(controls.delayMs, controls.highPassHz,
                          controls.lowPassHz, Config::kSampleRate, controls.echoFilterFlat);
     const bool classic = controls.profile == PerformanceProfile::Classic;
@@ -141,7 +146,7 @@ void AudioEngine::renderSegment(const ControlState &liveControls, const Activati
         ? (controls.mode < SirenMode::Lickshot ? controls.mode : SirenMode::Sine1)
         : (queuedActivation ? activation.mode : controls.mode);
     const LfoShape shape = classic
-        ? (controls.classicModulation == ClassicModulation::Manual
+        ? (controls.classicModulation == ClassicModulation::Manual && !controls.tempo.lfoSync
                ? LfoShape::Manual : LfoShape::Classic)
         : (queuedActivation ? activation.lfoShape : controls.lfoShape);
     const float decayMs = queuedActivation
@@ -185,7 +190,7 @@ void AudioEngine::renderSegment(const ControlState &liveControls, const Activati
     const bool sonarRestart = !classic && requestedMode == SirenMode::Sonar &&
         (activationEdge || !modeInitialized_ || requestedMode != currentMode_);
     if (sonarRestart) oscillator_.resetSonarPulse();
-    if (sonarRestart || (!classic && retrigger && activationEdge)) {
+    if (!controls.tempo.lfoSync && (sonarRestart || (!classic && retrigger && activationEdge))) {
         lfo_.reset(shape);
     }
     previousTrigger_ = controls.trigger;
@@ -241,9 +246,10 @@ void AudioEngine::renderSegment(const ControlState &liveControls, const Activati
         if (!classic && tonal && sweepAmount > 0.0f) {
             sweepPitch = -sweepLevel * sweepAmount *
                          PerformanceConfig::kSweepPitchOctaves;
-            effectiveRate = rate * exp2f(
-                -sweepLevel * sweepAmount *
-                PerformanceConfig::kSweepRateOctaves);
+            if (!controls.tempo.lfoSync)
+                effectiveRate = rate * exp2f(
+                    -sweepLevel * sweepAmount *
+                    PerformanceConfig::kSweepRateOctaves);
         }
         const float lfoValue = tonal
             ? lfo_.next(shape, effectiveRate, controls.modUp,

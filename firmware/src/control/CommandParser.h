@@ -117,6 +117,12 @@ public:
                             unsigned size) const {
         performance_.formatCurrentValue(target, buffer, size);
     }
+    void formatTempoStatus(char *buffer, unsigned size) const {
+        performance_.formatTempoStatus(buffer, size);
+    }
+    void formatTempoJson(char *buffer, unsigned size) const {
+        performance_.formatTempoJson(buffer, size);
+    }
 
 private:
     static bool parseFloat(const String &text, float &value);

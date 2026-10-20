@@ -1,4 +1,5 @@
 import ctypes
+import json
 import queue
 import subprocess
 import sys
@@ -170,7 +171,7 @@ class VirtualTransport:
         for name in (
             "menu_title", "menu_footer", "overlay_title", "overlay_value",
             "pot_behavior", "encoder_action",
-            "echo_filter_name",
+            "echo_filter_name", "tempo_json",
         ):
             function = getattr(library, "virtual_esp_" + name)
             function.argtypes = []
@@ -362,6 +363,7 @@ class VirtualTransport:
                     "echoSpin": bool(self._lib.virtual_esp_echo_spin()),
                     "tuneHz": self._lib.virtual_esp_tune(),
                     "rateHz": self._lib.virtual_esp_rate_hz(),
+                    "tempo": json.loads(self._lib.virtual_esp_tempo_json()),
                     "liveTranspose": self._lib.virtual_esp_live_transpose(),
                     "pitchPosition": self._lib.virtual_esp_pitch_position(),
                     "ratePosition": self._lib.virtual_esp_rate_position(),

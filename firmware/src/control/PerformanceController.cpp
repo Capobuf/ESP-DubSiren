@@ -48,6 +48,127 @@ PerformanceController::PerformanceController(ControlStore &controls)
 
 void PerformanceController::changed() { ++revision_; }
 
+bool PerformanceController::tapTempo(uint32_t nowUs) {
+    snprintf(overlayTitle_, sizeof(overlayTitle_), "TAP TEMPO");
+    const uint32_t interval = nowUs - lastTapUs_;
+    if (!tapStarted_ || interval > 2000000u) {
+        tapStarted_ = true;
+        lastTapUs_ = nowUs;
+        tapIntervalCount_ = tapIntervalIndex_ = 0;
+        snprintf(overlayValue_, sizeof(overlayValue_), "TAP AGAIN");
+        changed();
+        return true;
+    }
+    if (interval < 200000u) {
+        snprintf(overlayValue_, sizeof(overlayValue_), "TOO FAST - IGNORED");
+        changed();
+        return false;
+    }
+    lastTapUs_ = nowUs;
+    tapIntervals_[tapIntervalIndex_] = interval;
+    tapIntervalIndex_ = (tapIntervalIndex_ + 1) % 4;
+    if (tapIntervalCount_ < 4) ++tapIntervalCount_;
+    uint32_t total = 0;
+    for (unsigned i = 0; i < tapIntervalCount_; ++i) total += tapIntervals_[i];
+    ControlState state = controls_.snapshot();
+    state.tempo.bpm = 60000000.0f * tapIntervalCount_ / total;
+    state.tempo.known = true;
+    updateTempoTiming(state.tempo);
+    controls_.set(state);
+    snprintf(overlayValue_, sizeof(overlayValue_), "%.1f BPM", state.tempo.bpm);
+    changed();
+    return true;
+}
+
+bool PerformanceController::setTempoBpm(float bpm) {
+    if (!isfinite(bpm) || bpm < 30.0f || bpm > 300.0f) return false;
+    ControlState state = controls_.snapshot();
+    state.tempo.bpm = bpm;
+    state.tempo.known = true;
+    updateTempoTiming(state.tempo);
+    controls_.set(state);
+    tapStarted_ = false;
+    snprintf(overlayTitle_, sizeof(overlayTitle_), "TEMPO");
+    snprintf(overlayValue_, sizeof(overlayValue_), "%.1f BPM", bpm);
+    changed();
+    return true;
+}
+
+bool PerformanceController::setTempoSync(bool echo, bool sync) {
+    ControlState state = controls_.snapshot();
+    bool &enabled = echo ? state.tempo.echoSync : state.tempo.lfoSync;
+    if (enabled == sync) return true;
+    if (sync) {
+        if (echo) state.tempo.echoMs = state.delayMs;
+        else state.tempo.lfoHz = state.lfoRateHz;
+    } else {
+        if (echo) state.delayMs = state.tempo.echoMs;
+        else {
+            state.lfoRateHz = state.tempo.lfoHz;
+            state.classicRateUsesRate = true;
+        }
+    }
+    enabled = sync;
+    updateTempoTiming(state.tempo);
+    controls_.set(state);
+    const auto &pots = settings_.profiles[profileIndex(state.profile)].pots;
+    for (unsigned i = 0; i < 6; ++i) {
+        if (pots[i].target != (echo ? PotTarget::EchoTime : PotTarget::Rate)) continue;
+        pickup_[i] = PickupState{};
+        // Returning to an absolute free control must not jump, even in Jump mode.
+        pickup_[i].force = !sync;
+    }
+    overlayTitle_[0] = overlayValue_[0] = '\0';
+    changed();
+    return true;
+}
+
+bool PerformanceController::setTempoDivision(bool echo, TempoDivision division) {
+    if (division >= TempoDivision::Count) return false;
+    ControlState state = controls_.snapshot();
+    (echo ? state.tempo.echoDivision : state.tempo.lfoDivision) = division;
+    updateTempoTiming(state.tempo);
+    controls_.set(state);
+    notifyExternalChange(echo ? PotTarget::EchoTime : PotTarget::Rate);
+    return true;
+}
+
+void PerformanceController::formatTempoStatus(char *buffer, unsigned size) const {
+    const auto state = controls_.snapshot();
+    const auto tempo = state.tempo;
+    if (!tempo.echoSync && !tempo.lfoSync) { buffer[0] = '\0'; return; }
+    char bpm[16];
+    if (tempo.known) snprintf(bpm, sizeof(bpm), "%.1f BPM", tempo.bpm);
+    else snprintf(bpm, sizeof(bpm), "TAP AGAIN");
+    snprintf(buffer, size, "%s E:%s%s L:%s%s", bpm,
+        tempo.echoSync ? tempoDivisionName(tempo.echoDivision) : "FREE",
+        tempo.echoSync && !tempoEchoAvailable(tempo) ? " N/A" : "",
+        tempo.lfoSync ? tempoDivisionName(tempo.lfoDivision) : "FREE",
+        tempo.lfoSync && (!tempoLfoAvailable(tempo) || !tempoLfoActive(state)) ? " N/A" : "");
+}
+
+void PerformanceController::formatTempoJson(char *buffer, unsigned size) const {
+    const auto state = controls_.snapshot();
+    const auto &tempo = state.tempo;
+    char status[64], echo[40], lfo[40];
+    formatTempoStatus(status, sizeof(status));
+    formatTargetValue(PotTarget::EchoTime, state, echo, sizeof(echo));
+    formatTargetValue(PotTarget::Rate, state, lfo, sizeof(lfo));
+    snprintf(buffer, size,
+        "{\"bpm\":%.4f,\"known\":%s,\"echoSync\":%s,\"lfoSync\":%s,"
+        "\"echoDivision\":\"%s\",\"lfoDivision\":\"%s\","
+        "\"echoAvailable\":%s,\"lfoAvailable\":%s,\"lfoActive\":%s,"
+        "\"echoMs\":%.4f,\"lfoHz\":%.4f,\"status\":\"%s\","
+        "\"echoText\":\"%s\",\"lfoText\":\"%s\"}",
+        tempo.bpm, tempo.known ? "true" : "false",
+        tempo.echoSync ? "true" : "false", tempo.lfoSync ? "true" : "false",
+        tempoDivisionName(tempo.echoDivision), tempoDivisionName(tempo.lfoDivision),
+        tempoEchoAvailable(tempo) ? "true" : "false",
+        tempoLfoAvailable(tempo) ? "true" : "false", tempoLfoActive(state) ? "true" : "false",
+        tempo.echoSync ? tempo.echoMs : state.delayMs,
+        tempo.lfoSync ? tempo.lfoHz : state.lfoRateHz, status, echo, lfo);
+}
+
 void PerformanceController::setPersistenceStatus(const char *status) {
     snprintf(persistenceStatus_, sizeof(persistenceStatus_), "%s",
              status == nullptr ? "" : status);
@@ -310,11 +431,14 @@ bool PerformanceController::setPad(unsigned padNumber, bool pressed) {
     if (padNumber < 1 || padNumber > 4) return false;
     const unsigned index = padNumber - 1;
     if (padDown_[index] == pressed) return true;
-    overlayTitle_[0] = '\0';
-    overlayValue_[0] = '\0';
     padDown_[index] = pressed;
     ControlState state = controls_.snapshot();
     ButtonConfig &button = settings_.profiles[profileIndex(state.profile)].buttons[index];
+    // A quick tap can press and release between display refreshes.
+    if (pressed || button.action != ButtonAction::TapTempo) {
+        overlayTitle_[0] = '\0';
+        overlayValue_[0] = '\0';
+    }
 
     // Extended's established encoder+button shortcuts take precedence over the
     // configured button action and suppress the release-click menu gesture.
@@ -332,7 +456,10 @@ bool PerformanceController::setPad(unsigned padNumber, bool pressed) {
         if (button.action == ButtonAction::Hold) holdToggle_ = !holdToggle_;
         else if (button.action == ButtonAction::Trigger) captureActivation(state);
         else if (button.action == ButtonAction::EchoLoop) state.echoLoop = !state.echoLoop;
-        else if (button.action == ButtonAction::PlaySound) {
+        else if (button.action == ButtonAction::TapTempo) {
+            tapTempo();
+            state = controls_.snapshot();
+        } else if (button.action == ButtonAction::PlaySound) {
             selectedPad_ = index;
             activePad_ = static_cast<int>(index);
             applySound(state, index, true);
@@ -388,6 +515,15 @@ void PerformanceController::applyEchoFilter(ControlState &state, float value) {
 void PerformanceController::applyPotValue(ControlState &state,
                                           const PotConfig &config,
                                           float position) {
+    if ((config.target == PotTarget::EchoTime && state.tempo.echoSync) ||
+        (config.target == PotTarget::Rate && state.tempo.lfoSync)) {
+        auto &division = config.target == PotTarget::EchoTime
+            ? state.tempo.echoDivision : state.tempo.lfoDivision;
+        division = static_cast<TempoDivision>(PerformanceConfig::selectorZone(
+            position, static_cast<int>(division), 4));
+        updateTempoTiming(state.tempo);
+        return;
+    }
     if (config.target == PotTarget::Pitch) state.pitchPosition = position;
     if (config.target == PotTarget::Rate) state.ratePosition = position;
     if (config.target == PotTarget::Pitch)
@@ -429,6 +565,12 @@ void PerformanceController::applyPotValue(ControlState &state,
 
 float PerformanceController::currentTargetNormalized(
         const PotConfig &config, const ControlState &state) const {
+    if ((config.target == PotTarget::EchoTime && state.tempo.echoSync) ||
+        (config.target == PotTarget::Rate && state.tempo.lfoSync)) {
+        const auto division = config.target == PotTarget::EchoTime
+            ? state.tempo.echoDivision : state.tempo.lfoDivision;
+        return (static_cast<unsigned>(division) + 0.5f) / 4;
+    }
     if (config.mode == PotMode::Zones) {
         const unsigned zone = config.target == PotTarget::Pitch
             ? static_cast<unsigned>(state.classicPitch)
@@ -469,7 +611,7 @@ bool PerformanceController::setPot(unsigned potNumber, float position) {
     ControlState state = controls_.snapshot();
     const PotConfig &config = settings_.profiles[profileIndex(state.profile)].pots[index];
     PickupState &pickup = pickup_[index];
-    bool apply = settings_.potBehavior == PotBehavior::Jump || pickup.latched ||
+    bool apply = (settings_.potBehavior == PotBehavior::Jump && !pickup.force) || pickup.latched ||
                  config.target == PotTarget::None;
     if (!apply) {
         const float target = currentTargetNormalized(config, state);
@@ -492,7 +634,7 @@ bool PerformanceController::setPot(unsigned potNumber, float position) {
         formatTargetValue(config.target, state, overlayValue_, sizeof(overlayValue_));
         if (config.mode == PotMode::Continuous && config.target == PotTarget::Pitch)
             snprintf(overlayValue_, sizeof(overlayValue_), "%.0f Hz", state.tuneHz);
-        if (config.mode == PotMode::Continuous && config.target == PotTarget::Rate)
+        if (config.mode == PotMode::Continuous && config.target == PotTarget::Rate && !state.tempo.lfoSync)
             snprintf(overlayValue_, sizeof(overlayValue_), "%.2f Hz", state.lfoRateHz);
         const bool transient = state.mode == SirenMode::Syndrum ||
                                state.mode == SirenMode::Gunshot;
@@ -848,6 +990,8 @@ void PerformanceController::resetDefaults() {
     settings_ = factoryPanelSettings();
     resetPickup();
     ControlState state = controls_.snapshot();
+    state.tempo = TempoState{};
+    tapStarted_ = false;
     if (state.profile == PerformanceProfile::Classic) {
         state.tuneHz = classicPitchHz(static_cast<unsigned>(state.classicPitch));
         const unsigned rate = static_cast<unsigned>(state.classicModulation);
@@ -967,7 +1111,7 @@ float PerformanceController::classicRateHz(unsigned index) const {
 bool PerformanceController::pickupWaiting(unsigned potNumber) const {
     return potNumber >= 1 && potNumber <= 6 && pickup_[potNumber - 1].seen &&
            !pickup_[potNumber - 1].latched &&
-           settings_.potBehavior == PotBehavior::Pickup;
+           (settings_.potBehavior == PotBehavior::Pickup || pickup_[potNumber - 1].force);
 }
 
 int PerformanceController::pickupDirection(unsigned potNumber) const {
@@ -1024,6 +1168,7 @@ void PerformanceController::rebuildMenuView() const {
             addMenuRow(Row::ModPage, "MOD", "MOD");
             addMenuRow(Row::EchoPage, "ECHO", "ECHO");
             addMenuRow(Row::SetupPage, "SETUP", "SETUP");
+            addMenuRow(Row::TapTempo, "TAP_TEMPO", "TAP TEMPO");
             addMenuRow(Row::Back, "BACK", "BACK");
             break;
         case MenuPage::Setup:
@@ -1073,23 +1218,38 @@ void PerformanceController::rebuildMenuView() const {
         }
         case MenuPage::Mod:
             snprintf(menuTitleBuffer_, sizeof(menuTitleBuffer_), "MODULATION");
-            if (state.profile == PerformanceProfile::Classic) {
+            addMenuRow(Row::LfoSync, "LFO_SYNC", "CLOCK", state.tempo.lfoSync ? "SYNC" : "FREE");
+            snprintf(value, sizeof(value), state.tempo.known ? "%.1f" : "%.1f (SET)", state.tempo.bpm);
+            addMenuRow(Row::Bpm, "BPM", "BPM", value);
+            addMenuRow(Row::TapTempo, "TAP_TEMPO", "TAP TEMPO");
+            if (state.tempo.lfoSync) {
+                formatTargetValue(PotTarget::Rate, state, value, sizeof(value));
+                addMenuRow(Row::LfoDivision, "LFO_DIV", "DIVISION", value);
+            }
+            if (state.profile == PerformanceProfile::Classic && !state.tempo.lfoSync) {
                 addMenuRow(Row::ClassicRate, "CLASSIC_RATE", "RATE", rateName(state.classicModulation));
-            } else if (state.mode != SirenMode::Syndrum && state.mode != SirenMode::Gunshot &&
+            } else if (state.profile == PerformanceProfile::Extended && state.mode != SirenMode::Syndrum && state.mode != SirenMode::Gunshot &&
                        !(state.mode == SirenMode::Lickshot && state.lickshotArticulation != LickshotArticulation::Legacy)) {
                 static const char *shapes[] = {"RC", "TRIANGLE", "SQUARE", "SAW UP", "SAW DOWN", "ASYM UP", "ASYM DOWN", "PULSE 25", "PULSE 75", "MANUAL"};
                 addMenuRow(Row::Shape, "SHAPE", "SHAPE", shapes[static_cast<unsigned>(state.lfoShape)]);
                 addMenuRow(Row::Modulation, "MODULATION", "MODULATION", state.modulationEnabled ? "ON" : "OFF");
-                addSoundValue(state, Row::Rate, "RATE", "RATE", "Hz");
+                if (!state.tempo.lfoSync) addSoundValue(state, Row::Rate, "RATE", "RATE", "Hz");
                 if (state.mode != SirenMode::TestTone) addSoundValue(state, Row::Depth, "DEPTH", "DEPTH", "oct");
-                addMenuRow(Row::Retrigger, "RETRIGGER", "RETRIGGER", state.retrigger ? "ON" : "OFF");
+                if (!state.tempo.lfoSync) addMenuRow(Row::Retrigger, "RETRIGGER", "RETRIGGER", state.retrigger ? "ON" : "OFF");
             }
             addMenuRow(Row::Back, "BACK", "BACK");
             break;
         case MenuPage::Echo:
             snprintf(menuTitleBuffer_, sizeof(menuTitleBuffer_), "ECHO");
             addSoundValue(state, Row::EchoLevel, "LEVEL", "LEVEL", "");
-            addSoundValue(state, Row::EchoTime, "TIME", "TIME", "ms");
+            addMenuRow(Row::EchoSync, "ECHO_SYNC", "CLOCK", state.tempo.echoSync ? "SYNC" : "FREE");
+            snprintf(value, sizeof(value), state.tempo.known ? "%.1f" : "%.1f (SET)", state.tempo.bpm);
+            addMenuRow(Row::Bpm, "BPM", "BPM", value);
+            addMenuRow(Row::TapTempo, "TAP_TEMPO", "TAP TEMPO");
+            if (state.tempo.echoSync) {
+                formatTargetValue(PotTarget::EchoTime, state, value, sizeof(value));
+                addMenuRow(Row::EchoDivision, "ECHO_DIV", "DIVISION", value);
+            } else addSoundValue(state, Row::EchoTime, "TIME", "TIME", "ms");
             addSoundValue(state, Row::Feedback, "FEEDBACK", "FEEDBACK", "");
             addSoundValue(state, Row::Filter, "FILTER", "FILTER LP / HP", "");
             if (state.profile == PerformanceProfile::Extended) {
@@ -1218,6 +1378,8 @@ void PerformanceController::pressMenuItem() {
     const Row row = menuRows_[menuIndex_].row;
     if (menuEditing_) {
         menuEditing_ = false;
+        if (row == Row::Bpm && !controls_.snapshot().tempo.known)
+            setTempoBpm(controls_.snapshot().tempo.bpm);
         if (row == Row::Confirm && resetConfirmed_) {
             resetDefaults();
             resetConfirmed_ = false;
@@ -1229,6 +1391,7 @@ void PerformanceController::pressMenuItem() {
         return;
     }
     if (row == Row::SavePatch) { savePad(selectedPad_ + 1); return; }
+    if (row == Row::TapTempo) { tapTempo(); return; }
     if (row == Row::RecallPatch) { recallPad(selectedPad_ + 1); return; }
     if (row == Row::SoundPage) { selectedButton_ = selectedPad_; setMenuPage(MenuPage::Sound); }
     else if (row == Row::ModPage) setMenuPage(MenuPage::Mod);
@@ -1263,6 +1426,20 @@ void PerformanceController::pressMenuItem() {
 
 void PerformanceController::editMenuItem(Row row, int direction) {
     ControlState state = controls_.snapshot();
+    if (row == Row::Bpm) {
+        setTempoBpm(clampFloat(state.tempo.bpm + direction, 30.0f, 300.0f)); return;
+    }
+    if (row == Row::EchoSync || row == Row::LfoSync) {
+        const bool echo = row == Row::EchoSync;
+        setTempoSync(echo, !(echo ? state.tempo.echoSync : state.tempo.lfoSync)); return;
+    }
+    if (row == Row::EchoDivision || row == Row::LfoDivision ||
+        (row == Row::Rate && state.tempo.lfoSync)) {
+        const bool echo = row == Row::EchoDivision;
+        const auto division = echo ? state.tempo.echoDivision : state.tempo.lfoDivision;
+        setTempoDivision(echo, static_cast<TempoDivision>(wrappedStep(
+            static_cast<int>(division), direction, 4))); return;
+    }
     const unsigned profile = profileIndex(state.profile);
     PotConfig &pot = settings_.profiles[profile].pots[selectedPot_];
     ButtonConfig &button = settings_.profiles[profile].buttons[menuPage_ == MenuPage::Sound ? selectedPad_ : selectedButton_];
@@ -1413,6 +1590,12 @@ float *PerformanceController::soundValue(ControlState &state, Row row, float &mi
 }
 
 void PerformanceController::addSoundValue(const ControlState &state, Row row, const char *key, const char *label, const char *unit) const {
+    if (row == Row::Rate && state.tempo.lfoSync) {
+        char value[32];
+        formatTargetValue(PotTarget::Rate, state, value, sizeof(value));
+        addMenuRow(row, key, label, value);
+        return;
+    }
     ControlState copy = state;
     float minimum, maximum, step;
     const float *number = soundValue(copy, row, minimum, maximum, step);
@@ -1429,6 +1612,20 @@ void PerformanceController::normalizeMenuIndex() {
 
 void PerformanceController::formatTargetValue(PotTarget target,
         const ControlState &state, char *buffer, unsigned size) const {
+    if ((target == PotTarget::EchoTime && state.tempo.echoSync) ||
+        (target == PotTarget::Rate && state.tempo.lfoSync)) {
+        const bool echo = target == PotTarget::EchoTime;
+        if (!echo && !tempoLfoActive(state)) {
+            snprintf(buffer, size, "%s N/A VOICE", tempoDivisionName(state.tempo.lfoDivision));
+            return;
+        }
+        const bool available = echo ? tempoEchoAvailable(state.tempo) : tempoLfoAvailable(state.tempo);
+        snprintf(buffer, size, echo ? "%s %s%.1f ms" : "%s %s%.2f Hz",
+            tempoDivisionName(echo ? state.tempo.echoDivision : state.tempo.lfoDivision),
+            available ? "" : "N/A HOLD ",
+            echo ? state.tempo.echoMs : state.tempo.lfoHz);
+        return;
+    }
     switch (target) {
         case PotTarget::Pitch:
             if (state.pitchZonesActive)

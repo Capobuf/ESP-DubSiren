@@ -226,3 +226,8 @@ l'abilitazione locale (default ON); la destinazione OUTPUT resta applicabile.
 Stop Audio/Disconnect del client interrompono il flusso USB, non sono un mute
 generale della macchina. Per silenziare I2S usare LOCAL_AUDIO 0 oppure OUTPUT PC.
 Le nuove metriche e la configurazione del pannello sono in [standalone](standalone.md).
+
+## Tap tempo
+
+I comandi `TAP_TEMPO` e `TEMPO` e il campo `panel.display.tempo` sono descritti
+in [Tap tempo e sincronizzazione](tempo.md). Framing invariato, versione 1.
