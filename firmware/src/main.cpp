@@ -175,6 +175,8 @@ void sendStatus() {
     const bool pitchZones = displayState.pitchZonesActive;
     const bool rateZones = displayState.rateZonesActive;
     char filterValue[24];
+    char tempoJson[640];
+    commandParser.formatTempoJson(tempoJson, sizeof(tempoJson));
     commandParser.formatCurrentValue(PotTarget::EchoFilter,
                                      filterValue, sizeof(filterValue));
     String pads = "[";
@@ -260,12 +262,13 @@ void sendStatus() {
         ",\"hold\":" + (displayState.hold ? "true" : "false") +
         ",\"echoCut\":" + (displayState.echoCut ? "true" : "false") +
         ",\"tuneHz\":" + String(displayState.tuneHz, 4) +
-        ",\"rateHz\":" + String(displayState.lfoRateHz, 4) +
+        ",\"rateHz\":" + String(displayState.tempo.lfoSync ? displayState.tempo.lfoHz : displayState.lfoRateHz, 4) +
+        ",\"tempo\":" + tempoJson +
         ",\"liveTranspose\":" + static_cast<int>(displayState.liveTransposeSemitones) +
         ",\"pitchPosition\":" + String(displayState.pitchPosition, 4) +
         ",\"ratePosition\":" + String(displayState.ratePosition, 4) +
         ",\"echoLevel\":" + String(displayState.echoLevel, 4) +
-        ",\"delayMs\":" + String(displayState.delayMs, 4) +
+        ",\"delayMs\":" + String(displayState.tempo.echoSync ? displayState.tempo.echoMs : displayState.delayMs, 4) +
         ",\"feedback\":" + String(displayState.feedback, 4) +
         ",\"echoFilter\":" + String(displayState.echoFilterPosition, 4) +
         ",\"filter\":\"" + filterValue + "\"" +

@@ -219,11 +219,22 @@ VIRTUAL_ESP_API int virtual_esp_hold() { return controls->snapshot().hold; }
 VIRTUAL_ESP_API int virtual_esp_echo_cut() { return controls->snapshot().echoCut; }
 
 VIRTUAL_ESP_API float virtual_esp_tune() { return controls->snapshot().tuneHz; }
-VIRTUAL_ESP_API float virtual_esp_rate_hz() { return controls->snapshot().lfoRateHz; }
+VIRTUAL_ESP_API float virtual_esp_rate_hz() {
+    const auto state = controls->snapshot();
+    return state.tempo.lfoSync ? state.tempo.lfoHz : state.lfoRateHz;
+}
 VIRTUAL_ESP_API float virtual_esp_pitch_position() { return controls->snapshot().pitchPosition; }
 VIRTUAL_ESP_API float virtual_esp_rate_position() { return controls->snapshot().ratePosition; }
 VIRTUAL_ESP_API float virtual_esp_echo_level() { return controls->snapshot().echoLevel; }
-VIRTUAL_ESP_API float virtual_esp_delay_ms() { return controls->snapshot().delayMs; }
+VIRTUAL_ESP_API float virtual_esp_delay_ms() {
+    const auto state = controls->snapshot();
+    return state.tempo.echoSync ? state.tempo.echoMs : state.delayMs;
+}
+VIRTUAL_ESP_API const char *virtual_esp_tempo_json() {
+    static char json[640];
+    parser->formatTempoJson(json, sizeof(json));
+    return json;
+}
 VIRTUAL_ESP_API float virtual_esp_feedback() { return controls->snapshot().feedback; }
 VIRTUAL_ESP_API float virtual_esp_echo_filter() { return controls->snapshot().echoFilterPosition; }
 VIRTUAL_ESP_API float virtual_esp_master() { return controls->snapshot().masterVolume; }

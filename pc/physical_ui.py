@@ -105,7 +105,7 @@ def _validated_panel_config(data: object) -> dict:
                      "SWEEP AMOUNT", "SWEEP TIME"},
     }
     allowed_actions = {"NONE", "TRIGGER", "PLAY SOUND", "HOLD", "MOD UP",
-                       "MOD DOWN", "ECHO CUT", "ECHO LOOP", "ECHO SPIN"}
+                       "MOD DOWN", "ECHO CUT", "ECHO LOOP", "ECHO SPIN", "TAP TEMPO"}
     allowed_sounds = {"CLASSIC", "TWO TONE", "LICKSHOT", "PING", "GUNSHOT", "TEST TONE"}
     for profile_name in ("CLASSIC", "EXTENDED"):
         profile = profiles.get(profile_name)
@@ -962,7 +962,8 @@ class PhysicalDubSirenApp(DubSirenApp):
                                  if display.get("pitchMode", "ZONES") == "ZONES" else ""),
                           RATE=(display.get("rate", "MID")
                                 if display.get("rateMode", "ZONES") == "ZONES" else ""),
-                          ECHO_CUT=display.get("echoCut", False))
+                          ECHO_CUT=display.get("echoCut", False),
+                          TEMPO=display.get("tempo", {}))
             self.display.render_home(1, 1, display.get("voice", "SINE 1"), "DS01E / CLASSIC", "",
                                      bool(display.get("hold")), bool(display.get("echoLoop")),
                                      self.transport.connected, params,
@@ -987,7 +988,8 @@ class PhysicalDubSirenApp(DubSirenApp):
                 bool(display.get("echoLoop")),
                 self.transport.connected,
                 dict(self.parameter_values, ECHO_CUT=display.get("echoCut", False),
-                     ECHO_SPIN=display.get("echoSpin", False)),
+                     ECHO_SPIN=display.get("echoSpin", False),
+                     TEMPO=display.get("tempo", {})),
                 str(display.get("filter", "CUSTOM")),
             )
         else:

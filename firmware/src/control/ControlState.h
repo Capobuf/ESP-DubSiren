@@ -2,6 +2,7 @@
 
 #include <Arduino.h>
 #include "audio/PerformanceConfig.h"
+#include "Tempo.h"
 
 enum class SirenMode {
     Sine1,
@@ -72,6 +73,7 @@ struct ActivationEvent : SoundState {
 constexpr unsigned kActivationEventCapacity = 8;
 
 struct ControlState : SoundState {
+    TempoState tempo;
     PerformanceProfile profile = PerformanceProfile::Classic;
     ClassicPitch classicPitch = ClassicPitch::Mid;
     ClassicModulation classicModulation = ClassicModulation::Medium;
@@ -101,6 +103,14 @@ struct ControlState : SoundState {
     bool echoLoop = false;
     float masterVolume = 0.50f;
 };
+
+inline bool tempoLfoActive(const ControlState &state) {
+    if (state.profile == PerformanceProfile::Classic) return true;
+    if (state.mode == SirenMode::Gunshot || state.mode == SirenMode::Syndrum) return false;
+    if (state.mode == SirenMode::Lickshot && state.lickshotArticulation != LickshotArticulation::Legacy)
+        return state.lickshotArticulation == LickshotArticulation::Roll;
+    return state.modulationEnabled && state.lfoShape != LfoShape::Manual;
+}
 
 inline const char *pitchName(ClassicPitch pitch) {
     static const char *names[] = {"LOW", "MID", "HIGH"};

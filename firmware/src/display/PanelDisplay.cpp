@@ -91,6 +91,10 @@ void PanelDisplay::update(bool linked) {
 }
 
 void PanelDisplay::renderHome(const ControlState &state, bool linked) {
+    char tempoStatus[64], rateText[40], echoText[40];
+    controller_.formatTempoStatus(tempoStatus, sizeof(tempoStatus));
+    controller_.formatCurrentValue(PotTarget::Rate, rateText, sizeof(rateText));
+    controller_.formatCurrentValue(PotTarget::EchoTime, echoText, sizeof(echoText));
     if (state.profile == PerformanceProfile::Classic) {
         const bool pitchZones = state.pitchZonesActive;
         const bool rateZones = state.rateZonesActive;
@@ -99,12 +103,14 @@ void PanelDisplay::renderHome(const ControlState &state, bool linked) {
         drawText(16, 73, String("PITCH  ") +
                  (pitchZones ? String(pitchName(state.classicPitch)) + " - " : "") +
                  decimal(state.tuneHz, 0) + " Hz", 2, kOffWhite);
-        drawText(16, 99, String("RATE   ") +
+        drawText(16, 99, state.tempo.lfoSync ? String("RATE   ") + rateText : String("RATE   ") +
                  (rateZones ? String(rateName(state.classicModulation)) : "") +
                  (rateZones && state.classicModulation == ClassicModulation::Manual
                     ? "" : String(rateZones ? " - " : "") + decimal(state.lfoRateHz, 2) + " Hz"),
                  2, kOffWhite);
+        if (state.tempo.echoSync) drawText(16, 122, String("ECHO ") + echoText, 1, kOffWhite);
         String status = controller_.persistenceStatus();
+        if (!status.length() && tempoStatus[0]) status = tempoStatus;
         if (!status.length()) {
             status = state.hold ? "HOLD  " : "";
             status += state.echoCut ? "ECHO CUT" : state.echoLevel > 0.0f ? "ECHO" : "DRY";
@@ -126,10 +132,10 @@ void PanelDisplay::renderHome(const ControlState &state, bool linked) {
              controller_.padSoundName(controller_.selectedPad()), 2, kChartreuse);
     drawText(16, 32, controller_.padVariantName(controller_.selectedPad()), 1, kOffWhite);
     drawText(16, 51, "TUNE " + decimal(state.tuneHz, 0) + " Hz  RATE " +
-             decimal(state.lfoRateHz, 1) + " Hz", 1, kOffWhite);
+             (state.tempo.lfoSync ? String(rateText) : decimal(state.lfoRateHz, 1) + " Hz"), 1, kOffWhite);
     drawText(16, 69, "DEPTH " + decimal(state.lfoDepthOctaves, 2) +
              " oct  MASTER " + decimal(state.masterVolume * 100, 0) + "%", 1, kOffWhite);
-    drawText(16, 87, "ECHO " + decimal(state.delayMs, 0) + "ms  FB " +
+    drawText(16, 87, String("ECHO ") + (state.tempo.echoSync ? String(echoText) : decimal(state.delayMs, 0) + "ms") + "  FB " +
              decimal(state.feedback * 100, 0) + "%  LV " +
              decimal(state.echoLevel * 100, 0) + "%", 1, kOffWhite);
     if (focus_ != Focus::None) {
@@ -142,6 +148,7 @@ void PanelDisplay::renderHome(const ControlState &state, bool linked) {
         drawText(22, 92, overlayValue_, 3, kOffWhite);
     }
     String status = controller_.persistenceStatus();
+    if (!status.length() && tempoStatus[0]) status = tempoStatus;
     if (!status.length()) {
         if (state.hold) status += "HOLD ";
         if (state.echoCut) status += "CUT ";

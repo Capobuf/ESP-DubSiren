@@ -158,3 +158,9 @@ STATUS include `settings.patches`, quattro vettori numerici versionati di 23
 campi, definiti da `soundPatchValue` in PanelSettings.h. Il ripristino VirtualESP
 usa `PANEL PATCH n <23 valori>` dentro PANEL BEGIN/COMMIT, validando il candidato
 prima di applicarlo. La persistenza NVS fisica resta da verificare al riavvio.
+
+## Tap tempo
+
+PERFORMANCE include TAP TEMPO; MOD ed ECHO includono CLOCK, BPM e divisione.
+L'azione pulsante TAP TEMPO è assegnabile in SETUP.
+Semantica, limiti e persistenza: [Tap tempo e sincronizzazione](tempo.md).

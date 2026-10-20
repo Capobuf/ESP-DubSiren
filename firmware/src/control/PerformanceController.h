@@ -20,6 +20,12 @@ public:
     void notifyExternalChange(PotTarget target);
     bool setPad(unsigned padNumber, bool pressed);
     bool setPot(unsigned potNumber, float position);
+    bool tapTempo(uint32_t nowUs = micros());
+    bool setTempoBpm(float bpm);
+    bool setTempoSync(bool echo, bool sync);
+    bool setTempoDivision(bool echo, TempoDivision division);
+    void formatTempoStatus(char *buffer, unsigned size) const;
+    void formatTempoJson(char *buffer, unsigned size) const;
     void setEncoderPressed(bool pressed, bool cancelClick = false);
     void rotateEncoder(int direction);
     void resetMomentaries();
@@ -105,6 +111,7 @@ private:
         Length, Punch, PitchTime, Tone, Contour, ContourTime,
         Shape, Modulation, Retrigger, ClassicRate,
         EchoLevel, EchoTime, Feedback, Filter, Color, Loop, Spin, Cut, SavePatch, RecallPatch,
+        TapTempo, Bpm, EchoSync, LfoSync, EchoDivision, LfoDivision,
 
     };
     struct MenuRowView {
@@ -116,6 +123,7 @@ private:
     struct PickupState {
         bool seen = false;
         bool latched = false;
+        bool force = false;
         float previous = 0.0f;
         int direction = 0;
     };
@@ -174,6 +182,11 @@ private:
     bool holdToggle_ = false;
     bool soundLatchArmed_ = false;
     PickupState pickup_[6];
+    bool tapStarted_ = false;
+    uint32_t lastTapUs_ = 0;
+    uint32_t tapIntervals_[4] = {};
+    unsigned tapIntervalCount_ = 0;
+    unsigned tapIntervalIndex_ = 0;
     DisplayMode displayMode_ = DisplayMode::Home;
     MenuPage menuPage_ = MenuPage::Root;
     uint8_t menuIndex_ = 0;

@@ -73,6 +73,69 @@ class VirtualTransportTests(unittest.TestCase):
             self.transport.send(f"PANEL RECALL {pad}")
             self.assertAlmostEqual(self.statuses[-1]["panel"]["display"]["tuneHz"], 220 * pad)
 
+    def test_tempo_status_menu_and_button_persistence(self):
+        import json
+        import tempfile
+        from pathlib import Path
+        from physical_ui import save_panel_config, load_panel_config, panel_settings_commands
+
+        def display():
+            return self.statuses[-1]["panel"]["display"]
+
+        def click():
+            self.transport.send("ENCODER_SWITCH 1")
+            self.transport.send("ENCODER_SWITCH 0")
+
+        def select(key):
+            rows = display()["rows"]
+            target = next(i for i, row in enumerate(rows) if row["key"] == key)
+            for _ in range((target - display()["menuIndex"]) % len(rows)):
+                self.transport.send("ENCODER_ROTATE NEXT")
+            click()
+
+        for command in ("TEMPO BPM 120", "TEMPO ECHO SYNC", "TEMPO LFO SYNC",
+                        "TEMPO ECHO_DIV 1/8D", "TEMPO LFO_DIV 1/8T",
+                        "PANEL BUTTON CLASSIC 4 ACTION TAP_TEMPO"):
+            self.transport.send(command)
+        tempo = display()["tempo"]
+        self.assertEqual(tempo["echoMs"], 375)
+        self.assertEqual(tempo["lfoHz"], 6)
+        self.assertEqual(display()["delayMs"], 375)
+        self.assertEqual(display()["rateHz"], 6)
+        self.assertIn("120.0 BPM", tempo["status"])
+        self.assertIn("1/8D", tempo["echoText"])
+        click()
+        select("ECHO")
+        self.assertIn("375.0 ms", next(r["value"] for r in display()["rows"] if r["key"] == "ECHO_DIV"))
+        select("ECHO_DIV")
+        self.transport.send("ENCODER_ROTATE NEXT")
+        click()
+        self.assertAlmostEqual(display()["tempo"]["echoMs"], 500 / 3, places=3)
+        select("TAP_TEMPO")
+        self.assertFalse(display()["editing"])
+        self.assertIn("TAP AGAIN", display()["footer"])
+        self.transport.send("TEMPO BPM 30")
+        self.transport.send("TEMPO ECHO_DIV 1/4")
+        self.assertFalse(display()["tempo"]["echoAvailable"])
+        self.assertIn("N/A HOLD", display()["tempo"]["echoText"])
+        self.assertLess(len(json.dumps(self.statuses[-1]).encode()), 8192)
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "panel.json"
+            save_panel_config(path, self.statuses[-1]["panel"]["settings"])
+            commands = panel_settings_commands(load_panel_config(path))
+        self.transport.disconnect()
+        self.transport.connect(VIRTUAL_DEVICE)
+        for command in commands:
+            self.transport.send(command)
+        self.assertEqual(display()["buttons"][3], "TAP TEMPO")
+        self.assertFalse(display()["tempo"]["known"])
+        self.assertFalse(display()["tempo"]["echoSync"])
+        self.assertFalse(display()["tempo"]["lfoSync"])
+        self.transport.send("TAP_TEMPO")
+        self.assertEqual(display()["overlay"]["value"], "TAP AGAIN")
+        self.transport.send("TAP_TEMPO")
+        self.assertEqual(display()["overlay"]["value"], "TOO FAST - IGNORED")
+
     def test_all_panel_menu_pages_fit_real_tk_canvas(self):
         import tkinter as tk
         from panel_display import PanelDisplay
@@ -113,6 +176,8 @@ class VirtualTransportTests(unittest.TestCase):
         paths += [["SETUP", "BUTTONS", f"BTN_{i}"] for i in range(1, 5)]
         for profile in ("CLASSIC", "EXTENDED"):
             self.transport.send(f"SET PROFILE {profile}")
+            for command in ("TEMPO BPM 30", "TEMPO ECHO SYNC", "TEMPO LFO SYNC"):
+                self.transport.send(command)
             for path in paths:
                 with self.subTest(profile=profile, path=path):
                     while display()["mode"] == "MENU":
@@ -128,6 +193,12 @@ class VirtualTransportTests(unittest.TestCase):
         renderer.canvas.delete("all")
         renderer.render_overlay("PITCH", "DOWN PICKUP - HIGH - 9000 Hz")
         assert_bounds()
+        for profile in ("CLASSIC", "EXTENDED"):
+            self.transport.send(f"SET PROFILE {profile}")
+            tempo = display()["tempo"]
+            renderer.render_home(1, 1, "SINE 1", "SINE 1", "1 oct", False,
+                                 False, True, {"PROFILE": profile, "TEMPO": tempo})
+            assert_bounds()
 
     def test_shared_dsp_controls_audio_transients_and_reconnect(self):
         self.assertEqual(len(self.statuses), 1)

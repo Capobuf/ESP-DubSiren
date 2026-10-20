@@ -202,3 +202,6 @@ Vedi [controlli](docs/controls.md), [menu e memorie](docs/panel-ui.md) e
 [pinout, build autonoma e verifiche hardware pendenti](docs/standalone.md).
 `STREAM 0` interrompe soltanto USB; `LOCAL_AUDIO 0` silenzia l'uscita locale.
 Le nuove tarature sonore richiedono ascolto e misure sull'ESP.
+
+Il [tap tempo](docs/tempo.md) aggiunge BPM e divisioni ritmiche indipendenti
+per Echo e LFO, con azione pulsante assegnabile e accesso dal menu.

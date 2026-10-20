@@ -47,6 +47,7 @@ class PanelDisplay(ttk.Frame):
     ) -> None:
         self.canvas.delete("all")
         params = parameters or {}
+        tempo = params.get("TEMPO", {})
         if params.get("PROFILE") == "CLASSIC":
             self._text(16, 10, "DS01E / CLASSIC", 11, MUTED)
             self._text(16, 31, sound, 24, ACCENT)
@@ -61,18 +62,21 @@ class PanelDisplay(ttk.Frame):
                 rate += f" \u00b7 {params.get('LFO_RATE_HZ', .7):.2f} Hz"
             else:
                 rate = f"{params.get('LFO_RATE_HZ', .7):.2f} Hz"
-            self._text(16, 99, "RATE   " + rate, 17)
+            self._text(16, 99, "RATE   " + (tempo["lfoText"] if tempo.get("lfoSync") else rate), 17)
+            if tempo.get("echoSync"):
+                self._text(16, 122, "ECHO " + tempo["echoText"])
             status = ["HOLD"] if hold else []
             status.append("ECHO CUT" if params.get("ECHO_CUT") else
                           "ECHO" if float(params.get("ECHO_LEVEL", 0)) > 0 else "DRY")
         else:
             self._text(16, 10, f"P{selected_pad} {sound}", 18, ACCENT)
             self._text(16, 32, variant)
-            self._text(16, 51, f"TUNE {params.get('TUNE_HZ', 220):.0f} Hz  "
-                       f"RATE {params.get('LFO_RATE_HZ', 2):.1f} Hz")
+            rate_text = tempo["lfoText"] if tempo.get("lfoSync") else f"{params.get('LFO_RATE_HZ', 2):.1f} Hz"
+            self._text(16, 51, f"TUNE {params.get('TUNE_HZ', 220):.0f} Hz  RATE {rate_text}")
             self._text(16, 69, f"DEPTH {depth}  "
                        f"MASTER {params.get('MASTER', 0.5):.0%}")
-            self._text(16, 87, f"ECHO {params.get('DELAY_MS', 300):.0f}ms  "
+            echo_text = tempo["echoText"] if tempo.get("echoSync") else f"{params.get('DELAY_MS', 300):.0f}ms"
+            self._text(16, 87, f"ECHO {echo_text}  "
                        f"FB {params.get('FEEDBACK', 0):.0%}  "
                        f"LV {params.get('ECHO_LEVEL', 0):.0%}")
             self._text(16, 111, f"FILTER {echo_tone}")
@@ -87,7 +91,7 @@ class PanelDisplay(ttk.Frame):
                 status.append("LOOP")
             if connected:
                 status.append("LINK")
-        self._text(16, 149, " / ".join(status), 11, AMBER)
+        self._text(16, 149, tempo.get("status") or " / ".join(status), 11, AMBER)
 
     def render_overlay(self, title: str, value: str) -> None:
         self.canvas.create_rectangle(10, 60, 310, 133, fill=BLACK, outline=MUTED)
