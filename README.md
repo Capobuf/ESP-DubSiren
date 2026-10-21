@@ -169,9 +169,13 @@ ESP32-S3-WROOM-1U, DAC Adafruit 6250 e display Adafruit 5393.
 Il **KiCad è provvisorio, senza routing né bordo definitivo: nessun PCB
 fabbricabile**. La [issue #14](https://github.com/Capobuf/ESP-DubSiren/issues/14)
 è in fase B con [pannello provvisorio](hardware/cad/gate-a-panel.pdf):
-la [verifica Z](hardware/cad/gate-b-height-check.pdf) rileva un deficit di 0,9 mm
-nello stack con RCA e potenziometri su facce opposte. Assieme completo,
-sagoma PCB, inserimento e dima 3D restano da validare; i PDF non autorizzano la foratura.
+la PR #17 ha sostituito il RCA con il jack Neutrik NRJ4HF, eliminando il precedente
+deficit nominale di altezza. Lo [studio meccanico aggiornato](hardware/README.md)
+propone una posizione CAD che libera i piedini del jack dagli inviluppi dei potenziometri.
+La battuta è ora determinata dai potenziometri: F.Cu nominale Z24,3; fori frontali Ø10.
+La rotazione provata incontra interferenze e il serraggio posteriore non è validato.
+Assieme completo, sagoma PCB, percorso continuo e dima 3D restano da validare;
+i PDF non autorizzano la foratura.
 
 Il firmware configura il 5393 con `init(172, 320)` e rotazione landscape,
 ottenendo un'area runtime di 320×172. Usa lo SPI hardware esistente:

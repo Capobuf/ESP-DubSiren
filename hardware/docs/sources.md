@@ -5,6 +5,39 @@ I file originali spostati mantengono il contenuto; studi, rendering e report del
 revisioni eliminate sono recuperabili dallo storico Git. I datasheet specifici
 per ciascun riferimento sono indicati anche in [BOM.csv](BOM.csv).
 
+## Audit conclusivo della posa meccanica
+
+La [conclusione #14](../cad/issue14-mechanical-conclusion.md) e
+`active_study.mechanical_conclusion` nel JSON riportano la verifica della
+registrazione dello STEP Hammond, delle aperture e degli appoggi. La scocca
+coincide con l'originale su 708 vertici e 414 facce; la sonda ora include
+anche encoder, display e quattro pulsanti, assenti nella precedente sonda.
+
+Il disegno NRJ-NUT-B documenta la flangia Ø17,45 e l'appoggio piano.
+Le facce posteriori dello STEP Hammond sono inclinate di 1°. Nel modello
+rigido questa differenza produce un vuoto inevitabile 0…0,304591 mm al primo
+contatto: la copertura del foro non certifica il serraggio. Compensatori e
+spianature sono alternative quotate, non modifiche applicate o accessori scelti.
+
+**PEC11R-4120F-S0018:** pagina 2 del PEC11R, variante `4xxxF-Sxxxx`, corpo
+assiale 6,5 mm; pagina 3, L20 → boccola LB7 e flat F10; dado2 e rondella0,5 mm.
+Con F.Cu Z24,3: spalla Z30,8, boccola Z37,8, punta Z50,8. Il supporto interno
+necessario alla spalla è nominalmente1 mm. Le forme aggiunte sono inviluppi
+assiali; non uno STEP completo o una registrazione verificata dei terminali.
+
+**SAK-023:** pagina1 quota7,1±0,08 mm dal fondo vano albero alla gonna e1,1±0,08 mm
+di sporgenza inferiore dell'inserto. Ne segue la gonna nominale minima Z43,7,
+9,9 mm sopra il tetto. Il disegno specifica albero Ø5,96…5,98 e piatto4,46…4,48;
+non garantisce l'intero campo Bourns Ø6±0,1 e piatto4,5±0,05. Nessun componente
+è stato sostituito o rilavorato. Per Cliff, la quota12,5 termina su uno scalino
+interno e non è stata scambiata per la profondità totale del foro; il riferimento
+Cliff5 A/F differisce dal piatto PTV4,5 con tolleranza negativa.
+
+I valori0,5 mm dei compensatori e del gioco gonna nelle alternative sono
+**parametri di progetto esplicitamente proposti**, non quote dei produttori.
+Filetto utile, accessori reali, tolleranze, resistenza e percorso completo
+richiedono verifica dopo la scelta. Le due quote fisiche display restano `null`.
+
 | Uso | Fonte conservata / autorità |
 |---|---|
 | Contenitore confermato dall'utente nella #14 | [STEP originale Hammond 29830PSLA](../cad/sources/Hammond_29830PSLA.stp); [disegno originale, rev. 03.01.2024](../cad/sources/Hammond_29830PSLA.pdf), [fonte Hammond](https://www.hammfg.com/files/parts/pdf/29830PSLA.pdf) |
@@ -50,6 +83,57 @@ Il file standard della libreria 3D KiCad non era disponibile nell'installazione.
 Il dado nel CAD è solo un inviluppo conservativo D17,45 x 4,75 mm (chiave 15),
 non uno STEP originale né una simulazione della filettatura. Il modello USB proviene
 invece dalla libreria KiCad installata `Connector_USB.3dshapes/USB_C_Receptacle_GCT_USB4085.step`.
-MASTER e DAC sono rappresentati solo dalle proiezioni dichiarate in assieme.
+Il DAC resta una proiezione dichiarata. Il MASTER ha ora inviluppi conservativi da Bourns, con placement CAD proposto e non trasferito a KiCad.
 Gli hash dei quattro originali Neutrik e le misure sono in
 [nrj4hf-validation.json](../cad/nrj4hf-validation.json).
+
+La prosecuzione dopo il merge della PR #17 introduce una proposta **nel solo CAD**:
+traslazione J2 di −4,5 mm lungo X, asse X12,5. Il modello nel PCB mantiene la
+posizione della PR #17; il precedente confronto STEP è riferito a quella posa.
+Gli inviluppi frontali PTV111-3 sono proiezioni F.Fab 12 × 13,4 mm del footprint
+del progetto, lette con Konnect, estruse per i 7,5 mm del corpo nel disegno Bourns.
+Non sono STEP originali e non includono piedini, clip, cavità o tolleranze.
+Il loro uso è limitato allo screening conservativo delle interferenze.
+
+Per il display, la [pagina Adafruit 5393](https://www.adafruit.com/product/5393)
+riporta 5,4 mm complessivi, senza separare PCB, vetro e componenti posteriori:
+questa quota non è stata trasformata in un'altezza del vetro presunta.
+Nel file Eagle conservato alla revisione `73022f63a4b82117093ff5c250c119b6720005df`,
+`layerSetup=(1*16)`, `mtIsolate=1.5mm` e `mtCopper=0.035mm` per lato danno
+1,57 mm di **stackup CAD nominale**. Conferma della fonte segnalata dall'utente,
+non certificazione dello spessore prodotto. Spessore PCB fisico e quota PCB-vetro
+restano entrambi da misurare; non guidano l'accoppiamento verticale definitivo.
+
+Le boccole frontali sono cilindri nominali M9 × 5 dal disegno Bourns PTV/PTT,
+pagina 2, estrusi sopra la spalla del corpo a Z31,8, in battuta contro la scocca. La filettatura
+e i componenti completi non sono modellati. Sono usate per sonde rettilinee e
+inclinate parziali, senza dimostrazione del percorso completo. I cilindri inclinati
+sono ricostruiti da base e asse trasformati; la controverifica tramite punti interni
+è nel report, dopo aver rilevato un falso volume comune nullo su una forma ruotata.
+
+Il foro D12 della proposta corrente deriva dalla richiesta dell'utente, non dal
+disegno Neutrik, che indica D11,2. La flangia circolare D17,45 del disegno
+NRJ-NUT-B copre D12 con 2,725 mm radiali nominali a foro centrato; SW15 indica
+la chiave. Copertura in proiezione e appoggio senza fessure sono verifiche distinte:
+la parete Hammond inclinata di 1° lascia un dislivello di 0,305 mm sul dado.
+Non sono state ricavate coppie, deformazioni ammissibili o misure fisiche dalla
+sola geometria. I risultati D11,2 nel JSON sono un riferimento storico esplicito;
+le sonde native correnti e la tavola usano D12.
+
+Confronto fori pot su richiesta dell'utente: D9,5 e D10 rispetto a D9,2.
+Bourns PTV/PTT pagina 2 conferma M9 × 0,75 per PTV111-1 e PTV111-3.
+La gonna Davies 1100 misura 25/32 pollici = 19,84375 mm; Cliff K85M ha
+D14 esterno e incavo inferiore D12. Il riferimento Alps RKZ00023UA documenta
+dado M9 × 0,75 SW11 spesso 2 mm e rondella D14/D9,1 spessa 0,5 mm;
+non prova che siano gli accessori forniti con i potenziometri Bourns.
+Copertura nominale del foro e compatibilità assiale della ferramenta sono
+distinte nel report; nessun acquisto o sostituzione automatica della ferramenta.
+
+Il disegno Bourns PTV/PTT conservato, rev09/23 pagina2, quota L dalla spalla
+alla punta dell’albero: L20 per i codici acquistati. La boccola occupa i primi
+5 mm; gli inviluppi degli alberi aggiunti occupano i successivi15 mm a Ø6
+massimo. Non riproducono D-flat e smussi. Il corpo MASTER PTV111-1 usa
+l’asse10 mm sopra la PCB; la registrazione proposta è descritta nel README.
+La posa corrente elimina il margine fittizio0,5 mm davanti ai corpi pot: la
+PCB è fermata dalle loro spalle contro il tetto interno, come richiesto
+dall’utente. F.CuZ24,3 deriva dal corpo nominale7,5 mm, non da una misura fisica.
