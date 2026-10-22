@@ -181,9 +181,9 @@ Every packet begins with this packed, 10-byte little-endian header:
 |---:|---|---|---|
 | 0 | magic | 2 bytes | `DS` |
 | 2 | version | uint8 | `1` |
-| 3 | type | uint8 | AUDIO `0x01`, STATUS `0x02` |
+| 3 | type | uint8 | AUDIO `0x01`, STATUS `0x02`, COMMAND_RESULT `0x03` |
 | 4 | payload length | uint16 | bytes |
-| 6 | sequence | uint32 | increments per packet type |
+| 6 | sequence | uint32 | separate audio counter; STATUS and COMMAND_RESULT share a counter |
 
 An AUDIO payload is always 960 bytes: 480 signed int16 mono PCM samples at
 48,000 Hz. A STATUS payload is UTF-8 JSON. `HELLO` currently returns:
@@ -191,6 +191,24 @@ An AUDIO payload is always 960 bytes: 480 signed int16 mono PCM samples at
 ```json
 {"name":"DubSiren","protocol":1,"sampleRate":48000,"blockSamples":480,"firmware":"0.9.0","output":"BOTH","i2sReady":true,"panel":{"revision":1,"settings":{"schema":2,"potBehavior":"PICKUP"},"persistenceStatus":"","display":{"width":320,"height":172,"mode":"HOME","menuIndex":0,"editing":false,"title":"PERFORMANCE","rows":[{"key":"PROFILE","label":"PROFILE","value":"CLASSIC"}],"profile":"CLASSIC","voice":"SINE 1","pitch":"MID","pitchMode":"ZONES","rate":"MID","rateMode":"ZONES","tuneHz":392.0,"rateHz":0.7,"liveTranspose":0}}}
 ```
+
+`COMMAND_RESULT` has a 2–512 byte payload: byte 0 is `1` (accepted) or `0`
+(rejected), followed by the original trimmed ASCII command, without newline.
+Every non-empty command of at most 511 bytes receives a result except `HELLO`,
+which returns STATUS. Oversize lines are discarded. Acceptance means the
+controller accepted the operation; clamping, pickup and tempo sync can still
+determine the effective value, reported separately in `panel.display`.
+Firmware retains one pending result and retries the non-blocking USB write
+before consuming the next command. Disconnect clears that pending reply.
+Audio rendering continues independently. Rejection also requests a fresh STATUS;
+periodic STATUS retries cover a full USB buffer.
+
+Virtual ESP delivers the same `{command, accepted}` result to an optional
+command callback, separate from its STATUS callback. Its synchronous API still
+raises on rejection for scripts and transactional configuration restoration.
+Older firmware without results leaves GUI requests explicitly unconfirmed;
+the GUI does not infer acceptance from a successful serial write. Existing
+clients can ignore packet type `0x03`; protocol version and PCM framing stay 1.
 
 Timing zeros above are placeholders, not measured performance. `renderUs` is the
 most recent 480-sample render time and `maxRenderUs` is the

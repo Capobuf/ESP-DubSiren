@@ -6,7 +6,7 @@ import serial
 
 from protocol import (
     AUDIO_PAYLOAD_BYTES, HEADER, MAGIC, PROTOCOL_VERSION, TYPE_AUDIO,
-    TYPE_STATUS, PacketParser,
+    TYPE_STATUS, TYPE_COMMAND_RESULT, PacketParser,
 )
 from transport import SerialTransport
 
@@ -17,6 +17,24 @@ def packet(kind, payload, length=None):
 
 
 class TransportTests(unittest.TestCase):
+    def test_results_are_separate_from_status_and_invalid_results_are_ignored(self):
+        statuses, results = [], []
+        transport = SerialTransport(queue.Queue(), statuses.append, results.append)
+        port = Mock(is_open=True)
+        data = (packet(TYPE_COMMAND_RESULT, b"\x01SET RATE_HZ 2") +
+                packet(TYPE_COMMAND_RESULT, b"\x00SET DELAY_MS 400") +
+                packet(TYPE_COMMAND_RESULT, b"\x02INVALID") +
+                packet(TYPE_COMMAND_RESULT, b"\x01\xff") +
+                packet(TYPE_STATUS, b'{"protocol":1}'))
+        port.read.side_effect = [data[:13], data[13:], serial.SerialException("done")]
+        transport._serial = port
+        transport._reader()
+        self.assertEqual(results, [
+            {"command": "SET RATE_HZ 2", "accepted": True},
+            {"command": "SET DELAY_MS 400", "accepted": False},
+        ])
+        self.assertEqual(statuses, [{"protocol": 1}])
+
     def test_impossible_length_does_not_hide_next_valid_packet(self):
         for kind in (TYPE_AUDIO, TYPE_STATUS):
             parser = PacketParser()

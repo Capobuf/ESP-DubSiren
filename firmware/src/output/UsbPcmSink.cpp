@@ -52,6 +52,14 @@ bool UsbPcmSink::writeStatus(const char *payload, size_t length) {
                        statusSequence_++);
 }
 
+bool UsbPcmSink::writeCommandResult(const char *command, size_t length, bool accepted) {
+    if (length == 0 || length > 511) return false;
+    uint8_t payload[512];
+    payload[0] = accepted ? 1 : 0;
+    memcpy(payload + 1, command, length);
+    return writePacket(0x03, payload, length + 1, statusSequence_++);
+}
+
 bool UsbPcmSink::writePacket(uint8_t type, const uint8_t *payload,
                              size_t length, uint32_t sequence) {
     if (mutex_ == nullptr || length + sizeof(PacketHeader) > sizeof(packetBuffer_) ||

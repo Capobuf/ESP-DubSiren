@@ -1,4 +1,5 @@
 import queue
+import threading
 import tkinter as tk
 from tkinter import messagebox, ttk
 
@@ -7,6 +8,7 @@ from serial.tools import list_ports
 from audio_player import AudioPlayer
 from control_ranges import CONTROL_SPECS, ControlSpec
 from protocol import PROTOCOL_VERSION
+from scrollable import ScrollablePanel
 from transport import SerialTransport
 from virtual_transport import VIRTUAL_DEVICE, VirtualTransport
 
@@ -76,7 +78,8 @@ class DubSirenApp:
     def __init__(self, root: tk.Tk) -> None:
         self.root = root
         self.root.title("ESP32-S3 Dub Siren")
-        self.root.minsize(760, 610)
+        self.root.minsize(620, 440)
+        self.root.geometry(f"900x{min(740, self.root.winfo_screenheight() - 100)}")
         self.audio_queue: queue.Queue[bytes] = queue.Queue(maxsize=12)
         self.ui_events: queue.Queue[tuple[str, object]] = queue.Queue()
         self._status_callback = (
@@ -92,6 +95,12 @@ class DubSirenApp:
         self.streaming = False
         self.active_output: str | None = None
         self._has_synchronized = False
+        self._connecting = False
+        self._connect_cancel = threading.Event()
+        self._connection_status = None
+        self._pending_command = None
+        self.command_var = tk.StringVar(value="Controls request values; device confirmation appears here.")
+        self.confirmed_var = tk.StringVar(value="Confirmed: waiting for device")
         self.pending_sends: dict[str, str] = {}
         self.sliders: dict[str, SliderControl] = {}
         self.momentary_active: set[str] = set()
@@ -116,44 +125,38 @@ class DubSirenApp:
         self.root.bind_all("<ButtonRelease-1>", self._global_release, add="+")
         self.root.protocol("WM_DELETE_WINDOW", self.close)
 
-    def _build_ui(self) -> None:
-        outer = ttk.Frame(self.root, padding=10)
+    def _build_shell(self):
+        outer = ttk.Frame(self.root, padding=8)
         outer.pack(fill="both", expand=True)
-
-        connection = ttk.LabelFrame(outer, text="CONNECTION", padding=8)
-        connection.pack(fill="x", pady=(0, 10))
+        connection = ttk.Frame(outer)
+        connection.pack(fill="x")
         ttk.Label(connection, text="Device").pack(side="left")
-        self.port_combo = ttk.Combobox(
-            connection, textvariable=self.port_var, state="readonly", width=22
-        )
+        self.port_combo = ttk.Combobox(connection, textvariable=self.port_var,
+                                       state="readonly", width=20)
         self.port_combo.pack(side="left", padx=6)
-        ttk.Button(connection, text="Refresh", command=self.refresh_ports).pack(
-            side="left", padx=3
-        )
-        self.connect_button = ttk.Button(
-            connection, text="Connect", command=self.toggle_connection
-        )
-        self.connect_button.pack(side="left", padx=3)
-        ttk.Label(connection, text="Output").pack(side="left", padx=(12, 0))
-        self.output_combo = ttk.Combobox(
-            connection,
-            textvariable=self.output_var,
-            values=tuple(OUTPUT_VALUES),
-            state="readonly",
-            width=10,
-        )
+        ttk.Button(connection, text="Refresh", command=self.refresh_ports).pack(side="left")
+        self.connect_button = ttk.Button(connection, text="Connect", command=self.toggle_connection)
+        self.connect_button.pack(side="left", padx=6)
+        routing = ttk.Frame(outer)
+        routing.pack(fill="x", pady=4)
+        ttk.Label(routing, text="Output").pack(side="left")
+        self.output_combo = ttk.Combobox(routing, textvariable=self.output_var,
+                                         values=tuple(OUTPUT_VALUES), state="readonly", width=10)
         self.output_combo.pack(side="left", padx=6)
         self.output_combo.bind("<<ComboboxSelected>>", self._output_changed)
-        self.audio_button = ttk.Button(
-            connection,
-            text="Start Audio",
-            command=self.toggle_audio,
-            state="disabled",
-        )
+        self.audio_button = ttk.Button(routing, text="Start Audio", command=self.toggle_audio,
+                                       state="disabled")
         self.audio_button.pack(side="left", padx=3)
-        ttk.Label(connection, textvariable=self.connection_var).pack(
-            side="right", padx=6
-        )
+        for variable in (self.connection_var, self.command_var, self.confirmed_var):
+            label = ttk.Label(outer, textvariable=variable, anchor="w", wraplength=650)
+            label.pack(fill="x", pady=1)
+            label.bind("<Configure>", lambda event: event.widget.configure(wraplength=max(100, event.width)))
+        self.viewport = ScrollablePanel(outer)
+        self.viewport.pack(fill="both", expand=True, pady=(6, 0))
+        return self.viewport.content
+
+    def _build_ui(self) -> None:
+        outer = self._build_shell()
 
         profile_row = ttk.Frame(outer)
         profile_row.pack(fill="x", pady=(0, 10))
@@ -482,10 +485,23 @@ class DubSirenApp:
     def _send(self, command: str) -> None:
         if not self.transport.connected:
             return
+        self._pending_command = command
+        self.command_var.set(f"Requested (unconfirmed): {command}")
         try:
             self.transport.send(command)
         except Exception as exc:
-            self.connection_var.set(f"Transport error: {exc}")
+            self.command_var.set(f"Command failed: {exc}")
+
+    def _handle_command_result(self, result: dict) -> None:
+        if not self.transport.connected:
+            return
+        command = result.get("command")
+        accepted = result.get("accepted")
+        if accepted is False:
+            self.command_var.set(f"Rejected: {command} · controls still show requested values")
+        elif accepted is True and command == self._pending_command:
+            if not self.command_var.get().startswith("Rejected:"):
+                self.command_var.set(f"Accepted: {command} · confirmed values below")
 
     def refresh_ports(self) -> None:
         ports = [VIRTUAL_DEVICE]
@@ -501,38 +517,66 @@ class DubSirenApp:
             self.connect()
 
     def connect(self) -> None:
+        if self._connecting or self.transport.connected:
+            return
         port = self.port_var.get()
         if not port:
             messagebox.showerror("Connection", "No device is available.")
             return
 
+        events = self.ui_events
+        factory = VirtualTransport if port == VIRTUAL_DEVICE else SerialTransport
+        transport = factory(
+            self.audio_queue,
+            lambda status: events.put(("transport_status", (transport, status))),
+            lambda result: events.put(("command_result", (transport, result))),
+        )
+        self.transport = transport
         if port == VIRTUAL_DEVICE:
-            self.transport = VirtualTransport(
-                self.audio_queue,
-                self._status_callback,
-            )
             self.output_var.set("PC")
             self.output_combo.configure(state="disabled")
         else:
-            self.transport = SerialTransport(
-                self.audio_queue,
-                self._status_callback,
-            )
             self.output_combo.configure(state="readonly")
 
-        try:
-            self.transport.connect(port)
-        except Exception as exc:
-            self.output_combo.configure(state="readonly")
-            messagebox.showerror("Connection", str(exc))
-            return
         self.protocol_ok = False
         self._has_synchronized = False
+        self._connecting = True
+        self._connection_status = None
+        self._connect_cancel = threading.Event()
+        self.connection_var.set("Building / opening Virtual ESP…" if port == VIRTUAL_DEVICE else "Opening device…")
+        self.connect_button.configure(text="Connecting…", state="disabled")
+        self.port_combo.configure(state="disabled")
+        cancelled = self._connect_cancel
+
+        def open_transport():
+            error = None
+            try:
+                transport.connect(port)
+            except Exception as exc:
+                error = exc
+            if cancelled.is_set() or error is not None:
+                transport.disconnect()
+            if not cancelled.is_set():
+                events.put(("connected", (transport, error)))
+
+        threading.Thread(target=open_transport, daemon=True).start()
+
+    def _connection_finished(self, transport, error) -> None:
+        if transport is not self.transport:
+            return
+        self._connecting = False
+        self.connect_button.configure(state="normal")
+        if error is not None:
+            self.disconnect()
+            self.connection_var.set(f"Connection failed: {str(error).splitlines()[0][:200]}")
+            messagebox.showerror("Connection", str(error))
+            return
         self.connection_var.set("Waiting for STATUS...")
         self.connect_button.configure(text="Disconnect")
-        self.port_combo.configure(state="disabled")
-        transport = self.transport
         self.root.after(5000, lambda: self._check_handshake(transport))
+        if self._connection_status is not None:
+            self._handle_status(self._connection_status)
+            self._connection_status = None
 
     def _check_handshake(self, transport) -> None:
         if self.transport is transport and transport.connected and not self.protocol_ok:
@@ -550,6 +594,9 @@ class DubSirenApp:
         self.i2s_ready = None
         self.active_output = None
         self.connection_var.set("Disconnected")
+        self.command_var.set("Controls request values; device confirmation appears here.")
+        self.confirmed_var.set("Confirmed: disconnected")
+        self._pending_command = None
         self.connect_button.configure(text="Connect")
         self.audio_button.configure(text="Start Audio", state="disabled")
         self.port_combo.configure(state="readonly")
@@ -626,7 +673,7 @@ class DubSirenApp:
 
     def _poll_ui_events(self) -> None:
         error = getattr(self.transport, "error", None)
-        if error is not None or (self.protocol_ok and not self.transport.connected):
+        if not self._connecting and (error is not None or (self.protocol_ok and not self.transport.connected)):
             self.disconnect()
             self.connection_var.set(f"Connection lost: {error or 'device stopped'}")
         try:
@@ -634,6 +681,19 @@ class DubSirenApp:
                 event, payload = self.ui_events.get_nowait()
                 if event == "status":
                     self._handle_status(payload)
+                elif event == "connected":
+                    self._connection_finished(*payload)
+                elif event == "command_result":
+                    transport, result = payload
+                    if transport is self.transport:
+                        self._handle_command_result(result)
+                elif event == "transport_status":
+                    transport, status = payload
+                    if transport is self.transport:
+                        if self._connecting:
+                            self._connection_status = status
+                        else:
+                            self._handle_status(status)
         except queue.Empty:
             pass
         self.root.after(50, self._poll_ui_events)
@@ -646,6 +706,18 @@ class DubSirenApp:
             self.root.after(0, self.disconnect)
             return
         self.protocol_ok = True
+        panel = status.get("panel")
+        display = panel.get("display") if isinstance(panel, dict) else None
+        if not isinstance(display, dict):
+            display = {}
+        values = []
+        for key, label, unit in (("tuneHz", "Tune", "Hz"), ("rateHz", "Rate", "Hz"),
+                                 ("delayMs", "Delay", "ms"), ("depth", "Depth", "oct"),
+                                 ("master", "Master", "")):
+            value = display.get(key)
+            if isinstance(value, (int, float)):
+                values.append(f"{label} {value:.3g}{unit}")
+        self.confirmed_var.set("Confirmed: " + (" · ".join(values) or "not reported by firmware"))
         is_virtual = status.get("virtual") is True
         self.i2s_ready = status.get("i2sReady") is True
         if is_virtual:
@@ -698,11 +770,17 @@ class DubSirenApp:
         self._send_bool("ECHO_CUT", False)
 
     def close(self) -> None:
-        if self.transport.connected:
+        self._connect_cancel.set()
+        if self._connecting:
+            self._cancel_pending_sends()
+            self.player.stop()
+        elif self.transport.connected:
             self.disconnect()
         else:
             self._cancel_pending_sends()
             self.player.stop()
+        for token in self.root.tk.splitlist(self.root.tk.call("after", "info")):
+            self.root.after_cancel(token)
         self.root.destroy()
 
 

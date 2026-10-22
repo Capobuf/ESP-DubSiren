@@ -4,7 +4,7 @@ from collections.abc import Callable
 
 import serial
 
-from protocol import PacketParser, TYPE_AUDIO, TYPE_STATUS, decode_status
+from protocol import PacketParser, TYPE_AUDIO, TYPE_COMMAND_RESULT, decode_status
 
 
 class SerialTransport:
@@ -12,9 +12,11 @@ class SerialTransport:
         self,
         audio_queue: queue.Queue[bytes],
         status_callback: Callable[[dict], None] | None = None,
+        command_callback: Callable[[dict], None] | None = None,
     ) -> None:
         self._audio_queue = audio_queue
         self._status_callback = status_callback
+        self._command_callback = command_callback
         self._serial: serial.Serial | None = None
         self._stop = threading.Event()
         self._thread: threading.Thread | None = None
@@ -73,12 +75,16 @@ class SerialTransport:
             for packet in parser.feed(data):
                 if packet.packet_type == TYPE_AUDIO:
                     self._put_latest(packet.payload)
-                elif self._status_callback is not None:
+                else:
                     try:
                         status = decode_status(packet)
                     except (ValueError, UnicodeDecodeError):
                         continue
-                    self._status_callback(status)
+                    if packet.packet_type == TYPE_COMMAND_RESULT:
+                        if self._command_callback is not None:
+                            self._command_callback(status["commandResult"])
+                    elif self._status_callback is not None:
+                        self._status_callback(status)
 
     def _put_latest(self, pcm: bytes) -> None:
         try:

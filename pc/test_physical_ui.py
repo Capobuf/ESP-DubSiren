@@ -158,6 +158,8 @@ def make_app() -> PhysicalDubSirenApp:
     app._panel_config_error = None
     app._panel_io_error = None
     app.connection_var = FakeVariable("")
+    app.command_var = FakeVariable("")
+    app.confirmed_var = FakeVariable("")
     app._virtual_restore_pending = False
     app._last_saved_settings_revision = None
     return app

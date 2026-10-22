@@ -63,11 +63,14 @@ def make_app(output: str) -> DubSirenApp:
     app = object.__new__(DubSirenApp)
     app.output_var = FakeVariable(output)
     app.connection_var = FakeVariable("Connected")
+    app.command_var = FakeVariable("")
+    app.confirmed_var = FakeVariable("")
     app.i2s_ready = True
     app.protocol_ok = True
     app.streaming = False
     app.active_output = None
     app._has_synchronized = False
+    app._connecting = False
     app.transport = FakeTransport()
     app.player = FakePlayer()
     app.audio_button = FakeWidget()

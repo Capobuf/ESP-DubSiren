@@ -40,6 +40,8 @@ std::atomic<uint32_t> maximumI2sWriteUs{0};
 bool i2sReady = false;
 bool hostLinked = false;
 String commandBuffer;
+String pendingCommandResult;
+bool pendingCommandAccepted = false;
 bool discardCommand = false;
 Preferences panelPreferences;
 bool panelPreferencesReady = false;
@@ -282,9 +284,12 @@ bool sendStatus() {
 
 void handleCommand(String command) {
     command.trim();
+    if (command.isEmpty()) return;
+    bool accepted = true;
     if (command == "HELLO") {
         hostLinked = true;
         sendStatus();
+        return;
     } else if (command == "STREAM 1") {
         streamEnabled.store(true, std::memory_order_release);
     } else if (command == "STREAM 0") {
@@ -296,18 +301,31 @@ void handleCommand(String command) {
         if (parseOutputMode(command.substring(11), requested) &&
             (requested == OutputMode::Pc || i2sReady)) {
             outputMode.store(requested, std::memory_order_release);
+        } else {
+            accepted = false;
         }
     } else {
         const unsigned panelRevision = commandParser.panelRevision();
-        if (commandParser.parse(command) &&
+        accepted = commandParser.parse(command);
+        if (accepted &&
             commandParser.panelRevision() != panelRevision) {
             savePanelSettingsIfNeeded();
             sendStatus();
         }
     }
+    pendingCommandResult = command;
+    pendingCommandAccepted = accepted;
+    if (!accepted) sendStatus();
 }
 
 void pollCommands() {
+    // Retain one reply until the non-blocking USB writer can accept it.
+    // Do not consume another command and overwrite its result under load.
+    if (!pendingCommandResult.isEmpty()) {
+        if (!usbSink.writeCommandResult(pendingCommandResult.c_str(),
+                                       pendingCommandResult.length(), pendingCommandAccepted)) return;
+        pendingCommandResult = "";
+    }
     unsigned budget = 64;
     while (budget-- && Serial.available() > 0) {
         const char value = static_cast<char>(Serial.read());
@@ -315,6 +333,7 @@ void pollCommands() {
             if (!discardCommand) handleCommand(commandBuffer);
             commandBuffer = "";
             discardCommand = false;
+            if (!pendingCommandResult.isEmpty()) break;
         } else if (value != '\r' && !discardCommand) {
             if (commandBuffer.length() < 511) {
                 commandBuffer += value;
@@ -404,6 +423,7 @@ void loop() {
             commandParser.parse("PANEL CANCEL");
         }
         hostLinked = false;
+        pendingCommandResult = "";
         streamEnabled.store(false);
         commandBuffer = "";
         discardCommand = false;

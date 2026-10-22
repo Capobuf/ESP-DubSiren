@@ -6,6 +6,7 @@ MAGIC = b"DS"
 PROTOCOL_VERSION = 1
 TYPE_AUDIO = 0x01
 TYPE_STATUS = 0x02
+TYPE_COMMAND_RESULT = 0x03
 HEADER = struct.Struct("<2sBBHI")
 AUDIO_PAYLOAD_BYTES = 480 * 2
 MAX_STATUS_PAYLOAD_BYTES = 8192 - HEADER.size
@@ -40,10 +41,12 @@ class PacketParser:
             if version != PROTOCOL_VERSION or packet_type not in (
                 TYPE_AUDIO,
                 TYPE_STATUS,
+                TYPE_COMMAND_RESULT,
             ):
                 del self._buffer[0]
                 continue
-            if ((packet_type == TYPE_AUDIO and length != AUDIO_PAYLOAD_BYTES)
+            if ((packet_type == TYPE_COMMAND_RESULT and not 2 <= length <= 512)
+                    or (packet_type == TYPE_AUDIO and length != AUDIO_PAYLOAD_BYTES)
                     or (packet_type == TYPE_STATUS and
                         not 0 < length <= MAX_STATUS_PAYLOAD_BYTES)):
                 del self._buffer[0]
@@ -60,6 +63,13 @@ class PacketParser:
 
 
 def decode_status(packet: Packet) -> dict:
+    if packet.packet_type == TYPE_COMMAND_RESULT:
+        if len(packet.payload) < 2 or packet.payload[0] not in (0, 1):
+            raise ValueError("invalid command result")
+        return {"protocol": PROTOCOL_VERSION, "commandResult": {
+            "command": packet.payload[1:].decode("ascii"),
+            "accepted": packet.payload[0] == 1,
+        }}
     if packet.packet_type != TYPE_STATUS:
         raise ValueError("not a status packet")
     status = json.loads(packet.payload.decode("utf-8"))

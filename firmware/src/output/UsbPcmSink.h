@@ -12,6 +12,7 @@ public:
     bool begin() override;
     bool write(const int16_t *samples, size_t count) override;
     bool writeStatus(const char *payload, size_t length);
+    bool writeCommandResult(const char *command, size_t length, bool accepted);
 
 private:
     bool writePacket(uint8_t type, const uint8_t *payload, size_t length,

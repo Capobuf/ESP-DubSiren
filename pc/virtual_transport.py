@@ -28,9 +28,11 @@ class VirtualTransport:
         self,
         audio_queue: queue.Queue[bytes],
         status_callback: Callable[[dict], None] | None = None,
+        command_callback: Callable[[dict], None] | None = None,
     ) -> None:
         self._audio_queue = audio_queue
         self._status_callback = status_callback
+        self._command_callback = command_callback
         self._lib: ctypes.CDLL | None = None
         self._connected = False
         self._streaming = False
@@ -89,27 +91,38 @@ class VirtualTransport:
 
         if command == "STREAM 1":
             self._streaming = True
+            self._command_result(command, True)
             return
         if command == "STREAM 0":
             self._streaming = False
+            self._command_result(command, True)
             return
         if command in ("LOCAL_AUDIO 0", "LOCAL_AUDIO 1"):
             # There is no local DAC in the simulator; USB/PC streaming is separate.
+            self._command_result(command, True)
             return
-        if command.startswith("SET OUTPUT "):
+        if command in ("SET OUTPUT PC", "SET OUTPUT GPIO", "SET OUTPUT BOTH"):
+            self._command_result(command, True)
             return
 
         assert self._lib is not None
         with self._lock:
             previous_revision = self._lib.virtual_esp_panel_revision()
             accepted = self._lib.virtual_esp_command(command.encode("ascii"))
+        self._command_result(command, accepted == 1)
         if accepted != 1:
+            if self._status_callback is not None:
+                self._status_callback(self._status())
             raise RuntimeError(f"Virtual ESP rejected command: {command}")
         if (
             self._status_callback is not None
             and self._lib.virtual_esp_panel_revision() != previous_revision
         ):
             self._status_callback(self._status())
+
+    def _command_result(self, command: str, accepted: bool) -> None:
+        if self._command_callback is not None:
+            self._command_callback({"command": command, "accepted": accepted})
 
     def _build_if_needed(self) -> None:
         result = subprocess.run(

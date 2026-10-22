@@ -9,7 +9,7 @@ e KiCad non sono stati modificati. I risultati e le attività residue sono in:
 |---|---|---|
 | [#29](https://github.com/Capobuf/ESP-DubSiren/issues/29) | Stop non silenziava I2S; USB persa lasciava input remoti attivi; errori seriali e handshake non gestiti | Correzioni lifecycle, parsing e STATUS periodico |
 | [#30](https://github.com/Capobuf/ESP-DubSiren/issues/30) | Nessuna CI; dipendenze firmware non fissate | GitHub Actions Windows/Ubuntu, due build, artefatti e versioni fissate |
-| [#31](https://github.com/Capobuf/ESP-DubSiren/issues/31) | Build Virtual ESP bloccante, pot senza tastiera, layout/scaling da verificare, comandi senza NACK, overlay Depth errato | Corretti Depth e validazione iniziale STATUS; altre attività aperte |
+| [#31](https://github.com/Capobuf/ESP-DubSiren/issues/31) | Build Virtual ESP bloccante, pot senza tastiera, layout/scaling da verificare, comandi senza NACK, overlay Depth errato | Corretti Depth/STATUS; connessione asincrona, tastiera, layout scorrevole e conferma/rifiuto comandi |
 | [#32](https://github.com/Capobuf/ESP-DubSiren/issues/32) | Nessuna prova sonora comparata/hardware in questo round; documentazione obsoleta | Rigenerate capture, corretti RCA/J3/stato PR17 e protocollo |
 
 ## Verifiche locali
@@ -22,8 +22,20 @@ e KiCad non sono stati modificati. I risultati e le attività residue sono in:
 - Build PlatformIO 6.2.0 riuscita per DevKit e `panel-prototype`, con
   Espressif32 6.13.0 e librerie Adafruit fissate. Nessun upload su scheda.
 - Istanza Tk effettiva con configurazione temporanea: Connect, PCM non nullo,
-  pad/rilascio, encoder/menu, Stop e Disconnect passati. Dimensione richiesta
-  locale 1012×697; questo non verifica rendering a tutti i DPI o accessibilità.
+  pad/rilascio, encoder/menu, Stop e Disconnect passati. La misura iniziale
+  1012×697 è stata sostituita da un layout scorrevole con minimo 620×440.
+- Follow-up #31: 72 test Python passati, inclusi sei test con widget Tk reali.
+  Verificati connessione lenta senza bloccare eventi, errore/retry e chiusura
+  prima del completamento; layout in finestra 1366×720 (entro 1366×768) con
+  scaling Tk 125% e 150%, focus/scroll e frecce/Home/End sui pot, accesso ai
+  bordi del pannello a 640×480. Non è una prova su monitor con DPI Windows
+  differenti né una certificazione screen reader.
+- Feedback: pacchetti USB COMMAND_RESULT separati da STATUS, risposte trattenute
+  fino a disponibilità del buffer, callback equivalente Virtual ESP. Con Tk e
+  core reale verificati rifiuto LFO Rate in Sync, Delay accettato in Free,
+  valori confermati separati e PCM non nullo. Suite C++ e due build firmware
+  passate dopo le modifiche; il comportamento USB sotto carico resta da provare
+  su ESP fisico nella #32.
 - Rigenerate 20 clip Classic e 37 confronti Extended con gli script esistenti.
   Le metriche Extended corrispondono al file già versionato: nessuna nuova
   taratura DSP arbitraria è stata introdotta. WAV locali esclusi da Git.
