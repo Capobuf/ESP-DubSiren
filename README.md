@@ -159,6 +159,8 @@ sono pubblicati come artefatti del run, separati per ambiente. Non viene
 eseguito alcun upload su scheda. Le versioni firmware sono fissate in
 `firmware/platformio.ini`; la CI usa PlatformIO 6.2.0.
 
+Riscontri, issue e limiti della verifica: [review del repository](docs/repository-review.md).
+
 ```powershell
 pc\.venv\Scripts\python.exe -m unittest discover -s pc -p "test_*.py" -f
 pc\.venv\Scripts\python.exe tests\native\run.py

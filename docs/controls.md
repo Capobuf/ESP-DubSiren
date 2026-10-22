@@ -117,9 +117,9 @@ safety limiter. Echo never controls the dry gate.
   ECHO LEVEL controls volume, not tail duration. With Pickup, follow the UP/DOWN
   indication until the pot reaches the stored value, then lower it; while
   PICKUP is shown the stored feedback is unchanged.
-- ECHO CUT immediately mutes wet at the next block snapshot; release is smoothed.
-  The ring buffer, filters and feedback continue evolving. No buffer is cleared.
-  Abruptly cutting a loud wet waveform may click: exact mute takes precedence.
+- ECHO CUT ramps wet gain to zero over 2 ms after the next block snapshot;
+  release also takes 2 ms. The ring buffer, filters and feedback continue
+  evolving. No buffer is cleared. Perceived clicks still require listening.
 - Delay time uses the existing fractional read, smoothing and 2000 ms/s slew.
 
 ## Extended
@@ -131,7 +131,8 @@ ramp to limit the obvious high-frequency aliasing of a naive digital saw;
 TRIANGLE is a direct continuous triangle with naturally faster harmonic rolloff.
 Both use DC blocking and the normal Extended pitch/modulation/gate/echo chain.
 Lickshot, Gunshot, Saw and Triangle are not Classic voices. `pc/app.py` exposes
-all advanced parameters. The physical UI retains its four-pad bank inside
+the original debug controls; newer Tone/Contour, articulation, Color and tempo
+controls are available through the shared encoder menu/protocol. The physical UI retains its four-pad bank inside
 Extended: Classic (Sine 1/Sine 2/Sonar/Saw/Triangle), Two Tone, Lickshot, Ping
 (Syndrum). Last pad wins;
 free encoder rotation cycles the selected pad's waveform variant. BTN1 held
