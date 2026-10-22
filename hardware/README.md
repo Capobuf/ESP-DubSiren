@@ -1,6 +1,6 @@
 # ESP-DubSiren — hardware
 
-**J2 sostituito con Neutrik NRJ4HF. Gate B NON VALIDATO: PR #17 in bozza per verifica dell'utente. Nessun PCB fabbricabile.**
+**J2 sostituito con Neutrik NRJ4HF, PR #17 integrata. Gate B NON VALIDATO. Nessun PCB fabbricabile.**
 
 - [Progetto KiCad](kicad/ESP-DubSiren.kicad_pro), [schema](kicad/ESP-DubSiren.kicad_sch), [PCB](kicad/ESP-DubSiren.kicad_pcb).
 - [Assieme FreeCAD modificabile](cad/assembly.FCStd): Hammond originale, proposta pannello Gate A e studio posteriore NRJ4HF.
@@ -90,6 +90,7 @@ e le [misure precedenti](cad/gate-b-height-check.json) documentano il deficit di
 Sono evidenze storiche, non una variante attiva. La precedente richiesta di doppia uscita RCA L/R
 è superata dalla scelta mono NRJ4HF; non resta alcuna correzione OUTL→L / OUTR→R da implementare.
 
-La [PR #17](https://github.com/Capobuf/ESP-DubSiren/pull/17) resta in bozza e la
-[issue #14](https://github.com/Capobuf/ESP-DubSiren/issues/14) aperta. Richiesto feedback sulle viste CAD
-prima dell'approvazione del Gate B. Nessun routing, Gerber o merge eseguito.
+La [PR #17](https://github.com/Capobuf/ESP-DubSiren/pull/17) è integrata;
+la [issue #14](https://github.com/Capobuf/ESP-DubSiren/issues/14) resta aperta e
+documenta gli studi successivi. L'integrazione di J2 non approva il Gate B.
+Nessun routing o Gerber disponibile.

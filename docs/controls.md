@@ -1,43 +1,22 @@
-# Controls: DS01E / Classic baseline
+# Controls: Classic baseline
 
 Classic is the boot profile in the firmware, Virtual ESP and both desktop UIs.
 The primary generator has four voicings: SINE 1, SINE 2, TEST TONE, SQUARE.
 Extended remains available from the encoder menu and the debug UI (`pc/app.py`).
 
-## Functional reference and calibration
+## Functional behavior and calibration
 
-Official sources consulted on 2026-09-29:
+Classic provides three pitch positions, three automatic rates plus manual,
+momentary/continuous triggering, 50–1000 ms echo, feedback up to oscillation,
+a combined HP/LP filter and temporary wet mute. SINE 1 and SINE 2 are filtered
+pulse-derived voices; their names do not imply mathematically pure sines.
+SINE 2 uses a narrower pulse and a higher filter cutoff. TEST TONE is gated by
+the LFO; SQUARE alternates high/low pitch. Manual stops the automatic LFO.
 
-- [Benidub DS01E](https://benidub.com/products/ds01e-dub-siren/) and
-  [DS01E manual](https://benidub.com/wp-content/uploads/2023/07/Benidub-DS01E-Dubsiren-User-manual.pdf):
-  three pitch positions, three automatic rates plus manual, momentary/continuous
-  triggering, 50-1000 ms echo, feedback from one repeat to oscillation, combined
-  HP/LP filter, and a button that temporarily mutes the echo output.
-- [Benidub DS01](https://benidub.com/products/ds01-dub-siren/) and
-  [DS01 manual](https://benidub.com/wp-content/uploads/2022/03/Benidub-DS01-User-manual.pdf):
-  Sine 1 is the rounder voice, Sine 2 has more bite, Test Tone is gated by the
-  LFO, Square alternates high/low pitch; manual stops the automatic LFO.
-
-The consulted official material does **not** specify numeric pitch/rate presets,
-wave spectra, modulation depth, gate timing or filter calibration. No hardware
-A/B measurement was performed. These are functional references, not evidence
-of circuit or sonic identity. The single-button manual gesture and bipolar
-filter calibration below are project implementation choices.
-
-Additional waveform research checked on 2026-10-04:
-
-- [ZEN Instruments' NJD redraw](https://zeninstruments.blogspot.com/2022/04/njd-dub-siren-schematic-redraw-and-pcb.html)
-  describes the classic NJD audio oscillator as a variable-pulse-width square
-  oscillator followed by cascaded low-pass stages. Keeping the DS01-inspired
-  Classic voicings pulse-derived is a project choice informed by this NJD
-  reference, not evidence of the Benidub circuit or literal sine oscillators.
-- [Benidub DS71](https://benidub.com/products/ds71-dub-siren/) documents eight
-  preset **LFO** waveforms but does not identify them as alternative carrier
-  waveforms, so they are not copied into the audio oscillator.
-- [Zongo Dub Siren](https://siren.zongosound.com/) exposes the conventional
-  Sine/Square/Triangle/Sawtooth carrier set. Triangle and Saw are therefore
-  added only to Extended as useful, distinct project waveforms; this is not a
-  claim that either waveform exists in the DS01/DS01E circuit.
+These are this project's implemented behaviors and tuning values. No matched
+hardware A/B recording is included, so sonic equivalence is unverified.
+Extended additionally offers Saw and Triangle audio carriers, independently
+of its selectable LFO waveforms.
 
 | Selector | Current Classic calibration |
 |---|---|
@@ -46,9 +25,8 @@ Additional waveform research checked on 2026-10-04:
 | RATE MANUAL | automatic phase stopped; BTN3 controls manual modulation |
 | Depth | 1 octave either side of base pitch |
 
-The pitch presets reflect the completed DS01E audio/video analysis. Rate and
-depth remain project values because that analysis did not support replacing
-them numerically.
+Pitch, rate, depth and harmonic balance are project calibration values.
+Their suitability for performance still requires level-matched listening.
 
 Musical calibration, Extended defaults and DSP safety constants live in
 `firmware/src/audio/PerformanceConfig.h`.
@@ -152,7 +130,7 @@ It also adds SAW and TRIANGLE as continuous tonal carriers. SAW is a PolyBLEP
 ramp to limit the obvious high-frequency aliasing of a naive digital saw;
 TRIANGLE is a direct continuous triangle with naturally faster harmonic rolloff.
 Both use DC blocking and the normal Extended pitch/modulation/gate/echo chain.
-Lickshot, Gunshot, Saw and Triangle are not DS01E voices. `pc/app.py` exposes
+Lickshot, Gunshot, Saw and Triangle are not Classic voices. `pc/app.py` exposes
 all advanced parameters. The physical UI retains its four-pad bank inside
 Extended: Classic (Sine 1/Sine 2/Sonar/Saw/Triangle), Two Tone, Lickshot, Ping
 (Syndrum). Last pad wins;
@@ -161,7 +139,7 @@ while turning adjusts Depth in 0.05-octave steps (0-2 octaves). A latched Hold
 alone leaves rotation on variant selection. Holding other Trigger/Play Sound
 buttons retains configured live pitch. Encoder push+BTN1 toggles pad Hold,
 push+BTN2/3 changes variant, and push+BTN4 cuts echo. Extended menu includes
-a return to DS01E.
+a return to Classic.
 
 Profile changes release gates and momentary controls, clear pad Holds and keep
 delay contents; advanced numeric settings remain stored. Saved pad assignments

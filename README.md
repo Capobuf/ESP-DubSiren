@@ -4,12 +4,11 @@ Dub siren controllata da una GUI Windows. Il DSP gira interamente sull'ESP32-S3
 e il PCM mono già elaborato può essere inviato al PC, a un DAC PCM5102A via
 I2S, oppure a entrambe le destinazioni senza resampling.
 
-La baseline predefinita **DS01E / Classic** offre SINE 1, SINE 2, TEST TONE e
+La baseline predefinita **Classic** offre SINE 1, SINE 2, TEST TONE e
 SQUARE, Pitch a tre posizioni e Rate a tre velocità più Manual. Il dry usa solo
 un gate anti-click di 2 ms in attacco e 3 ms in rilascio. Echo Level zero esclude
-completamente il wet. La revisione segue il comportamento funzionale descritto
-nei manuali ufficiali Benidub, senza dichiarare un clone circuitale o una
-corrispondenza sonora misurata.
+completamente il wet. Le voci e la risposta dei controlli hanno una taratura
+di progetto; una corrispondenza sonora con strumenti esterni non è misurata.
 
 **Extended** conserva Lickshot, Sonar, Syndrum, Gunshot, Dynamic Sweep, forme
 LFO aggiuntive e controlli avanzati, e aggiunge i carrier SAW e TRIANGLE.
@@ -40,7 +39,8 @@ Aprire un prompt nella cartella `pc` ed eseguire una volta:
 setup.bat
 ```
 
-Lo script crea `.venv`, aggiorna pip e installa `pyserial` e `sounddevice`.
+Lo script crea `.venv`, aggiorna pip e installa `pyserial`, `sounddevice`
+e il compilatore host `ziglang` per Virtual ESP.
 
 ## Build e upload firmware
 
@@ -123,8 +123,12 @@ Con l'hardware reale:
 5. usare BTN1 Trigger, BTN2 Hold, BTN3 Manual Mod e BTN4 Echo Cut;
    ruotare l'encoder per scegliere il voicing, premerlo per il menu.
 
-**Stop Audio** arresta il flusso; **Disconnect** chiude ordinatamente audio,
-thread e seriale. Per un controllo automatico dell'hardware collegato:
+**Stop Audio** silenzia sia il PC sia il DAC. **Connect** prende il controllo
+delle uscite e le mantiene silenziose fino a **Start Audio**; **Disconnect**
+le silenzia e chiude audio, thread e seriale. Il DSP continua a elaborare le
+code echo. Dopo Disconnect il DAC resta disabilitato fino a un nuovo Start,
+`LOCAL_AUDIO 1` o riavvio; all'accensione l'uso autonomo resta abilitato.
+Per un controllo automatico dell'hardware collegato:
 
 ```powershell
 .venv\Scripts\python.exe smoke_test.py COM6
@@ -149,10 +153,16 @@ uno smoke test I2S/DAC.
 
 ## Test
 
+La [CI](.github/workflows/ci.yml) esegue i test Python/Virtual ESP e DSP nativi
+su Windows e compila entrambi i firmware su Ubuntu. I binari e i file ELF
+sono pubblicati come artefatti del run, separati per ambiente. Non viene
+eseguito alcun upload su scheda. Le versioni firmware sono fissate in
+`firmware/platformio.ini`; la CI usa PlatformIO 6.2.0.
+
 ```powershell
-pc\.venv\Scripts\python.exe -m unittest discover -s pc -p "test_*.py"
+pc\.venv\Scripts\python.exe -m unittest discover -s pc -p "test_*.py" -f
 pc\.venv\Scripts\python.exe tests\native\run.py
-pc\.venv\Scripts\python.exe -m platformio run -d firmware
+pc\.venv\Scripts\python.exe -m platformio run -d firmware -e esp32-s3-devkitc-1-n16r8 -e panel-prototype
 ```
 
 Il test nativo usa Zig C++ (`pip install ziglang`) oppure il compilatore indicato
@@ -168,10 +178,10 @@ L'unico progetto hardware è in [hardware/README.md](hardware/README.md):
 ESP32-S3-WROOM-1U, DAC Adafruit 6250 e display Adafruit 5393.
 Il **KiCad è provvisorio, senza routing né bordo definitivo: nessun PCB
 fabbricabile**. La [issue #14](https://github.com/Capobuf/ESP-DubSiren/issues/14)
-è in fase B con [pannello provvisorio](hardware/cad/gate-a-panel.pdf):
-la [verifica Z](hardware/cad/gate-b-height-check.pdf) rileva un deficit di 0,9 mm
-nello stack con RCA e potenziometri su facce opposte. Assieme completo,
-sagoma PCB, inserimento e dima 3D restano da validare; i PDF non autorizzano la foratura.
+è in fase B con [pannello provvisorio](hardware/cad/gate-a-panel.pdf) e
+[studio del jack mono NRJ4HF](hardware/cad/nrj4hf-validation.json).
+Il deficit RCA di 0,9 mm è storico. Assieme completo, tolleranze, sagoma PCB,
+inserimento e dima 3D restano da validare; i PDF non autorizzano la foratura.
 
 Il firmware configura il 5393 con `init(172, 320)` e rotazione landscape,
 ottenendo un'area runtime di 320×172. Usa lo SPI hardware esistente:

@@ -48,7 +48,10 @@ Dopo inizializzazione I2S riuscita, l'uscita locale e abilitata al boot, con
 Trigger/Hold spenti. `STREAM 0|1` riguarda solo il flusso USB; `LOCAL_AUDIO 0|1`
 controlla il mute locale. `SET OUTPUT PC|GPIO|BOTH` conserva la scelta delle
 destinazioni: PC esclude I2S, GPIO esclude USB, BOTH le permette entrambe.
-La disconnessione USB arresta il solo streaming USB.
+La rimozione improvvisa di USB arresta lo streaming USB e rilascia gli input
+remoti momentanei, preservando input fisici e Hold intenzionali. Stop Audio e
+Disconnect della GUI silenziano anche I2S tramite `LOCAL_AUDIO 0`; per tornare
+all'uso autonomo abilitare l'uscita locale oppure riavviare.
 
 Il task audio scrive prima I2S. Il sink USB prova a scrivere un pacchetto intero
 solo quando c'e spazio nel ring del driver; mutex e timeout sono non bloccanti.

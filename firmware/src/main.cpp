@@ -169,7 +169,7 @@ void updateMaximum(std::atomic<uint32_t> &maximum, uint32_t value) {
     }
 }
 
-void sendStatus() {
+bool sendStatus() {
     const OutputMode mode = outputMode.load(std::memory_order_relaxed);
     const ControlState displayState = controls.snapshot();
     const bool pitchZones = displayState.pitchZonesActive;
@@ -277,7 +277,7 @@ void sendStatus() {
         ",\"echoSpin\":" + (displayState.echoSpin ? "true" : "false") +
         ",\"echoLoop\":" + (displayState.echoLoop ? "true" : "false") +
         "}}}";
-    usbSink.writeStatus(json.c_str(), json.length());
+    return usbSink.writeStatus(json.c_str(), json.length());
 }
 
 void handleCommand(String command) {
@@ -394,14 +394,29 @@ void setup() {
 }
 
 void loop() {
+    static bool serialWasConnected = false;
     panelInputs.poll();
     pollCommands();
-    if (!Serial.isConnected()) { hostLinked = false; streamEnabled.store(false); }
+    const bool serialConnected = Serial.isConnected();
+    if (!serialConnected) {
+        if (serialWasConnected || hostLinked) commandParser.resetRemoteInputs();
+        hostLinked = false;
+        streamEnabled.store(false);
+        commandBuffer = "";
+        discardCommand = false;
+    }
+    serialWasConnected = serialConnected;
     if (i2sWriteFailures.load()) commandParser.setDeviceStatus("I2S WRITE FAILED");
     static uint32_t lastStatusMs = 0;
+    static uint32_t lastStatusAttemptMs = 0;
     static unsigned statusRevision = 0;
-    if (hostLinked && millis() - lastStatusMs >= 200 && statusRevision != commandParser.panelRevision()) {
-        lastStatusMs = millis(); statusRevision = commandParser.panelRevision(); sendStatus();
+    if (hostLinked && millis() - lastStatusAttemptMs >= 200 &&
+        (statusRevision != commandParser.panelRevision() || millis() - lastStatusMs >= 1000)) {
+        lastStatusAttemptMs = millis();
+        if (sendStatus()) {
+            lastStatusMs = millis();
+            statusRevision = commandParser.panelRevision();
+        }
     }
     savePanelSettingsIfNeeded();
     panelDisplay.update(hostLinked);

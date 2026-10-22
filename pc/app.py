@@ -469,6 +469,8 @@ class DubSirenApp:
             player_started = True
 
         self._send(f"SET OUTPUT {selected}")
+        self._send_bool("LOCAL_AUDIO", self.streaming and self._uses_i2s(selected))
+        self._send_bool("STREAM", self.streaming and self._uses_pc(selected))
         self.active_output = selected
 
         if self.streaming and not self._uses_pc(selected):
@@ -529,6 +531,13 @@ class DubSirenApp:
         self.connection_var.set("Waiting for STATUS...")
         self.connect_button.configure(text="Disconnect")
         self.port_combo.configure(state="disabled")
+        transport = self.transport
+        self.root.after(5000, lambda: self._check_handshake(transport))
+
+    def _check_handshake(self, transport) -> None:
+        if self.transport is transport and transport.connected and not self.protocol_ok:
+            self.disconnect()
+            self.connection_var.set("No compatible STATUS received. Check device and firmware.")
 
     def disconnect(self) -> None:
         self._cancel_pending_sends()
@@ -568,7 +577,8 @@ class DubSirenApp:
         if self._uses_pc(selected):
             self.player.start()
         self._send(f"SET OUTPUT {selected}")
-        self._send("STREAM 1")
+        self._send_bool("LOCAL_AUDIO", self._uses_i2s(selected))
+        self._send_bool("STREAM", self._uses_pc(selected))
         self.active_output = selected
         self.streaming = True
         self.audio_button.configure(text="Stop Audio")
@@ -578,6 +588,7 @@ class DubSirenApp:
     def stop_audio(self) -> None:
         if self.transport.connected:
             self._send("STREAM 0")
+            self._send("LOCAL_AUDIO 0")
         self.player.stop()
         self.streaming = False
         self.audio_button.configure(text="Start Audio")
@@ -614,6 +625,10 @@ class DubSirenApp:
             self.root.after_cancel(token)
 
     def _poll_ui_events(self) -> None:
+        error = getattr(self.transport, "error", None)
+        if error is not None or (self.protocol_ok and not self.transport.connected):
+            self.disconnect()
+            self.connection_var.set(f"Connection lost: {error or 'device stopped'}")
         try:
             while True:
                 event, payload = self.ui_events.get_nowait()
@@ -655,6 +670,8 @@ class DubSirenApp:
         self.audio_button.configure(state="normal")
         if not self._has_synchronized:
             self._has_synchronized = True
+            self._send("STREAM 0")
+            self._send("LOCAL_AUDIO 0")
             self._synchronize_controls()
 
     def _synchronize_controls(self) -> None:

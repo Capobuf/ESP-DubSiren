@@ -93,6 +93,9 @@ class VirtualTransport:
         if command == "STREAM 0":
             self._streaming = False
             return
+        if command in ("LOCAL_AUDIO 0", "LOCAL_AUDIO 1"):
+            # There is no local DAC in the simulator; USB/PC streaming is separate.
+            return
         if command.startswith("SET OUTPUT "):
             return
 

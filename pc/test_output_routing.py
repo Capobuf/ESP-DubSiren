@@ -97,7 +97,7 @@ class OutputRoutingTests(unittest.TestCase):
         app.start_audio()
 
         self.assertEqual(app.player.starts, 0)
-        self.assertEqual(app.commands, ["SET OUTPUT GPIO", "STREAM 1"])
+        self.assertEqual(app.commands, ["SET OUTPUT GPIO", "LOCAL_AUDIO 1", "STREAM 0"])
         self.assertTrue(app.streaming)
 
     def test_both_start_starts_pc_player(self):
@@ -106,7 +106,7 @@ class OutputRoutingTests(unittest.TestCase):
         app.start_audio()
 
         self.assertEqual(app.player.starts, 1)
-        self.assertEqual(app.commands, ["SET OUTPUT BOTH", "STREAM 1"])
+        self.assertEqual(app.commands, ["SET OUTPUT BOTH", "LOCAL_AUDIO 1", "STREAM 1"])
 
     def test_live_gpio_to_pc_starts_player_before_routing(self):
         app = make_app("PC")
@@ -116,7 +116,7 @@ class OutputRoutingTests(unittest.TestCase):
         app._output_changed()
 
         self.assertEqual(app.player.starts, 1)
-        self.assertEqual(app.commands, ["SET OUTPUT PC"])
+        self.assertEqual(app.commands, ["SET OUTPUT PC", "LOCAL_AUDIO 0", "STREAM 1"])
         self.assertEqual(app.drains, 1)
         self.assertEqual(len(app.root.scheduled), 1)
 
@@ -127,7 +127,7 @@ class OutputRoutingTests(unittest.TestCase):
 
         app._output_changed()
 
-        self.assertEqual(app.commands, ["SET OUTPUT GPIO"])
+        self.assertEqual(app.commands, ["SET OUTPUT GPIO", "LOCAL_AUDIO 1", "STREAM 0"])
         self.assertEqual(app.player.stops, 1)
         self.assertEqual(app.drains, 1)
 
@@ -162,6 +162,43 @@ class OutputRoutingTests(unittest.TestCase):
         app._handle_status(status)
 
         self.assertEqual(synchronizations, [True])
+
+    def test_stop_silences_dac_and_usb_for_every_output(self):
+        for output in ("PC", "PCM5102A", "Both"):
+            with self.subTest(output=output):
+                app = make_app(output)
+                app.streaming = True
+                app.stop_audio()
+                self.assertEqual(app.commands, ["STREAM 0", "LOCAL_AUDIO 0"])
+                self.assertFalse(app.streaming)
+                self.assertEqual(app.player.stops, 1)
+
+    def test_output_change_while_stopped_does_not_enable_dac(self):
+        app = make_app("PCM5102A")
+        app._output_changed()
+        self.assertIn("LOCAL_AUDIO 0", app.commands)
+
+    def test_transport_failure_disconnects_and_disables_audio(self):
+        app = make_app("Both")
+        app.transport.error = OSError("USB removed")
+        app._poll_ui_events()
+        self.assertFalse(app.protocol_ok)
+        self.assertEqual(app.transport.disconnects, 1)
+        self.assertIn("USB removed", app.connection_var.get())
+        self.assertEqual(app.audio_button.config["state"], "disabled")
+
+    def test_handshake_timeout_releases_port_and_explains_failure(self):
+        app = make_app("PC")
+        app.protocol_ok = False
+        app._check_handshake(app.transport)
+        self.assertEqual(app.transport.disconnects, 1)
+        self.assertIn("STATUS", app.connection_var.get())
+
+    def test_old_handshake_timer_cannot_disconnect_new_transport(self):
+        app = make_app("PC")
+        app.protocol_ok = False
+        app._check_handshake(FakeTransport())
+        self.assertEqual(app.transport.disconnects, 0)
 
 
 if __name__ == "__main__":

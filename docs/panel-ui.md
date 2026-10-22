@@ -110,11 +110,10 @@ Text is drawn directly, with no display buffer or PSRAM requirement.
 The desktop panel draws text with Tk; its existing control callbacks manage
 parameter overlays. Audio, controls and VirtualESP synthesis remain unchanged.
 
-The current PCB is not display-ready: J3 exposes power, I²C, CS, DC, reset and
-backlight, but not `SPI_MOSI` or `SPI_SCK`. J3 must be revised or another
-explicit physical connection must be defined. No KiCad source was changed in
-this software/UI revision, and operation on real display hardware remains
-unverified.
+The current hardware documentation identifies U5 as the Adafruit 5393 SPI
+display. The earlier J3/I²C description does not describe the active design.
+PCB routing and physical operation remain unverified; see the
+[hardware status](../hardware/README.md).
 
 ## Menu performance (#10)
 

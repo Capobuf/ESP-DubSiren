@@ -98,7 +98,7 @@ void PanelDisplay::renderHome(const ControlState &state, bool linked) {
     if (state.profile == PerformanceProfile::Classic) {
         const bool pitchZones = state.pitchZonesActive;
         const bool rateZones = state.rateZonesActive;
-        drawText(16, 10, "DS01E / CLASSIC", 1, kMuted);
+        drawText(16, 10, "DUB SIREN / CLASSIC", 1, kMuted);
         drawText(16, 31, modeName(state.mode), 3, kChartreuse);
         drawText(16, 73, String("PITCH  ") +
                  (pitchZones ? String(pitchName(state.classicPitch)) + " - " : "") +

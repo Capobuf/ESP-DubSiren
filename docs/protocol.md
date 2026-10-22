@@ -12,13 +12,14 @@ Connection commands:
 HELLO
 STREAM 1
 STREAM 0
+LOCAL_AUDIO 0|1
 SET OUTPUT PC|GPIO|BOTH
 ```
 
-`STREAM` is the global audio enable. With streaming enabled, `PC` emits USB
-AUDIO packets, `GPIO` writes only to the PCM5102A I2S sink, and `BOTH` writes
-the same rendered PCM block to both sinks. In GPIO-only mode USB remains active
-for commands, HELLO, STATUS, controls, and triggers.
+`STREAM` enables only USB AUDIO packets; `LOCAL_AUDIO` independently enables
+the PCM5102A I2S sink. OUTPUT selects which enabled sinks receive the same
+rendered PCM block: PC, GPIO or BOTH. USB commands and STATUS remain available
+in every output mode, including when both audio sinks are disabled.
 
 Control commands:
 
@@ -162,13 +163,13 @@ FEEDBACK value. ECHO_LOOP takes precedence and recirculates existing ring-buffer
 audio without acquiring dry input or applying feedback to the write. ECHO_CUT
 continues to mute only wet output.
 
-The boot profile is CLASSIC. Pitch 261.63/392.00/587.33 Hz reflects the completed
-DS01E analysis; automatic rates 0.35/0.70/2.80 Hz remain project values.
+The boot profile is CLASSIC. Pitch 261.63/392.00/587.33 Hz and automatic rates 0.35/0.70/2.80 Hz
+are project calibration values.
 Classic uses fixed depth, a finite 2 ms attack / 3 ms release anti-click gate,
 and ignores Extended decay, sweep, legacy voicing, automatic bend and retrigger.
 Manual stops the automatic LFO and connects its gate to the manual button.
-ECHO_LEVEL zero and ECHO_CUT exclude wet immediately at the next audio snapshot.
-The buffer continues evolving; unmuting is smoothed. Spin and Loop are ignored
+ECHO_LEVEL zero excludes wet at the next audio snapshot; ECHO_CUT ramps the
+wet gain down/up over 2 ms. The buffer continues evolving. Spin and Loop are ignored
 while Classic is active; their stored Extended settings are retained. Detailed behavior and
 source references: [controls](controls.md).
 
@@ -204,7 +205,9 @@ profiles, pots, buttons and menu rows. `panel.display` is logical state, not pix
 dimensions, Home/Menu mode, menu cursor/edit state, ordered row keys, current
 Depth, Echo Loop, profile, voice, confirmed pitch/rate labels, Hold, Echo Cut
 and Extended tuneHz/rateHz. Firmware sends an updated STATUS packet when controller
-or menu state changes. These are additive status/command changes: existing
+or menu state changes and at least once per second after HELLO while USB has
+space available. Failed periodic sends are retried no faster than every 200 ms.
+These are additive status/command changes: existing
 commands, packet framing, and protocol version 1 remain compatible.
 
 In firmware 0.9.0, `panel.settings` contains the complete schema-2 persistent
@@ -217,14 +220,18 @@ and `liveTranspose` are included for connection reconstruction.
 
 There is no CRC because USB is the reliable transport. The Python parser scans
 again for `DS` after invalid data or lost framing and rejects AUDIO payloads of
-the wrong length.
+the wrong length before waiting for their payload. STATUS payloads must fit
+the firmware's 8192-byte packet buffer (8182 payload bytes). Invalid UTF-8,
+JSON and non-object status payloads are discarded without stopping the reader.
 
 ## Revisione uso autonomo (#12)
 
 `STREAM 0|1` controlla ora solo il PCM USB. `LOCAL_AUDIO 0|1` controlla
 l'abilitazione locale (default ON); la destinazione OUTPUT resta applicabile.
-Stop Audio/Disconnect del client interrompono il flusso USB, non sono un mute
-generale della macchina. Per silenziare I2S usare LOCAL_AUDIO 0 oppure OUTPUT PC.
+Stop Audio/Disconnect del client inviano entrambi i comandi di disabilitazione,
+silenziano USB e I2S, e lasciano il DSP attivo. Connect mantiene le uscite mute
+fino a Start Audio. La rimozione improvvisa di USB rilascia i comandi remoti
+momentanei, conserva quelli fisici e non cambia l'abilitazione locale.
 Le nuove metriche e la configurazione del pannello sono in [standalone](standalone.md).
 
 ## Tap tempo

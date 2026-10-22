@@ -9,6 +9,7 @@ from tkinter import ttk
 from app import DubSirenApp, OUTPUT_VALUES
 from control_ranges import CONTROL_SPECS, ControlSpec
 from panel_display import DISPLAY_HEIGHT, DISPLAY_WIDTH, PanelDisplay
+from protocol import PROTOCOL_VERSION
 
 PANEL_KNOBS = tuple((f"POT {number}", f"POT_{number}") for number in range(1, 7))
 FRONT_POT_SPEC = ControlSpec(0.0, 1.0, 0.5, lambda value: f"{value:.0%}")
@@ -964,7 +965,7 @@ class PhysicalDubSirenApp(DubSirenApp):
                                 if display.get("rateMode", "ZONES") == "ZONES" else ""),
                           ECHO_CUT=display.get("echoCut", False),
                           TEMPO=display.get("tempo", {}))
-            self.display.render_home(1, 1, display.get("voice", "SINE 1"), "DS01E / CLASSIC", "",
+            self.display.render_home(1, 1, display.get("voice", "SINE 1"), "DUB SIREN / CLASSIC", "",
                                      bool(display.get("hold")), bool(display.get("echoLoop")),
                                      self.transport.connected, params,
                                      str(display.get("filter", "FLAT")))
@@ -1057,6 +1058,10 @@ class PhysicalDubSirenApp(DubSirenApp):
         self._refresh_display()
 
     def _handle_status(self, status: object) -> None:
+        if (not self.transport.connected or not isinstance(status, dict)
+                or status.get("protocol") != PROTOCOL_VERSION):
+            super()._handle_status(status)
+            return
         if isinstance(status, dict):
             self._connected_virtual = status.get("virtual") is True
             panel = status.get("panel")
@@ -1071,6 +1076,7 @@ class PhysicalDubSirenApp(DubSirenApp):
                 self._last_menu_revision = menu_revision
                 self.panel_state = panel
                 display = panel.get("display", {})
+                old_depth = self.parameter_values["LFO_DEPTH_OCT"]
                 for key, parameter in (
                     ("tuneHz", "TUNE_HZ"), ("rateHz", "LFO_RATE_HZ"),
                     ("depth", "LFO_DEPTH_OCT"), ("echoLevel", "ECHO_LEVEL"),
@@ -1085,7 +1091,6 @@ class PhysicalDubSirenApp(DubSirenApp):
                             and display.get("profile") == "CLASSIC"):
                         self._show_overlay(title, display.get(key, "MID"))
                 if "depth" in display:
-                    old_depth = self.parameter_values["LFO_DEPTH_OCT"]
                     depth = float(display["depth"])
                     self.parameter_values["LFO_DEPTH_OCT"] = depth
                     if (

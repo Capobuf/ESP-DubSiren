@@ -1,7 +1,7 @@
 # Classic baseline validation - 2026-09-29
 
-This revision establishes a DS01E-inspired functional baseline, not a measured
-replica. Official source links and calibration distinctions are in
+This revision establishes a Classic functional baseline, not a measured
+replica. Behavior and calibration distinctions are in
 [controls](controls.md). No PCB, GPIO, I2S, USB routing, PCM5102A configuration,
 sample rate or dependency changes were made.
 
@@ -57,7 +57,7 @@ Its callbacks exercised all four voices, Trigger release, Hold, Manual,
 Pitch/Rate selectors, filter overlay, menu and profile changes. The audio player
 reported no errors. Home, filter and menu text were inspected at 320x170.
 This was an application/PCM check, not a human listening verdict or a test of
-physical ADCs, the hardware display, I2S or a Benidub unit.
+physical ADCs, the hardware display, I2S or an external reference instrument.
 
 Reproduce listening files with:
 
@@ -102,7 +102,7 @@ Native tests check tail decay at feedback 0-0.99 with flat and filtered echo,
 and confirm that lowering an already self-oscillating 1.05 loop to 0.50 drains
 the buffer. Above-unity feedback and explicit ECHO LOOP remain available.
 Exact wet mute may click when a loud repeat is interrupted. No claim
-of indistinguishability from the DS01E is made.
+of indistinguishability from an external reference instrument is made.
 
 ## Shared sine voicing and pulsed Sonar - 2026-10-04
 
