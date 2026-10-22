@@ -129,7 +129,8 @@ class TkRuntimeTests(unittest.TestCase):
         import array
         self.app = PhysicalDubSirenApp(self.root)
         self.app.connect()
-        self.pump_until(lambda: self.app.protocol_ok, timeout=30)
+        # CI compiles the shared core from scratch before the first connection.
+        self.pump_until(lambda: self.app.protocol_ok, timeout=300)
         for command in ("TEMPO BPM 120", "TEMPO LFO SYNC", "TEMPO ECHO SYNC"):
             self.app._send(command)
         self.root.update()
