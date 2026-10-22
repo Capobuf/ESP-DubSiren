@@ -1854,6 +1854,18 @@ void testPhysicalAndRemoteOwnership() {
     assert(parser.parse("PAD 1 1")); assert(parser.setPhysicalPad(1, true));
     assert(parser.setPhysicalPad(1, false)); assert(store.snapshot().trigger);
     assert(parser.parse("PAD 1 0")); assert(!store.snapshot().trigger);
+    // USB loss releases remote input without cancelling a physical trigger.
+    assert(parser.parse("PAD 1 1"));
+    assert(parser.parse("ENCODER_SWITCH 1"));
+    parser.resetRemoteInputs();
+    assert(!store.snapshot().trigger);
+    assert(strcmp(parser.displayModeName(), "HOME") == 0);
+    assert(parser.setPhysicalPad(1, true));
+    assert(parser.parse("PAD 1 1"));
+    parser.resetRemoteInputs();
+    assert(store.snapshot().trigger);
+    assert(parser.setPhysicalPad(1, false));
+    assert(!store.snapshot().trigger);
 }
 
 void testPanelValidationAndCancelledClicks() {

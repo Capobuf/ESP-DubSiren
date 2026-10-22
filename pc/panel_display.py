@@ -49,7 +49,7 @@ class PanelDisplay(ttk.Frame):
         params = parameters or {}
         tempo = params.get("TEMPO", {})
         if params.get("PROFILE") == "CLASSIC":
-            self._text(16, 10, "DS01E / CLASSIC", 11, MUTED)
+            self._text(16, 10, "DUB SIREN / CLASSIC", 11, MUTED)
             self._text(16, 31, sound, 24, ACCENT)
             pitch = str(params.get("PITCH", "MID"))
             pitch = (pitch + " \u00b7 ") if pitch else ""

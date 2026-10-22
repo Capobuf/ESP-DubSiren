@@ -158,6 +158,8 @@ def make_app() -> PhysicalDubSirenApp:
     app._panel_config_error = None
     app._panel_io_error = None
     app.connection_var = FakeVariable("")
+    app.command_var = FakeVariable("")
+    app.confirmed_var = FakeVariable("")
     app._virtual_restore_pending = False
     app._last_saved_settings_revision = None
     return app
@@ -249,7 +251,7 @@ class PhysicalUiTests(unittest.TestCase):
                     if kind == "text"]
 
         display.render_home(
-            1, 1, "SINE 2", "DS01E / CLASSIC", "", True, False, True,
+            1, 1, "SINE 2", "DUB SIREN / CLASSIC", "", True, False, True,
             {"PROFILE": "CLASSIC", "PITCH": "HIGH", "RATE": "MANUAL", "ECHO_CUT": True},
         )
         self.assertIn("SINE 2", text())
@@ -315,6 +317,26 @@ class PhysicalUiTests(unittest.TestCase):
         self.assertEqual(app.dials["POT_2"].value_label.config["text"], "RATE")
         for button, label in zip(app.pad_buttons, ("TRIGGER", "HOLD", "MOD UP", "ECHO CUT")):
             self.assertIn(label, button.config["text"])
+
+    def test_depth_status_shows_changed_value_overlay(self):
+        app = make_app()
+        app.overlay_token = None
+        overlays = []
+        app._show_overlay = lambda *args: overlays.append(args)
+        panel = json.loads(json.dumps(app.panel_state))
+        panel["display"]["depth"] = 1.5
+        with patch("app.DubSirenApp._handle_status"):
+            app._handle_status({"protocol": 1, "panel": panel})
+        self.assertIn(("DEPTH", "1.50 oct"), overlays)
+        self.assertEqual(app.parameter_values["LFO_DEPTH_OCT"], 1.5)
+
+    def test_wrong_protocol_does_not_apply_panel_settings(self):
+        app = make_app()
+        original = app.panel_state
+        with patch("app.DubSirenApp._handle_status") as base:
+            app._handle_status({"protocol": 999, "panel": {"pads": [{}, {}, {}, {}]}})
+        self.assertIs(app.panel_state, original)
+        base.assert_called_once()
 
     def test_pad_sources_overlap_and_keyboard_repeat_is_ignored(self):
         app = make_app()

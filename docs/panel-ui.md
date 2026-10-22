@@ -4,6 +4,25 @@ The panel remains six front pots, four buttons, one encoder with push, one
 small, primarily text-based Adafruit Product 5393 display (320x172) and one
 separate rear Master. No extra performance knobs.
 
+The desktop layout places three pots above the display/encoder, three below,
+then the four buttons. Connection and audio controls remain above a scrollable
+panel; both axes can scroll in small windows or at larger text scaling. Tab
+focus automatically scrolls a control into view. The debug UI uses the same
+connection/status area and scrolling behavior.
+
+Connecting runs build/open in one background worker; Tk stays responsive and
+reports `Building / opening Virtual ESP…`. Connect is disabled until it finishes
+to avoid overlapping builds. On failure it becomes available for retry. Closing
+the window cancels adoption of a late connection and releases its transport.
+
+`Requested (unconfirmed)`, `Accepted` and `Rejected` describe command delivery.
+The separate `Confirmed` row shows Tune, Rate, Delay, Depth and Master from
+STATUS, including effective synchronized Rate/Delay. Sliders and pot positions
+are requests; an accepted pot movement may still await pickup. A rejection
+remains visible across STATUS updates and subsequent replies from the same
+batch, until another command is requested. Firmware without result packets
+never produces a false acceptance indication.
+
 | Control | Classic mapping / command |
 |---|---|
 | POT1..POT6 | `POT <1..6> <0..1>`; C++ applies the active profile mapping |
@@ -59,6 +78,9 @@ Echo Cut leaves the delay evolving. Master and audio routing are unchanged.
 
 Mouse/keyboard sources are tracked independently. Keys 1-4 operate buttons,
 [ / ] rotate the encoder and E presses it. Autorepeat cannot retoggle Hold.
+Tab also focuses every active pot and rear Master, with a blue focus outline.
+Arrow keys adjust by 2% of the normalized travel; Home/End select minimum/maximum.
+Inactive controls do not accept keyboard adjustments or participate in Tab order.
 Releasing outside widgets, losing focus or disconnecting releases momentaries
 with `PANEL_RESET`; intentional Hold remains latched until toggled or the
 profile changes. Switching profile clears gates and Hold. Pot commands keep
@@ -110,11 +132,10 @@ Text is drawn directly, with no display buffer or PSRAM requirement.
 The desktop panel draws text with Tk; its existing control callbacks manage
 parameter overlays. Audio, controls and VirtualESP synthesis remain unchanged.
 
-The current PCB is not display-ready: J3 exposes power, I²C, CS, DC, reset and
-backlight, but not `SPI_MOSI` or `SPI_SCK`. J3 must be revised or another
-explicit physical connection must be defined. No KiCad source was changed in
-this software/UI revision, and operation on real display hardware remains
-unverified.
+The current hardware documentation identifies U5 as the Adafruit 5393 SPI
+display. The earlier J3/I²C description does not describe the active design.
+PCB routing and physical operation remain unverified; see the
+[hardware status](../hardware/README.md).
 
 ## Menu performance (#10)
 

@@ -9,6 +9,7 @@ from tkinter import ttk
 from app import DubSirenApp, OUTPUT_VALUES
 from control_ranges import CONTROL_SPECS, ControlSpec
 from panel_display import DISPLAY_HEIGHT, DISPLAY_WIDTH, PanelDisplay
+from protocol import PROTOCOL_VERSION
 
 PANEL_KNOBS = tuple((f"POT {number}", f"POT_{number}") for number in range(1, 7))
 FRONT_POT_SPEC = ControlSpec(0.0, 1.0, 0.5, lambda value: f"{value:.0%}")
@@ -306,7 +307,10 @@ class DialControl(ttk.Frame):
             width=diameter,
             height=diameter,
             bg="#1b1f24",
-            highlightthickness=0,
+            highlightthickness=2,
+            highlightbackground="#59636f",
+            highlightcolor="#168bdf",
+            takefocus=True,
             cursor="sb_v_double_arrow",
         )
         self.canvas.pack(pady=(3, 2))
@@ -319,7 +323,19 @@ class DialControl(ttk.Frame):
         self.canvas.bind("<MouseWheel>", self._wheel)
         self.canvas.bind("<Button-4>", lambda _event: self._step(0.02, True))
         self.canvas.bind("<Button-5>", lambda _event: self._step(-0.02, True))
+        for key in ("Left", "Right", "Up", "Down", "Home", "End"):
+            self.canvas.bind(f"<KeyPress-{key}>", self._key)
+        self.canvas.bind("<FocusOut>", lambda _event: self.finish_drag())
         self.set_value(spec.default)
+
+    def _key(self, event):
+        if self._active:
+            if event.keysym in ("Home", "End"):
+                self.set_value(self.spec.minimum if event.keysym == "Home" else self.spec.maximum,
+                               notify=True)
+            else:
+                self._step(0.02 if event.keysym in ("Right", "Up") else -0.02, True)
+        return "break"
 
     def set_value(self, value: float, notify: bool = False, final: bool = True) -> None:
         self.value = max(self.spec.minimum, min(self.spec.maximum, value))
@@ -331,6 +347,7 @@ class DialControl(ttk.Frame):
     def _pressed(self, event) -> None:
         if not self._active:
             return
+        self.canvas.focus_set()
         self._drag_y = event.y_root
         self._drag_position = self.spec.to_normalized(self.value)
 
@@ -364,7 +381,7 @@ class DialControl(ttk.Frame):
 
     def set_active(self, active: bool) -> None:
         self._active = active
-        self.canvas.configure(cursor="sb_v_double_arrow" if active else "arrow")
+        self.canvas.configure(cursor="sb_v_double_arrow" if active else "arrow", takefocus=active)
         self.label_state = "normal" if active else "disabled"
         self._draw()
 
@@ -593,65 +610,21 @@ class PhysicalDubSirenApp(DubSirenApp):
         self.dials: dict[str, DialControl] = {}
         super().__init__(root)
         self.root.title("ESP Dub Siren")
-        self.root.minsize(980, 700)
+        self.root.minsize(620, 440)
         self._bind_keyboard()
         self.root.bind("<FocusOut>", self._focus_out, add="+")
         self._refresh_display()
 
     def _build_ui(self) -> None:
-        outer = ttk.Frame(self.root, padding=10)
-        outer.pack(fill="both", expand=True)
+        outer = self._build_shell()
 
-        connection = ttk.Frame(outer)
-        connection.pack(fill="x", pady=(0, 10))
-        ttk.Label(connection, text="DEVICE").pack(side="left")
-        self.port_combo = ttk.Combobox(
-            connection,
-            textvariable=self.port_var,
-            state="readonly",
-            width=20,
-        )
-        self.port_combo.pack(side="left", padx=(6, 3))
-        ttk.Button(
-            connection,
-            text="Refresh",
-            command=self.refresh_ports,
-        ).pack(side="left", padx=3)
-        self.connect_button = ttk.Button(
-            connection,
-            text="Connect",
-            command=self.toggle_connection,
-        )
-        self.connect_button.pack(side="left", padx=(3, 12))
-        ttk.Label(connection, text="OUTPUT").pack(side="left")
-        self.output_combo = ttk.Combobox(
-            connection,
-            textvariable=self.output_var,
-            values=tuple(OUTPUT_VALUES),
-            state="readonly",
-            width=10,
-        )
-        self.output_combo.pack(side="left", padx=6)
-        self.output_combo.bind("<<ComboboxSelected>>", self._output_changed)
-        self.audio_button = ttk.Button(
-            connection,
-            text="Start Audio",
-            command=self.toggle_audio,
-            state="disabled",
-        )
-        self.audio_button.pack(side="left", padx=3)
-        ttk.Label(
-            connection,
-            textvariable=self.connection_var,
-        ).pack(side="right", padx=6)
-
-        panel = ttk.LabelFrame(outer, text="FRONT PANEL", padding=14)
+        panel = ttk.LabelFrame(outer, text="FRONT PANEL", padding=6)
         panel.pack(fill="both", expand=True)
-        for column in range(6):
+        for column in range(3):
             panel.columnconfigure(column, weight=1, uniform="panel")
 
         for index, (label, command_name) in enumerate(PANEL_KNOBS):
-            row = 0 if index < 3 else 1
+            row = 0 if index < 3 else 2
             column = index if index < 3 else index - 3
             dial = DialControl(
                 panel,
@@ -659,22 +632,22 @@ class PhysicalDubSirenApp(DubSirenApp):
                 command_name,
                 FRONT_POT_SPEC,
                 self._panel_parameter_changed,
+                diameter=76,
             )
             dial.grid(
                 row=row,
                 column=column,
                 padx=8,
-                pady=8,
+                pady=3,
                 sticky="nsew",
             )
             self.dials[command_name] = dial
 
         display_frame = ttk.Frame(panel)
         display_frame.grid(
-            row=0,
-            column=3,
+            row=1,
+            column=0,
             columnspan=2,
-            rowspan=2,
             padx=12,
             pady=8,
             sticky="",
@@ -694,9 +667,8 @@ class PhysicalDubSirenApp(DubSirenApp):
             self._encoder_up,
         )
         self.encoder.grid(
-            row=0,
-            column=5,
-            rowspan=2,
+            row=1,
+            column=2,
             padx=8,
             pady=8,
             sticky="n",
@@ -704,11 +676,11 @@ class PhysicalDubSirenApp(DubSirenApp):
 
         buttons = ttk.Frame(panel)
         buttons.grid(
-            row=2,
+            row=3,
             column=0,
-            columnspan=6,
+            columnspan=3,
             sticky="ew",
-            pady=(16, 2),
+            pady=(6, 2),
         )
         for column in range(4):
             buttons.columnconfigure(column, weight=1, uniform="buttons")
@@ -749,15 +721,17 @@ class PhysicalDubSirenApp(DubSirenApp):
             rear,
             text=(
                 "EXTENDED: turn = waveform; BTN1 + turn = Depth.\n"
-                "Press the encoder to open settings."
+                "Press the encoder to open settings.\n"
+                "Tab: focus pot · arrows: adjust · Home/End: min/max."
             ),
             justify="left",
-        ).pack(side="left", fill="x", expand=True, padx=12)
+            wraplength=340,
+        ).pack(side="left", fill="x", expand=True, padx=8)
         ttk.Label(
             rear,
             text="KEYS  1–4 pads   [ / ] encoder   E press",
-            justify="right",
-        ).pack(side="right", padx=12)
+            justify="left",
+        ).pack(side="bottom", fill="x", padx=8)
         self._update_pad_labels()
 
     def _panel_parameter_changed(
@@ -964,7 +938,7 @@ class PhysicalDubSirenApp(DubSirenApp):
                                 if display.get("rateMode", "ZONES") == "ZONES" else ""),
                           ECHO_CUT=display.get("echoCut", False),
                           TEMPO=display.get("tempo", {}))
-            self.display.render_home(1, 1, display.get("voice", "SINE 1"), "DS01E / CLASSIC", "",
+            self.display.render_home(1, 1, display.get("voice", "SINE 1"), "DUB SIREN / CLASSIC", "",
                                      bool(display.get("hold")), bool(display.get("echoLoop")),
                                      self.transport.connected, params,
                                      str(display.get("filter", "FLAT")))
@@ -1057,6 +1031,10 @@ class PhysicalDubSirenApp(DubSirenApp):
         self._refresh_display()
 
     def _handle_status(self, status: object) -> None:
+        if (not self.transport.connected or not isinstance(status, dict)
+                or status.get("protocol") != PROTOCOL_VERSION):
+            super()._handle_status(status)
+            return
         if isinstance(status, dict):
             self._connected_virtual = status.get("virtual") is True
             panel = status.get("panel")
@@ -1071,6 +1049,7 @@ class PhysicalDubSirenApp(DubSirenApp):
                 self._last_menu_revision = menu_revision
                 self.panel_state = panel
                 display = panel.get("display", {})
+                old_depth = self.parameter_values["LFO_DEPTH_OCT"]
                 for key, parameter in (
                     ("tuneHz", "TUNE_HZ"), ("rateHz", "LFO_RATE_HZ"),
                     ("depth", "LFO_DEPTH_OCT"), ("echoLevel", "ECHO_LEVEL"),
@@ -1085,7 +1064,6 @@ class PhysicalDubSirenApp(DubSirenApp):
                             and display.get("profile") == "CLASSIC"):
                         self._show_overlay(title, display.get(key, "MID"))
                 if "depth" in display:
-                    old_depth = self.parameter_values["LFO_DEPTH_OCT"]
                     depth = float(display["depth"])
                     self.parameter_values["LFO_DEPTH_OCT"] = depth
                     if (
@@ -1158,6 +1136,8 @@ class PhysicalDubSirenApp(DubSirenApp):
             self._panel_config_error = str(exc)
 
     def connect(self) -> None:
+        if self._connecting or self.transport.connected:
+            return
         self._saved_config_applied = False
         self._virtual_restore_pending = False
         self._connected_virtual = False

@@ -40,6 +40,8 @@ std::atomic<uint32_t> maximumI2sWriteUs{0};
 bool i2sReady = false;
 bool hostLinked = false;
 String commandBuffer;
+String pendingCommandResult;
+bool pendingCommandAccepted = false;
 bool discardCommand = false;
 Preferences panelPreferences;
 bool panelPreferencesReady = false;
@@ -169,7 +171,7 @@ void updateMaximum(std::atomic<uint32_t> &maximum, uint32_t value) {
     }
 }
 
-void sendStatus() {
+bool sendStatus() {
     const OutputMode mode = outputMode.load(std::memory_order_relaxed);
     const ControlState displayState = controls.snapshot();
     const bool pitchZones = displayState.pitchZonesActive;
@@ -277,14 +279,17 @@ void sendStatus() {
         ",\"echoSpin\":" + (displayState.echoSpin ? "true" : "false") +
         ",\"echoLoop\":" + (displayState.echoLoop ? "true" : "false") +
         "}}}";
-    usbSink.writeStatus(json.c_str(), json.length());
+    return usbSink.writeStatus(json.c_str(), json.length());
 }
 
 void handleCommand(String command) {
     command.trim();
+    if (command.isEmpty()) return;
+    bool accepted = true;
     if (command == "HELLO") {
         hostLinked = true;
         sendStatus();
+        return;
     } else if (command == "STREAM 1") {
         streamEnabled.store(true, std::memory_order_release);
     } else if (command == "STREAM 0") {
@@ -296,18 +301,31 @@ void handleCommand(String command) {
         if (parseOutputMode(command.substring(11), requested) &&
             (requested == OutputMode::Pc || i2sReady)) {
             outputMode.store(requested, std::memory_order_release);
+        } else {
+            accepted = false;
         }
     } else {
         const unsigned panelRevision = commandParser.panelRevision();
-        if (commandParser.parse(command) &&
+        accepted = commandParser.parse(command);
+        if (accepted &&
             commandParser.panelRevision() != panelRevision) {
             savePanelSettingsIfNeeded();
             sendStatus();
         }
     }
+    pendingCommandResult = command;
+    pendingCommandAccepted = accepted;
+    if (!accepted) sendStatus();
 }
 
 void pollCommands() {
+    // Retain one reply until the non-blocking USB writer can accept it.
+    // Do not consume another command and overwrite its result under load.
+    if (!pendingCommandResult.isEmpty()) {
+        if (!usbSink.writeCommandResult(pendingCommandResult.c_str(),
+                                       pendingCommandResult.length(), pendingCommandAccepted)) return;
+        pendingCommandResult = "";
+    }
     unsigned budget = 64;
     while (budget-- && Serial.available() > 0) {
         const char value = static_cast<char>(Serial.read());
@@ -315,6 +333,7 @@ void pollCommands() {
             if (!discardCommand) handleCommand(commandBuffer);
             commandBuffer = "";
             discardCommand = false;
+            if (!pendingCommandResult.isEmpty()) break;
         } else if (value != '\r' && !discardCommand) {
             if (commandBuffer.length() < 511) {
                 commandBuffer += value;
@@ -394,14 +413,33 @@ void setup() {
 }
 
 void loop() {
+    static bool serialWasConnected = false;
     panelInputs.poll();
     pollCommands();
-    if (!Serial.isConnected()) { hostLinked = false; streamEnabled.store(false); }
+    const bool serialConnected = Serial.isConnected();
+    if (!serialConnected) {
+        if (serialWasConnected || hostLinked) {
+            commandParser.resetRemoteInputs();
+            commandParser.parse("PANEL CANCEL");
+        }
+        hostLinked = false;
+        pendingCommandResult = "";
+        streamEnabled.store(false);
+        commandBuffer = "";
+        discardCommand = false;
+    }
+    serialWasConnected = serialConnected;
     if (i2sWriteFailures.load()) commandParser.setDeviceStatus("I2S WRITE FAILED");
     static uint32_t lastStatusMs = 0;
+    static uint32_t lastStatusAttemptMs = 0;
     static unsigned statusRevision = 0;
-    if (hostLinked && millis() - lastStatusMs >= 200 && statusRevision != commandParser.panelRevision()) {
-        lastStatusMs = millis(); statusRevision = commandParser.panelRevision(); sendStatus();
+    if (hostLinked && millis() - lastStatusAttemptMs >= 200 &&
+        (statusRevision != commandParser.panelRevision() || millis() - lastStatusMs >= 1000)) {
+        lastStatusAttemptMs = millis();
+        if (sendStatus()) {
+            lastStatusMs = millis();
+            statusRevision = commandParser.panelRevision();
+        }
     }
     savePanelSettingsIfNeeded();
     panelDisplay.update(hostLinked);

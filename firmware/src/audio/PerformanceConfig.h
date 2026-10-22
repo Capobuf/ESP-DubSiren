@@ -2,7 +2,7 @@
 
 // Shared performance calibration and project tuning points.
 namespace PerformanceConfig {
-// DS01E Classic pitch calibration; other tuning points remain project values.
+// Classic pitch calibration; all tuning points are project values.
 constexpr float kClassicPitchHz[] = {261.63f, 392.00f, 587.33f};
 constexpr float kClassicRateHz[] = {0.35f, 0.70f, 2.80f};
 constexpr float kClassicDepthOctaves = 1.0f;

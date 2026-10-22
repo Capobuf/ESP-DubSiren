@@ -8,6 +8,24 @@ from virtual_transport import VIRTUAL_DEVICE, VirtualTransport
 
 
 class VirtualTransportTests(unittest.TestCase):
+    def test_command_results_report_sync_rejections_and_confirmed_values(self):
+        results = []
+        self.transport._command_callback = results.append
+        self.transport.send("TEMPO BPM 120")
+        self.transport.send("TEMPO LFO SYNC")
+        self.transport.send("TEMPO ECHO SYNC")
+        before = self.statuses[-1]["panel"]["display"]
+        for command in ("SET LFO_RATE_HZ 2", "SET DELAY_MS 400", "SET OUTPUT INVALID"):
+            with self.assertRaisesRegex(RuntimeError, "rejected"):
+                self.transport.send(command)
+            self.assertEqual(results[-1], {"command": command, "accepted": False})
+        after = self.statuses[-1]["panel"]["display"]
+        self.assertEqual((after["rateHz"], after["delayMs"]), (before["rateHz"], before["delayMs"]))
+        self.transport.send("TEMPO ECHO FREE")
+        self.transport.send("SET DELAY_MS 400")
+        self.assertEqual(results[-1], {"command": "SET DELAY_MS 400", "accepted": True})
+        self.assertEqual(self.statuses[-1]["panel"]["display"]["delayMs"], 400)
+
     def setUp(self):
         self.audio_queue = queue.Queue(maxsize=128)
         self.statuses = []

@@ -12,13 +12,14 @@ Connection commands:
 HELLO
 STREAM 1
 STREAM 0
+LOCAL_AUDIO 0|1
 SET OUTPUT PC|GPIO|BOTH
 ```
 
-`STREAM` is the global audio enable. With streaming enabled, `PC` emits USB
-AUDIO packets, `GPIO` writes only to the PCM5102A I2S sink, and `BOTH` writes
-the same rendered PCM block to both sinks. In GPIO-only mode USB remains active
-for commands, HELLO, STATUS, controls, and triggers.
+`STREAM` enables only USB AUDIO packets; `LOCAL_AUDIO` independently enables
+the PCM5102A I2S sink. OUTPUT selects which enabled sinks receive the same
+rendered PCM block: PC, GPIO or BOTH. USB commands and STATUS remain available
+in every output mode, including when both audio sinks are disabled.
 
 Control commands:
 
@@ -162,13 +163,13 @@ FEEDBACK value. ECHO_LOOP takes precedence and recirculates existing ring-buffer
 audio without acquiring dry input or applying feedback to the write. ECHO_CUT
 continues to mute only wet output.
 
-The boot profile is CLASSIC. Pitch 261.63/392.00/587.33 Hz reflects the completed
-DS01E analysis; automatic rates 0.35/0.70/2.80 Hz remain project values.
+The boot profile is CLASSIC. Pitch 261.63/392.00/587.33 Hz and automatic rates 0.35/0.70/2.80 Hz
+are project calibration values.
 Classic uses fixed depth, a finite 2 ms attack / 3 ms release anti-click gate,
 and ignores Extended decay, sweep, legacy voicing, automatic bend and retrigger.
 Manual stops the automatic LFO and connects its gate to the manual button.
-ECHO_LEVEL zero and ECHO_CUT exclude wet immediately at the next audio snapshot.
-The buffer continues evolving; unmuting is smoothed. Spin and Loop are ignored
+ECHO_LEVEL zero excludes wet at the next audio snapshot; ECHO_CUT ramps the
+wet gain down/up over 2 ms. The buffer continues evolving. Spin and Loop are ignored
 while Classic is active; their stored Extended settings are retained. Detailed behavior and
 source references: [controls](controls.md).
 
@@ -180,9 +181,9 @@ Every packet begins with this packed, 10-byte little-endian header:
 |---:|---|---|---|
 | 0 | magic | 2 bytes | `DS` |
 | 2 | version | uint8 | `1` |
-| 3 | type | uint8 | AUDIO `0x01`, STATUS `0x02` |
+| 3 | type | uint8 | AUDIO `0x01`, STATUS `0x02`, COMMAND_RESULT `0x03` |
 | 4 | payload length | uint16 | bytes |
-| 6 | sequence | uint32 | increments per packet type |
+| 6 | sequence | uint32 | separate audio counter; STATUS and COMMAND_RESULT share a counter |
 
 An AUDIO payload is always 960 bytes: 480 signed int16 mono PCM samples at
 48,000 Hz. A STATUS payload is UTF-8 JSON. `HELLO` currently returns:
@@ -190,6 +191,24 @@ An AUDIO payload is always 960 bytes: 480 signed int16 mono PCM samples at
 ```json
 {"name":"DubSiren","protocol":1,"sampleRate":48000,"blockSamples":480,"firmware":"0.9.0","output":"BOTH","i2sReady":true,"panel":{"revision":1,"settings":{"schema":2,"potBehavior":"PICKUP"},"persistenceStatus":"","display":{"width":320,"height":172,"mode":"HOME","menuIndex":0,"editing":false,"title":"PERFORMANCE","rows":[{"key":"PROFILE","label":"PROFILE","value":"CLASSIC"}],"profile":"CLASSIC","voice":"SINE 1","pitch":"MID","pitchMode":"ZONES","rate":"MID","rateMode":"ZONES","tuneHz":392.0,"rateHz":0.7,"liveTranspose":0}}}
 ```
+
+`COMMAND_RESULT` has a 2–512 byte payload: byte 0 is `1` (accepted) or `0`
+(rejected), followed by the original trimmed ASCII command, without newline.
+Every non-empty command of at most 511 bytes receives a result except `HELLO`,
+which returns STATUS. Oversize lines are discarded. Acceptance means the
+controller accepted the operation; clamping, pickup and tempo sync can still
+determine the effective value, reported separately in `panel.display`.
+Firmware retains one pending result and retries the non-blocking USB write
+before consuming the next command. Disconnect clears that pending reply.
+Audio rendering continues independently. Rejection also requests a fresh STATUS;
+periodic STATUS retries cover a full USB buffer.
+
+Virtual ESP delivers the same `{command, accepted}` result to an optional
+command callback, separate from its STATUS callback. Its synchronous API still
+raises on rejection for scripts and transactional configuration restoration.
+Older firmware without results leaves GUI requests explicitly unconfirmed;
+the GUI does not infer acceptance from a successful serial write. Existing
+clients can ignore packet type `0x03`; protocol version and PCM framing stay 1.
 
 Timing zeros above are placeholders, not measured performance. `renderUs` is the
 most recent 480-sample render time and `maxRenderUs` is the
@@ -204,7 +223,9 @@ profiles, pots, buttons and menu rows. `panel.display` is logical state, not pix
 dimensions, Home/Menu mode, menu cursor/edit state, ordered row keys, current
 Depth, Echo Loop, profile, voice, confirmed pitch/rate labels, Hold, Echo Cut
 and Extended tuneHz/rateHz. Firmware sends an updated STATUS packet when controller
-or menu state changes. These are additive status/command changes: existing
+or menu state changes and at least once per second after HELLO while USB has
+space available. Failed periodic sends are retried no faster than every 200 ms.
+These are additive status/command changes: existing
 commands, packet framing, and protocol version 1 remain compatible.
 
 In firmware 0.9.0, `panel.settings` contains the complete schema-2 persistent
@@ -217,14 +238,18 @@ and `liveTranspose` are included for connection reconstruction.
 
 There is no CRC because USB is the reliable transport. The Python parser scans
 again for `DS` after invalid data or lost framing and rejects AUDIO payloads of
-the wrong length.
+the wrong length before waiting for their payload. STATUS payloads must fit
+the firmware's 8192-byte packet buffer (8182 payload bytes). Invalid UTF-8,
+JSON and non-object status payloads are discarded without stopping the reader.
 
 ## Revisione uso autonomo (#12)
 
 `STREAM 0|1` controlla ora solo il PCM USB. `LOCAL_AUDIO 0|1` controlla
 l'abilitazione locale (default ON); la destinazione OUTPUT resta applicabile.
-Stop Audio/Disconnect del client interrompono il flusso USB, non sono un mute
-generale della macchina. Per silenziare I2S usare LOCAL_AUDIO 0 oppure OUTPUT PC.
+Stop Audio/Disconnect del client inviano entrambi i comandi di disabilitazione,
+silenziano USB e I2S, e lasciano il DSP attivo. Connect mantiene le uscite mute
+fino a Start Audio. La rimozione improvvisa di USB rilascia i comandi remoti
+momentanei, conserva quelli fisici e non cambia l'abilitazione locale.
 Le nuove metriche e la configurazione del pannello sono in [standalone](standalone.md).
 
 ## Tap tempo

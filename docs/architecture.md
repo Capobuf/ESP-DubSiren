@@ -41,8 +41,8 @@ block is routed through the `AudioSink` interface to `UsbPcmSink`,
 AUDIO and STATUS writes with a mutex. STATUS remains available over USB even
 when USB AUDIO packets are disabled. Hardware CDC's TX ring is set to 8192 bytes
 before USB startup, so a 970-byte audio packet can be queued without waiting
-for the default 256-byte ring to drain. Packet writes complete any partial
-`Serial.write` before another packet starts.
+for the default 256-byte ring to drain. The sink reserves space for a complete
+packet and issues one non-blocking write; a short write reports failure.
 
 `PanelDisplay` is outside `audioTask`. The main loop reads controller and
 `ControlStore` state and renders text for Home or Menu directly through
@@ -80,8 +80,8 @@ memory. Normal operation writes dry input plus saturated feedback. In loop
 mode the write path instead copies the raw interpolated delayed sample back to
 the ring, while the wet output still passes through the HPF/LPF. This avoids
 reapplying filters and saturation on every loop pass. ECHO CUT only mutes the
-wet mix immediately at the next audio snapshot and therefore leaves loop
-contents intact; release uses the existing smoother. It does not alter feedback, filtering, or the stored Echo Level.
+wet mix with a 2 ms ramp and therefore leaves loop contents intact; release
+also uses a 2 ms ramp. It does not alter feedback, filtering, or the stored Echo Level.
 
 `SmoothedParameter` handles sample-rate tune, depth, rate, feedback, echo level,
 master, DIVE/RISE bend, delay and filter cutoff changes. The LFO retains phase
