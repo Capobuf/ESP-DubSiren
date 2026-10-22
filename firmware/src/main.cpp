@@ -399,7 +399,10 @@ void loop() {
     pollCommands();
     const bool serialConnected = Serial.isConnected();
     if (!serialConnected) {
-        if (serialWasConnected || hostLinked) commandParser.resetRemoteInputs();
+        if (serialWasConnected || hostLinked) {
+            commandParser.resetRemoteInputs();
+            commandParser.parse("PANEL CANCEL");
+        }
         hostLinked = false;
         streamEnabled.store(false);
         commandBuffer = "";

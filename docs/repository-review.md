@@ -17,6 +17,8 @@ e KiCad non sono stati modificati. I risultati e le attività residue sono in:
 - Suite Python/Virtual ESP e suite C++ DSP/controller passate. Le regressioni
   aggiunte coprono uscite, timeout, perdita seriale, pacchetti malformati,
   overlay e rilascio degli input remoti con pressione fisica simultanea.
+  La perdita USB annulla anche una transazione PANEL lasciata incompleta:
+  il solo reset dei pulsanti non la annullava e il successivo BEGIN falliva.
 - Build PlatformIO 6.2.0 riuscita per DevKit e `panel-prototype`, con
   Espressif32 6.13.0 e librerie Adafruit fissate. Nessun upload su scheda.
 - Istanza Tk effettiva con configurazione temporanea: Connect, PCM non nullo,
