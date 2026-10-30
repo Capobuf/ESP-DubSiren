@@ -176,14 +176,12 @@ del testo ST7789 e devono restare sotto il budget display di 100.000 µs.
 
 ## Hardware
 
-L'unico progetto hardware è in [hardware/README.md](hardware/README.md):
-ESP32-S3-WROOM-1U, DAC Adafruit 6250 e display Adafruit 5393.
-Il **KiCad è provvisorio, senza routing né bordo definitivo: nessun PCB
-fabbricabile**. La [issue #14](https://github.com/Capobuf/ESP-DubSiren/issues/14)
-è in fase B con [pannello provvisorio](hardware/cad/gate-a-panel.pdf) e
-[studio del jack mono NRJ4HF](hardware/cad/nrj4hf-validation.json).
-Il deficit RCA di 0,9 mm è storico. Assieme completo, tolleranze, sagoma PCB,
-inserimento e dima 3D restano da validare; i PDF non autorizzano la foratura.
+Il progetto è ora destinato a un **PCB desktop standalone a vista**, senza Hammond né altra custodia obbligatoria. Sono previsti solder mask nero, serigrafia frontale, quattro fori per supporti e montaggio orizzontale o leggermente inclinato tramite distanziali commerciali.
+
+- [Decisioni e vincoli del PCB standalone](hardware/docs/pcb-standalone.md), [stato hardware](hardware/README.md).
+- [#34 verifica elettrica e BOM](https://github.com/Capobuf/ESP-DubSiren/issues/34), [#35 layout e fissaggi](https://github.com/Capobuf/ESP-DubSiren/issues/35), [#36 serigrafia e montaggio](https://github.com/Capobuf/ESP-DubSiren/issues/36).
+
+**KiCad è ancora provvisorio**, senza routing e senza bordo finale approvato: nessun PCB pronto per la fabbricazione. Il vecchio studio Hammond della [#14](https://github.com/Capobuf/ESP-DubSiren/issues/14) è storico, non costituisce un vincolo progettuale.
 
 Il firmware configura il 5393 con `init(172, 320)` e rotazione landscape,
 ottenendo un'area runtime di 320×172. Usa lo SPI hardware esistente:
@@ -203,8 +201,7 @@ ST7789 Library**. In base alla [guida ufficiale Adafruit 5393](https://learn.ada
 gli offset del pannello sono gestiti dalla libreria.
 
 Il funzionamento del display sull'hardware reale e l'integrazione del firmware
-con la scheda definitiva restano da verificare. La pulizia hardware della #15
-non modifica firmware, collegamenti elettrici o pinout.
+con la scheda definitiva restano da verificare.
 
 ## Firmware per il pannello autonomo (issue #5-#12)
 
