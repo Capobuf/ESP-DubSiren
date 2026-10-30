@@ -176,16 +176,20 @@ del testo ST7789 e devono restare sotto il budget display di 100.000 µs.
 
 ## Hardware
 
-L'unico progetto hardware è in [hardware/README.md](hardware/README.md):
-ESP32-S3-WROOM-1U, DAC Adafruit 6250 e display Adafruit 5393.
-Il **KiCad è una proposta standalone da 86 × 126 mm, senza routing: nessun
-PCB fabbricabile**. La direzione del 30/10/2026 prevede PCB a vista nero e quattro
-fissaggi M3, senza contenitore obbligatorio. Sono disponibili la
-[verifica elettrica #34](hardware/docs/issue-34-electrical-review.md) e la
-[proposta layout #35](hardware/docs/issue-35-standalone-layout.md), da revisionare
-prima del routing. Stack display/DAC, keycap e montaggio fisico restano da qualificare.
-Gli studi Hammond della #14 e il deficit RCA sono storici; i relativi PDF non
-autorizzano la foratura.
+Il progetto è destinato a un **PCB desktop standalone a vista**, senza Hammond
+né altra custodia obbligatoria: ESP32-S3-WROOM-1U, DAC Adafruit 6250 e display
+Adafruit 5393, solder mask nera e quattro fissaggi M3.
+
+Il layout KiCad aggiornato è **86 × 126 mm**, con angoli R3 e senza routing:
+**nessun PCB fabbricabile**. Stack display/DAC, keycap, accoppiamenti delle
+manopole e montaggio fisico restano da qualificare.
+
+- [Decisioni e vincoli standalone](hardware/docs/pcb-standalone.md), [stato hardware](hardware/README.md).
+- [Verifica elettrica #34](hardware/docs/issue-34-electrical-review.md), [layout e ingombri #35](hardware/docs/issue-35-standalone-layout.md).
+- [#36: serigrafia e guida di montaggio](https://github.com/Capobuf/ESP-DubSiren/issues/36).
+
+Lo studio Hammond della [#14](https://github.com/Capobuf/ESP-DubSiren/issues/14)
+è storico e non costituisce un vincolo del progetto attuale.
 
 Il firmware configura il 5393 con `init(172, 320)` e rotazione landscape,
 ottenendo un'area runtime di 320×172. Usa lo SPI hardware esistente:
@@ -205,8 +209,7 @@ ST7789 Library**. In base alla [guida ufficiale Adafruit 5393](https://learn.ada
 gli offset del pannello sono gestiti dalla libreria.
 
 Il funzionamento del display sull'hardware reale e l'integrazione del firmware
-con la scheda definitiva restano da verificare. La pulizia hardware della #15
-non modifica firmware, collegamenti elettrici o pinout.
+con la scheda definitiva restano da verificare.
 
 ## Firmware per il pannello autonomo (issue #5-#12)
 
