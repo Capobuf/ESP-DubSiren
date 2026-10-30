@@ -21,6 +21,7 @@ inserimento e dima non sono requisiti.
 
 ## Viste e coordinate
 
+- **[Vista 3D inclinata con comandi montati](layout-35/assembled-oblique.png)** / [scena Blender](layout-35/assembled-preview.blend): posizioni XY aggiornate; altezze, copritasti e ferramenta illustrativi. [Assunzioni del modello](layout-35/assembled-preview-notes.json). Non è una verifica di collisione 3D; retro e MASTER omessi.
 - **[Comandi frontali con manopole e copritasti](layout-35/assembled-top.png)** / [SVG](layout-35/assembled-top.svg): proiezione XY in scala, superfici illustrative; copritasti provvisori 20×20 mm. MASTER e retro omessi, altezze non validate.
 - **[Top 2D](layout-35/F-layout.png)** / [SVG](layout-35/F-layout.svg).
 - **[Bottom 2D, specchiato](layout-35/B-layout.png)** / [SVG](layout-35/B-layout.svg).
