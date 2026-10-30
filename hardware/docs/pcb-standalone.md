@@ -37,6 +37,10 @@ Materiali standard: nylon nero, viti M3, rondelle isolanti dove servono, piedini
 - I quattro CHERRY devono poter essere premuti senza che keycap, piedini o PCB interferiscano; definire i keycap effettivi, non usare un volume generico come dato certificato.
 - Encoder e manopola SAK-023: conservare lo studio dimensionale precedente come evidenza, ma rivalutare la posizione della manopola **senza** l'obbligo della battuta sulla parete Hammond.
 
+## Archivio meccanico Hammond
+
+Conservare il branch **`codex/issue-14-jack-fit`** come archivio tecnico dello studio Hammond, non integrato in `main`. Il branch contiene prove FreeCAD, report e geometrie che potrebbero tornare utili in futuro. La [PR #18](https://github.com/Capobuf/ESP-DubSiren/pull/18) è stata chiusa senza merge e la [issue #14](https://github.com/Capobuf/ESP-DubSiren/issues/14) resta chiusa come non pianificata. **Non eliminare questo branch durante la pulizia ordinaria** e non applicarne i vincoli al layout standalone.
+
 ## Stato reale del progetto
 
 - [Schema KiCad](../kicad/ESP-DubSiren.kicad_sch), [PCB](../kicad/ESP-DubSiren.kicad_pcb), [BOM](BOM.csv), [fonti](sources.md).
