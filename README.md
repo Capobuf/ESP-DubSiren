@@ -178,12 +178,14 @@ del testo ST7789 e devono restare sotto il budget display di 100.000 µs.
 
 L'unico progetto hardware è in [hardware/README.md](hardware/README.md):
 ESP32-S3-WROOM-1U, DAC Adafruit 6250 e display Adafruit 5393.
-Il **KiCad è provvisorio, senza routing né bordo definitivo: nessun PCB
-fabbricabile**. La [issue #14](https://github.com/Capobuf/ESP-DubSiren/issues/14)
-è in fase B con [pannello provvisorio](hardware/cad/gate-a-panel.pdf) e
-[studio del jack mono NRJ4HF](hardware/cad/nrj4hf-validation.json).
-Il deficit RCA di 0,9 mm è storico. Assieme completo, tolleranze, sagoma PCB,
-inserimento e dima 3D restano da validare; i PDF non autorizzano la foratura.
+Il **KiCad è una proposta standalone da 86 × 120 mm, senza routing: nessun
+PCB fabbricabile**. La direzione del 30/10/2026 prevede PCB a vista nero e quattro
+fissaggi M3, senza contenitore obbligatorio. Sono disponibili la
+[verifica elettrica #34](hardware/docs/issue-34-electrical-review.md) e la
+[proposta layout #35](hardware/docs/issue-35-standalone-layout.md), da revisionare
+prima del routing. Stack display/DAC, keycap e montaggio fisico restano da qualificare.
+Gli studi Hammond della #14 e il deficit RCA sono storici; i relativi PDF non
+autorizzano la foratura.
 
 Il firmware configura il 5393 con `init(172, 320)` e rotazione landscape,
 ottenendo un'area runtime di 320×172. Usa lo SPI hardware esistente:

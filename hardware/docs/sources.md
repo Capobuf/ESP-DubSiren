@@ -1,13 +1,14 @@
 # Fonti hardware
 
-Fonti conservate per lo schema attivo e la futura verifica meccanica #14.
+Fonti conservate per lo schema attivo e la verifica standalone #34–#35.
+Gli studi Hammond della #14 sono storici: il contenitore non è più un requisito.
 I file originali spostati mantengono il contenuto; studi, rendering e report delle
 revisioni eliminate sono recuperabili dallo storico Git. I datasheet specifici
 per ciascun riferimento sono indicati anche in [BOM.csv](BOM.csv).
 
 | Uso | Fonte conservata / autorità |
 |---|---|
-| Contenitore confermato dall'utente nella #14 | [STEP originale Hammond 29830PSLA](../cad/sources/Hammond_29830PSLA.stp); [disegno originale, rev. 03.01.2024](../cad/sources/Hammond_29830PSLA.pdf), [fonte Hammond](https://www.hammfg.com/files/parts/pdf/29830PSLA.pdf) |
+| STORICO: contenitore dello studio #14, non richiesto per il PCB standalone | [STEP originale Hammond 29830PSLA](../cad/sources/Hammond_29830PSLA.stp); [disegno originale, rev. 03.01.2024](../cad/sources/Hammond_29830PSLA.pdf), [fonte Hammond](https://www.hammfg.com/files/parts/pdf/29830PSLA.pdf) |
 | STORICO: dual RCA RCJ-2123 sostituito, assente da BOM e assieme attivi | [STEP originale](../cad/sources/SameSky_RCJ-2123.step), [disegno RCJ-21](../cad/sources/rcj_21.pdf); [servizio CAD Same Sky](https://www.sameskydevices.com/product/resource/3dmodel/rcj-21-series/rcj-2123), [termini](https://www.sameskydevices.com/cad-model-terms) |
 | Display 5393 | [Eagle, licenza e revisione originali](../cad/sources/adafruit-5393/); [repository Adafruit](https://github.com/adafruit/Adafruit-1.47in-320x172-Round-Rectangle-TFT-PCB), commit `73022f63a4b82117093ff5c250c119b6720005df` |
 | DAC 6250 | [Eagle, licenza e revisione originali](../cad/sources/adafruit-6250/); [repository Adafruit](https://github.com/adafruit/Adafruit-PCM510x-I2S-DAC-PCB), commit `2edfe9e71b59e6acc73d0ab2b2f796149146ce74`; [PCM5102](pcm5102.pdf) |
@@ -33,7 +34,7 @@ completi dei breakout nelle revisioni Adafruit conservate.
 - [Disegno originale](../cad/sources/Neutrik_NRJ4HF.pdf), [origine](https://www.neutrik.com/media/8561/download/st-nrj4hf.PDF?v=2).
 - [STEP originale](../cad/sources/Neutrik_NRJ4HF.stp), [origine](https://www.neutrik.com/media/12335/download/nrj4hf-2.stp?v=1).
 - [Circuiti originali Neutrik](../cad/sources/Neutrik_Jacks_Circuits.pdf), [origine](https://www.neutrik.com/media/8557/download/jacks---circuits.pdf).
-- Accessorio meccanico obbligatorio: **NRJ-NUT-B, quantità 1**, [disegno originale](../cad/sources/Neutrik_NRJ-NUT-B.pdf), [origine](https://www.neutrik.com/media/8611/download/nrj-nut-b_r-1.pdf?v=1), [DigiKey](https://www.digikey.it/it/products/detail/neutrik-americas-inc/NRJ-NUT-B/29427303). Registrato qui come ferramenta, senza simbolo elettrico fittizio.
+- Accessorio meccanico **facoltativo senza pannello**: NRJ-NUT-B, quantità 1 se utilizzato, [disegno originale](../cad/sources/Neutrik_NRJ-NUT-B.pdf), [origine](https://www.neutrik.com/media/8611/download/nrj-nut-b_r-1.pdf?v=1), [DigiKey](https://www.digikey.it/it/products/detail/neutrik-americas-inc/NRJ-NUT-B/29427303). Registrato qui come ferramenta, senza simbolo elettrico fittizio.
 
 Il footprint standard `Connector_Audio:Jack_6.35mm_Neutrik_NRJ4HF_Horizontal`
 coincide con la foratura del disegno Neutrik: interassi elettrici 12,70 x 11,43 mm,

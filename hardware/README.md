@@ -1,6 +1,33 @@
 # ESP-DubSiren — hardware
 
-**J2 sostituito con Neutrik NRJ4HF, PR #17 integrata. Gate B NON VALIDATO. Nessun PCB fabbricabile.**
+**Proposta standalone a PCB esposto, 86 × 120 mm, da revisionare prima del routing. Nessun PCB fabbricabile.**
+
+La direzione approvata il 30/10/2026 supera il vincolo Hammond: una sola PCB,
+colore finale nero, quattro fissaggi M3, nessuna scocca o stampa 3D obbligatoria.
+Il solo progetto attivo resta quello nella cartella `kicad`.
+
+- [Verifica elettrica #34](docs/issue-34-electrical-review.md): ERC 0 errori/0 warning,
+  237 pin coerenti fra schema e PCB, distinta verificata.
+- [Proposta e verifica ingombri #35](docs/issue-35-standalone-layout.md):
+  coordinate, altezze documentate, fissaggi e prove fisiche pendenti.
+- [Vista superiore](docs/layout-35/F-layout.png),
+  [vista inferiore](docs/layout-35/B-layout.png),
+  [render superiore](docs/layout-35/top-3d.png),
+  [render inferiore](docs/layout-35/bottom-3d.png).
+  I render sono diagnostici: modelli incompleti e colore predefinito verde;
+  non rappresentano un assieme completo o la finitura finale.
+
+Il PCB conserva 68 footprint, ora riposizionati; bordo 86 × 120 mm R3,
+fori Ø3,2 in (5;5), (81;5), (5;115), (81;115) mm. Nessuna pista, via o zona.
+Le riserve 8 × 8 mm ai fissaggi sono annotate su `Dwgs.User` per entrambe le
+facce; non sono ancora regole automatiche del router.
+Il dado NRJ-NUT-B è facoltativo nell'uso senza pannello.
+
+## Archivio dello studio Hammond
+
+Le sezioni seguenti conservano misure e stato **precedenti** alla #35.
+Coordinate, conteggi DRC e vincoli Hammond qui sotto non descrivono il layout
+standalone attuale. L'assieme FreeCAD è storico, non una seconda scheda attiva.
 
 - [Progetto KiCad](kicad/ESP-DubSiren.kicad_pro), [schema](kicad/ESP-DubSiren.kicad_sch), [PCB](kicad/ESP-DubSiren.kicad_pcb).
 - [Assieme FreeCAD modificabile](cad/assembly.FCStd): Hammond originale, proposta pannello Gate A e studio posteriore NRJ4HF.

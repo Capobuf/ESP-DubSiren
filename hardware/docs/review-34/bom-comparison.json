@@ -1,0 +1,12 @@
+{
+  "schematic_components": 64,
+  "bom_components": 64,
+  "purchasable": 57,
+  "differences": [],
+  "not_in_recorded_order": {
+    "GRM1885C1H103JA01D": 1,
+    "NRJ4HF": 1,
+    "TPS22918DBVR": 1
+  },
+  "insufficient_recorded_quantity": {}
+}
