@@ -21,6 +21,7 @@ inserimento e dima non sono requisiti.
 
 ## Viste e coordinate
 
+- **[Comandi frontali con manopole e copritasti](layout-35/assembled-top.png)** / [SVG](layout-35/assembled-top.svg): proiezione XY in scala, superfici illustrative; copritasti provvisori 20×20 mm. MASTER e retro omessi, altezze non validate.
 - **[Top 2D](layout-35/F-layout.png)** / [SVG](layout-35/F-layout.svg).
 - **[Bottom 2D, specchiato](layout-35/B-layout.png)** / [SVG](layout-35/B-layout.svg).
 - [Render 3D top](layout-35/top-3d.png) e [bottom](layout-35/bottom-3d.png).
