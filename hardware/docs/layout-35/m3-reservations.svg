@@ -1,18 +1,18 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="86" height="120" viewBox="0 0 86 120">
+<svg xmlns="http://www.w3.org/2000/svg" width="86" height="126" viewBox="0 0 86 126">
 <path fill="black" d="M1,1 h8 v0.12 h-8 Z"/>
-<path fill="black" d="M1,8.879999999999999 h8 v0.12 h-8 Z"/>
+<path fill="black" d="M1,8.88 h8 v0.12 h-8 Z"/>
 <path fill="black" d="M1,1 h0.12 v8 h-0.12 Z"/>
-<path fill="black" d="M8.879999999999999,1 h0.12 v8 h-0.12 Z"/>
+<path fill="black" d="M8.88,1 h0.12 v8 h-0.12 Z"/>
 <path fill="black" d="M77,1 h8 v0.12 h-8 Z"/>
-<path fill="black" d="M77,8.879999999999999 h8 v0.12 h-8 Z"/>
+<path fill="black" d="M77,8.88 h8 v0.12 h-8 Z"/>
 <path fill="black" d="M77,1 h0.12 v8 h-0.12 Z"/>
 <path fill="black" d="M84.88,1 h0.12 v8 h-0.12 Z"/>
-<path fill="black" d="M1,111 h8 v0.12 h-8 Z"/>
-<path fill="black" d="M1,118.88 h8 v0.12 h-8 Z"/>
-<path fill="black" d="M1,111 h0.12 v8 h-0.12 Z"/>
-<path fill="black" d="M8.879999999999999,111 h0.12 v8 h-0.12 Z"/>
-<path fill="black" d="M77,111 h8 v0.12 h-8 Z"/>
-<path fill="black" d="M77,118.88 h8 v0.12 h-8 Z"/>
-<path fill="black" d="M77,111 h0.12 v8 h-0.12 Z"/>
-<path fill="black" d="M84.88,111 h0.12 v8 h-0.12 Z"/>
+<path fill="black" d="M1,117 h8 v0.12 h-8 Z"/>
+<path fill="black" d="M1,124.88 h8 v0.12 h-8 Z"/>
+<path fill="black" d="M1,117 h0.12 v8 h-0.12 Z"/>
+<path fill="black" d="M8.88,117 h0.12 v8 h-0.12 Z"/>
+<path fill="black" d="M77,117 h8 v0.12 h-8 Z"/>
+<path fill="black" d="M77,124.88 h8 v0.12 h-8 Z"/>
+<path fill="black" d="M77,117 h0.12 v8 h-0.12 Z"/>
+<path fill="black" d="M84.88,117 h0.12 v8 h-0.12 Z"/>
 </svg>

@@ -1,6 +1,6 @@
 # ESP-DubSiren — hardware
 
-**Proposta standalone a PCB esposto, 86 × 120 mm, da revisionare prima del routing. Nessun PCB fabbricabile.**
+**Proposta standalone a PCB esposto, 86 × 126 mm, da revisionare prima del routing. Nessun PCB fabbricabile.**
 
 La direzione approvata il 30/10/2026 supera il vincolo Hammond: una sola PCB,
 colore finale nero, quattro fissaggi M3, nessuna scocca o stampa 3D obbligatoria.
@@ -17,7 +17,7 @@ Il solo progetto attivo resta quello nella cartella `kicad`.
   I render sono diagnostici: modelli incompleti e colore predefinito verde;
   non rappresentano un assieme completo o la finitura finale.
 
-Il PCB conserva 68 footprint, ora riposizionati; bordo 86 × 120 mm R3,
+Il PCB conserva 68 footprint, ora riposizionati; bordo 86 × 126 mm R3,
 fori Ø3,2 in (5;5), (81;5), (5;115), (81;115) mm. Nessuna pista, via o zona.
 Le riserve 8 × 8 mm ai fissaggi sono annotate su `Dwgs.User` per entrambe le
 facce; non sono ancora regole automatiche del router.

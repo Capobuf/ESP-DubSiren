@@ -1,28 +1,28 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="520" viewBox="0 0 1000 520"><rect width="1000" height="520" fill="#fff"/><g font-family="Arial,sans-serif" fill="#17212b">
-<text x="35" y="32" font-size="21">Appoggi proposti — proiezione longitudinale nominale</text>
-<text x="35" y="55" font-size="13">Y=0 posteriore; Y=120 fronte. Disegno di ingombro, non stack completo né quote di fabbricazione.</text>
-<text x="50" y="100" font-size="17">PIANA 20 / 20 mm</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="520" viewBox="0 0 1000 520"><rect width="1000" height="520" fill="white"/><g font-family="Arial,sans-serif" fill="#17212b">
+<text x="35" y="32" font-size="21">Appoggi proposti - proiezione longitudinale nominale</text>
+<text x="35" y="55" font-size="13">PCB 126 mm; KiCad Y=-6 posteriore / Y=120 fronte. Non e uno stack completo o una quota di fabbricazione.</text>
 <line x1="25" y1="340" x2="430" y2="340" stroke="#4b5563" stroke-width="2"/>
-<path d="M74.0,284.0 L84.0,284.0 L84.0,340 L74.0,340 Z" fill="#dce7ee" stroke="#526273"/>
-<path d="M382.0,284.0 L392.0,284.0 L392.0,340 L382.0,340 Z" fill="#dce7ee" stroke="#526273"/>
-<polygon points="65.0,284.0 401.0,284.0 401.0,279.52 65.0,279.52" fill="#20252b"/>
-<polygon points="34.732,284.0 127.58,284.0 127.58,319.56 34.732,319.56" fill="#f5d6a6" stroke="#85591d"/>
-<text x="45" y="225" font-size="13">NRJ4HF: 12,7 mm sotto B.Cu</text>
-<text x="185" y="255" font-size="13">PCB 1,6 nominale</text>
+<polygon points="73.640,286.000 83.360,286.000 83.360,340.000 73.640,340.000" fill="#dce7ee" stroke="#526273"/>
+<polygon points="386.840,286.000 396.560,286.000 396.560,340.000 386.840,340.000" fill="#dce7ee" stroke="#526273"/>
+<polygon points="65.000,286.000 405.200,286.000 405.200,281.680 65.000,281.680" fill="#20252b" stroke="#20252b"/>
+<polygon points="35.813,286.000 125.345,286.000 125.345,320.290 35.813,320.290" fill="#f5d6a6" stroke="#85591d"/>
+<text x="50" y="100" font-size="17">PIANA 20 / 20 mm</text>
+<text x="50" y="225" font-size="13">NRJ4HF: 12,7 mm sotto B.Cu</text>
+<text x="50" y="255" font-size="13">PCB 1,6 nominale</text>
 <text x="50" y="380" font-size="14">Gioco jack: 7,3 mm nominali</text>
-<text x="50" y="404" font-size="13">Massimo stack ammesso: 17 mm per ≥3 mm globali</text>
+<text x="50" y="404" font-size="13">Stack massimo: 17 mm per almeno 3 mm globali</text>
 <text x="50" y="428" font-size="13">Piedini e tolleranze da qualificare</text>
-<text x="530" y="100" font-size="17">INCLINATA 25 / 20 mm — 2,60°</text>
 <line x1="505" y1="340" x2="910" y2="340" stroke="#4b5563" stroke-width="2"/>
-<path d="M554.0,270.072202185279 L564.0,270.072202185279 L564.0,340 L554.0,340 Z" fill="#dce7ee" stroke="#526273"/>
-<path d="M862.0,284.05776174822324 L872.0,284.05776174822324 L872.0,340 L862.0,340 Z" fill="#dce7ee" stroke="#526273"/>
-<polygon points="545.0,269.43649493241793 881.0,284.69346900108434 881.0,280.2134690010843 545.0,264.95649493241797" fill="#20252b"/>
-<polygon points="514.732,268.06209585173224 607.58,272.278106352707 607.58,307.83810635270703 514.732,303.62209585173224" fill="#f5d6a6" stroke="#85591d"/>
-<text x="525" y="225" font-size="13">NRJ4HF: 12,7 mm sotto B.Cu</text>
-<text x="665" y="255" font-size="13">PCB 1,6 nominale</text>
+<polygon points="553.632,272.353 563.343,272.772 566.250,340.209 556.539,339.791" fill="#dce7ee" stroke="#526273"/>
+<polygon points="866.541,285.841 876.252,286.259 878.578,340.209 868.867,339.791" fill="#dce7ee" stroke="#526273"/>
+<polygon points="545.000,271.981 884.884,286.631 884.698,282.315 544.814,267.665" fill="#20252b" stroke="#20252b"/>
+<polygon points="515.840,270.724 605.289,274.580 606.766,308.838 517.317,304.983" fill="#f5d6a6" stroke="#85591d"/>
+<text x="530" y="100" font-size="17">INCLINATA 25 / 20 mm - 2,47 gradi</text>
+<text x="530" y="225" font-size="13">NRJ4HF: 12,7 mm sotto B.Cu</text>
+<text x="530" y="255" font-size="13">PCB 1,6 nominale</text>
 <text x="530" y="380" font-size="14">Gioco jack: circa 11,5 mm nominali</text>
-<text x="530" y="404" font-size="13">Massimo stack ammesso: 16,7 mm per ≥3 mm globali</text>
+<text x="530" y="404" font-size="13">Stack massimo: 16,7 mm per almeno 3 mm globali</text>
 <text x="530" y="428" font-size="13">Piedini e tolleranze da qualificare</text>
 <text x="35" y="475" font-size="14">DAC: g + 6,2 mm e sporgenze da misurare. MASTER, terminali e cavi devono rispettare lo stesso budget.</text>
-<text x="35" y="498" font-size="13">L’appoggio inclinato richiede piedini cedevoli: non piegare la PCB con serraggio su facce rigide non complanari.</text>
+<text x="35" y="498" font-size="13">Appoggio inclinato con piedini cedevoli: non piegare la PCB serrandola su facce rigide non complanari.</text>
 </g></svg>

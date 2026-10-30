@@ -1,13 +1,13 @@
 {
-  "method": "conservative pad circumscribed circles against four 8x8 mm reserved squares; exclude each mounting hole itself",
+  "method": "conservative pad circumscribed circles against four 8x8 mm reserved squares; exclude mounting holes themselves",
   "holes": [
     [
       5,
-      5
+      -1
     ],
     [
       81,
-      5
+      -1
     ],
     [
       5,

@@ -1,18 +1,18 @@
 {
-  "board_sha256": "2896e286924c04ccb9e5103acd6a21fc07404d22ab17e86785f457e064804068",
+  "board_sha256": "eba0380182fc750882cdedb8ee098c1f2e4ae56ca151f67306795de534e96563",
   "board_dimensions_mm": [
     86,
-    120
+    126
   ],
   "corner_radius_mm": 3,
   "hole_centers_mm": [
     [
       5,
-      5
+      -1
     ],
     [
       81,
-      5
+      -1
     ],
     [
       5,
@@ -38,5 +38,20 @@
   "bom_electrical_fields_modified": false,
   "bom_editorial_change": "J2 Notes: optional nut without panel",
   "render_coverage": "partial 3D models; green preset, intended mask black",
-  "physical_validation": "pending display/DAC mounting, caps/knobs, terminal and cable height, support stability"
+  "physical_validation": "pending display/DAC mounting, caps/knobs, terminal and cable height, support stability",
+  "board_extents_mm": [
+    0,
+    -6,
+    86,
+    120
+  ],
+  "hole_pitch_mm": [
+    76,
+    116
+  ],
+  "front_keycap_gap_mm": 4.078125,
+  "display_to_lower_knob_gap_mm": 4.338125,
+  "connectivity_entries_unchanged": 237,
+  "placement_readback_verified": 68,
+  "user_authorized_length_mm": 126
 }

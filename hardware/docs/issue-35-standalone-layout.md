@@ -1,14 +1,23 @@
 # Issue #35 — proposta PCB standalone
 
 Proposta del **30 ottobre 2026**, nell'unico [PCB attivo](../kicad/ESP-DubSiren.kicad_pcb):
-**86 × 120 mm, angoli R3, quattro fori M3, nessun routing/via/zona**.
+**86 × 126 mm, angoli R3, quattro fori M3, nessun routing/via/zona**.
 È il punto di revisione del placement, non un assieme qualificato o un file fabbricabile.
 Il colore previsto è **nero**; i render KiCad conservano il verde predefinito.
 
-La lunghezza supera di 8 mm il riferimento indicativo 86 × 112: a 112 mm i
-pin passanti USB e jack entravano nel courtyard dei pot superiori. La fascia
-posteriore aggiunta elimina queste interferenze conservando i passi orizzontali
-28 mm e 22 mm. Hammond, traiettoria di inserimento e dima non sono requisiti.
+**Aggiornamento approvato dall'utente:** lunghezza 126 mm; pulsanti e fori
+anteriori fermi, fila inferiore dei potenziometri spostata di 3 mm verso il retro,
+gruppo superiore e connettori posteriori di 6 mm. R11–R13 seguono la fila
+inferiore di 3 mm. I margini nominali diventano **4,08 mm verso i keycap** e
+**4,34 mm fra display e manopola centrale inferiore**.
+Il [rapporto meccanico](issue-35-mechanical-clearance-review.md) conserva la
+verifica prima/dopo e gli accoppiamenti manopola/albero ancora da qualificare.
+
+La lunghezza supera di 14 mm il riferimento indicativo 86 × 112: i primi 8 mm
+separavano i terminali posteriori dai potenziometri superiori; i successivi 6 mm,
+autorizzati dopo la verifica degli ingombri, aumentano i margini fra le file dei
+comandi. Passi orizzontali 28 mm e 22 mm invariati. Hammond, traiettoria di
+inserimento e dima non sono requisiti.
 
 ## Viste e coordinate
 
@@ -22,30 +31,30 @@ posteriore aggiunta elimina queste interferenze conservando i passi orizzontali
 - [Tutte le posizioni dei footprint](layout-35/positions.csv),
   [pad finali](layout-35/pads-final.json).
 
-Origine KiCad all'angolo posteriore sinistro del rettangolo; X verso destra,
-Y verso il fronte con i pulsanti. Tutte le coordinate sotto sono **viste da sopra**,
+L'origine KiCad precedente è conservata: bordo posteriore a **Y=−6**,
+bordo anteriore a **Y=120**, X da 0 a 86 mm. X verso destra, Y verso i pulsanti. Tutte le coordinate sotto sono **viste da sopra**,
 anche per i componenti B.Cu. Spessore PCB di riferimento 1,6 mm, da confermare
 nel futuro ordine di produzione.
 
 | Elemento | X; Y in mm | Faccia / orientamento |
 |---|---|---|
-| H1, H2 | 5;5 — 81;5 | Ø3,2 NPTH, M3 |
-| H3, H4 | 5;115 — 81;115 | Ø3,2 NPTH, M3; interassi 76 × 110 |
-| RV1–3, assi | 15;24 — 43;24 — 71;24 | F.Cu, 0° |
-| RV4–6, assi | 15;79 — 43;79 — 71;79 | F.Cu, 0° |
-| Display U5 | anchor 44,016;52,5; area attiva 43;52,5 | F.Cu, 0° |
-| Encoder SW7, asse | 75;52,5 | F.Cu, 0° |
+| H1, H2 | 5;−1 — 81;−1 | Ø3,2 NPTH, M3 |
+| H3, H4 | 5;115 — 81;115 | Ø3,2 NPTH, M3; interassi 76 × 116 |
+| RV1–3, assi | 15;18 — 43;18 — 71;18 | F.Cu, 0° |
+| RV4–6, assi | 15;76 — 43;76 — 71;76 | F.Cu, 0° |
+| Display U5 | anchor 44,016;46,5; area attiva 43;46,5 | F.Cu, 0° |
+| Encoder SW7, asse | 75;46,5 | F.Cu, 0° |
 | SW1–4, **steli** | 10;100 — 32;100 — 54;100 — 76;100 | F.Cu; anchor pad1 = stelo+(2,54;−5,08) |
-| MASTER RV7 | 16;6 | B.Cu, 0°; albero verso il posteriore |
-| USB-C J1 | anchor 40;8,61 | B.Cu, 0°; apertura verso il posteriore |
-| Mono J2 | pad T 71,23;15 | B.Cu, 90°; apertura verso il posteriore |
-| DAC U6 | 13;55,5 | B.Cu, 90° |
-| ESP32 U1 / mux U3 | 43;52 / 43;75 | B.Cu, 0° |
-| RESET SW5 / BOOT SW6 | 81;70 / 81;86 | B.Cu, 90°; accesso dal bordo destro |
+| MASTER RV7 | 16;0 | B.Cu, 0°; albero verso il posteriore |
+| USB-C J1 | anchor 40;2,61 | B.Cu, 0°; apertura verso il posteriore |
+| Mono J2 | pad T 71,23;9 | B.Cu, 90°; apertura verso il posteriore |
+| DAC U6 | 13;49,5 | B.Cu, 90° |
+| ESP32 U1 / mux U3 | 43;46 / 43;69 | B.Cu, 0° |
+| RESET SW5 / BOOT SW6 | 81;64 / 81;80 | B.Cu, 90°; accesso dal bordo destro |
 
 Rispetto al Gate A, una traslazione di riferimento sarebbe Xpcb=Xcad+43,
-Ypcb=56−Ycad. **Non è stata copiata**: pot superiori Y14→24, display/encoder
-Y44→52,5, inferiori Y71→79, steli Y96,5→100. Il vecchio placement KiCad
+Ypcb=56−Ycad. **Non è stata copiata**: pot superiori Y14→18, display/encoder
+Y44→46,5, inferiori Y71→76, steli Y96,5→100. Il vecchio placement KiCad
 aveva inoltre passo pot35 mm e steli a Y122: le coordinate attuali sono state
 verificate dall'esportazione nativa, non ricavate solo dal CAD storico.
 
@@ -68,8 +77,8 @@ esagonali AF5,5 hanno diagonale 6,35 mm e rientrano nella riserva.
 |---|---|
 | Davies 1100 | Gonna Ø19,84375; corpo Ø16,66875; altezza manopola 11,90625 mm dal [catalogo p.24](../cad/sources/Davies-Catalog-Instrument-Knobs.pdf). Passo28: spazio laterale 8,15625 mm. L'accoppiamento del foro 1/4″ con albero e grano resta da provare. |
 | SAK-023 | Ø14,5 nominale dal [disegno](../cad/sources/SameSky-SAK-023.pdf). Fra il bordo PCB del display e l'inviluppo encoder restano circa 5,3 mm. Accesso dita e corsa click richiedono prova. |
-| CHERRY/keycap | Corpo CHERRY documentato; keycap **non identificato**: riserva20×20, passo22, gap2 mm. I cappucci estremi arrivano nominalmente ai bordi laterali. Fra riserva keycap e riserva vite anteriore resta1 mm. Non garantisce ergonomia per ogni cappuccio. |
-| Display 5393 | PCB Eagle36,83×30,48; ingombro prodotto web37,3×30,5. Area attiva Eagle32,35×17,4. Il contorno TFT Eagle e la quota web non coincidono: usare il pezzo per qualificare il montaggio. Gap nominale dalla PCB breakout alla gonna dei pot inferiori circa1,34 mm. |
+| CHERRY/keycap | Corpo CHERRY documentato; keycap **non identificato**: riserva20×20, passo22, gap2 mm. I cappucci estremi arrivano nominalmente ai bordi laterali. Fra riserva keycap e riserva vite anteriore resta1 mm. Distanza minima nominale dalle gonne inferiori4,08 mm. Non garantisce ergonomia per ogni cappuccio. |
+| Display 5393 | PCB Eagle36,83×30,48; ingombro prodotto web37,3×30,5. Area attiva Eagle32,35×17,4. Il contorno TFT Eagle e la quota web non coincidono: usare il pezzo per qualificare il montaggio. Gap nominale dalla PCB breakout alla gonna dei pot inferiori circa4,34 mm. |
 | DAC 6250 | PCB Eagle30,48×20,32, prodotto con jack32,5×20,3. Ruotato sul retro a sinistra; il suo jack3,5 non è una seconda uscita di pannello. Non sono previsti cavi su quel jack nel normale montaggio mono. |
 | Retro | USB, NRJ4HF e MASTER sono disposti lungo il bordo posteriore. Il corpo del jack sporge oltre il bordo: è intenzionale. I cavi reali, il raggio di curvatura e la forza di inserzione non sono qualificati dal courtyard. |
 
@@ -102,7 +111,7 @@ opzioni commerciali dimensionate, da qualificare con misure, non altezze finali.
 | Configurazione | Ferramenta commerciale candidata | Gioco nominale / condizione |
 |---|---|---|
 | Piana | 4× [Harwin R30-1612000](https://www.harwin.com/products/R30-1612000), M3 femmina/femmina, nylon66, L20, AF5,5; viti M3 compatibili e piedini antiscivolo | Ignorando il contributo favorevole dei piedini, B.Cu–tavolo20 mm e gioco jack7,3 mm. Accettare solo se ogni corpo/terminale/cavo resta entro17 mm da B.Cu, riservando almeno3 mm al tavolo. |
-| Leggermente inclinata | H1/H2: 2× [R30-1612500](https://www.harwin.com/products/R30-1612500), L25; H3/H4: 2× R30-1612000, L20; stessi M3 e piedini cedevoli | Interasse110: inclinazione nominale atan(5/110)=2,60°. Con colonne normali alla PCB, quota minima nominale al bordo anteriore≈19,75 mm; gioco jack nella sua zona posteriore≈11,5 mm. Per ≥3 mm globali, inviluppo sottoscheda conservativo≤16,7 mm. |
+| Leggermente inclinata | H1/H2: 2× [R30-1612500](https://www.harwin.com/products/R30-1612500), L25; H3/H4: 2× R30-1612000, L20; stessi M3 e piedini cedevoli | Interasse116: inclinazione nominale atan(5/116)=2,47°. Con colonne normali alla PCB, quota minima nominale al bordo anteriore≈19,77 mm; gioco jack nella sua zona posteriore≈11,5 mm. Per ≥3 mm globali, inviluppo sottoscheda conservativo≤16,7 mm. |
 
 Nella soluzione inclinata i piedini devono assorbire il dislivello della propria
 faccia inferiore e aderire al tavolo senza imporre flessione al PCB. L'inclinazione
@@ -121,13 +130,13 @@ Lo stesso controllo vale per MASTER, pin passanti e cavo antenna.
 
 Alternative sugli stessi fori: [Harwin R30-1002002](https://www.harwin.com/products/R30-1002002)
 in ottone M3/L20/AF5 con isolamento e riserve rispettate; fissaggio a una base
-generica tramite gli stessi76×110 mm; appoggi antiscivolo sotto le colonne.
+generica tramite gli stessi76×116 mm; appoggi antiscivolo sotto le colonne.
 Supporti a scatto **non qualificati**: occorre MPN con foro ammesso Ø3,2 e
 spessore1,6, diametro testa dentro8 mm e altezza adeguata. Nessun foro aggiunto.
 
 ## Fissaggio display
 
-I quattro fori esistenti Ø2,5 sono a X28,141/59,891 e Y39,8/65,2.
+I quattro fori esistenti Ø2,5 sono a X28,141/59,891 e Y33,8/59,2.
 La distanza centro foro inferiore sinistro–bordo del pad VIN quadrato è
 **2,2098 mm**: una rondella metallica Ø5 invade nominalmente il rame di0,2902 mm;
 un ingombro Ø4 lascia solo0,2098 mm prima delle tolleranze.
@@ -164,7 +173,8 @@ alla fase successiva; i warning sono esplicitati, non ignorati come un PASS glob
 Le scritture KiCad sono avvenute solo tramite Konnect MCP, con letture/export
 successivi. I rendering/plot nativi KiCad sono esportazioni in sola lettura.
 
-**Da decidere sulla proposta:** disposizione/ingombro86×120 e accesso posteriore.
+**Dimensione autorizzata:** 86×126 mm; spostamento applicato e verificato.
+**Da validare:** accessibilità e comodità reali dei comandi assemblati.
 **Da misurare prima di consolidarla:** stack display/DAC, keycap, manopole,
 ganci/pin/saldature, presa dei cavi e stabilità degli appoggi. Le riserve dei
 fissaggi vanno rese vincoli automatici prima del routing. Non sono stati prodotti

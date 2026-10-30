@@ -178,7 +178,7 @@ del testo ST7789 e devono restare sotto il budget display di 100.000 µs.
 
 L'unico progetto hardware è in [hardware/README.md](hardware/README.md):
 ESP32-S3-WROOM-1U, DAC Adafruit 6250 e display Adafruit 5393.
-Il **KiCad è una proposta standalone da 86 × 120 mm, senza routing: nessun
+Il **KiCad è una proposta standalone da 86 × 126 mm, senza routing: nessun
 PCB fabbricabile**. La direzione del 30/10/2026 prevede PCB a vista nero e quattro
 fissaggi M3, senza contenitore obbligatorio. Sono disponibili la
 [verifica elettrica #34](hardware/docs/issue-34-electrical-review.md) e la
