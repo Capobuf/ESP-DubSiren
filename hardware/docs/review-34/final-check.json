@@ -1,0 +1,1268 @@
+{
+  "pin_count": 237,
+  "differences_from_verified_baseline": [],
+  "tracks": "",
+  "routes": "",
+  "component_count": 68,
+  "drc_counts": {
+    "violations": {
+      "silk_edge_clearance": 11,
+      "lib_footprint_mismatch": 64,
+      "silk_overlap": 13,
+      "silk_over_copper": 27
+    },
+    "unconnected_items": {
+      "unconnected_items": 160
+    },
+    "schematic_parity": {
+      "footprint_symbol_field_mismatch": 64,
+      "extra_footprint": 4
+    }
+  },
+  "fresh_export_comparison": {
+    "schematic_pin_count": 237,
+    "pcb_pin_count": 237,
+    "differences": []
+  },
+  "ipc2581_via_elements": 0,
+  "ipc2581_copper_geometry": {
+    "F.Cu": {
+      "LayerFeature": 1,
+      "Set": 54,
+      "Pad": 90,
+      "Location": 90,
+      "StandardPrimitiveRef": 90,
+      "PinRef": 90,
+      "Xform": 18
+    },
+    "B.Cu": {
+      "LayerFeature": 1,
+      "Set": 81,
+      "Pad": 247,
+      "Location": 247,
+      "StandardPrimitiveRef": 247,
+      "PinRef": 247,
+      "Xform": 73
+    }
+  },
+  "limits": "IPC2581 confirms no exported traces/vias/copper fills; absence of unfilled rule areas is not established by export.",
+  "native_final_pads": {
+    "U6": [
+      {
+        "number": "",
+        "x": 5.38,
+        "y": 68.2,
+        "net": "",
+        "pad_type": "np_thru_hole",
+        "shape": "circle",
+        "size": {
+          "x": 2.5,
+          "y": 2.5
+        },
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 2.5,
+            "y": 2.5
+          },
+          "start_layer": null
+        }
+      },
+      {
+        "number": "",
+        "x": 20.62,
+        "y": 68.2,
+        "net": "",
+        "pad_type": "np_thru_hole",
+        "shape": "circle",
+        "size": {
+          "x": 2.5,
+          "y": 2.5
+        },
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 2.5,
+            "y": 2.5
+          },
+          "start_layer": null
+        }
+      },
+      {
+        "number": "",
+        "x": 5.38,
+        "y": 42.8,
+        "net": "",
+        "pad_type": "np_thru_hole",
+        "shape": "circle",
+        "size": {
+          "x": 2.5,
+          "y": 2.5
+        },
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 2.5,
+            "y": 2.5
+          },
+          "start_layer": null
+        }
+      },
+      {
+        "number": "",
+        "x": 20.62,
+        "y": 42.8,
+        "net": "",
+        "pad_type": "np_thru_hole",
+        "shape": "circle",
+        "size": {
+          "x": 2.5,
+          "y": 2.5
+        },
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 2.5,
+            "y": 2.5
+          },
+          "start_layer": null
+        }
+      },
+      {
+        "number": "1",
+        "x": 5.38,
+        "y": 64.39,
+        "net": "+5V",
+        "pad_type": "thru_hole",
+        "shape": "rect",
+        "size": {
+          "x": 1.6764,
+          "y": 1.6764
+        },
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 1.0,
+            "y": 1.0
+          },
+          "start_layer": null
+        }
+      },
+      {
+        "number": "2",
+        "x": 5.38,
+        "y": 61.85,
+        "net": "GND",
+        "pad_type": "thru_hole",
+        "shape": "circle",
+        "size": {
+          "x": 1.6764,
+          "y": 1.6764
+        },
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 1.0,
+            "y": 1.0
+          },
+          "start_layer": null
+        }
+      },
+      {
+        "number": "3",
+        "x": 5.38,
+        "y": 59.31,
+        "net": "/I2S_LRCK",
+        "pad_type": "thru_hole",
+        "shape": "circle",
+        "size": {
+          "x": 1.6764,
+          "y": 1.6764
+        },
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 1.0,
+            "y": 1.0
+          },
+          "start_layer": null
+        }
+      },
+      {
+        "number": "4",
+        "x": 5.38,
+        "y": 56.77,
+        "net": "/I2S_DIN",
+        "pad_type": "thru_hole",
+        "shape": "circle",
+        "size": {
+          "x": 1.6764,
+          "y": 1.6764
+        },
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 1.0,
+            "y": 1.0
+          },
+          "start_layer": null
+        }
+      },
+      {
+        "number": "5",
+        "x": 5.38,
+        "y": 54.23,
+        "net": "/I2S_BCLK",
+        "pad_type": "thru_hole",
+        "shape": "circle",
+        "size": {
+          "x": 1.6764,
+          "y": 1.6764
+        },
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 1.0,
+            "y": 1.0
+          },
+          "start_layer": null
+        }
+      },
+      {
+        "number": "6",
+        "x": 5.38,
+        "y": 51.69,
+        "net": "/AUDIO_MONO",
+        "pad_type": "thru_hole",
+        "shape": "circle",
+        "size": {
+          "x": 1.6764,
+          "y": 1.6764
+        },
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 1.0,
+            "y": 1.0
+          },
+          "start_layer": null
+        }
+      },
+      {
+        "number": "7",
+        "x": 5.38,
+        "y": 49.15,
+        "net": "GND",
+        "pad_type": "thru_hole",
+        "shape": "circle",
+        "size": {
+          "x": 1.6764,
+          "y": 1.6764
+        },
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 1.0,
+            "y": 1.0
+          },
+          "start_layer": null
+        }
+      },
+      {
+        "number": "8",
+        "x": 5.38,
+        "y": 46.61,
+        "net": "unconnected-(U6-OUTR-Pad8)",
+        "pad_type": "thru_hole",
+        "shape": "circle",
+        "size": {
+          "x": 1.6764,
+          "y": 1.6764
+        },
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 1.0,
+            "y": 1.0
+          },
+          "start_layer": null
+        }
+      },
+      {
+        "number": "9",
+        "x": 20.62,
+        "y": 49.15,
+        "net": "unconnected-(U6-3V3_OUT-Pad9)",
+        "pad_type": "thru_hole",
+        "shape": "circle",
+        "size": {
+          "x": 1.778,
+          "y": 1.778
+        },
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 1.0,
+            "y": 1.0
+          },
+          "start_layer": null
+        }
+      },
+      {
+        "number": "10",
+        "x": 20.62,
+        "y": 51.69,
+        "net": "unconnected-(U6-FORMAT-Pad10)",
+        "pad_type": "thru_hole",
+        "shape": "circle",
+        "size": {
+          "x": 1.778,
+          "y": 1.778
+        },
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 1.0,
+            "y": 1.0
+          },
+          "start_layer": null
+        }
+      },
+      {
+        "number": "11",
+        "x": 20.62,
+        "y": 54.23,
+        "net": "unconnected-(U6-MUTE-Pad11)",
+        "pad_type": "thru_hole",
+        "shape": "circle",
+        "size": {
+          "x": 1.778,
+          "y": 1.778
+        },
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 1.0,
+            "y": 1.0
+          },
+          "start_layer": null
+        }
+      },
+      {
+        "number": "12",
+        "x": 20.62,
+        "y": 56.77,
+        "net": "unconnected-(U6-MCLK-Pad12)",
+        "pad_type": "thru_hole",
+        "shape": "circle",
+        "size": {
+          "x": 1.778,
+          "y": 1.778
+        },
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 1.0,
+            "y": 1.0
+          },
+          "start_layer": null
+        }
+      },
+      {
+        "number": "13",
+        "x": 20.62,
+        "y": 59.31,
+        "net": "unconnected-(U6-FILTER-Pad13)",
+        "pad_type": "thru_hole",
+        "shape": "circle",
+        "size": {
+          "x": 1.778,
+          "y": 1.778
+        },
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 1.0,
+            "y": 1.0
+          },
+          "start_layer": null
+        }
+      },
+      {
+        "number": "14",
+        "x": 20.62,
+        "y": 61.85,
+        "net": "unconnected-(U6-DEMPH-Pad14)",
+        "pad_type": "thru_hole",
+        "shape": "circle",
+        "size": {
+          "x": 1.778,
+          "y": 1.778
+        },
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 1.0,
+            "y": 1.0
+          },
+          "start_layer": null
+        }
+      }
+    ],
+    "U5": [
+      {
+        "number": "",
+        "x": 28.140999,
+        "y": 39.8,
+        "net": "",
+        "pad_type": "np_thru_hole",
+        "shape": "circle",
+        "size": {
+          "x": 2.5,
+          "y": 2.5
+        },
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 2.5,
+            "y": 2.5
+          },
+          "start_layer": null
+        }
+      },
+      {
+        "number": "",
+        "x": 28.140999,
+        "y": 65.2,
+        "net": "",
+        "pad_type": "np_thru_hole",
+        "shape": "circle",
+        "size": {
+          "x": 2.5,
+          "y": 2.5
+        },
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 2.5,
+            "y": 2.5
+          },
+          "start_layer": null
+        }
+      },
+      {
+        "number": "",
+        "x": 59.891,
+        "y": 39.8,
+        "net": "",
+        "pad_type": "np_thru_hole",
+        "shape": "circle",
+        "size": {
+          "x": 2.5,
+          "y": 2.5
+        },
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 2.5,
+            "y": 2.5
+          },
+          "start_layer": null
+        }
+      },
+      {
+        "number": "",
+        "x": 59.891,
+        "y": 65.2,
+        "net": "",
+        "pad_type": "np_thru_hole",
+        "shape": "circle",
+        "size": {
+          "x": 2.5,
+          "y": 2.5
+        },
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 2.5,
+            "y": 2.5
+          },
+          "start_layer": null
+        }
+      },
+      {
+        "number": "1",
+        "x": 31.316,
+        "y": 65.83500000000001,
+        "net": "+3V3",
+        "pad_type": "thru_hole",
+        "shape": "rect",
+        "size": {
+          "x": 1.9304,
+          "y": 1.9304
+        },
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 1.0,
+            "y": 1.0
+          },
+          "start_layer": null
+        }
+      },
+      {
+        "number": "2",
+        "x": 33.855999,
+        "y": 65.83500000000001,
+        "net": "unconnected-(U5-3V3_OUT-Pad2)",
+        "pad_type": "thru_hole",
+        "shape": "circle",
+        "size": {
+          "x": 1.9304,
+          "y": 1.9304
+        },
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 1.0,
+            "y": 1.0
+          },
+          "start_layer": null
+        }
+      },
+      {
+        "number": "3",
+        "x": 36.395998999999996,
+        "y": 65.83500000000001,
+        "net": "GND",
+        "pad_type": "thru_hole",
+        "shape": "circle",
+        "size": {
+          "x": 1.9304,
+          "y": 1.9304
+        },
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 1.0,
+            "y": 1.0
+          },
+          "start_layer": null
+        }
+      },
+      {
+        "number": "4",
+        "x": 38.936,
+        "y": 65.83500000000001,
+        "net": "/SPI_SCK",
+        "pad_type": "thru_hole",
+        "shape": "circle",
+        "size": {
+          "x": 1.9304,
+          "y": 1.9304
+        },
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 1.0,
+            "y": 1.0
+          },
+          "start_layer": null
+        }
+      },
+      {
+        "number": "5",
+        "x": 41.476,
+        "y": 65.83500000000001,
+        "net": "unconnected-(U5-MISO_SD-Pad5)",
+        "pad_type": "thru_hole",
+        "shape": "circle",
+        "size": {
+          "x": 1.9304,
+          "y": 1.9304
+        },
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 1.0,
+            "y": 1.0
+          },
+          "start_layer": null
+        }
+      },
+      {
+        "number": "6",
+        "x": 44.016,
+        "y": 65.83500000000001,
+        "net": "/SPI_MOSI",
+        "pad_type": "thru_hole",
+        "shape": "circle",
+        "size": {
+          "x": 1.9304,
+          "y": 1.9304
+        },
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 1.0,
+            "y": 1.0
+          },
+          "start_layer": null
+        }
+      },
+      {
+        "number": "7",
+        "x": 46.555999,
+        "y": 65.83500000000001,
+        "net": "/TFT_CS",
+        "pad_type": "thru_hole",
+        "shape": "circle",
+        "size": {
+          "x": 1.9304,
+          "y": 1.9304
+        },
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 1.0,
+            "y": 1.0
+          },
+          "start_layer": null
+        }
+      },
+      {
+        "number": "8",
+        "x": 49.095999,
+        "y": 65.83500000000001,
+        "net": "/TFT_RST",
+        "pad_type": "thru_hole",
+        "shape": "circle",
+        "size": {
+          "x": 1.9304,
+          "y": 1.9304
+        },
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 1.0,
+            "y": 1.0
+          },
+          "start_layer": null
+        }
+      },
+      {
+        "number": "9",
+        "x": 51.635999,
+        "y": 65.83500000000001,
+        "net": "/TFT_DC",
+        "pad_type": "thru_hole",
+        "shape": "circle",
+        "size": {
+          "x": 1.9304,
+          "y": 1.9304
+        },
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 1.0,
+            "y": 1.0
+          },
+          "start_layer": null
+        }
+      },
+      {
+        "number": "10",
+        "x": 54.175999,
+        "y": 65.83500000000001,
+        "net": "unconnected-(U5-SD_CS-Pad10)",
+        "pad_type": "thru_hole",
+        "shape": "circle",
+        "size": {
+          "x": 1.9304,
+          "y": 1.9304
+        },
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 1.0,
+            "y": 1.0
+          },
+          "start_layer": null
+        }
+      },
+      {
+        "number": "11",
+        "x": 56.715999999999994,
+        "y": 65.83500000000001,
+        "net": "/TFT_LITE",
+        "pad_type": "thru_hole",
+        "shape": "circle",
+        "size": {
+          "x": 1.9304,
+          "y": 1.9304
+        },
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 1.0,
+            "y": 1.0
+          },
+          "start_layer": null
+        }
+      }
+    ],
+    "SW1": [
+      {
+        "number": "",
+        "x": 4.919999999999999,
+        "y": 99.999999,
+        "net": "",
+        "pad_type": "np_thru_hole",
+        "shape": "circle",
+        "size": {
+          "x": 1.7,
+          "y": 1.7
+        },
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 1.7,
+            "y": 1.7
+          },
+          "start_layer": null
+        }
+      },
+      {
+        "number": "",
+        "x": 10.0,
+        "y": 99.999999,
+        "net": "",
+        "pad_type": "np_thru_hole",
+        "shape": "circle",
+        "size": {
+          "x": 4.0,
+          "y": 4.0
+        },
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 4.0,
+            "y": 4.0
+          },
+          "start_layer": null
+        }
+      },
+      {
+        "number": "",
+        "x": 15.079999999999998,
+        "y": 99.999999,
+        "net": "",
+        "pad_type": "np_thru_hole",
+        "shape": "circle",
+        "size": {
+          "x": 1.7,
+          "y": 1.7
+        },
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 1.7,
+            "y": 1.7
+          },
+          "start_layer": null
+        }
+      },
+      {
+        "number": "1",
+        "x": 12.54,
+        "y": 94.92,
+        "net": "/BTN1",
+        "pad_type": "thru_hole",
+        "shape": "circle",
+        "size": {
+          "x": 2.2,
+          "y": 2.2
+        },
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 1.5,
+            "y": 1.5
+          },
+          "start_layer": null
+        }
+      },
+      {
+        "number": "2",
+        "x": 6.1899999999999995,
+        "y": 97.46000000000001,
+        "net": "GND",
+        "pad_type": "thru_hole",
+        "shape": "circle",
+        "size": {
+          "x": 2.2,
+          "y": 2.2
+        },
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 1.5,
+            "y": 1.5
+          },
+          "start_layer": null
+        }
+      }
+    ],
+    "SW2": [
+      {
+        "number": "",
+        "x": 26.919999999999998,
+        "y": 99.999999,
+        "net": "",
+        "pad_type": "np_thru_hole",
+        "shape": "circle",
+        "size": {
+          "x": 1.7,
+          "y": 1.7
+        },
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 1.7,
+            "y": 1.7
+          },
+          "start_layer": null
+        }
+      },
+      {
+        "number": "",
+        "x": 32.0,
+        "y": 99.999999,
+        "net": "",
+        "pad_type": "np_thru_hole",
+        "shape": "circle",
+        "size": {
+          "x": 4.0,
+          "y": 4.0
+        },
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 4.0,
+            "y": 4.0
+          },
+          "start_layer": null
+        }
+      },
+      {
+        "number": "",
+        "x": 37.08,
+        "y": 99.999999,
+        "net": "",
+        "pad_type": "np_thru_hole",
+        "shape": "circle",
+        "size": {
+          "x": 1.7,
+          "y": 1.7
+        },
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 1.7,
+            "y": 1.7
+          },
+          "start_layer": null
+        }
+      },
+      {
+        "number": "1",
+        "x": 34.54,
+        "y": 94.92,
+        "net": "/BTN2",
+        "pad_type": "thru_hole",
+        "shape": "circle",
+        "size": {
+          "x": 2.2,
+          "y": 2.2
+        },
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 1.5,
+            "y": 1.5
+          },
+          "start_layer": null
+        }
+      },
+      {
+        "number": "2",
+        "x": 28.189999999999998,
+        "y": 97.46000000000001,
+        "net": "GND",
+        "pad_type": "thru_hole",
+        "shape": "circle",
+        "size": {
+          "x": 2.2,
+          "y": 2.2
+        },
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 1.5,
+            "y": 1.5
+          },
+          "start_layer": null
+        }
+      }
+    ],
+    "SW3": [
+      {
+        "number": "",
+        "x": 48.92,
+        "y": 100.0,
+        "net": "",
+        "pad_type": "np_thru_hole",
+        "shape": "circle",
+        "size": {
+          "x": 1.7,
+          "y": 1.7
+        },
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 1.7,
+            "y": 1.7
+          },
+          "start_layer": null
+        }
+      },
+      {
+        "number": "",
+        "x": 54.0,
+        "y": 100.0,
+        "net": "",
+        "pad_type": "np_thru_hole",
+        "shape": "circle",
+        "size": {
+          "x": 4.0,
+          "y": 4.0
+        },
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 4.0,
+            "y": 4.0
+          },
+          "start_layer": null
+        }
+      },
+      {
+        "number": "",
+        "x": 59.08,
+        "y": 100.0,
+        "net": "",
+        "pad_type": "np_thru_hole",
+        "shape": "circle",
+        "size": {
+          "x": 1.7,
+          "y": 1.7
+        },
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 1.7,
+            "y": 1.7
+          },
+          "start_layer": null
+        }
+      },
+      {
+        "number": "1",
+        "x": 56.54,
+        "y": 94.92,
+        "net": "/BTN3",
+        "pad_type": "thru_hole",
+        "shape": "circle",
+        "size": {
+          "x": 2.2,
+          "y": 2.2
+        },
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 1.5,
+            "y": 1.5
+          },
+          "start_layer": null
+        }
+      },
+      {
+        "number": "2",
+        "x": 50.19,
+        "y": 97.46000000000001,
+        "net": "GND",
+        "pad_type": "thru_hole",
+        "shape": "circle",
+        "size": {
+          "x": 2.2,
+          "y": 2.2
+        },
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 1.5,
+            "y": 1.5
+          },
+          "start_layer": null
+        }
+      }
+    ],
+    "SW4": [
+      {
+        "number": "",
+        "x": 70.92,
+        "y": 100.0,
+        "net": "",
+        "pad_type": "np_thru_hole",
+        "shape": "circle",
+        "size": {
+          "x": 1.7,
+          "y": 1.7
+        },
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 1.7,
+            "y": 1.7
+          },
+          "start_layer": null
+        }
+      },
+      {
+        "number": "",
+        "x": 76.0,
+        "y": 100.0,
+        "net": "",
+        "pad_type": "np_thru_hole",
+        "shape": "circle",
+        "size": {
+          "x": 4.0,
+          "y": 4.0
+        },
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 4.0,
+            "y": 4.0
+          },
+          "start_layer": null
+        }
+      },
+      {
+        "number": "",
+        "x": 81.08000000000001,
+        "y": 100.0,
+        "net": "",
+        "pad_type": "np_thru_hole",
+        "shape": "circle",
+        "size": {
+          "x": 1.7,
+          "y": 1.7
+        },
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 1.7,
+            "y": 1.7
+          },
+          "start_layer": null
+        }
+      },
+      {
+        "number": "1",
+        "x": 78.54,
+        "y": 94.92,
+        "net": "/BTN4",
+        "pad_type": "thru_hole",
+        "shape": "circle",
+        "size": {
+          "x": 2.2,
+          "y": 2.2
+        },
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 1.5,
+            "y": 1.5
+          },
+          "start_layer": null
+        }
+      },
+      {
+        "number": "2",
+        "x": 72.19000000000001,
+        "y": 97.459999,
+        "net": "GND",
+        "pad_type": "thru_hole",
+        "shape": "circle",
+        "size": {
+          "x": 2.2,
+          "y": 2.2
+        },
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 1.5,
+            "y": 1.5
+          },
+          "start_layer": null
+        }
+      }
+    ],
+    "H1": [
+      {
+        "number": "",
+        "x": 5.0,
+        "y": 5.0,
+        "net": "",
+        "pad_type": "np_thru_hole",
+        "shape": "circle",
+        "size": {
+          "x": 3.2,
+          "y": 3.2
+        },
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 3.2,
+            "y": 3.2
+          },
+          "start_layer": null
+        }
+      }
+    ],
+    "H2": [
+      {
+        "number": "",
+        "x": 81.0,
+        "y": 5.0,
+        "net": "",
+        "pad_type": "np_thru_hole",
+        "shape": "circle",
+        "size": {
+          "x": 3.2,
+          "y": 3.2
+        },
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 3.2,
+            "y": 3.2
+          },
+          "start_layer": null
+        }
+      }
+    ],
+    "H3": [
+      {
+        "number": "",
+        "x": 5.0,
+        "y": 115.0,
+        "net": "",
+        "pad_type": "np_thru_hole",
+        "shape": "circle",
+        "size": {
+          "x": 3.2,
+          "y": 3.2
+        },
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 3.2,
+            "y": 3.2
+          },
+          "start_layer": null
+        }
+      }
+    ],
+    "H4": [
+      {
+        "number": "",
+        "x": 81.0,
+        "y": 115.0,
+        "net": "",
+        "pad_type": "np_thru_hole",
+        "shape": "circle",
+        "size": {
+          "x": 3.2,
+          "y": 3.2
+        },
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 3.2,
+            "y": 3.2
+          },
+          "start_layer": null
+        }
+      }
+    ]
+  }
+}

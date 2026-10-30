@@ -176,12 +176,20 @@ del testo ST7789 e devono restare sotto il budget display di 100.000 µs.
 
 ## Hardware
 
-Il progetto è ora destinato a un **PCB desktop standalone a vista**, senza Hammond né altra custodia obbligatoria. Sono previsti solder mask nero, serigrafia frontale, quattro fori per supporti e montaggio orizzontale o leggermente inclinato tramite distanziali commerciali.
+Il progetto è destinato a un **PCB desktop standalone a vista**, senza Hammond
+né altra custodia obbligatoria: ESP32-S3-WROOM-1U, DAC Adafruit 6250 e display
+Adafruit 5393, solder mask nera e quattro fissaggi M3.
 
-- [Decisioni e vincoli del PCB standalone](hardware/docs/pcb-standalone.md), [stato hardware](hardware/README.md).
-- [#34 verifica elettrica e BOM](https://github.com/Capobuf/ESP-DubSiren/issues/34), [#35 layout e fissaggi](https://github.com/Capobuf/ESP-DubSiren/issues/35), [#36 serigrafia e montaggio](https://github.com/Capobuf/ESP-DubSiren/issues/36).
+Il layout KiCad aggiornato è **86 × 126 mm**, con angoli R3 e senza routing:
+**nessun PCB fabbricabile**. Stack display/DAC, keycap, accoppiamenti delle
+manopole e montaggio fisico restano da qualificare.
 
-**KiCad è ancora provvisorio**, senza routing e senza bordo finale approvato: nessun PCB pronto per la fabbricazione. Il vecchio studio Hammond della [#14](https://github.com/Capobuf/ESP-DubSiren/issues/14) è storico, non costituisce un vincolo progettuale.
+- [Decisioni e vincoli standalone](hardware/docs/pcb-standalone.md), [stato hardware](hardware/README.md).
+- [Verifica elettrica #34](hardware/docs/issue-34-electrical-review.md), [layout e ingombri #35](hardware/docs/issue-35-standalone-layout.md).
+- [#36: serigrafia e guida di montaggio](https://github.com/Capobuf/ESP-DubSiren/issues/36).
+
+Lo studio Hammond della [#14](https://github.com/Capobuf/ESP-DubSiren/issues/14)
+è storico e non costituisce un vincolo del progetto attuale.
 
 Il firmware configura il 5393 con `init(172, 320)` e rotazione landscape,
 ottenendo un'area runtime di 320×172. Usa lo SPI hardware esistente:

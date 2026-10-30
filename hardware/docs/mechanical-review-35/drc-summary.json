@@ -1,0 +1,63 @@
+{
+  "categories_not_reported": [],
+  "design_rule_violations": 115,
+  "errors": 160,
+  "filtered_count": 343,
+  "live_board_synced": false,
+  "schematic_parity": 68,
+  "schematic_parity_diagnostic": null,
+  "severity_filter": "warning",
+  "shown": 1,
+  "source": "saved_file",
+  "total_violations": 343,
+  "truncated": true,
+  "unconnected_items": 160,
+  "violations": [
+    {
+      "description": "Silkscreen clipped by board edge",
+      "items": [
+        {
+          "description": "Arco di RV6 su Edge.Cuts",
+          "item_kind": "fp_arc",
+          "layer": "Edge.Cuts",
+          "owner": {
+            "kind": "footprint",
+            "reference": "RV6",
+            "uuid": "1da045d5-19aa-4895-a3dd-6644f7eefb59"
+          },
+          "ownership_status": "resolved",
+          "pos": {
+            "x": 64.800001,
+            "y": 79.650001
+          },
+          "uuid": "616a45fd-f6b8-495a-8922-b638cfc32c55"
+        },
+        {
+          "description": "Rettangolo di RV6 su F.Silkscreen",
+          "item_kind": "fp_rect",
+          "layer": "F.SilkS",
+          "owner": {
+            "kind": "footprint",
+            "reference": "RV6",
+            "uuid": "1da045d5-19aa-4895-a3dd-6644f7eefb59"
+          },
+          "ownership_status": "resolved",
+          "pos": {
+            "x": 64.9,
+            "y": 72.2
+          },
+          "uuid": "9a2b94a7-dd69-42b1-8622-4df7b2fb231b"
+        }
+      ],
+      "pos": {
+        "x": 64.800001,
+        "y": 79.650001
+      },
+      "rule": "silk_edge_clearance",
+      "severity": "warning"
+    }
+  ],
+  "warnings": 183,
+  "zone_refill_source": null,
+  "zones_refilled": false
+}

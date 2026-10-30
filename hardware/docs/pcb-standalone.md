@@ -2,6 +2,18 @@
 
 Decisione di progetto: **30 ottobre 2026**. Sostituisce i vincoli meccanici della issue [#14](https://github.com/Capobuf/ESP-DubSiren/issues/14). Le verifiche dello studio Hammond non vengono presentate come validazione della nuova scheda.
 
+## Aggiornamento del layout
+
+La [proposta #35](issue-35-standalone-layout.md) applica la dimensione **86×126 mm**
+autorizzata dall'utente, con angoli R3 e fori M3 Ø3,2 a interassi 76×116 mm.
+Gli spostamenti aumentano i margini nominali a 4,08 mm fra manopole inferiori e
+riserva keycap, e a 4,34 mm fra display e manopola centrale inferiore.
+La [verifica elettrica #34](issue-34-electrical-review.md) e il
+[controllo meccanico](issue-35-mechanical-clearance-review.md) riportano evidenze
+e limiti. I render assemblati sono illustrativi; qualifica fisica e routing
+restano da eseguire. Le indicazioni iniziali sotto si leggono insieme a questo
+aggiornamento, senza ripristinare il precedente vincolo Hammond.
+
 ## Configurazione scelta
 
 - **Un solo PCB strutturale a vista**, per uso DIY su un tavolo. Niente Hammond o altra enclosure obbligatoria, né stampa 3D necessaria.
@@ -16,7 +28,7 @@ La possibilità futura di progettare una custodia su misura resta aperta, ma **n
 
 ## Fissaggi e opzioni di appoggio
 
-Predisporre **quattro fori non metallizzati** per viteria **M3**, preferibilmente vicino agli angoli del PCB, con area libera adeguata per teste delle viti, rondelle, distanziali, rame e saldature. Diametro, coordinate, distanza dai bordi e giochi da fissare nella [#35](https://github.com/Capobuf/ESP-DubSiren/issues/35) sulla geometria vera.
+Predisporre **quattro fori non metallizzati** per viteria **M3**, preferibilmente vicino agli angoli del PCB, con area libera adeguata per teste delle viti, rondelle, distanziali, rame e saldature. Diametro e coordinate sono ora definiti nella [proposta #35](issue-35-standalone-layout.md); le riserve 8×8 mm sono annotate e devono diventare vincoli automatici prima del routing.
 
 Tre montaggi non esclusivi, sfruttando se possibile gli stessi quattro fori:
 
@@ -24,7 +36,7 @@ Tre montaggi non esclusivi, sfruttando se possibile gli stessi quattro fori:
 2. **Inclinato**: due distanziali anteriori più bassi e due posteriori più alti, controllando la stabilità dei contatti con il tavolo e il gioco dei componenti sottostanti.
 3. **Alternativo**: fissaggio ai medesimi fori su una base generica; clip/supporti a scatto soltanto se il produttore ne documenta la compatibilità con foro e spessore PCB. Non presumere che una clip standard funzioni in un foro M3.
 
-**Indicazione non definitiva** per i distanziali: iniziare a valutare 15 mm davanti / 20 mm dietro, oppure quattro distanziali da 15–20 mm. Nello studio precedente il corpo del jack sul lato inferiore arriva nominalmente circa **12,7 mm sotto B.Cu**. Le altezze utilizzabili e l'angolo dipendono però dalla posizione reale di jack, DAC, componenti, saldature e punti di appoggio. Non ordinare la minuteria prima di questa verifica.
+**Opzioni attuali da qualificare**: quattro distanziali da 20 mm, oppure 20 mm davanti / 25 mm dietro, come dimensionato nel [rapporto #35](issue-35-standalone-layout.md). Queste opzioni aggiornano la precedente indicazione iniziale di 15–20 mm. Nello studio precedente il corpo del jack sul lato inferiore arriva nominalmente circa **12,7 mm sotto B.Cu**. Le altezze utilizzabili e l'angolo dipendono però dalla posizione reale di jack, DAC, componenti, saldature e punti di appoggio. Non ordinare la minuteria prima di questa verifica.
 
 Materiali standard: nylon nero, viti M3, rondelle isolanti dove servono, piedini in gomma/silicone. Nessuna soluzione di supporto deve diventare un componente elettronico obbligatorio nella BOM.
 
@@ -44,7 +56,7 @@ Conservare il branch **`codex/issue-14-jack-fit`** come archivio tecnico dello s
 ## Stato reale del progetto
 
 - [Schema KiCad](../kicad/ESP-DubSiren.kicad_sch), [PCB](../kicad/ESP-DubSiren.kicad_pcb), [BOM](BOM.csv), [fonti](sources.md).
-- Il PCB attuale **non è instradato**, non ha un bordo finale approvato e conserva posizioni di studio. In particolare, le coordinate dei potenziometri sul PCB non coincidono con quelle usate per il precedente pannello FreeCAD; il layout va riconciliato, non semplicemente copiato.
+- Il PCB attuale **non è instradato**. Il bordo 86×126 mm e il nuovo placement sono applicati e verificati; il confronto con il pannello FreeCAD è storico, non un requisito da ripristinare. La qualifica dell’assieme reale è ancora pendente.
 - J2 resta **Neutrik NRJ4HF mono TS**, non doppio RCA. Collegamento previsto: T → AUDIO_MONO/OUTL, S → GND, TN/SN NC, OUTR indipendente e non unito a OUTL. Il dado NRJ-NUT-B serviva al fissaggio attraverso un pannello: **non è obbligatorio nel montaggio a PCB nudo**; valutarne la presenza solo se si aggiungerà una parete opzionale.
 - Conservare l'accessibilità fisica a USB, jack, MASTER, RESET/BOOT e ai test pad; non introdurre staffe o supporti che coprano le aree da saldare.
 - L'assemblaggio completamente popolato **non è stato validato**. Il colore del PCB e gli schemi di montaggio sono decisioni approvate, non prova di fattibilità dei footprint correnti.

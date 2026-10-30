@@ -1,0 +1,60 @@
+{
+  "purpose": "Illustrative oblique view of front controls, not mechanical acceptance",
+  "position_source": "positions.csv, current 86x126 PCB",
+  "board_mm": [
+    86,
+    126,
+    1.6
+  ],
+  "documented_xy_mm": {
+    "Davies_skirt_diameter": 19.84375,
+    "Davies_grip_diameter": 16.66875,
+    "SAK_skirt_diameter": 14.5,
+    "CHERRY_body": [
+      15.63,
+      15.63
+    ],
+    "display_module_pcb": [
+      36.83,
+      30.48
+    ]
+  },
+  "provisional_keycap_envelope_mm": [
+    20,
+    20
+  ],
+  "illustrative_z_from_carrier_top_mm": {
+    "pot_body": [
+      0,
+      7.5
+    ],
+    "Davies_knob": [
+      17.2,
+      29.10625
+    ],
+    "encoder_body": [
+      0,
+      6.5
+    ],
+    "SAK_knob": [
+      17.5,
+      31.5
+    ],
+    "display_module": [
+      4.5,
+      8.4
+    ],
+    "keycap": [
+      10.3,
+      20.3
+    ],
+    "support_length": 20
+  },
+  "limitations": [
+    "Actual mounting heights and insertions are not verified",
+    "Generic keycap profile, no identified MPN",
+    "Surface details and hardware illustrative",
+    "Rear electronics, connectors and MASTER not modeled",
+    "No 3D collision or ergonomics approval"
+  ]
+}

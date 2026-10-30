@@ -1,0 +1,57 @@
+{
+  "board_sha256": "eba0380182fc750882cdedb8ee098c1f2e4ae56ca151f67306795de534e96563",
+  "board_dimensions_mm": [
+    86,
+    126
+  ],
+  "corner_radius_mm": 3,
+  "hole_centers_mm": [
+    [
+      5,
+      -1
+    ],
+    [
+      81,
+      -1
+    ],
+    [
+      5,
+      115
+    ],
+    [
+      81,
+      115
+    ]
+  ],
+  "hole_diameter_mm": 3.2,
+  "m3_reservation_mm": [
+    8,
+    8
+  ],
+  "m3_rule_enforcement": "documentation on Dwgs.User; no automatic router rule yet",
+  "mutations": "Konnect MCP only; guarded saved-file operations after user clean close and absent lock",
+  "exports": "KiCad 10.0.6; native CLI used for bottom render and cropped mirrored SVG options not exposed by MCP",
+  "routing_added": false,
+  "vias_added": false,
+  "zones_added": false,
+  "schematic_modified": false,
+  "bom_electrical_fields_modified": false,
+  "bom_editorial_change": "J2 Notes: optional nut without panel",
+  "render_coverage": "partial 3D models; green preset, intended mask black",
+  "physical_validation": "pending display/DAC mounting, caps/knobs, terminal and cable height, support stability",
+  "board_extents_mm": [
+    0,
+    -6,
+    86,
+    120
+  ],
+  "hole_pitch_mm": [
+    76,
+    116
+  ],
+  "front_keycap_gap_mm": 4.078125,
+  "display_to_lower_knob_gap_mm": 4.338125,
+  "connectivity_entries_unchanged": 237,
+  "placement_readback_verified": 68,
+  "user_authorized_length_mm": 126
+}

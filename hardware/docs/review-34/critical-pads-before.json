@@ -1,0 +1,3544 @@
+{
+  "U1": {
+    "pad_count": 50,
+    "pads": [
+      {
+        "copper_layers": [],
+        "drill": null,
+        "layers": [
+          "B.Paste"
+        ],
+        "net": "",
+        "number": "",
+        "pad_type": "smd",
+        "rotation_deg": 0,
+        "shape": "rect",
+        "size": {
+          "x": 0.9,
+          "y": 0.9
+        },
+        "uuid": "3f277a35-e7a7-48df-bb08-679bdb91b6a8",
+        "x": 33.1,
+        "y": 48.29
+      },
+      {
+        "copper_layers": [],
+        "drill": null,
+        "layers": [
+          "B.Paste"
+        ],
+        "net": "",
+        "number": "",
+        "pad_type": "smd",
+        "rotation_deg": 0,
+        "shape": "rect",
+        "size": {
+          "x": 0.9,
+          "y": 0.9
+        },
+        "uuid": "dac281cf-1894-49c9-a125-b55f8832e7da",
+        "x": 33.1,
+        "y": 49.69
+      },
+      {
+        "copper_layers": [],
+        "drill": null,
+        "layers": [
+          "B.Paste"
+        ],
+        "net": "",
+        "number": "",
+        "pad_type": "smd",
+        "rotation_deg": 0,
+        "shape": "rect",
+        "size": {
+          "x": 0.9,
+          "y": 0.9
+        },
+        "uuid": "ff2c94b0-2961-4af2-ab47-0952bdd17c64",
+        "x": 33.1,
+        "y": 51.09
+      },
+      {
+        "copper_layers": [],
+        "drill": null,
+        "layers": [
+          "B.Paste"
+        ],
+        "net": "",
+        "number": "",
+        "pad_type": "smd",
+        "rotation_deg": 0,
+        "shape": "rect",
+        "size": {
+          "x": 0.9,
+          "y": 0.9
+        },
+        "uuid": "b69dd6f2-07c4-45d9-80b5-cc682f655298",
+        "x": 34.5,
+        "y": 48.29
+      },
+      {
+        "copper_layers": [],
+        "drill": null,
+        "layers": [
+          "B.Paste"
+        ],
+        "net": "",
+        "number": "",
+        "pad_type": "smd",
+        "rotation_deg": 0,
+        "shape": "rect",
+        "size": {
+          "x": 0.9,
+          "y": 0.9
+        },
+        "uuid": "0771f9a0-5359-4f7b-b7e4-e45ad6a49d8f",
+        "x": 34.5,
+        "y": 49.69
+      },
+      {
+        "copper_layers": [],
+        "drill": null,
+        "layers": [
+          "B.Paste"
+        ],
+        "net": "",
+        "number": "",
+        "pad_type": "smd",
+        "rotation_deg": 0,
+        "shape": "rect",
+        "size": {
+          "x": 0.9,
+          "y": 0.9
+        },
+        "uuid": "7435c837-b6bd-4e36-a299-6a00654daa39",
+        "x": 34.5,
+        "y": 51.09
+      },
+      {
+        "copper_layers": [],
+        "drill": null,
+        "layers": [
+          "B.Paste"
+        ],
+        "net": "",
+        "number": "",
+        "pad_type": "smd",
+        "rotation_deg": 0,
+        "shape": "rect",
+        "size": {
+          "x": 0.9,
+          "y": 0.9
+        },
+        "uuid": "8314b133-dd13-4372-90a8-78287163cea4",
+        "x": 35.9,
+        "y": 48.29
+      },
+      {
+        "copper_layers": [],
+        "drill": null,
+        "layers": [
+          "B.Paste"
+        ],
+        "net": "",
+        "number": "",
+        "pad_type": "smd",
+        "rotation_deg": 0,
+        "shape": "rect",
+        "size": {
+          "x": 0.9,
+          "y": 0.9
+        },
+        "uuid": "a245ab55-9906-4cb8-bc38-29ddcd7dc350",
+        "x": 35.9,
+        "y": 49.69
+      },
+      {
+        "copper_layers": [],
+        "drill": null,
+        "layers": [
+          "B.Paste"
+        ],
+        "net": "",
+        "number": "",
+        "pad_type": "smd",
+        "rotation_deg": 0,
+        "shape": "rect",
+        "size": {
+          "x": 0.9,
+          "y": 0.9
+        },
+        "uuid": "7711108c-1388-42fc-9595-f2b7807a09c1",
+        "x": 35.9,
+        "y": 51.09
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "B.Cu",
+            "offset": null,
+            "shape": "rect",
+            "size": {
+              "x": 1.5,
+              "y": 0.9
+            }
+          }
+        ],
+        "drill": null,
+        "layers": [
+          "B.Cu",
+          "B.Mask",
+          "B.Paste"
+        ],
+        "net": "GND",
+        "number": "1",
+        "pad_type": "smd",
+        "rotation_deg": 0,
+        "shape": "rect",
+        "size": {
+          "x": 1.5,
+          "y": 0.9
+        },
+        "uuid": "0787ab58-48e9-48b2-ae10-e7b9a804f51d",
+        "x": 27.25,
+        "y": 57.41
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "B.Cu",
+            "offset": null,
+            "shape": "rect",
+            "size": {
+              "x": 1.5,
+              "y": 0.9
+            }
+          }
+        ],
+        "drill": null,
+        "layers": [
+          "B.Cu",
+          "B.Mask",
+          "B.Paste"
+        ],
+        "net": "+3V3",
+        "number": "2",
+        "pad_type": "smd",
+        "rotation_deg": 0,
+        "shape": "rect",
+        "size": {
+          "x": 1.5,
+          "y": 0.9
+        },
+        "uuid": "81d50fd9-6647-4085-9233-93c64fdd84e4",
+        "x": 27.25,
+        "y": 56.14
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "B.Cu",
+            "offset": null,
+            "shape": "rect",
+            "size": {
+              "x": 1.5,
+              "y": 0.9
+            }
+          }
+        ],
+        "drill": null,
+        "layers": [
+          "B.Cu",
+          "B.Mask",
+          "B.Paste"
+        ],
+        "net": "/ESP_EN",
+        "number": "3",
+        "pad_type": "smd",
+        "rotation_deg": 0,
+        "shape": "rect",
+        "size": {
+          "x": 1.5,
+          "y": 0.9
+        },
+        "uuid": "8af50532-64a2-423b-aae1-715a256c5b42",
+        "x": 27.25,
+        "y": 54.87
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "B.Cu",
+            "offset": null,
+            "shape": "rect",
+            "size": {
+              "x": 1.5,
+              "y": 0.9
+            }
+          }
+        ],
+        "drill": null,
+        "layers": [
+          "B.Cu",
+          "B.Mask",
+          "B.Paste"
+        ],
+        "net": "/ADC_MUX",
+        "number": "4",
+        "pad_type": "smd",
+        "rotation_deg": 0,
+        "shape": "rect",
+        "size": {
+          "x": 1.5,
+          "y": 0.9
+        },
+        "uuid": "25ffb46e-a148-47b3-83b9-5ab9a6136a77",
+        "x": 27.25,
+        "y": 53.6
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "B.Cu",
+            "offset": null,
+            "shape": "rect",
+            "size": {
+              "x": 1.5,
+              "y": 0.9
+            }
+          }
+        ],
+        "drill": null,
+        "layers": [
+          "B.Cu",
+          "B.Mask",
+          "B.Paste"
+        ],
+        "net": "/MUX_S0",
+        "number": "5",
+        "pad_type": "smd",
+        "rotation_deg": 0,
+        "shape": "rect",
+        "size": {
+          "x": 1.5,
+          "y": 0.9
+        },
+        "uuid": "c62a0918-1392-4990-bfc5-80985c0c7f7f",
+        "x": 27.25,
+        "y": 52.33
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "B.Cu",
+            "offset": null,
+            "shape": "rect",
+            "size": {
+              "x": 1.5,
+              "y": 0.9
+            }
+          }
+        ],
+        "drill": null,
+        "layers": [
+          "B.Cu",
+          "B.Mask",
+          "B.Paste"
+        ],
+        "net": "/MUX_S1",
+        "number": "6",
+        "pad_type": "smd",
+        "rotation_deg": 0,
+        "shape": "rect",
+        "size": {
+          "x": 1.5,
+          "y": 0.9
+        },
+        "uuid": "098850cf-b263-48ee-b15a-256907968e79",
+        "x": 27.25,
+        "y": 51.06
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "B.Cu",
+            "offset": null,
+            "shape": "rect",
+            "size": {
+              "x": 1.5,
+              "y": 0.9
+            }
+          }
+        ],
+        "drill": null,
+        "layers": [
+          "B.Cu",
+          "B.Mask",
+          "B.Paste"
+        ],
+        "net": "/TFT_RST",
+        "number": "7",
+        "pad_type": "smd",
+        "rotation_deg": 0,
+        "shape": "rect",
+        "size": {
+          "x": 1.5,
+          "y": 0.9
+        },
+        "uuid": "1f216aab-5818-49c2-9599-0a84afe31211",
+        "x": 27.25,
+        "y": 49.79
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "B.Cu",
+            "offset": null,
+            "shape": "rect",
+            "size": {
+              "x": 1.5,
+              "y": 0.9
+            }
+          }
+        ],
+        "drill": null,
+        "layers": [
+          "B.Cu",
+          "B.Mask",
+          "B.Paste"
+        ],
+        "net": "unconnected-(U1-IO15-Pad8)",
+        "number": "8",
+        "pad_type": "smd",
+        "rotation_deg": 0,
+        "shape": "rect",
+        "size": {
+          "x": 1.5,
+          "y": 0.9
+        },
+        "uuid": "6c90c6ca-5c24-4a96-9acd-90174813b83d",
+        "x": 27.25,
+        "y": 48.52
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "B.Cu",
+            "offset": null,
+            "shape": "rect",
+            "size": {
+              "x": 1.5,
+              "y": 0.9
+            }
+          }
+        ],
+        "drill": null,
+        "layers": [
+          "B.Cu",
+          "B.Mask",
+          "B.Paste"
+        ],
+        "net": "/I2S_BCLK",
+        "number": "9",
+        "pad_type": "smd",
+        "rotation_deg": 0,
+        "shape": "rect",
+        "size": {
+          "x": 1.5,
+          "y": 0.9
+        },
+        "uuid": "968073fe-8ca0-43e4-b54a-3377df6d31af",
+        "x": 27.25,
+        "y": 47.25
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "B.Cu",
+            "offset": null,
+            "shape": "rect",
+            "size": {
+              "x": 1.5,
+              "y": 0.9
+            }
+          }
+        ],
+        "drill": null,
+        "layers": [
+          "B.Cu",
+          "B.Mask",
+          "B.Paste"
+        ],
+        "net": "/I2S_LRCK",
+        "number": "10",
+        "pad_type": "smd",
+        "rotation_deg": 0,
+        "shape": "rect",
+        "size": {
+          "x": 1.5,
+          "y": 0.9
+        },
+        "uuid": "0e1d2768-5047-4a89-8b2e-c35102ffd210",
+        "x": 27.25,
+        "y": 45.98
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "B.Cu",
+            "offset": null,
+            "shape": "rect",
+            "size": {
+              "x": 1.5,
+              "y": 0.9
+            }
+          }
+        ],
+        "drill": null,
+        "layers": [
+          "B.Cu",
+          "B.Mask",
+          "B.Paste"
+        ],
+        "net": "/I2S_DIN",
+        "number": "11",
+        "pad_type": "smd",
+        "rotation_deg": 0,
+        "shape": "rect",
+        "size": {
+          "x": 1.5,
+          "y": 0.9
+        },
+        "uuid": "4afc7303-e5ca-456a-9f3c-9bb05c12b4b2",
+        "x": 27.25,
+        "y": 44.71
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "B.Cu",
+            "offset": null,
+            "shape": "rect",
+            "size": {
+              "x": 1.5,
+              "y": 0.9
+            }
+          }
+        ],
+        "drill": null,
+        "layers": [
+          "B.Cu",
+          "B.Mask",
+          "B.Paste"
+        ],
+        "net": "/TFT_DC",
+        "number": "12",
+        "pad_type": "smd",
+        "rotation_deg": 0,
+        "shape": "rect",
+        "size": {
+          "x": 1.5,
+          "y": 0.9
+        },
+        "uuid": "79df9d05-a607-43a8-a010-51204cd72c67",
+        "x": 27.25,
+        "y": 43.44
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "B.Cu",
+            "offset": null,
+            "shape": "rect",
+            "size": {
+              "x": 1.5,
+              "y": 0.9
+            }
+          }
+        ],
+        "drill": null,
+        "layers": [
+          "B.Cu",
+          "B.Mask",
+          "B.Paste"
+        ],
+        "net": "/USB_DM_MCU",
+        "number": "13",
+        "pad_type": "smd",
+        "rotation_deg": 0,
+        "shape": "rect",
+        "size": {
+          "x": 1.5,
+          "y": 0.9
+        },
+        "uuid": "abd48d41-7f60-4062-b8ee-422bcb7dbe8f",
+        "x": 27.25,
+        "y": 42.17
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "B.Cu",
+            "offset": null,
+            "shape": "rect",
+            "size": {
+              "x": 1.5,
+              "y": 0.9
+            }
+          }
+        ],
+        "drill": null,
+        "layers": [
+          "B.Cu",
+          "B.Mask",
+          "B.Paste"
+        ],
+        "net": "/USB_DP_MCU",
+        "number": "14",
+        "pad_type": "smd",
+        "rotation_deg": 180,
+        "shape": "rect",
+        "size": {
+          "x": 1.5,
+          "y": 0.9
+        },
+        "uuid": "7d5bb3f8-cf1b-4bb4-ad6b-9855ae02aeca",
+        "x": 27.25,
+        "y": 40.9
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "B.Cu",
+            "offset": null,
+            "shape": "rect",
+            "size": {
+              "x": 1.5,
+              "y": 0.9
+            }
+          }
+        ],
+        "drill": null,
+        "layers": [
+          "B.Cu",
+          "B.Mask",
+          "B.Paste"
+        ],
+        "net": "unconnected-(U1-IO3-Pad15)",
+        "number": "15",
+        "pad_type": "smd",
+        "rotation_deg": 90,
+        "shape": "rect",
+        "size": {
+          "x": 1.5,
+          "y": 0.9
+        },
+        "uuid": "771423c9-3df7-45a6-a9dd-0538dfa981b6",
+        "x": 29.015,
+        "y": 39.65
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "B.Cu",
+            "offset": null,
+            "shape": "rect",
+            "size": {
+              "x": 1.5,
+              "y": 0.9
+            }
+          }
+        ],
+        "drill": null,
+        "layers": [
+          "B.Cu",
+          "B.Mask",
+          "B.Paste"
+        ],
+        "net": "unconnected-(U1-IO46-Pad16)",
+        "number": "16",
+        "pad_type": "smd",
+        "rotation_deg": 90,
+        "shape": "rect",
+        "size": {
+          "x": 1.5,
+          "y": 0.9
+        },
+        "uuid": "247d0fc5-fae2-4e8f-a5b6-6bbf37062954",
+        "x": 30.285,
+        "y": 39.65
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "B.Cu",
+            "offset": null,
+            "shape": "rect",
+            "size": {
+              "x": 1.5,
+              "y": 0.9
+            }
+          }
+        ],
+        "drill": null,
+        "layers": [
+          "B.Cu",
+          "B.Mask",
+          "B.Paste"
+        ],
+        "net": "/TFT_CS",
+        "number": "17",
+        "pad_type": "smd",
+        "rotation_deg": 90,
+        "shape": "rect",
+        "size": {
+          "x": 1.5,
+          "y": 0.9
+        },
+        "uuid": "3481a8f2-610b-4ce4-b078-a4599f354794",
+        "x": 31.555,
+        "y": 39.65
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "B.Cu",
+            "offset": null,
+            "shape": "rect",
+            "size": {
+              "x": 1.5,
+              "y": 0.9
+            }
+          }
+        ],
+        "drill": null,
+        "layers": [
+          "B.Cu",
+          "B.Mask",
+          "B.Paste"
+        ],
+        "net": "/MUX_S2",
+        "number": "18",
+        "pad_type": "smd",
+        "rotation_deg": 90,
+        "shape": "rect",
+        "size": {
+          "x": 1.5,
+          "y": 0.9
+        },
+        "uuid": "89029bcd-b782-4667-a965-6baaf18e54b8",
+        "x": 32.825,
+        "y": 39.65
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "B.Cu",
+            "offset": null,
+            "shape": "rect",
+            "size": {
+              "x": 1.5,
+              "y": 0.9
+            }
+          }
+        ],
+        "drill": null,
+        "layers": [
+          "B.Cu",
+          "B.Mask",
+          "B.Paste"
+        ],
+        "net": "/SPI_MOSI",
+        "number": "19",
+        "pad_type": "smd",
+        "rotation_deg": 90,
+        "shape": "rect",
+        "size": {
+          "x": 1.5,
+          "y": 0.9
+        },
+        "uuid": "6ab62dad-af8a-4f9b-be29-0ccbae8096d6",
+        "x": 34.095,
+        "y": 39.65
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "B.Cu",
+            "offset": null,
+            "shape": "rect",
+            "size": {
+              "x": 1.5,
+              "y": 0.9
+            }
+          }
+        ],
+        "drill": null,
+        "layers": [
+          "B.Cu",
+          "B.Mask",
+          "B.Paste"
+        ],
+        "net": "/SPI_SCK",
+        "number": "20",
+        "pad_type": "smd",
+        "rotation_deg": 90,
+        "shape": "rect",
+        "size": {
+          "x": 1.5,
+          "y": 0.9
+        },
+        "uuid": "598a0f95-fae5-4f37-95da-0b9ed1358f57",
+        "x": 35.365,
+        "y": 39.65
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "B.Cu",
+            "offset": null,
+            "shape": "rect",
+            "size": {
+              "x": 1.5,
+              "y": 0.9
+            }
+          }
+        ],
+        "drill": null,
+        "layers": [
+          "B.Cu",
+          "B.Mask",
+          "B.Paste"
+        ],
+        "net": "unconnected-(U1-IO13-Pad21)",
+        "number": "21",
+        "pad_type": "smd",
+        "rotation_deg": 90,
+        "shape": "rect",
+        "size": {
+          "x": 1.5,
+          "y": 0.9
+        },
+        "uuid": "062eedfd-153c-47ed-9f1c-5d66d9b1b248",
+        "x": 36.635,
+        "y": 39.65
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "B.Cu",
+            "offset": null,
+            "shape": "rect",
+            "size": {
+              "x": 1.5,
+              "y": 0.9
+            }
+          }
+        ],
+        "drill": null,
+        "layers": [
+          "B.Cu",
+          "B.Mask",
+          "B.Paste"
+        ],
+        "net": "/TFT_LITE",
+        "number": "22",
+        "pad_type": "smd",
+        "rotation_deg": 90,
+        "shape": "rect",
+        "size": {
+          "x": 1.5,
+          "y": 0.9
+        },
+        "uuid": "f4d02862-c91e-4f33-b23c-09b2884482de",
+        "x": 37.905,
+        "y": 39.65
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "B.Cu",
+            "offset": null,
+            "shape": "rect",
+            "size": {
+              "x": 1.5,
+              "y": 0.9
+            }
+          }
+        ],
+        "drill": null,
+        "layers": [
+          "B.Cu",
+          "B.Mask",
+          "B.Paste"
+        ],
+        "net": "unconnected-(U1-IO21-Pad23)",
+        "number": "23",
+        "pad_type": "smd",
+        "rotation_deg": 90,
+        "shape": "rect",
+        "size": {
+          "x": 1.5,
+          "y": 0.9
+        },
+        "uuid": "4acc3347-4f93-4f71-bc51-a991793778dd",
+        "x": 39.175,
+        "y": 39.65
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "B.Cu",
+            "offset": null,
+            "shape": "rect",
+            "size": {
+              "x": 1.5,
+              "y": 0.9
+            }
+          }
+        ],
+        "drill": null,
+        "layers": [
+          "B.Cu",
+          "B.Mask",
+          "B.Paste"
+        ],
+        "net": "unconnected-(U1-IO47-Pad24)",
+        "number": "24",
+        "pad_type": "smd",
+        "rotation_deg": 90,
+        "shape": "rect",
+        "size": {
+          "x": 1.5,
+          "y": 0.9
+        },
+        "uuid": "0184872e-d7ae-4f30-b938-d7a4e66eefc8",
+        "x": 40.445,
+        "y": 39.65
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "B.Cu",
+            "offset": null,
+            "shape": "rect",
+            "size": {
+              "x": 1.5,
+              "y": 0.9
+            }
+          }
+        ],
+        "drill": null,
+        "layers": [
+          "B.Cu",
+          "B.Mask",
+          "B.Paste"
+        ],
+        "net": "unconnected-(U1-IO48-Pad25)",
+        "number": "25",
+        "pad_type": "smd",
+        "rotation_deg": 90,
+        "shape": "rect",
+        "size": {
+          "x": 1.5,
+          "y": 0.9
+        },
+        "uuid": "d1b4187b-0462-4464-bf36-1af81449a493",
+        "x": 41.715,
+        "y": 39.65
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "B.Cu",
+            "offset": null,
+            "shape": "rect",
+            "size": {
+              "x": 1.5,
+              "y": 0.9
+            }
+          }
+        ],
+        "drill": null,
+        "layers": [
+          "B.Cu",
+          "B.Mask",
+          "B.Paste"
+        ],
+        "net": "unconnected-(U1-IO45-Pad26)",
+        "number": "26",
+        "pad_type": "smd",
+        "rotation_deg": 90,
+        "shape": "rect",
+        "size": {
+          "x": 1.5,
+          "y": 0.9
+        },
+        "uuid": "1c402f10-c880-4b91-8c18-b31dcee794b9",
+        "x": 42.985,
+        "y": 39.65
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "B.Cu",
+            "offset": null,
+            "shape": "rect",
+            "size": {
+              "x": 1.5,
+              "y": 0.9
+            }
+          }
+        ],
+        "drill": null,
+        "layers": [
+          "B.Cu",
+          "B.Mask",
+          "B.Paste"
+        ],
+        "net": "/BOOT",
+        "number": "27",
+        "pad_type": "smd",
+        "rotation_deg": 0,
+        "shape": "rect",
+        "size": {
+          "x": 1.5,
+          "y": 0.9
+        },
+        "uuid": "c6be9a87-6332-4cb2-97a5-0f26aec70956",
+        "x": 44.75,
+        "y": 40.9
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "B.Cu",
+            "offset": null,
+            "shape": "rect",
+            "size": {
+              "x": 1.5,
+              "y": 0.9
+            }
+          }
+        ],
+        "drill": null,
+        "layers": [
+          "B.Cu",
+          "B.Mask",
+          "B.Paste"
+        ],
+        "net": "unconnected-(U1-RESERVED_IO35-Pad28)",
+        "number": "28",
+        "pad_type": "smd",
+        "rotation_deg": 0,
+        "shape": "rect",
+        "size": {
+          "x": 1.5,
+          "y": 0.9
+        },
+        "uuid": "5cfa554b-83db-491f-9f4e-0d5f52150755",
+        "x": 44.75,
+        "y": 42.17
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "B.Cu",
+            "offset": null,
+            "shape": "rect",
+            "size": {
+              "x": 1.5,
+              "y": 0.9
+            }
+          }
+        ],
+        "drill": null,
+        "layers": [
+          "B.Cu",
+          "B.Mask",
+          "B.Paste"
+        ],
+        "net": "unconnected-(U1-RESERVED_IO36-Pad29)",
+        "number": "29",
+        "pad_type": "smd",
+        "rotation_deg": 0,
+        "shape": "rect",
+        "size": {
+          "x": 1.5,
+          "y": 0.9
+        },
+        "uuid": "4d5ee469-0fe9-4fd1-8553-9414c6fb471a",
+        "x": 44.75,
+        "y": 43.44
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "B.Cu",
+            "offset": null,
+            "shape": "rect",
+            "size": {
+              "x": 1.5,
+              "y": 0.9
+            }
+          }
+        ],
+        "drill": null,
+        "layers": [
+          "B.Cu",
+          "B.Mask",
+          "B.Paste"
+        ],
+        "net": "unconnected-(U1-RESERVED_IO37-Pad30)",
+        "number": "30",
+        "pad_type": "smd",
+        "rotation_deg": 0,
+        "shape": "rect",
+        "size": {
+          "x": 1.5,
+          "y": 0.9
+        },
+        "uuid": "687c02b5-a8a3-4547-a5ea-cdf17d1a50f3",
+        "x": 44.75,
+        "y": 44.71
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "B.Cu",
+            "offset": null,
+            "shape": "rect",
+            "size": {
+              "x": 1.5,
+              "y": 0.9
+            }
+          }
+        ],
+        "drill": null,
+        "layers": [
+          "B.Cu",
+          "B.Mask",
+          "B.Paste"
+        ],
+        "net": "/BTN1",
+        "number": "31",
+        "pad_type": "smd",
+        "rotation_deg": 0,
+        "shape": "rect",
+        "size": {
+          "x": 1.5,
+          "y": 0.9
+        },
+        "uuid": "bcaeeb86-b52f-441a-943b-d4c047c5d24f",
+        "x": 44.75,
+        "y": 45.98
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "B.Cu",
+            "offset": null,
+            "shape": "rect",
+            "size": {
+              "x": 1.5,
+              "y": 0.9
+            }
+          }
+        ],
+        "drill": null,
+        "layers": [
+          "B.Cu",
+          "B.Mask",
+          "B.Paste"
+        ],
+        "net": "/BTN2",
+        "number": "32",
+        "pad_type": "smd",
+        "rotation_deg": 0,
+        "shape": "rect",
+        "size": {
+          "x": 1.5,
+          "y": 0.9
+        },
+        "uuid": "56c2bdcb-a5a7-419e-bc86-1b165567f27d",
+        "x": 44.75,
+        "y": 47.25
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "B.Cu",
+            "offset": null,
+            "shape": "rect",
+            "size": {
+              "x": 1.5,
+              "y": 0.9
+            }
+          }
+        ],
+        "drill": null,
+        "layers": [
+          "B.Cu",
+          "B.Mask",
+          "B.Paste"
+        ],
+        "net": "/BTN3",
+        "number": "33",
+        "pad_type": "smd",
+        "rotation_deg": 0,
+        "shape": "rect",
+        "size": {
+          "x": 1.5,
+          "y": 0.9
+        },
+        "uuid": "b0ade221-348b-4cc5-ac47-dc71276aa173",
+        "x": 44.75,
+        "y": 48.52
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "B.Cu",
+            "offset": null,
+            "shape": "rect",
+            "size": {
+              "x": 1.5,
+              "y": 0.9
+            }
+          }
+        ],
+        "drill": null,
+        "layers": [
+          "B.Cu",
+          "B.Mask",
+          "B.Paste"
+        ],
+        "net": "/BTN4",
+        "number": "34",
+        "pad_type": "smd",
+        "rotation_deg": 0,
+        "shape": "rect",
+        "size": {
+          "x": 1.5,
+          "y": 0.9
+        },
+        "uuid": "d67ecf97-cfaa-4c1d-b6bc-42551bd985d4",
+        "x": 44.75,
+        "y": 49.79
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "B.Cu",
+            "offset": null,
+            "shape": "rect",
+            "size": {
+              "x": 1.5,
+              "y": 0.9
+            }
+          }
+        ],
+        "drill": null,
+        "layers": [
+          "B.Cu",
+          "B.Mask",
+          "B.Paste"
+        ],
+        "net": "/ENC_SW",
+        "number": "35",
+        "pad_type": "smd",
+        "rotation_deg": 0,
+        "shape": "rect",
+        "size": {
+          "x": 1.5,
+          "y": 0.9
+        },
+        "uuid": "cf80c19b-77f8-4f30-8125-25ec07fc4903",
+        "x": 44.75,
+        "y": 51.06
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "B.Cu",
+            "offset": null,
+            "shape": "rect",
+            "size": {
+              "x": 1.5,
+              "y": 0.9
+            }
+          }
+        ],
+        "drill": null,
+        "layers": [
+          "B.Cu",
+          "B.Mask",
+          "B.Paste"
+        ],
+        "net": "/UART_RX",
+        "number": "36",
+        "pad_type": "smd",
+        "rotation_deg": 0,
+        "shape": "rect",
+        "size": {
+          "x": 1.5,
+          "y": 0.9
+        },
+        "uuid": "b8c8dabe-ec34-4047-aa51-1145a4a683c0",
+        "x": 44.75,
+        "y": 52.33
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "B.Cu",
+            "offset": null,
+            "shape": "rect",
+            "size": {
+              "x": 1.5,
+              "y": 0.9
+            }
+          }
+        ],
+        "drill": null,
+        "layers": [
+          "B.Cu",
+          "B.Mask",
+          "B.Paste"
+        ],
+        "net": "/UART_TX",
+        "number": "37",
+        "pad_type": "smd",
+        "rotation_deg": 0,
+        "shape": "rect",
+        "size": {
+          "x": 1.5,
+          "y": 0.9
+        },
+        "uuid": "89e78b81-91e1-40cd-aa61-3ffaed16a45d",
+        "x": 44.75,
+        "y": 53.6
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "B.Cu",
+            "offset": null,
+            "shape": "rect",
+            "size": {
+              "x": 1.5,
+              "y": 0.9
+            }
+          }
+        ],
+        "drill": null,
+        "layers": [
+          "B.Cu",
+          "B.Mask",
+          "B.Paste"
+        ],
+        "net": "/ENC_B",
+        "number": "38",
+        "pad_type": "smd",
+        "rotation_deg": 0,
+        "shape": "rect",
+        "size": {
+          "x": 1.5,
+          "y": 0.9
+        },
+        "uuid": "f5de34de-9e37-423e-90ca-a7f10ada6a6c",
+        "x": 44.75,
+        "y": 54.87
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "B.Cu",
+            "offset": null,
+            "shape": "rect",
+            "size": {
+              "x": 1.5,
+              "y": 0.9
+            }
+          }
+        ],
+        "drill": null,
+        "layers": [
+          "B.Cu",
+          "B.Mask",
+          "B.Paste"
+        ],
+        "net": "/ENC_A",
+        "number": "39",
+        "pad_type": "smd",
+        "rotation_deg": 0,
+        "shape": "rect",
+        "size": {
+          "x": 1.5,
+          "y": 0.9
+        },
+        "uuid": "db06e88f-d089-494e-b208-565f70db928b",
+        "x": 44.75,
+        "y": 56.14
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "B.Cu",
+            "offset": null,
+            "shape": "rect",
+            "size": {
+              "x": 1.5,
+              "y": 0.9
+            }
+          }
+        ],
+        "drill": null,
+        "layers": [
+          "B.Cu",
+          "B.Mask",
+          "B.Paste"
+        ],
+        "net": "GND",
+        "number": "40",
+        "pad_type": "smd",
+        "rotation_deg": 0,
+        "shape": "rect",
+        "size": {
+          "x": 1.5,
+          "y": 0.9
+        },
+        "uuid": "b0f90504-1189-4632-aa13-26ffb8a631c0",
+        "x": 44.75,
+        "y": 57.41
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "B.Cu",
+            "offset": null,
+            "shape": "rect",
+            "size": {
+              "x": 3.7,
+              "y": 3.7
+            }
+          }
+        ],
+        "drill": null,
+        "layers": [
+          "B.Cu",
+          "B.Mask"
+        ],
+        "net": "GND",
+        "number": "41",
+        "pad_type": "smd",
+        "rotation_deg": 0,
+        "shape": "rect",
+        "size": {
+          "x": 3.7,
+          "y": 3.7
+        },
+        "uuid": "b4587f01-8357-4f56-b11e-c157e9594800",
+        "x": 34.5,
+        "y": 49.69
+      }
+    ],
+    "reference": "U1",
+    "source": "file"
+  },
+  "U2": {
+    "pad_count": 9,
+    "pads": [
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "B.Cu",
+            "offset": null,
+            "shape": "rect",
+            "size": {
+              "x": 0.625,
+              "y": 0.4
+            }
+          }
+        ],
+        "drill": null,
+        "layers": [
+          "B.Cu",
+          "B.Mask",
+          "B.Paste"
+        ],
+        "net": "+5V",
+        "number": "1",
+        "pad_type": "smd",
+        "rotation_deg": 0,
+        "shape": "rect",
+        "size": {
+          "x": 0.625,
+          "y": 0.4
+        },
+        "uuid": "8d20c14a-e0af-4933-99d4-501f792444bf",
+        "x": 16.8875,
+        "y": 30.975
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "B.Cu",
+            "offset": null,
+            "shape": "rect",
+            "size": {
+              "x": 0.625,
+              "y": 0.4
+            }
+          }
+        ],
+        "drill": null,
+        "layers": [
+          "B.Cu",
+          "B.Mask",
+          "B.Paste"
+        ],
+        "net": "+5V",
+        "number": "2",
+        "pad_type": "smd",
+        "rotation_deg": 0,
+        "shape": "rect",
+        "size": {
+          "x": 0.625,
+          "y": 0.4
+        },
+        "uuid": "e9980d6a-229a-4c62-8d07-aad94d1a15d6",
+        "x": 16.8875,
+        "y": 30.325
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "B.Cu",
+            "offset": null,
+            "shape": "rect",
+            "size": {
+              "x": 0.625,
+              "y": 0.4
+            }
+          }
+        ],
+        "drill": null,
+        "layers": [
+          "B.Cu",
+          "B.Mask",
+          "B.Paste"
+        ],
+        "net": "GND",
+        "number": "3",
+        "pad_type": "smd",
+        "rotation_deg": 0,
+        "shape": "rect",
+        "size": {
+          "x": 0.625,
+          "y": 0.4
+        },
+        "uuid": "6b7f1081-6ab4-44ab-887a-08e706d7458d",
+        "x": 16.8875,
+        "y": 29.675
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "B.Cu",
+            "offset": null,
+            "shape": "rect",
+            "size": {
+              "x": 0.625,
+              "y": 0.4
+            }
+          }
+        ],
+        "drill": null,
+        "layers": [
+          "B.Cu",
+          "B.Mask",
+          "B.Paste"
+        ],
+        "net": "+3V3",
+        "number": "4",
+        "pad_type": "smd",
+        "rotation_deg": 0,
+        "shape": "rect",
+        "size": {
+          "x": 0.625,
+          "y": 0.4
+        },
+        "uuid": "50401acc-0aab-477b-b40b-925768813e27",
+        "x": 16.8875,
+        "y": 29.025
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "B.Cu",
+            "offset": null,
+            "shape": "rect",
+            "size": {
+              "x": 0.625,
+              "y": 0.4
+            }
+          }
+        ],
+        "drill": null,
+        "layers": [
+          "B.Cu",
+          "B.Mask",
+          "B.Paste"
+        ],
+        "net": "+3V3",
+        "number": "5",
+        "pad_type": "smd",
+        "rotation_deg": 0,
+        "shape": "rect",
+        "size": {
+          "x": 0.625,
+          "y": 0.4
+        },
+        "uuid": "416c5999-214d-4f46-a438-057cf8aba438",
+        "x": 19.1125,
+        "y": 29.025
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "B.Cu",
+            "offset": null,
+            "shape": "rect",
+            "size": {
+              "x": 0.625,
+              "y": 0.4
+            }
+          }
+        ],
+        "drill": null,
+        "layers": [
+          "B.Cu",
+          "B.Mask",
+          "B.Paste"
+        ],
+        "net": "/VOUT_S",
+        "number": "6",
+        "pad_type": "smd",
+        "rotation_deg": 0,
+        "shape": "rect",
+        "size": {
+          "x": 0.625,
+          "y": 0.4
+        },
+        "uuid": "c0524ad1-1e71-405e-b76b-57f38ff19592",
+        "x": 19.1125,
+        "y": 29.675
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "B.Cu",
+            "offset": null,
+            "shape": "rect",
+            "size": {
+              "x": 0.625,
+              "y": 0.4
+            }
+          }
+        ],
+        "drill": null,
+        "layers": [
+          "B.Cu",
+          "B.Mask",
+          "B.Paste"
+        ],
+        "net": "unconnected-(U2-PG-Pad7)",
+        "number": "7",
+        "pad_type": "smd",
+        "rotation_deg": 0,
+        "shape": "rect",
+        "size": {
+          "x": 0.625,
+          "y": 0.4
+        },
+        "uuid": "1b5fe881-c079-43b7-8bce-3961139de683",
+        "x": 19.1125,
+        "y": 30.325
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "B.Cu",
+            "offset": null,
+            "shape": "rect",
+            "size": {
+              "x": 0.625,
+              "y": 0.4
+            }
+          }
+        ],
+        "drill": null,
+        "layers": [
+          "B.Cu",
+          "B.Mask",
+          "B.Paste"
+        ],
+        "net": "unconnected-(U2-VCC-Pad8)",
+        "number": "8",
+        "pad_type": "smd",
+        "rotation_deg": 0,
+        "shape": "rect",
+        "size": {
+          "x": 0.625,
+          "y": 0.4
+        },
+        "uuid": "f864caac-a62f-44d5-8c9e-ed9d9589b99c",
+        "x": 19.1125,
+        "y": 30.975
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "B.Cu",
+            "offset": null,
+            "shape": "rect",
+            "size": {
+              "x": 1.1,
+              "y": 1.9
+            }
+          }
+        ],
+        "drill": null,
+        "layers": [
+          "B.Cu",
+          "B.Mask",
+          "B.Paste"
+        ],
+        "net": "GND",
+        "number": "EP",
+        "pad_type": "smd",
+        "rotation_deg": 0,
+        "shape": "rect",
+        "size": {
+          "x": 1.1,
+          "y": 1.9
+        },
+        "uuid": "fa46761c-8b7f-4be2-b728-6b74adfb787a",
+        "x": 18,
+        "y": 30
+      }
+    ],
+    "reference": "U2",
+    "source": "file"
+  },
+  "U5": {
+    "pad_count": 15,
+    "pads": [
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "*.Cu",
+            "offset": null,
+            "shape": "circle",
+            "size": {
+              "x": 2.5,
+              "y": 2.5
+            }
+          }
+        ],
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 2.5,
+            "y": 2.5
+          },
+          "start_layer": null
+        },
+        "layers": [
+          "*.Cu",
+          "*.Mask"
+        ],
+        "net": "",
+        "number": "",
+        "pad_type": "np_thru_hole",
+        "rotation_deg": 0,
+        "shape": "circle",
+        "size": {
+          "x": 2.5,
+          "y": 2.5
+        },
+        "uuid": "69976c2f-3fd3-4880-8e15-a1bc41291470",
+        "x": 47.640999,
+        "y": 47.3
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "*.Cu",
+            "offset": null,
+            "shape": "circle",
+            "size": {
+              "x": 2.5,
+              "y": 2.5
+            }
+          }
+        ],
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 2.5,
+            "y": 2.5
+          },
+          "start_layer": null
+        },
+        "layers": [
+          "*.Cu",
+          "*.Mask"
+        ],
+        "net": "",
+        "number": "",
+        "pad_type": "np_thru_hole",
+        "rotation_deg": 0,
+        "shape": "circle",
+        "size": {
+          "x": 2.5,
+          "y": 2.5
+        },
+        "uuid": "c38a7be2-09fb-46ba-90c2-80dd28b238e5",
+        "x": 47.640999,
+        "y": 72.7
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "*.Cu",
+            "offset": null,
+            "shape": "circle",
+            "size": {
+              "x": 2.5,
+              "y": 2.5
+            }
+          }
+        ],
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 2.5,
+            "y": 2.5
+          },
+          "start_layer": null
+        },
+        "layers": [
+          "*.Cu",
+          "*.Mask"
+        ],
+        "net": "",
+        "number": "",
+        "pad_type": "np_thru_hole",
+        "rotation_deg": 0,
+        "shape": "circle",
+        "size": {
+          "x": 2.5,
+          "y": 2.5
+        },
+        "uuid": "54811d31-0a7b-409c-8c88-9af78252b7dd",
+        "x": 79.39099999999999,
+        "y": 47.3
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "*.Cu",
+            "offset": null,
+            "shape": "circle",
+            "size": {
+              "x": 2.5,
+              "y": 2.5
+            }
+          }
+        ],
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 2.5,
+            "y": 2.5
+          },
+          "start_layer": null
+        },
+        "layers": [
+          "*.Cu",
+          "*.Mask"
+        ],
+        "net": "",
+        "number": "",
+        "pad_type": "np_thru_hole",
+        "rotation_deg": 0,
+        "shape": "circle",
+        "size": {
+          "x": 2.5,
+          "y": 2.5
+        },
+        "uuid": "2aaa7c44-2bb1-4ec2-81cc-c22db959b03e",
+        "x": 79.39099999999999,
+        "y": 72.7
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "*.Cu",
+            "offset": null,
+            "shape": "rect",
+            "size": {
+              "x": 1.9304,
+              "y": 1.9304
+            }
+          }
+        ],
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 1,
+            "y": 1
+          },
+          "start_layer": null
+        },
+        "layers": [
+          "*.Cu",
+          "*.Mask"
+        ],
+        "net": "+3V3",
+        "number": "1",
+        "pad_type": "thru_hole",
+        "rotation_deg": 0,
+        "shape": "rect",
+        "size": {
+          "x": 1.9304,
+          "y": 1.9304
+        },
+        "uuid": "b1463ad0-62cd-4216-9fd8-66e94bdd51d6",
+        "x": 50.816,
+        "y": 73.33500000000001
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "*.Cu",
+            "offset": null,
+            "shape": "circle",
+            "size": {
+              "x": 1.9304,
+              "y": 1.9304
+            }
+          }
+        ],
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 1,
+            "y": 1
+          },
+          "start_layer": null
+        },
+        "layers": [
+          "*.Cu",
+          "*.Mask"
+        ],
+        "net": "unconnected-(U5-3V3_OUT-Pad2)",
+        "number": "2",
+        "pad_type": "thru_hole",
+        "rotation_deg": 0,
+        "shape": "circle",
+        "size": {
+          "x": 1.9304,
+          "y": 1.9304
+        },
+        "uuid": "346334a2-5d68-4904-920b-7985f5ba2139",
+        "x": 53.355999,
+        "y": 73.33500000000001
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "*.Cu",
+            "offset": null,
+            "shape": "circle",
+            "size": {
+              "x": 1.9304,
+              "y": 1.9304
+            }
+          }
+        ],
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 1,
+            "y": 1
+          },
+          "start_layer": null
+        },
+        "layers": [
+          "*.Cu",
+          "*.Mask"
+        ],
+        "net": "GND",
+        "number": "3",
+        "pad_type": "thru_hole",
+        "rotation_deg": 0,
+        "shape": "circle",
+        "size": {
+          "x": 1.9304,
+          "y": 1.9304
+        },
+        "uuid": "7cc60519-f996-446c-8c7e-12e2f2a50c16",
+        "x": 55.895998999999996,
+        "y": 73.33500000000001
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "*.Cu",
+            "offset": null,
+            "shape": "circle",
+            "size": {
+              "x": 1.9304,
+              "y": 1.9304
+            }
+          }
+        ],
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 1,
+            "y": 1
+          },
+          "start_layer": null
+        },
+        "layers": [
+          "*.Cu",
+          "*.Mask"
+        ],
+        "net": "/SPI_SCK",
+        "number": "4",
+        "pad_type": "thru_hole",
+        "rotation_deg": 0,
+        "shape": "circle",
+        "size": {
+          "x": 1.9304,
+          "y": 1.9304
+        },
+        "uuid": "64b48428-9801-4061-856b-643ce3d21902",
+        "x": 58.436,
+        "y": 73.33500000000001
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "*.Cu",
+            "offset": null,
+            "shape": "circle",
+            "size": {
+              "x": 1.9304,
+              "y": 1.9304
+            }
+          }
+        ],
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 1,
+            "y": 1
+          },
+          "start_layer": null
+        },
+        "layers": [
+          "*.Cu",
+          "*.Mask"
+        ],
+        "net": "unconnected-(U5-MISO_SD-Pad5)",
+        "number": "5",
+        "pad_type": "thru_hole",
+        "rotation_deg": 0,
+        "shape": "circle",
+        "size": {
+          "x": 1.9304,
+          "y": 1.9304
+        },
+        "uuid": "cdd90433-bd7b-4ddf-b749-1bae946307be",
+        "x": 60.976,
+        "y": 73.33500000000001
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "*.Cu",
+            "offset": null,
+            "shape": "circle",
+            "size": {
+              "x": 1.9304,
+              "y": 1.9304
+            }
+          }
+        ],
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 1,
+            "y": 1
+          },
+          "start_layer": null
+        },
+        "layers": [
+          "*.Cu",
+          "*.Mask"
+        ],
+        "net": "/SPI_MOSI",
+        "number": "6",
+        "pad_type": "thru_hole",
+        "rotation_deg": 0,
+        "shape": "circle",
+        "size": {
+          "x": 1.9304,
+          "y": 1.9304
+        },
+        "uuid": "9ac8587c-6ff3-4c74-b767-e288b995fbd1",
+        "x": 63.516,
+        "y": 73.33500000000001
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "*.Cu",
+            "offset": null,
+            "shape": "circle",
+            "size": {
+              "x": 1.9304,
+              "y": 1.9304
+            }
+          }
+        ],
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 1,
+            "y": 1
+          },
+          "start_layer": null
+        },
+        "layers": [
+          "*.Cu",
+          "*.Mask"
+        ],
+        "net": "/TFT_CS",
+        "number": "7",
+        "pad_type": "thru_hole",
+        "rotation_deg": 0,
+        "shape": "circle",
+        "size": {
+          "x": 1.9304,
+          "y": 1.9304
+        },
+        "uuid": "ed2e1e66-4f50-4216-bd43-0c39ce818beb",
+        "x": 66.055999,
+        "y": 73.33500000000001
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "*.Cu",
+            "offset": null,
+            "shape": "circle",
+            "size": {
+              "x": 1.9304,
+              "y": 1.9304
+            }
+          }
+        ],
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 1,
+            "y": 1
+          },
+          "start_layer": null
+        },
+        "layers": [
+          "*.Cu",
+          "*.Mask"
+        ],
+        "net": "/TFT_RST",
+        "number": "8",
+        "pad_type": "thru_hole",
+        "rotation_deg": 0,
+        "shape": "circle",
+        "size": {
+          "x": 1.9304,
+          "y": 1.9304
+        },
+        "uuid": "56bba5ea-a3d5-46ff-a51f-00575a6a5c95",
+        "x": 68.59599899999999,
+        "y": 73.33500000000001
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "*.Cu",
+            "offset": null,
+            "shape": "circle",
+            "size": {
+              "x": 1.9304,
+              "y": 1.9304
+            }
+          }
+        ],
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 1,
+            "y": 1
+          },
+          "start_layer": null
+        },
+        "layers": [
+          "*.Cu",
+          "*.Mask"
+        ],
+        "net": "/TFT_DC",
+        "number": "9",
+        "pad_type": "thru_hole",
+        "rotation_deg": 0,
+        "shape": "circle",
+        "size": {
+          "x": 1.9304,
+          "y": 1.9304
+        },
+        "uuid": "76467b33-9552-4d1f-8fe6-728d6cfb9b48",
+        "x": 71.135999,
+        "y": 73.33500000000001
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "*.Cu",
+            "offset": null,
+            "shape": "circle",
+            "size": {
+              "x": 1.9304,
+              "y": 1.9304
+            }
+          }
+        ],
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 1,
+            "y": 1
+          },
+          "start_layer": null
+        },
+        "layers": [
+          "*.Cu",
+          "*.Mask"
+        ],
+        "net": "unconnected-(U5-SD_CS-Pad10)",
+        "number": "10",
+        "pad_type": "thru_hole",
+        "rotation_deg": 0,
+        "shape": "circle",
+        "size": {
+          "x": 1.9304,
+          "y": 1.9304
+        },
+        "uuid": "507ceda1-278a-41e2-880e-e6307fe24c93",
+        "x": 73.67599899999999,
+        "y": 73.33500000000001
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "*.Cu",
+            "offset": null,
+            "shape": "circle",
+            "size": {
+              "x": 1.9304,
+              "y": 1.9304
+            }
+          }
+        ],
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 1,
+            "y": 1
+          },
+          "start_layer": null
+        },
+        "layers": [
+          "*.Cu",
+          "*.Mask"
+        ],
+        "net": "/TFT_LITE",
+        "number": "11",
+        "pad_type": "thru_hole",
+        "rotation_deg": 0,
+        "shape": "circle",
+        "size": {
+          "x": 1.9304,
+          "y": 1.9304
+        },
+        "uuid": "f6f9c9e2-24c3-4dcb-89e8-bd509c44f3a8",
+        "x": 76.216,
+        "y": 73.33500000000001
+      }
+    ],
+    "reference": "U5",
+    "source": "file"
+  },
+  "U6": {
+    "pad_count": 18,
+    "pads": [
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "*.Cu",
+            "offset": null,
+            "shape": "circle",
+            "size": {
+              "x": 2.5,
+              "y": 2.5
+            }
+          }
+        ],
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 2.5,
+            "y": 2.5
+          },
+          "start_layer": null
+        },
+        "layers": [
+          "*.Cu",
+          "*.Mask"
+        ],
+        "net": "",
+        "number": "",
+        "pad_type": "np_thru_hole",
+        "rotation_deg": 0,
+        "shape": "circle",
+        "size": {
+          "x": 2.5,
+          "y": 2.5
+        },
+        "uuid": "bbdf1fa0-e862-4bc8-9535-444aa0da6269",
+        "x": 63.3,
+        "y": 40.88
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "*.Cu",
+            "offset": null,
+            "shape": "circle",
+            "size": {
+              "x": 2.5,
+              "y": 2.5
+            }
+          }
+        ],
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 2.5,
+            "y": 2.5
+          },
+          "start_layer": null
+        },
+        "layers": [
+          "*.Cu",
+          "*.Mask"
+        ],
+        "net": "",
+        "number": "",
+        "pad_type": "np_thru_hole",
+        "rotation_deg": 0,
+        "shape": "circle",
+        "size": {
+          "x": 2.5,
+          "y": 2.5
+        },
+        "uuid": "560f659d-255a-46a6-a5ea-f56450cb4269",
+        "x": 63.3,
+        "y": 56.12
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "*.Cu",
+            "offset": null,
+            "shape": "circle",
+            "size": {
+              "x": 2.5,
+              "y": 2.5
+            }
+          }
+        ],
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 2.5,
+            "y": 2.5
+          },
+          "start_layer": null
+        },
+        "layers": [
+          "*.Cu",
+          "*.Mask"
+        ],
+        "net": "",
+        "number": "",
+        "pad_type": "np_thru_hole",
+        "rotation_deg": 0,
+        "shape": "circle",
+        "size": {
+          "x": 2.5,
+          "y": 2.5
+        },
+        "uuid": "8adf5e6a-8776-4e50-9df4-c11117f57cda",
+        "x": 88.7,
+        "y": 40.88
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "*.Cu",
+            "offset": null,
+            "shape": "circle",
+            "size": {
+              "x": 2.5,
+              "y": 2.5
+            }
+          }
+        ],
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 2.5,
+            "y": 2.5
+          },
+          "start_layer": null
+        },
+        "layers": [
+          "*.Cu",
+          "*.Mask"
+        ],
+        "net": "",
+        "number": "",
+        "pad_type": "np_thru_hole",
+        "rotation_deg": 0,
+        "shape": "circle",
+        "size": {
+          "x": 2.5,
+          "y": 2.5
+        },
+        "uuid": "0a3152be-0501-4b77-a05d-9d450ca25681",
+        "x": 88.7,
+        "y": 56.12
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "*.Cu",
+            "offset": null,
+            "shape": "rect",
+            "size": {
+              "x": 1.6764,
+              "y": 1.6764
+            }
+          }
+        ],
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 1,
+            "y": 1
+          },
+          "start_layer": null
+        },
+        "layers": [
+          "*.Cu",
+          "*.Mask"
+        ],
+        "net": "+5V",
+        "number": "1",
+        "pad_type": "thru_hole",
+        "rotation_deg": 0,
+        "shape": "rect",
+        "size": {
+          "x": 1.6764,
+          "y": 1.6764
+        },
+        "uuid": "edd33ff2-d31b-4cc9-b6f1-4190e0f9de33",
+        "x": 67.11,
+        "y": 40.88
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "*.Cu",
+            "offset": null,
+            "shape": "circle",
+            "size": {
+              "x": 1.6764,
+              "y": 1.6764
+            }
+          }
+        ],
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 1,
+            "y": 1
+          },
+          "start_layer": null
+        },
+        "layers": [
+          "*.Cu",
+          "*.Mask"
+        ],
+        "net": "GND",
+        "number": "2",
+        "pad_type": "thru_hole",
+        "rotation_deg": 0,
+        "shape": "circle",
+        "size": {
+          "x": 1.6764,
+          "y": 1.6764
+        },
+        "uuid": "3b08723b-30eb-4028-a4fb-eef3800b36f1",
+        "x": 69.65,
+        "y": 40.88
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "*.Cu",
+            "offset": null,
+            "shape": "circle",
+            "size": {
+              "x": 1.6764,
+              "y": 1.6764
+            }
+          }
+        ],
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 1,
+            "y": 1
+          },
+          "start_layer": null
+        },
+        "layers": [
+          "*.Cu",
+          "*.Mask"
+        ],
+        "net": "/I2S_LRCK",
+        "number": "3",
+        "pad_type": "thru_hole",
+        "rotation_deg": 0,
+        "shape": "circle",
+        "size": {
+          "x": 1.6764,
+          "y": 1.6764
+        },
+        "uuid": "b718aeb2-bfd2-420f-a8d8-216c3cc82401",
+        "x": 72.19,
+        "y": 40.88
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "*.Cu",
+            "offset": null,
+            "shape": "circle",
+            "size": {
+              "x": 1.6764,
+              "y": 1.6764
+            }
+          }
+        ],
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 1,
+            "y": 1
+          },
+          "start_layer": null
+        },
+        "layers": [
+          "*.Cu",
+          "*.Mask"
+        ],
+        "net": "/I2S_DIN",
+        "number": "4",
+        "pad_type": "thru_hole",
+        "rotation_deg": 0,
+        "shape": "circle",
+        "size": {
+          "x": 1.6764,
+          "y": 1.6764
+        },
+        "uuid": "a8859f7f-e7b1-4067-bc72-a67964e41ee4",
+        "x": 74.73,
+        "y": 40.88
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "*.Cu",
+            "offset": null,
+            "shape": "circle",
+            "size": {
+              "x": 1.6764,
+              "y": 1.6764
+            }
+          }
+        ],
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 1,
+            "y": 1
+          },
+          "start_layer": null
+        },
+        "layers": [
+          "*.Cu",
+          "*.Mask"
+        ],
+        "net": "/I2S_BCLK",
+        "number": "5",
+        "pad_type": "thru_hole",
+        "rotation_deg": 0,
+        "shape": "circle",
+        "size": {
+          "x": 1.6764,
+          "y": 1.6764
+        },
+        "uuid": "06c2a157-3c5f-454e-95f3-4b678e3db20d",
+        "x": 77.27,
+        "y": 40.88
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "*.Cu",
+            "offset": null,
+            "shape": "circle",
+            "size": {
+              "x": 1.6764,
+              "y": 1.6764
+            }
+          }
+        ],
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 1,
+            "y": 1
+          },
+          "start_layer": null
+        },
+        "layers": [
+          "*.Cu",
+          "*.Mask"
+        ],
+        "net": "/AUDIO_MONO",
+        "number": "6",
+        "pad_type": "thru_hole",
+        "rotation_deg": 0,
+        "shape": "circle",
+        "size": {
+          "x": 1.6764,
+          "y": 1.6764
+        },
+        "uuid": "735d8734-05da-4528-85cc-88488da0db0c",
+        "x": 79.81,
+        "y": 40.88
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "*.Cu",
+            "offset": null,
+            "shape": "circle",
+            "size": {
+              "x": 1.6764,
+              "y": 1.6764
+            }
+          }
+        ],
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 1,
+            "y": 1
+          },
+          "start_layer": null
+        },
+        "layers": [
+          "*.Cu",
+          "*.Mask"
+        ],
+        "net": "GND",
+        "number": "7",
+        "pad_type": "thru_hole",
+        "rotation_deg": 0,
+        "shape": "circle",
+        "size": {
+          "x": 1.6764,
+          "y": 1.6764
+        },
+        "uuid": "a3a3bf81-2f90-4e7e-9901-ec671ddd6b1b",
+        "x": 82.35,
+        "y": 40.88
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "*.Cu",
+            "offset": null,
+            "shape": "circle",
+            "size": {
+              "x": 1.6764,
+              "y": 1.6764
+            }
+          }
+        ],
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 1,
+            "y": 1
+          },
+          "start_layer": null
+        },
+        "layers": [
+          "*.Cu",
+          "*.Mask"
+        ],
+        "net": "unconnected-(U6-OUTR-Pad8)",
+        "number": "8",
+        "pad_type": "thru_hole",
+        "rotation_deg": 0,
+        "shape": "circle",
+        "size": {
+          "x": 1.6764,
+          "y": 1.6764
+        },
+        "uuid": "ba06e3ac-a91d-4d8f-a760-bd01465736fb",
+        "x": 84.89,
+        "y": 40.88
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "*.Cu",
+            "offset": null,
+            "shape": "circle",
+            "size": {
+              "x": 1.778,
+              "y": 1.778
+            }
+          }
+        ],
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 1,
+            "y": 1
+          },
+          "start_layer": null
+        },
+        "layers": [
+          "*.Cu",
+          "*.Mask"
+        ],
+        "net": "unconnected-(U6-3V3_OUT-Pad9)",
+        "number": "9",
+        "pad_type": "thru_hole",
+        "rotation_deg": 0,
+        "shape": "circle",
+        "size": {
+          "x": 1.778,
+          "y": 1.778
+        },
+        "uuid": "7fe3db55-5bc2-4b21-890f-cf74d560a24c",
+        "x": 82.35,
+        "y": 56.12
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "*.Cu",
+            "offset": null,
+            "shape": "circle",
+            "size": {
+              "x": 1.778,
+              "y": 1.778
+            }
+          }
+        ],
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 1,
+            "y": 1
+          },
+          "start_layer": null
+        },
+        "layers": [
+          "*.Cu",
+          "*.Mask"
+        ],
+        "net": "unconnected-(U6-FORMAT-Pad10)",
+        "number": "10",
+        "pad_type": "thru_hole",
+        "rotation_deg": 0,
+        "shape": "circle",
+        "size": {
+          "x": 1.778,
+          "y": 1.778
+        },
+        "uuid": "6252e3c0-385b-4f0a-ad29-881ad0b38e2d",
+        "x": 79.81,
+        "y": 56.12
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "*.Cu",
+            "offset": null,
+            "shape": "circle",
+            "size": {
+              "x": 1.778,
+              "y": 1.778
+            }
+          }
+        ],
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 1,
+            "y": 1
+          },
+          "start_layer": null
+        },
+        "layers": [
+          "*.Cu",
+          "*.Mask"
+        ],
+        "net": "unconnected-(U6-MUTE-Pad11)",
+        "number": "11",
+        "pad_type": "thru_hole",
+        "rotation_deg": 0,
+        "shape": "circle",
+        "size": {
+          "x": 1.778,
+          "y": 1.778
+        },
+        "uuid": "2f592453-2a9f-4ba7-bdc5-80b318f2f771",
+        "x": 77.27,
+        "y": 56.12
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "*.Cu",
+            "offset": null,
+            "shape": "circle",
+            "size": {
+              "x": 1.778,
+              "y": 1.778
+            }
+          }
+        ],
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 1,
+            "y": 1
+          },
+          "start_layer": null
+        },
+        "layers": [
+          "*.Cu",
+          "*.Mask"
+        ],
+        "net": "unconnected-(U6-MCLK-Pad12)",
+        "number": "12",
+        "pad_type": "thru_hole",
+        "rotation_deg": 0,
+        "shape": "circle",
+        "size": {
+          "x": 1.778,
+          "y": 1.778
+        },
+        "uuid": "3c7bad74-dcc8-4606-a234-372411b48540",
+        "x": 74.73,
+        "y": 56.12
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "*.Cu",
+            "offset": null,
+            "shape": "circle",
+            "size": {
+              "x": 1.778,
+              "y": 1.778
+            }
+          }
+        ],
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 1,
+            "y": 1
+          },
+          "start_layer": null
+        },
+        "layers": [
+          "*.Cu",
+          "*.Mask"
+        ],
+        "net": "unconnected-(U6-FILTER-Pad13)",
+        "number": "13",
+        "pad_type": "thru_hole",
+        "rotation_deg": 0,
+        "shape": "circle",
+        "size": {
+          "x": 1.778,
+          "y": 1.778
+        },
+        "uuid": "6f4540a4-5bad-4ec0-8e24-452828b9b559",
+        "x": 72.19,
+        "y": 56.12
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "*.Cu",
+            "offset": null,
+            "shape": "circle",
+            "size": {
+              "x": 1.778,
+              "y": 1.778
+            }
+          }
+        ],
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 1,
+            "y": 1
+          },
+          "start_layer": null
+        },
+        "layers": [
+          "*.Cu",
+          "*.Mask"
+        ],
+        "net": "unconnected-(U6-DEMPH-Pad14)",
+        "number": "14",
+        "pad_type": "thru_hole",
+        "rotation_deg": 0,
+        "shape": "circle",
+        "size": {
+          "x": 1.778,
+          "y": 1.778
+        },
+        "uuid": "0da68ad1-c70e-4a1d-a750-2afb22259449",
+        "x": 69.65,
+        "y": 56.12
+      }
+    ],
+    "reference": "U6",
+    "source": "file"
+  },
+  "RV1": {
+    "pad_count": 4,
+    "pads": [
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "*.Cu",
+            "offset": null,
+            "shape": "circle",
+            "size": {
+              "x": 1.9,
+              "y": 1.9
+            }
+          }
+        ],
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 1.1,
+            "y": 1.1
+          },
+          "start_layer": null
+        },
+        "layers": [
+          "*.Cu",
+          "*.Mask"
+        ],
+        "net": "",
+        "number": "",
+        "pad_type": "thru_hole",
+        "rotation_deg": 0,
+        "shape": "circle",
+        "size": {
+          "x": 1.9,
+          "y": 1.9
+        },
+        "uuid": "950e5ca9-5c65-452e-9677-2ca3b3bf4d35",
+        "x": 31.25,
+        "y": 37
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "*.Cu",
+            "offset": null,
+            "shape": "rect",
+            "size": {
+              "x": 1.9,
+              "y": 1.9
+            }
+          }
+        ],
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 1.1,
+            "y": 1.1
+          },
+          "start_layer": null
+        },
+        "layers": [
+          "*.Cu",
+          "*.Mask"
+        ],
+        "net": "GND",
+        "number": "1",
+        "pad_type": "thru_hole",
+        "rotation_deg": 0,
+        "shape": "rect",
+        "size": {
+          "x": 1.9,
+          "y": 1.9
+        },
+        "uuid": "c1c8cb0b-2eca-444e-b637-cfded63d3629",
+        "x": 23.75,
+        "y": 37
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "*.Cu",
+            "offset": null,
+            "shape": "circle",
+            "size": {
+              "x": 1.9,
+              "y": 1.9
+            }
+          }
+        ],
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 1.1,
+            "y": 1.1
+          },
+          "start_layer": null
+        },
+        "layers": [
+          "*.Cu",
+          "*.Mask"
+        ],
+        "net": "/POT1",
+        "number": "2",
+        "pad_type": "thru_hole",
+        "rotation_deg": 0,
+        "shape": "circle",
+        "size": {
+          "x": 1.9,
+          "y": 1.9
+        },
+        "uuid": "ba926a7a-bd44-41df-9a37-b5c56e99f6e6",
+        "x": 26.25,
+        "y": 37
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "*.Cu",
+            "offset": null,
+            "shape": "circle",
+            "size": {
+              "x": 1.9,
+              "y": 1.9
+            }
+          }
+        ],
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 1.1,
+            "y": 1.1
+          },
+          "start_layer": null
+        },
+        "layers": [
+          "*.Cu",
+          "*.Mask"
+        ],
+        "net": "/POT1_TOP",
+        "number": "3",
+        "pad_type": "thru_hole",
+        "rotation_deg": 0,
+        "shape": "circle",
+        "size": {
+          "x": 1.9,
+          "y": 1.9
+        },
+        "uuid": "0d4717f6-d48a-4a74-91a4-e27ec6dd1f29",
+        "x": 28.75,
+        "y": 37
+      }
+    ],
+    "reference": "RV1",
+    "source": "file"
+  },
+  "SW7": {
+    "pad_count": 5,
+    "pads": [
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "*.Cu",
+            "offset": null,
+            "shape": "rect",
+            "size": {
+              "x": 1.9,
+              "y": 1.9
+            }
+          }
+        ],
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 1.05,
+            "y": 1.05
+          },
+          "start_layer": null
+        },
+        "layers": [
+          "*.Cu",
+          "*.Mask"
+        ],
+        "net": "/ENC_A",
+        "number": "A",
+        "pad_type": "thru_hole",
+        "rotation_deg": 0,
+        "shape": "rect",
+        "size": {
+          "x": 1.9,
+          "y": 1.9
+        },
+        "uuid": "35dc01b9-116b-4748-b1fa-9453e89e4fe1",
+        "x": 95,
+        "y": 67.5
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "*.Cu",
+            "offset": null,
+            "shape": "circle",
+            "size": {
+              "x": 1.9,
+              "y": 1.9
+            }
+          }
+        ],
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 1.05,
+            "y": 1.05
+          },
+          "start_layer": null
+        },
+        "layers": [
+          "*.Cu",
+          "*.Mask"
+        ],
+        "net": "/ENC_B",
+        "number": "B",
+        "pad_type": "thru_hole",
+        "rotation_deg": 0,
+        "shape": "circle",
+        "size": {
+          "x": 1.9,
+          "y": 1.9
+        },
+        "uuid": "8635e853-daec-4bb5-bbd0-ff17653b9057",
+        "x": 100,
+        "y": 67.5
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "*.Cu",
+            "offset": null,
+            "shape": "circle",
+            "size": {
+              "x": 1.9,
+              "y": 1.9
+            }
+          }
+        ],
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 1.05,
+            "y": 1.05
+          },
+          "start_layer": null
+        },
+        "layers": [
+          "*.Cu",
+          "*.Mask"
+        ],
+        "net": "GND",
+        "number": "C",
+        "pad_type": "thru_hole",
+        "rotation_deg": 0,
+        "shape": "circle",
+        "size": {
+          "x": 1.9,
+          "y": 1.9
+        },
+        "uuid": "7672d707-6f4d-4f10-9500-6eaa2eefcc12",
+        "x": 97.5,
+        "y": 67.5
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "*.Cu",
+            "offset": null,
+            "shape": "circle",
+            "size": {
+              "x": 1.9,
+              "y": 1.9
+            }
+          }
+        ],
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 1.05,
+            "y": 1.05
+          },
+          "start_layer": null
+        },
+        "layers": [
+          "*.Cu",
+          "*.Mask"
+        ],
+        "net": "/ENC_SW",
+        "number": "S1",
+        "pad_type": "thru_hole",
+        "rotation_deg": 0,
+        "shape": "circle",
+        "size": {
+          "x": 1.9,
+          "y": 1.9
+        },
+        "uuid": "18663329-b9e1-4324-94a8-29e9d87d857a",
+        "x": 95,
+        "y": 53
+      },
+      {
+        "copper_layers": [
+          {
+            "chamfer_ratio": null,
+            "corner_rounding_ratio": null,
+            "layer": "*.Cu",
+            "offset": null,
+            "shape": "circle",
+            "size": {
+              "x": 1.9,
+              "y": 1.9
+            }
+          }
+        ],
+        "drill": {
+          "end_layer": null,
+          "shape": "circle",
+          "size": {
+            "x": 1.05,
+            "y": 1.05
+          },
+          "start_layer": null
+        },
+        "layers": [
+          "*.Cu",
+          "*.Mask"
+        ],
+        "net": "GND",
+        "number": "S2",
+        "pad_type": "thru_hole",
+        "rotation_deg": 0,
+        "shape": "circle",
+        "size": {
+          "x": 1.9,
+          "y": 1.9
+        },
+        "uuid": "c9d7c50f-dec3-4dcb-85f9-13e12f6bc402",
+        "x": 100,
+        "y": 53
+      }
+    ],
+    "reference": "SW7",
+    "source": "file"
+  }
+}
