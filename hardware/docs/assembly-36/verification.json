@@ -1,0 +1,258 @@
+{
+  "export_sections_unchanged": {
+    "BOARD": true,
+    "PADS": true,
+    "PADSTACKS": true,
+    "SHAPES": false,
+    "DEVICES": true,
+    "COMPONENTS": true,
+    "SIGNALS": true,
+    "TRACKS": true,
+    "ROUTES": true
+  },
+  "pin_count": 237,
+  "existing_source_objects_changed": [],
+  "source_objects_removed": [],
+  "added_source_objects": [
+    {
+      "uuid": "04c94434-db28-4ae3-a18b-b43d2afcdac0",
+      "kind": "gr_text",
+      "text": "ECHO TIME",
+      "layer": "F.SilkS",
+      "at": [
+        15.0,
+        65.0,
+        0.0
+      ]
+    },
+    {
+      "uuid": "135188fd-6468-4648-b7d8-2294be66755e",
+      "kind": "gr_text",
+      "text": "BTN1",
+      "layer": "F.SilkS",
+      "at": [
+        13.0,
+        112.0,
+        0.0
+      ]
+    },
+    {
+      "uuid": "14edf646-edc7-40e3-a023-f6b74d009297",
+      "kind": "gr_text",
+      "text": "ECHO CUT",
+      "layer": "F.SilkS",
+      "at": [
+        73.0,
+        114.2,
+        0.0
+      ]
+    },
+    {
+      "uuid": "1d181412-e6fa-42ba-bc72-2cae8d547a4e",
+      "kind": "gr_text",
+      "text": "USB-C",
+      "layer": "F.SilkS",
+      "at": [
+        40.0,
+        -4.099999,
+        0.0
+      ]
+    },
+    {
+      "uuid": "1d61ba86-c77f-42e5-9974-7d8ac7e081e3",
+      "kind": "gr_text",
+      "text": "ESP-DubSiren",
+      "layer": "F.SilkS",
+      "at": [
+        43.0,
+        117.4,
+        0.0
+      ]
+    },
+    {
+      "uuid": "1f306968-224a-4543-b9cb-611507691747",
+      "kind": "gr_text",
+      "text": "SELECT",
+      "layer": "F.SilkS",
+      "at": [
+        75.0,
+        35.5,
+        0.0
+      ]
+    },
+    {
+      "uuid": "32ec005a-a8ba-4298-97be-ec974c8738d5",
+      "kind": "gr_text",
+      "text": "ECHO FILTER",
+      "layer": "F.SilkS",
+      "at": [
+        71.0,
+        65.0,
+        0.0
+      ]
+    },
+    {
+      "uuid": "37a436dc-6c1c-4623-9907-76319afb382d",
+      "kind": "gr_text",
+      "text": "MANUAL MOD",
+      "layer": "F.SilkS",
+      "at": [
+        54.0,
+        114.2,
+        0.0
+      ]
+    },
+    {
+      "uuid": "4cab7da2-dd4b-45a0-af50-bf12cbde687c",
+      "kind": "gr_text",
+      "text": "RATE",
+      "layer": "F.SilkS",
+      "at": [
+        43.0,
+        6.2,
+        0.0
+      ]
+    },
+    {
+      "uuid": "676e746f-f989-46a8-a79d-f5f19caf8996",
+      "kind": "gr_text",
+      "text": "BTN3",
+      "layer": "F.SilkS",
+      "at": [
+        54.0,
+        112.0,
+        0.0
+      ]
+    },
+    {
+      "uuid": "7afa2853-2520-4366-be30-de48e46e0c9c",
+      "kind": "gr_text",
+      "text": "ECHO LEVEL",
+      "layer": "F.SilkS",
+      "at": [
+        71.0,
+        2.5,
+        0.0
+      ]
+    },
+    {
+      "uuid": "867256dd-84b6-4c9c-b116-fc89417fd4fd",
+      "kind": "gr_text",
+      "text": "BTN4",
+      "layer": "F.SilkS",
+      "at": [
+        73.0,
+        112.0,
+        0.0
+      ]
+    },
+    {
+      "uuid": "8b214833-621e-4997-bdd3-b50f100abb46",
+      "kind": "gr_text",
+      "text": "MONO",
+      "layer": "F.SilkS",
+      "at": [
+        65.5,
+        -3.7,
+        0.0
+      ]
+    },
+    {
+      "uuid": "9cdd2a5b-a4b0-455f-b237-9884bcc51023",
+      "kind": "gr_text",
+      "text": "ECHO FEEDBACK",
+      "layer": "F.SilkS",
+      "at": [
+        43.0,
+        65.0,
+        0.0
+      ]
+    },
+    {
+      "uuid": "a14ee39c-918b-4deb-a603-57a9b04c42d2",
+      "kind": "gr_text",
+      "text": "PITCH",
+      "layer": "F.SilkS",
+      "at": [
+        15.0,
+        6.2,
+        0.0
+      ]
+    },
+    {
+      "uuid": "acf25b3a-b19b-49c5-9ae0-5b8aab44bb3b",
+      "kind": "gr_text",
+      "text": "BTN2",
+      "layer": "F.SilkS",
+      "at": [
+        32.0,
+        112.0,
+        0.0
+      ]
+    },
+    {
+      "uuid": "bf638067-e062-4347-a231-687280e81012",
+      "kind": "gr_text",
+      "text": "TRIGGER",
+      "layer": "F.SilkS",
+      "at": [
+        13.0,
+        114.2,
+        0.0
+      ]
+    },
+    {
+      "uuid": "c74b1059-fdbb-4452-99ce-af8be296ada1",
+      "kind": "gr_text",
+      "text": "MASTER",
+      "layer": "F.SilkS",
+      "at": [
+        16.0,
+        0.8,
+        0.0
+      ]
+    },
+    {
+      "uuid": "c7e8f816-fe39-4fd0-899a-013b905a851b",
+      "kind": "gr_text",
+      "text": "HOLD",
+      "layer": "F.SilkS",
+      "at": [
+        32.0,
+        114.2,
+        0.0
+      ]
+    },
+    {
+      "uuid": "f3971310-97bd-45a4-8636-668f409c920a",
+      "kind": "gr_text",
+      "text": "PUSH: MENU",
+      "layer": "F.SilkS",
+      "at": [
+        75.0,
+        57.5,
+        0.0
+      ]
+    }
+  ],
+  "source_numeric_comparison_precision_mm": 1e-06,
+  "drc_rule_counts": {
+    "silk_edge_clearance": 11,
+    "lib_footprint_mismatch": 64,
+    "silk_overlap": 13,
+    "silk_over_copper": 27
+  },
+  "drc_baseline_rule_counts": {
+    "silk_edge_clearance": 11,
+    "lib_footprint_mismatch": 64,
+    "silk_overlap": 13,
+    "silk_over_copper": 27
+  },
+  "new_label_violations": [],
+  "bom_references": 64,
+  "bom_differences": [],
+  "expected_unconnected": 160,
+  "expected_schematic_parity": 68,
+  "limitation": "No routed PCB or physical assembly tested; native save normalizes ordering and numeric formatting.",
+  "gencad_shapes_same_line_multiset": true
+}

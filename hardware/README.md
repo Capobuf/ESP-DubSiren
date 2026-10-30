@@ -10,6 +10,11 @@ Il solo progetto attivo resta quello nella cartella `kicad`.
   237 pin coerenti fra schema e PCB, distinta verificata.
 - [Proposta e verifica ingombri #35](docs/issue-35-standalone-layout.md):
   coordinate, altezze documentate, fissaggi e prove fisiche pendenti.
+- [Serigrafia e assemblaggio #36](docs/issue-36-silkscreen-assembly.md):
+  20 nuove etichette frontali, [guida DIY](docs/assembly.md) e
+  [preview top/bottom](docs/assembly-36/review.png). Consegna parziale:
+  colori nello stackup, pulizia dei footprint e nuove etichette posteriori
+  restano pendenti per limiti dei tool Konnect.
 - [Vista superiore](docs/layout-35/F-layout.png),
   [vista inferiore](docs/layout-35/B-layout.png),
   [render superiore](docs/layout-35/top-3d.png),
