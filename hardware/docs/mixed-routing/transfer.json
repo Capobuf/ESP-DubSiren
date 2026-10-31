@@ -1,0 +1,45 @@
+{
+  "source_sha256": {
+    "C:\\Users\\dot\\Documents\\ESP-DubSiren\\hardware\\kicad\\ESP-DubSiren-mixed-diagnostic.kicad_pcb": "0764ee2c7d9772f598a4ce1b180565121287560ee6922ffc44f22bdd6b942693",
+    "C:\\Users\\dot\\Documents\\ESP-DubSiren\\hardware\\kicad\\ESP-DubSiren-mixed-diagnostic.kicad_pro": "5744c2e5d913b08dc2daab7ef9e6b8bb3c8595b34706b09953ab6bb7b507dd22"
+  },
+  "classes": {
+    "Default": {
+      "track_width_mm": 0.2,
+      "clearance_mm": 0.15
+    },
+    "Power": {
+      "track_width_mm": 0.8,
+      "clearance_mm": 0.15
+    },
+    "USB": {
+      "track_width_mm": 0.6,
+      "clearance_mm": 0.15
+    }
+  },
+  "cutout_count": 16,
+  "native_keepouts": 5,
+  "kicad_edge_clearance_um": 500.0,
+  "dsn_approximation_margin_um": 6,
+  "settings": {
+    "router.automatic_neckdown": false,
+    "router.neck_width_um": 0,
+    "router.fanout.enabled": false,
+    "router.optimizer.enabled": false,
+    "router.autorouter.max_passes": 8,
+    "router.job_timeout": "00:09:50",
+    "router.copper_to_edge_clearance_um": 506.0,
+    "router.hole_clearance_um": 0,
+    "router.clearance_tolerance_um": 0
+  },
+  "npth_keepouts_with_hole_clearance_already_in_geometry": 54,
+  "reserved_geometry_extra_clearance_um": 0.1,
+  "kicad_hole_clearance_um": 250.0,
+  "copper_layers": [
+    "F.Cu",
+    "B.Cu"
+  ],
+  "source_unchanged": true,
+  "handoff_validated": false,
+  "required_validation": "Compare Freerouting connectivity and DRC with KiCad before routing; this exporter never runs the autorouter."
+}

@@ -1,0 +1,222 @@
+{
+  "segments": 136,
+  "vias": 13,
+  "initial_unconnected": 160,
+  "remaining_unconnected": 119,
+  "completed_connections": 41,
+  "below_netclass_width": 0,
+  "below_drc_minimum": 0,
+  "new_drc_violations": 0,
+  "baseline_geometric_errors": 18,
+  "baseline_warnings": 92,
+  "baseline_parity_warnings": 68,
+  "all_footprints_pads_nets_placement_arcs_layers_unchanged": true,
+  "approved_keepouts": 5,
+  "no_copper_pours": true,
+  "net_stats": {
+    "GND": {
+      "segments": 28,
+      "length_mm": 92.207,
+      "widths_mm": [
+        0.2
+      ],
+      "vias": 0,
+      "open_connections": 42
+    },
+    "+3V3": {
+      "segments": 23,
+      "length_mm": 62.333,
+      "widths_mm": [
+        0.8
+      ],
+      "vias": 3,
+      "open_connections": 20
+    },
+    "/USB_DM_MCU": {
+      "segments": 1,
+      "length_mm": 2.925,
+      "widths_mm": [
+        0.6
+      ],
+      "vias": 0,
+      "open_connections": 0
+    },
+    "+5V": {
+      "segments": 12,
+      "length_mm": 23.559,
+      "widths_mm": [
+        0.8
+      ],
+      "vias": 2,
+      "open_connections": 2
+    },
+    "/ADC_MUX": {
+      "segments": 10,
+      "length_mm": 42.892,
+      "widths_mm": [
+        0.2
+      ],
+      "vias": 3,
+      "open_connections": 0
+    },
+    "/I2S_BCLK": {
+      "segments": 4,
+      "length_mm": 36.335,
+      "widths_mm": [
+        0.2
+      ],
+      "vias": 1,
+      "open_connections": 0
+    },
+    "/I2S_LRCK": {
+      "segments": 6,
+      "length_mm": 28.411,
+      "widths_mm": [
+        0.2
+      ],
+      "vias": 1,
+      "open_connections": 0
+    },
+    "/I2S_DIN": {
+      "segments": 8,
+      "length_mm": 37.872,
+      "widths_mm": [
+        0.2
+      ],
+      "vias": 0,
+      "open_connections": 0
+    },
+    "/USB_DP_MCU": {
+      "segments": 3,
+      "length_mm": 3.712,
+      "widths_mm": [
+        0.6
+      ],
+      "vias": 0,
+      "open_connections": 0
+    },
+    "/VOUT_S": {
+      "segments": 3,
+      "length_mm": 4.204,
+      "widths_mm": [
+        0.2
+      ],
+      "vias": 0,
+      "open_connections": 0
+    },
+    "/VBUS_PROTECTED": {
+      "segments": 12,
+      "length_mm": 26.927,
+      "widths_mm": [
+        0.8
+      ],
+      "vias": 0,
+      "open_connections": 0
+    },
+    "/AUDIO_MONO": {
+      "segments": 9,
+      "length_mm": 79.241,
+      "widths_mm": [
+        0.2
+      ],
+      "vias": 1,
+      "open_connections": 0
+    },
+    "/VBUS_RAW": {
+      "segments": 17,
+      "length_mm": 35.128,
+      "widths_mm": [
+        0.8
+      ],
+      "vias": 2,
+      "open_connections": 0
+    }
+  },
+  "remaining_by_net": {
+    "+3V3": 20,
+    "+5V": 2,
+    "/BOOT": 2,
+    "/BTN1": 2,
+    "/BTN2": 2,
+    "/BTN3": 2,
+    "/BTN4": 2,
+    "/ENC_A": 2,
+    "/ENC_B": 2,
+    "/ENC_SW": 2,
+    "/ESP_EN": 3,
+    "/MASTER": 1,
+    "/MUX_S0": 1,
+    "/MUX_S1": 1,
+    "/MUX_S2": 1,
+    "/POT1": 1,
+    "/POT1_TOP": 1,
+    "/POT2": 1,
+    "/POT2_TOP": 1,
+    "/POT3": 1,
+    "/POT3_TOP": 1,
+    "/POT4": 1,
+    "/POT4_TOP": 1,
+    "/POT5": 1,
+    "/POT5_TOP": 1,
+    "/POT6": 1,
+    "/POT6_TOP": 1,
+    "/POT7_TOP": 1,
+    "/SPI_MOSI": 1,
+    "/SPI_SCK": 1,
+    "/TFT_CS": 1,
+    "/TFT_DC": 1,
+    "/TFT_LITE": 1,
+    "/TFT_RST": 1,
+    "/UART_RX": 1,
+    "/UART_TX": 1,
+    "/USB_CC1": 1,
+    "/USB_CC2": 1,
+    "/USB_DM_CONN": 4,
+    "/USB_DP_CONN": 4,
+    "/VBUS_SLEW_CT": 1,
+    "GND": 42
+  },
+  "non_routing_rule_probe": {
+    "native": {
+      "total_count": 3,
+      "pre_existing_count": 3,
+      "unfixable_count": 3,
+      "router_introduced_count": 0,
+      "total_violation_um": 450.0,
+      "min_violation_um": 150.0,
+      "max_violation_um": 150.0,
+      "avg_violation_um": 150.0
+    },
+    "corrected": {
+      "total_count": 6,
+      "pre_existing_count": 6,
+      "unfixable_count": 6,
+      "router_introduced_count": 0,
+      "total_violation_um": 468.3,
+      "min_violation_um": 0.2,
+      "max_violation_um": 155.9,
+      "avg_violation_um": 78.05
+    }
+  },
+  "active_source_sha256": {
+    "ESP-DubSiren.kicad_pcb": "18071a8a3104b410ba28ebea4b8c64b05f7e63d50f047a343c214c413686ddcc",
+    "ESP-DubSiren.kicad_pro": "5744c2e5d913b08dc2daab7ef9e6b8bb3c8595b34706b09953ab6bb7b507dd22",
+    "ESP-DubSiren.kicad_sch": "c15d4f9292840322e1fad0f3c763c27f37ffb33fed64f57a03c592b0dc6f54f5"
+  },
+  "candidate": "hardware\\kicad\\ESP-DubSiren-mixed-diagnostic.kicad_pcb",
+  "freerouting_handoff": {
+    "validated": false,
+    "all_routing_stages_disabled": true,
+    "parameters_confirmed_in_settings_snapshot": true,
+    "remaining_connections": 132,
+    "clearance_reports": 16,
+    "reason": "KiCad/Freerouting disagree on off-centre pad contacts and VBUS pad-entry geometry; do not start routing"
+  },
+  "candidate_sha256": "0764ee2c7d9772f598a4ce1b180565121287560ee6922ffc44f22bdd6b942693",
+  "no_routing_ses_roundtrip": {
+    "objects_before": 149,
+    "objects_after": 149,
+    "unconnected": 119,
+    "new_kicad_errors": 0
+  }
+}
