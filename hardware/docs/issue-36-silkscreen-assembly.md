@@ -1,5 +1,11 @@
 # Issue #36 — serigrafia e assemblaggio DIY
 
+**Integrazione approvata il 31 ottobre 2026:** il lavoro #36 e il checkpoint
+locale successivo sono preservati nella consegna #38 autorizzata per push e
+merge. I riferimenti seguenti al ramo non ancora integrato descrivono lo
+stato storico del 30 ottobre, non un obbligo di conservarlo dopo la verifica
+dell'integrazione.
+
 **Aggiornamento, 30 ottobre 2026:** la successiva
 [pulizia della serigrafia](silkscreen-cleanup/README.md) ha rimosso 19 delle
 20 etichette frontali qui documentate, conservando MASTER. Le anteprime e le

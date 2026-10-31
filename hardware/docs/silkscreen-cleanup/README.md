@@ -1,5 +1,10 @@
 # Pulizia serigrafia frontale — 30 ottobre 2026
 
+**Aggiornamento 31 ottobre 2026:** questo checkpoint è preservato nella
+consegna #38 approvata dall'utente per push e merge. La conservazione del
+ramo #36 descritta sotto si riferisce allo stato precedente all'integrazione;
+la sua pulizia è consentita solo dopo averne verificato l'equivalenza.
+
 **Esito parziale**, con uso esclusivo di Konnect confermato dall'utente.
 PCB salvato: `hardware/kicad/ESP-DubSiren.kicad_pcb`.
 

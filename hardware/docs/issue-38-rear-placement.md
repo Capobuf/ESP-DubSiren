@@ -5,6 +5,11 @@ Proposta del **31 ottobre 2026**, ramo `codex/issue-38-rear-placement`, nell'uni
 non consolidata e PCB non fabbricabile.** Nessun routing, via, zona, Gerber,
 cambiamento di schema, BOM o firmware.
 
+**Revisione utente del 31 ottobre 2026:** «per me ok, procedi al push e
+merge». Approvata l'integrazione dello studio e della serigrafia #36
+preservata. L'approvazione non assegna quote fisiche mancanti e non autorizza
+routing o produzione; i limiti descritti sotto restano aperti tecnicamente.
+
 **Integrazione header nella issue, ricontrollata il 31 ottobre:** il
 [nuovo esame SLxG1](issue-38-header-stack-review.md) documenta il riferimento
 commerciale 2,50/3,00/6,10 mm. Con il lato corto U6 nella portante rimangono
@@ -299,6 +304,8 @@ GenCAD [prima](placement-38/before.cad) / [dopo](placement-38/after.cad),
 [pad finali](placement-38/after-pads.json) e
 [courtyard finali](placement-38/after-courtyards.json).
 
-**Stop per revisione utente:** una sola proposta nel PCB attivo. Prima di
-consolidarla servono feedback sul compromesso e misure di stack, ferramenta,
-header e cavo antenna. Nessun merge autonomo, chiusura della #38 o routing.
+**Revisione utente completata:** autorizzati push e merge dello studio il
+31 ottobre 2026. Una sola proposta nel PCB attivo; restano da qualificare
+stack, ferramenta, header e cavo antenna prima di consolidare il montaggio.
+La chiusura della #38 riguarda lo studio accettato, non l'approvazione
+produttiva o l'autorizzazione al routing.
