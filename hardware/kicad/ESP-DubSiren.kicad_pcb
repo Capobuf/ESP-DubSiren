@@ -28,6 +28,47 @@
 		(33 "B.Fab" user)
 	)
 	(setup
+		(stackup
+			(layer "F.SilkS"
+				(type "Top Silk Screen")
+				(color "Black")
+			)
+			(layer "F.Paste"
+				(type "Top Solder Paste")
+			)
+			(layer "F.Mask"
+				(type "Top Solder Mask")
+				(thickness 0.01)
+			)
+			(layer "F.Cu"
+				(type "copper")
+				(thickness 0.035)
+			)
+			(layer "dielectric 1"
+				(type "core")
+				(thickness 1.51)
+				(material "FR4")
+				(epsilon_r 4.5)
+				(loss_tangent 0.02)
+			)
+			(layer "B.Cu"
+				(type "copper")
+				(thickness 0.035)
+			)
+			(layer "B.Mask"
+				(type "Bottom Solder Mask")
+				(thickness 0.01)
+			)
+			(layer "B.Paste"
+				(type "Bottom Solder Paste")
+			)
+			(layer "B.SilkS"
+				(type "Bottom Silk Screen")
+				(color "Black")
+			)
+			(copper_finish "None")
+			(dielectric_constraints no)
+		)
 		(pad_to_mask_clearance 0.05)
 		(allow_soldermask_bridges_in_footprints no)
 		(tenting
@@ -44,6 +85,7 @@
 		)
 		(capping no)
 		(filling no)
+		(zone_defaults)
 		(pcbplotparams
 			(layerselection 0x00000000_00000000_55555555_5755f5ff)
 			(plot_on_all_layers_selection 0x00000000_00000000_00000000_00000000)
@@ -671,6 +713,7 @@
 			(at 0 -4.15 0)
 			(unlocked yes)
 			(layer "F.SilkS")
+			(hide yes)
 			(uuid "4dcb8eea-583f-43a3-85a4-e5fbd1e673d4")
 			(effects
 				(font
@@ -1959,7 +2002,7 @@
 		(uuid "5343e46e-f875-425c-acb8-a1c431a4f7ff")
 		(at 78.54 94.92)
 		(property "Reference" "SW4"
-			(at -2.54 -2.794 0)
+			(at -2.54 9.08 0)
 			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "f15d66e3-97e4-4695-8ed0-dbb76d31961c")
@@ -2168,7 +2211,7 @@
 			(uuid "42d9e6d5-02b0-4c1f-9fe3-e02e5c8cb67a")
 		)
 		(fp_text user "${REFERENCE}"
-			(at -2.54 -2.794 0)
+			(at -2.54 9.08 0)
 			(unlocked yes)
 			(layer "F.Fab")
 			(uuid "5a35ec30-3ca2-4778-a19d-511a97f62ecf")
@@ -2228,6 +2271,7 @@
 			(at 0 -4.15 0)
 			(unlocked yes)
 			(layer "F.SilkS")
+			(hide yes)
 			(uuid "56186667-6605-4134-815f-6f5670e69e47")
 			(effects
 				(font
@@ -2320,7 +2364,7 @@
 		(uuid "6763ffef-2c43-4c6f-a730-11d8a534b157")
 		(at 34.54 94.92)
 		(property "Reference" "SW2"
-			(at -2.54 -2.794 0)
+			(at -2.54 9.08 0)
 			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "a40e9898-c6ac-41b2-9aa9-cb76c2b5bedc")
@@ -2529,7 +2573,7 @@
 			(uuid "7000575e-de2c-4867-baa1-1d4bc79d618c")
 		)
 		(fp_text user "${REFERENCE}"
-			(at -2.54 -2.794 0)
+			(at -2.54 9.08 0)
 			(unlocked yes)
 			(layer "F.Fab")
 			(uuid "6e6b7e57-d0b2-41b1-b68f-c78762b167d2")
@@ -2880,6 +2924,7 @@
 			(at 0 -4.15 0)
 			(unlocked yes)
 			(layer "F.SilkS")
+			(hide yes)
 			(uuid "a673762a-1f79-4c10-9aba-8e50d696be6c")
 			(effects
 				(font
@@ -3906,7 +3951,7 @@
 		(uuid "c3720ce0-c17f-4ca0-a633-4164cf7ab922")
 		(at 12.54 94.92)
 		(property "Reference" "SW1"
-			(at -2.54 -2.794 0)
+			(at -2.54 9.08 0)
 			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "9cf02b86-0633-4051-bf89-782d364e94e6")
@@ -4115,7 +4160,7 @@
 			(uuid "fc683ea9-e8b0-4f8a-8189-1dc946f973a8")
 		)
 		(fp_text user "${REFERENCE}"
-			(at -2.54 -2.794 0)
+			(at -2.54 9.08 0)
 			(unlocked yes)
 			(layer "F.Fab")
 			(uuid "ee906b0f-45a1-44a7-8c45-de38d54a552f")
@@ -4172,7 +4217,7 @@
 		(uuid "cef7a251-a7fc-40f7-b4fa-221d4a0c0f68")
 		(at 56.54 94.92)
 		(property "Reference" "SW3"
-			(at -2.54 -2.794 0)
+			(at -2.54 9.08 0)
 			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "7f697cac-98f1-4cd3-8861-53575c78be73")
@@ -4381,7 +4426,7 @@
 			(uuid "33727a07-9e5a-4c3c-b038-4ec93499e764")
 		)
 		(fp_text user "${REFERENCE}"
-			(at -2.54 -2.794 0)
+			(at -2.54 9.08 0)
 			(unlocked yes)
 			(layer "F.Fab")
 			(uuid "d0184d4d-7e47-425b-9020-94aa612f8c75")
@@ -4441,7 +4486,8 @@
 			(at 0 -4.15 0)
 			(unlocked yes)
 			(layer "F.SilkS")
-			(uuid "998d2ef0-8f37-41cb-af55-9bf6ec41dec3")
+			(hide yes)
+			(uuid "5be2fe9d-6346-4d82-b73f-48a817911e87")
 			(effects
 				(font
 					(size 1 1)
@@ -4454,7 +4500,7 @@
 			(unlocked yes)
 			(layer "F.SilkS")
 			(hide yes)
-			(uuid "79592d54-f8ca-44a9-a87b-fec07a115160")
+			(uuid "754fdee6-f34e-4b37-90bf-1b4fbc2d4676")
 			(effects
 				(font
 					(size 1 1)
@@ -4466,7 +4512,7 @@
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "8c834e7a-9d13-4bf5-8af4-e61334fd74c4")
+			(uuid "4bf53510-6d18-456c-8757-03bf19eebcb3")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4477,7 +4523,7 @@
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "9449ffba-48a0-4fdd-a27a-b3c57b31bde1")
+			(uuid "237b3f2c-3754-472a-920f-43794b92dd59")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7310,18 +7356,6 @@
 			(layer "B.Fab")
 			(uuid "0964e017-78dc-4dea-af7f-f492734eb422")
 		)
-		(fp_text user "PCB Edge"
-			(at 2.975 -6.1 0)
-			(unlocked yes)
-			(layer "Dwgs.User")
-			(uuid "3a93df94-f5d7-41dd-84a1-97a82ea871d1")
-			(effects
-				(font
-					(size 0.5 0.5)
-					(thickness 0.1)
-				)
-			)
-		)
 		(fp_text user "${REFERENCE}"
 			(at 2.975 -4.025 0)
 			(unlocked yes)
@@ -8247,7 +8281,7 @@
 			(at 0 1 90)
 			(unlocked yes)
 			(layer "B.SilkS")
-			(uuid "bc1814b1-923c-4136-8bc6-a09afda71f0d")
+			(uuid "efe4b0df-7ce0-4dbb-a4d1-b2a0c09aef9e")
 			(effects
 				(font
 					(size 1 1)
@@ -8261,7 +8295,7 @@
 			(unlocked yes)
 			(layer "B.SilkS")
 			(hide yes)
-			(uuid "5961921c-a029-4971-a9d8-65bb851e4163")
+			(uuid "57be229a-2678-4d83-b9d1-600d884ca427")
 			(effects
 				(font
 					(size 1 1)
@@ -8274,7 +8308,7 @@
 			(at 0 0 90)
 			(layer "B.Fab")
 			(hide yes)
-			(uuid "368ad5b1-aaa0-4a7b-9c2c-ac2d83be70ba")
+			(uuid "69afb030-2ee1-4c9b-96a5-442798c34839")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8286,7 +8320,7 @@
 			(at 0 0 90)
 			(layer "B.Fab")
 			(hide yes)
-			(uuid "239eec3e-da88-408e-8731-1a17ebd236ae")
+			(uuid "c77eafe2-f7a3-42a8-a8b4-84fb3675883c")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -19193,182 +19227,6 @@
 		(layer "Edge.Cuts")
 		(uuid "dec292e5-135f-448d-879d-34e848dae8a2")
 	)
-	(gr_text "BTN1"
-		(at 13 112 0)
-		(layer "F.SilkS")
-		(uuid "135188fd-6468-4648-b7d8-2294be66755e")
-		(effects
-			(font
-				(size 0.85 0.85)
-				(thickness 0.1275)
-			)
-		)
-	)
-	(gr_text "TRIGGER"
-		(at 13 114.2 0)
-		(layer "F.SilkS")
-		(uuid "bf638067-e062-4347-a231-687280e81012")
-		(effects
-			(font
-				(size 0.85 0.85)
-				(thickness 0.1275)
-			)
-		)
-	)
-	(gr_text "BTN2"
-		(at 32 112 0)
-		(layer "F.SilkS")
-		(uuid "acf25b3a-b19b-49c5-9ae0-5b8aab44bb3b")
-		(effects
-			(font
-				(size 0.85 0.85)
-				(thickness 0.1275)
-			)
-		)
-	)
-	(gr_text "HOLD"
-		(at 32 114.2 0)
-		(layer "F.SilkS")
-		(uuid "c7e8f816-fe39-4fd0-899a-013b905a851b")
-		(effects
-			(font
-				(size 0.85 0.85)
-				(thickness 0.1275)
-			)
-		)
-	)
-	(gr_text "BTN3"
-		(at 54 112 0)
-		(layer "F.SilkS")
-		(uuid "676e746f-f989-46a8-a79d-f5f19caf8996")
-		(effects
-			(font
-				(size 0.85 0.85)
-				(thickness 0.1275)
-			)
-		)
-	)
-	(gr_text "MANUAL MOD"
-		(at 54 114.2 0)
-		(layer "F.SilkS")
-		(uuid "37a436dc-6c1c-4623-9907-76319afb382d")
-		(effects
-			(font
-				(size 0.85 0.85)
-				(thickness 0.1275)
-			)
-		)
-	)
-	(gr_text "BTN4"
-		(at 73 112 0)
-		(layer "F.SilkS")
-		(uuid "867256dd-84b6-4c9c-b116-fc89417fd4fd")
-		(effects
-			(font
-				(size 0.85 0.85)
-				(thickness 0.1275)
-			)
-		)
-	)
-	(gr_text "ECHO CUT"
-		(at 73 114.2 0)
-		(layer "F.SilkS")
-		(uuid "14edf646-edc7-40e3-a023-f6b74d009297")
-		(effects
-			(font
-				(size 0.85 0.85)
-				(thickness 0.1275)
-			)
-		)
-	)
-	(gr_text "PUSH: MENU"
-		(at 75 57.5 0)
-		(layer "F.SilkS")
-		(uuid "f3971310-97bd-45a4-8636-668f409c920a")
-		(effects
-			(font
-				(size 0.9 0.9)
-				(thickness 0.135)
-			)
-		)
-	)
-	(gr_text "ECHO FEEDBACK"
-		(at 43 65 0)
-		(layer "F.SilkS")
-		(uuid "9cdd2a5b-a4b0-455f-b237-9884bcc51023")
-		(effects
-			(font
-				(size 1.05 1.05)
-				(thickness 0.1575)
-			)
-		)
-	)
-	(gr_text "ECHO TIME"
-		(at 15 65 0)
-		(layer "F.SilkS")
-		(uuid "04c94434-db28-4ae3-a18b-b43d2afcdac0")
-		(effects
-			(font
-				(size 1.1 1.1)
-				(thickness 0.165)
-			)
-		)
-	)
-	(gr_text "USB-C"
-		(at 40 -4.099999 0)
-		(layer "F.SilkS")
-		(uuid "1d181412-e6fa-42ba-bc72-2cae8d547a4e")
-		(effects
-			(font
-				(size 1.1 1.1)
-				(thickness 0.165)
-			)
-		)
-	)
-	(gr_text "MONO"
-		(at 65.5 -3.7 0)
-		(layer "F.SilkS")
-		(uuid "8b214833-621e-4997-bdd3-b50f100abb46")
-		(effects
-			(font
-				(size 1.1 1.1)
-				(thickness 0.165)
-			)
-		)
-	)
-	(gr_text "ECHO LEVEL"
-		(at 71 2.5 0)
-		(layer "F.SilkS")
-		(uuid "7afa2853-2520-4366-be30-de48e46e0c9c")
-		(effects
-			(font
-				(size 1.1 1.1)
-				(thickness 0.165)
-			)
-		)
-	)
-	(gr_text "ECHO FILTER"
-		(at 71 65 0)
-		(layer "F.SilkS")
-		(uuid "32ec005a-a8ba-4298-97be-ec974c8738d5")
-		(effects
-			(font
-				(size 1.1 1.1)
-				(thickness 0.165)
-			)
-		)
-	)
-	(gr_text "SELECT"
-		(at 75 35.5 0)
-		(layer "F.SilkS")
-		(uuid "1f306968-224a-4543-b9cb-611507691747")
-		(effects
-			(font
-				(size 1.1 1.1)
-				(thickness 0.165)
-			)
-		)
-	)
 	(gr_text "MASTER"
 		(at 16 0.8 0)
 		(layer "F.SilkS")
@@ -19377,72 +19235,6 @@
 			(font
 				(size 1.15 1.15)
 				(thickness 0.1725)
-			)
-		)
-	)
-	(gr_text "PITCH"
-		(at 15 6.2 0)
-		(layer "F.SilkS")
-		(uuid "a14ee39c-918b-4deb-a603-57a9b04c42d2")
-		(effects
-			(font
-				(size 1.25 1.25)
-				(thickness 0.1875)
-			)
-		)
-	)
-	(gr_text "RATE"
-		(at 43 6.2 0)
-		(layer "F.SilkS")
-		(uuid "4cab7da2-dd4b-45a0-af50-bf12cbde687c")
-		(effects
-			(font
-				(size 1.25 1.25)
-				(thickness 0.1875)
-			)
-		)
-	)
-	(gr_text "ESP-DubSiren"
-		(at 43 117.4 0)
-		(layer "F.SilkS")
-		(uuid "1d61ba86-c77f-42e5-9974-7d8ac7e081e3")
-		(effects
-			(font
-				(size 2.1 2.1)
-				(thickness 0.315)
-			)
-		)
-	)
-	(gr_text "GAPS: KEYS 4.08 / DISPLAY 4.34 mm NOMINAL"
-		(at 43 112 0)
-		(layer "Dwgs.User")
-		(uuid "5b0c7f67-222f-4477-aca8-e9948f33b699")
-		(effects
-			(font
-				(size 0.85 0.85)
-				(thickness 0.15)
-			)
-		)
-	)
-	(gr_text "STANDALONE 86x126 R3 - M3 3.2"
-		(at 43 115 0)
-		(layer "Dwgs.User")
-		(uuid "35779cef-4060-474a-ad80-a5f33771626f")
-		(effects
-			(font
-				(size 0.85 0.85)
-				(thickness 0.15)
-			)
-		)
-	)
-	(gr_text "M3 RESERVE 8x8 BOTH SIDES - NO ROUTING"
-		(at 43 118 0)
-		(layer "Dwgs.User")
-		(uuid "c2834698-54a5-4d1f-92b8-4a94cda15e09")
-		(effects
-			(font
-				(size 0.85 0.85)
-				(thickness 0.15)
 			)
 		)
 	)

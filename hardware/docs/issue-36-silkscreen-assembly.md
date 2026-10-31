@@ -1,9 +1,21 @@
 # Issue #36 — serigrafia e assemblaggio DIY
 
+**Aggiornamento, 30 ottobre 2026:** la successiva
+[pulizia della serigrafia](silkscreen-cleanup/README.md) ha rimosso 19 delle
+20 etichette frontali qui documentate, conservando MASTER. Le anteprime e le
+verifiche seguenti descrivono la consegna precedente; lo stato attuale e i
+campi dei footprint ancora da sistemare sono nella nuova revisione.
+
+L'utente ha accettato la consegna parziale («per me ok»); la issue #36 è
+chiusa con i limiti residui esplicitati. Il ramo dedicato resta conservato,
+perché non è ancora integrato in `main`. La chiusura non equivale a una
+validazione produttiva o al completamento dei campi non modificabili con Konnect.
+
 Consegna **parziale**, 30 ottobre 2026, sul ramo
 `codex/issue-36-silkscreen-assembly` e sull'unico PCB attivo. Il bordo resta
 **86 × 126 mm R3**, senza routing. La guida è in [assembly.md](assembly.md).
-La issue resta aperta: completamento serigrafie e revisione dell'utente pendenti.
+Alla consegna iniziale la issue restava aperta: completamento serigrafie e
+revisione dell'utente erano pendenti; vedere l'aggiornamento sopra.
 
 ## Anteprime dal PCB salvato
 
