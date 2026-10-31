@@ -133,6 +133,13 @@ La sezione distingue:
 - `hF`: massimo sopra il carrier di saldature/pin U6 e teste delle sue viti;
 - `g6`: distanza carrier B.Cu–PCB DAC, includendo header e ferramenta.
 
+**Precisazione dell'utente, 31 ottobre 2026:** il display è sempre saldato
+tramite header. Questo è il montaggio di riferimento. Il tipo e l'altezza
+dell'header non sono ancora identificati: non si assume dal termine «header»
+che sia presente uno zoccolo sfilabile. Il controllo DRC qui riportato è in
+pianta e non valuta la separazione verticale creata dall'header; i 18 errori
+non dimostrano da soli una collisione nell'assieme montato.
+
 Occorre misurare e soddisfare **`g5 > hU5 + hF + margine`**, usando altezze
 reali e tolleranze. Il margine non è stato scelto arbitrariamente. Verificare
 anche `g6` e la profondità finale sotto il carrier rispetto agli appoggi #35.
@@ -156,7 +163,8 @@ Sequenza da qualificare sul campione prima di consolidare il placement:
 3. Montare **DAC prima**: il fronte privo del display lascia accesso ai suoi
    14 giunti. Saldare, pulire, ispezionare e misurare la massima sporgenza
    effettiva dei pin/giunti e delle teste. Non tagliare pin a una quota inventata.
-4. Qualificare una connessione **sfilabile a 11 poli** per U5 e quattro
+4. Per il montaggio U5 tramite header confermato dall'utente, qualificare
+   la possibilità di una connessione **sfilabile a 11 poli** e quattro
    distanziali isolanti sui fori esistenti. Servono corpo dell'header, innesto
    utile e altezza corrispondenti a `g5`: il relativo articolo non è selezionato
    né aggiunto alla BOM elettrica. Controllare in particolare l'angolo VIN:
@@ -167,8 +175,9 @@ Sequenza da qualificare sul campione prima di consolidare il placement:
    Verificare anche accesso laterale alla microSD e all'eventuale flex.
 6. Per manutenzione: togliere alimentazione, svitare U5 e sfilarlo verticalmente
    sostenendo la PCB, non il vetro. Tornano accessibili giunti e teste U6;
-   si può quindi intervenire sul DAC. Un U5 saldato direttamente al carrier
-   non offre questa rimozione semplice e **non soddisfa questa proposta**.
+   si può quindi intervenire sul DAC. Se i pin dell'header sono saldati a
+   entrambe le schede senza zoccolo, occorre dissaldarli per rimuovere U5:
+   la manutenzione sfilabile descritta qui resta una proposta da qualificare.
 
 Se non si trova lo spazio per header/fissaggi o il rialzo richiesto non è
 accettabile, lo stack rimane non valido: non sostituirlo con un generico
