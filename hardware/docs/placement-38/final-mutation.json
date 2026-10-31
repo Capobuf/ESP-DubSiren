@@ -1,0 +1,9 @@
+{
+  "content": [
+    {
+      "text": "{\"count\":18,\"fallback_reason\":{\"kind\":\"transport_unreachable\",\"message\":\"KiCad IPC is unreachable and no exact-board sibling lock was present.\"},\"placements\":[{\"reference\":\"U1\",\"rotation\":-90.0,\"x\":13.0,\"y\":46.0},{\"reference\":\"R2\",\"rotation\":-90.0,\"x\":19.83,\"y\":33.5},{\"reference\":\"R3\",\"rotation\":-90.0,\"x\":23.0,\"y\":33.5},{\"reference\":\"R6\",\"rotation\":0.0,\"x\":8.8,\"y\":32.0},{\"reference\":\"R7\",\"rotation\":180.0,\"x\":25.3,\"y\":55.5},{\"reference\":\"C5\",\"rotation\":90.0,\"x\":2.5,\"y\":34.5},{\"reference\":\"C6\",\"rotation\":90.0,\"x\":5.86,\"y\":34.7},{\"reference\":\"C7\",\"rotation\":90.0,\"x\":8.8,\"y\":34.5},{\"reference\":\"C9\",\"rotation\":90.0,\"x\":11.5,\"y\":34.5},{\"reference\":\"R15\",\"rotation\":90.0,\"x\":19.0,\"y\":58.0},{\"reference\":\"R16\",\"rotation\":90.0,\"x\":16.0,\"y\":58.0},{\"reference\":\"R17\",\"rotation\":90.0,\"x\":13.0,\"y\":58.0},{\"reference\":\"R18\",\"rotation\":90.0,\"x\":10.0,\"y\":58.0},{\"reference\":\"R19\",\"rotation\":90.0,\"x\":4.5,\"y\":58.0},{\"reference\":\"R20\",\"rotation\":90.0,\"x\":7.2,\"y\":58.0},{\"reference\":\"R21\",\"rotation\":90.0,\"x\":20.0,\"y\":61.5},{\"reference\":\"U3\",\"rotation\":0.0,\"x\":13.0,\"y\":67.0},{\"reference\":\"C8\",\"rotation\":0.0,\"x\":19.0,\"y\":71.445}],\"source\":\"file\",\"warning\":\"KiCad IPC was unreachable, so Konnect could not contact a live editor; no exact-board sibling lock was present. This board has not been observed live during the current Konnect server session, so Konnect edited the saved board file directly. If KiCad crashed or was force-quit before this server started, reconcile any unsaved work before relying on this change. Reload the file in KiCad before editing it there.\"}",
+      "type": "text"
+    }
+  ],
+  "isError": false
+}

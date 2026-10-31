@@ -186,7 +186,9 @@ manopole e montaggio fisico restano da qualificare.
 
 - [Decisioni e vincoli standalone](hardware/docs/pcb-standalone.md), [stato hardware](hardware/README.md).
 - [Verifica elettrica #34](hardware/docs/issue-34-electrical-review.md), [layout e ingombri #35](hardware/docs/issue-35-standalone-layout.md).
-- [#36: serigrafia e guida di montaggio](https://github.com/Capobuf/ESP-DubSiren/issues/36).
+- [Serigrafia #36 e anteprime](hardware/docs/issue-36-silkscreen-assembly.md),
+  [guida di montaggio DIY](hardware/docs/assembly.md): etichette frontali applicate;
+  completamento del retro e colori nel progetto ancora pendenti.
 
 Lo studio Hammond della [#14](https://github.com/Capobuf/ESP-DubSiren/issues/14)
 è storico e non costituisce un vincolo del progetto attuale.

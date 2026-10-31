@@ -1,0 +1,21 @@
+{
+  "konnect_version": "0.12.1",
+  "konnect_commit": "fa62e1ccb9eba359519bf8e3eab53a6cffeee33c",
+  "kicad_cli_version": "10.0.6",
+  "back_text": {
+    "attempted": 13,
+    "drc_nonmirrored_text_on_back_layer": 13,
+    "recovery": "All 13 removed through delete_graphics; none retained."
+  },
+  "svg_import": {
+    "reported_polygon_count": 530,
+    "observed_board_polygon_count": 1,
+    "observed_shape_uuid": "4b11fb58-39d5-407e-8dce-838241fa2858",
+    "recovery": "Incomplete shape removed through delete_graphics; B.SilkS board graphics readback count 0."
+  },
+  "unsupported_operations": [
+    "Stackup mask/silkscreen colour selection",
+    "Instance footprint reference/text/line cleanup"
+  ],
+  "authorisation": "User requested Konnect tools only; native UI edits not authorised."
+}

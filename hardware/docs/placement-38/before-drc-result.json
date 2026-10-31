@@ -1,0 +1,9 @@
+{
+  "content": [
+    {
+      "text": "{\"categories_not_reported\":[],\"design_rule_violations\":115,\"errors\":160,\"filtered_count\":343,\"live_board_synced\":false,\"schematic_parity\":68,\"schematic_parity_diagnostic\":null,\"severity_filter\":\"warning\",\"shown\":0,\"source\":\"saved_file\",\"total_violations\":343,\"truncated\":true,\"unconnected_items\":160,\"violations\":[],\"warnings\":183,\"zone_refill_source\":null,\"zones_refilled\":false}",
+      "type": "text"
+    }
+  ],
+  "isError": false
+}

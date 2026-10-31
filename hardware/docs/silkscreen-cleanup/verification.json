@@ -1,0 +1,236 @@
+{
+  "status": "partial",
+  "mutation_source": "Konnect live IPC, saved via save_project; checks/preview from saved file",
+  "removed_text_count": 19,
+  "removed_texts": [
+    {
+      "text": "BTN1",
+      "x": 13.0,
+      "y": 112.425
+    },
+    {
+      "text": "TRIGGER",
+      "x": 13.0,
+      "y": 114.625
+    },
+    {
+      "text": "BTN2",
+      "x": 32.0,
+      "y": 112.425
+    },
+    {
+      "text": "HOLD",
+      "x": 32.0,
+      "y": 114.625
+    },
+    {
+      "text": "BTN3",
+      "x": 54.0,
+      "y": 112.425
+    },
+    {
+      "text": "MANUAL MOD",
+      "x": 54.0,
+      "y": 114.625
+    },
+    {
+      "text": "BTN4",
+      "x": 73.0,
+      "y": 112.425
+    },
+    {
+      "text": "ECHO CUT",
+      "x": 73.0,
+      "y": 114.625
+    },
+    {
+      "text": "PUSH: MENU",
+      "x": 75.0,
+      "y": 57.95
+    },
+    {
+      "text": "ECHO FEEDBACK",
+      "x": 43.0,
+      "y": 65.525
+    },
+    {
+      "text": "ECHO TIME",
+      "x": 15.0,
+      "y": 65.55
+    },
+    {
+      "text": "USB-C",
+      "x": 40.0,
+      "y": -3.55
+    },
+    {
+      "text": "MONO",
+      "x": 65.5,
+      "y": -3.15
+    },
+    {
+      "text": "ECHO LEVEL",
+      "x": 71.0,
+      "y": 3.05
+    },
+    {
+      "text": "ECHO FILTER",
+      "x": 71.0,
+      "y": 65.55
+    },
+    {
+      "text": "SELECT",
+      "x": 75.0,
+      "y": 36.05
+    },
+    {
+      "text": "PITCH",
+      "x": 15.0,
+      "y": 6.825
+    },
+    {
+      "text": "RATE",
+      "x": 43.0,
+      "y": 6.825
+    },
+    {
+      "text": "ESP-DubSiren",
+      "x": 43.0,
+      "y": 118.45
+    }
+  ],
+  "front_texts_after": [
+    {
+      "text": "MASTER",
+      "x": 16.0,
+      "y": 1.375
+    },
+    {
+      "text": "RV6",
+      "x": 71.0,
+      "y": 75.5
+    },
+    {
+      "text": "RV2",
+      "x": 43.0,
+      "y": 17.5
+    },
+    {
+      "text": "H1",
+      "x": 5.0,
+      "y": -4.65
+    },
+    {
+      "text": "RV5",
+      "x": 43.0,
+      "y": 75.5
+    },
+    {
+      "text": "RV3",
+      "x": 71.0,
+      "y": 17.5
+    },
+    {
+      "text": "SW7",
+      "x": 75.0,
+      "y": 46.0
+    },
+    {
+      "text": "RV1",
+      "x": 15.0,
+      "y": 17.5
+    },
+    {
+      "text": "SW4",
+      "x": 76.0,
+      "y": 92.626
+    },
+    {
+      "text": "H3",
+      "x": 5.0,
+      "y": 111.35
+    },
+    {
+      "text": "SW2",
+      "x": 32.0,
+      "y": 92.626
+    },
+    {
+      "text": "RV4",
+      "x": 15.0,
+      "y": 75.5
+    },
+    {
+      "text": "H4",
+      "x": 81.0,
+      "y": 111.35
+    },
+    {
+      "text": "U5",
+      "x": 44.016,
+      "y": 46.0
+    },
+    {
+      "text": "SW1",
+      "x": 10.0,
+      "y": 92.626
+    },
+    {
+      "text": "SW3",
+      "x": 54.0,
+      "y": 92.626
+    },
+    {
+      "text": "H2",
+      "x": 81.0,
+      "y": -4.65
+    }
+  ],
+  "gencad_sections_unchanged": {
+    "BOARD": true,
+    "PADS": true,
+    "PADSTACKS": true,
+    "ARTWORKS": true,
+    "SHAPES": true,
+    "COMPONENTS": true,
+    "DEVICES": false,
+    "SIGNALS": true,
+    "TRACKS": true,
+    "ROUTES": true
+  },
+  "gencad_devices_difference": [
+    "--- \n",
+    "+++ \n",
+    "@@ -128,7 +128,7 @@\n",
+    " PACKAGE \"Resistor_SMD:R_0603_1608Metric\"",
+    " ",
+    " DEVICE \"DEV_Resistor_SMD:R_0603_1608Metric_0\"",
+    "-PART \"10\"",
+    "+PART \"5.1k\"",
+    " PACKAGE \"Resistor_SMD:R_0603_1608Metric\"",
+    " ",
+    " DEVICE \"DEV_Resistor_SMD:R_0603_1608Metric_1\""
+  ],
+  "gencad_devices_note": "Export PART for shared resistor footprint differs (10 vs 5.1k). No footprint/value source changes: git diff contains only 19 F.SilkS gr_text deletions. COMPONENTS, PADS, PADSTACKS, SIGNALS and geometry sections match.",
+  "git_diff": {
+    "added_lines": 0,
+    "deleted_lines": 209,
+    "deleted_gr_text": 19,
+    "deleted_F_SilkS_layer_entries": 19
+  },
+  "drc_rules": {
+    "silk_edge_clearance": 11,
+    "lib_footprint_mismatch": 64,
+    "silk_overlap": 13,
+    "silk_over_copper": 27
+  },
+  "drc_rule_item_uuid_pairs_equal_baseline": true,
+  "unconnected_items": 160,
+  "schematic_parity": 68,
+  "remaining_work": [
+    "Hide H1-H4 and U5 on F.SilkS, preserving project references",
+    "Move SW1-SW4 fields inside their squares clear of holes/pads",
+    "Review pre-existing footprint text and silk overlaps; Konnect 0.12.1 has no suitable editor"
+  ],
+  "preview": "F.SilkS + Edge.Cuts from saved PCB; crop and display colours only; no pad/hole overlay"
+}

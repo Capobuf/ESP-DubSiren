@@ -10,6 +10,16 @@ Il solo progetto attivo resta quello nella cartella `kicad`.
   237 pin coerenti fra schema e PCB, distinta verificata.
 - [Proposta e verifica ingombri #35](docs/issue-35-standalone-layout.md):
   coordinate, altezze documentate, fissaggi e prove fisiche pendenti.
+- [Serigrafia e assemblaggio #36](docs/issue-36-silkscreen-assembly.md):
+  [pulizia successiva](docs/silkscreen-cleanup/README.md) preservata,
+  senza ripristinare le etichette funzionali; [guida DIY](docs/assembly.md).
+- **[Studio di placement #38](docs/issue-38-rear-placement.md)**: stato attivo,
+  ESP32 a sinistra e DAC sotto U5, [fronte prima/dopo](docs/placement-38/F-comparison.png)
+  e [retro prima/dopo](docs/placement-38/B-comparison.png). Stack non qualificato:
+  18 errori DRC U6 sotto U5; nessun routing. Studio approvato dall'utente
+  il 31/10/2026 per push e merge, con i limiti meccanici documentati.
+  [Ricontrollo header SLxG1](docs/issue-38-header-stack-review.md): prova del
+  distacco 2,50 mm, verso dei pin, saldatura e compatibilità ancora da verificare.
 - [Vista superiore](docs/layout-35/F-layout.png),
   [vista inferiore](docs/layout-35/B-layout.png),
   [render superiore](docs/layout-35/top-3d.png),
@@ -37,7 +47,7 @@ quote verticali, copritasti e minuteria sono illustrativi, non un assieme valida
 - [BOM](docs/BOM.csv), [fonti/datasheet](docs/sources.md), [acquisti precedenti](docs/acquisti.csv).
 - Issue [#34: validazione elettrica](https://github.com/Capobuf/ESP-DubSiren/issues/34), [#35: layout, altezza componenti e fissaggi](https://github.com/Capobuf/ESP-DubSiren/issues/35), [#36: serigrafia e guida assemblaggio](https://github.com/Capobuf/ESP-DubSiren/issues/36).
 
-C'è **un solo progetto KiCad attivo**, con 68 footprint riposizionati e dimensione 86×126 mm autorizzata dall'utente. Non ha routing, via o zone. Il placement standalone è documentato nella #35 e non deriva dalla copia del pannello FreeCAD storico. **Il PCB non è fabbricabile**: le verifiche geometriche non sostituiscono la qualifica dell'assieme reale.
+C'è **un solo progetto KiCad attivo**, con 68 footprint e dimensione 86×126 mm autorizzata dall'utente. Non ha routing, via o zone. La base standalone è documentata nella #35; la proposta corrente è nella [#38](docs/issue-38-rear-placement.md) e non deriva dalla copia del pannello FreeCAD storico. **Il PCB non è fabbricabile**: le verifiche geometriche non sostituiscono la qualifica dell'assieme reale.
 
 ## Componenti e interfacce
 

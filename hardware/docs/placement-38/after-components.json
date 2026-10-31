@@ -1,0 +1,481 @@
+{
+  "source": "saved_file_gencad",
+  "components": [
+    {
+      "reference": "RV6",
+      "x": 71.0,
+      "y": 76.0,
+      "layer": "TOP",
+      "rotation": 0.0
+    },
+    {
+      "reference": "RV2",
+      "x": 43.0,
+      "y": 17.999999999999996,
+      "layer": "TOP",
+      "rotation": 0.0
+    },
+    {
+      "reference": "H1",
+      "x": 5.0,
+      "y": -0.9999999999999999,
+      "layer": "TOP",
+      "rotation": 0.0
+    },
+    {
+      "reference": "RV5",
+      "x": 43.0,
+      "y": 76.0,
+      "layer": "TOP",
+      "rotation": 0.0
+    },
+    {
+      "reference": "RV3",
+      "x": 71.0,
+      "y": 17.999999999999996,
+      "layer": "TOP",
+      "rotation": 0.0
+    },
+    {
+      "reference": "SW7",
+      "x": 75.0,
+      "y": 46.5,
+      "layer": "TOP",
+      "rotation": 0.0
+    },
+    {
+      "reference": "RV1",
+      "x": 14.999999999999998,
+      "y": 17.999999999999996,
+      "layer": "TOP",
+      "rotation": 0.0
+    },
+    {
+      "reference": "SW4",
+      "x": 78.53999999999999,
+      "y": 94.91999999999999,
+      "layer": "TOP",
+      "rotation": 0.0
+    },
+    {
+      "reference": "H3",
+      "x": 5.0,
+      "y": 114.99999999999999,
+      "layer": "TOP",
+      "rotation": 0.0
+    },
+    {
+      "reference": "SW2",
+      "x": 34.54,
+      "y": 94.91999999999999,
+      "layer": "TOP",
+      "rotation": 0.0
+    },
+    {
+      "reference": "RV4",
+      "x": 14.999999999999998,
+      "y": 76.0,
+      "layer": "TOP",
+      "rotation": 0.0
+    },
+    {
+      "reference": "H4",
+      "x": 81.0,
+      "y": 114.99999999999999,
+      "layer": "TOP",
+      "rotation": 0.0
+    },
+    {
+      "reference": "U5",
+      "x": 44.016,
+      "y": 46.5,
+      "layer": "TOP",
+      "rotation": 0.0
+    },
+    {
+      "reference": "SW1",
+      "x": 12.54,
+      "y": 94.91999999999999,
+      "layer": "TOP",
+      "rotation": 0.0
+    },
+    {
+      "reference": "SW3",
+      "x": 56.53999999999999,
+      "y": 94.91999999999999,
+      "layer": "TOP",
+      "rotation": 0.0
+    },
+    {
+      "reference": "H2",
+      "x": 81.0,
+      "y": -0.9999999999999999,
+      "layer": "TOP",
+      "rotation": 0.0
+    },
+    {
+      "reference": "TP2",
+      "x": 29.999999999999996,
+      "y": 22.999999999999996,
+      "layer": "BOTTOM",
+      "rotation": 0.0
+    },
+    {
+      "reference": "R2",
+      "x": 19.83,
+      "y": 33.5,
+      "layer": "BOTTOM",
+      "rotation": 270.0
+    },
+    {
+      "reference": "R10",
+      "x": 76.0,
+      "y": 31.0,
+      "layer": "BOTTOM",
+      "rotation": 0.0
+    },
+    {
+      "reference": "C1",
+      "x": 23.5,
+      "y": 15.1,
+      "layer": "BOTTOM",
+      "rotation": 180.0
+    },
+    {
+      "reference": "R13",
+      "x": 76.0,
+      "y": 90.0,
+      "layer": "BOTTOM",
+      "rotation": 0.0
+    },
+    {
+      "reference": "U1",
+      "x": 12.999999999999998,
+      "y": 45.99999999999999,
+      "layer": "BOTTOM",
+      "rotation": 270.0
+    },
+    {
+      "reference": "R1",
+      "x": 30.5,
+      "y": 12.2,
+      "layer": "BOTTOM",
+      "rotation": 0.0
+    },
+    {
+      "reference": "R5",
+      "x": 51.0,
+      "y": 6.0,
+      "layer": "BOTTOM",
+      "rotation": 0.0
+    },
+    {
+      "reference": "U3",
+      "x": 12.999999999999998,
+      "y": 67.0,
+      "layer": "BOTTOM",
+      "rotation": 0.0
+    },
+    {
+      "reference": "D1",
+      "x": 34.0,
+      "y": 22.0,
+      "layer": "BOTTOM",
+      "rotation": 0.0
+    },
+    {
+      "reference": "TP5",
+      "x": 77.99999999999999,
+      "y": 22.0,
+      "layer": "BOTTOM",
+      "rotation": 0.0
+    },
+    {
+      "reference": "R8",
+      "x": 20.0,
+      "y": 31.0,
+      "layer": "BOTTOM",
+      "rotation": 0.0
+    },
+    {
+      "reference": "TP7",
+      "x": 68.0,
+      "y": 62.0,
+      "layer": "BOTTOM",
+      "rotation": 0.0
+    },
+    {
+      "reference": "R20",
+      "x": 7.199999999999999,
+      "y": 57.99999999999999,
+      "layer": "BOTTOM",
+      "rotation": 90.0
+    },
+    {
+      "reference": "SW6",
+      "x": 81.0,
+      "y": 80.0,
+      "layer": "BOTTOM",
+      "rotation": 90.0
+    },
+    {
+      "reference": "J1",
+      "x": 40.0,
+      "y": 2.61,
+      "layer": "BOTTOM",
+      "rotation": 0.0
+    },
+    {
+      "reference": "TP6",
+      "x": 63.99999999999999,
+      "y": 62.0,
+      "layer": "BOTTOM",
+      "rotation": 0.0
+    },
+    {
+      "reference": "TP3",
+      "x": 5.0,
+      "y": 103.99999999999999,
+      "layer": "BOTTOM",
+      "rotation": 0.0
+    },
+    {
+      "reference": "C7",
+      "x": 8.799999999999999,
+      "y": 34.5,
+      "layer": "BOTTOM",
+      "rotation": 90.0
+    },
+    {
+      "reference": "R17",
+      "x": 12.999999999999998,
+      "y": 57.99999999999999,
+      "layer": "BOTTOM",
+      "rotation": 90.0
+    },
+    {
+      "reference": "C5",
+      "x": 2.5,
+      "y": 34.5,
+      "layer": "BOTTOM",
+      "rotation": 90.0
+    },
+    {
+      "reference": "R9",
+      "x": 48.0,
+      "y": 31.0,
+      "layer": "BOTTOM",
+      "rotation": 0.0
+    },
+    {
+      "reference": "U6",
+      "x": 44.0,
+      "y": 46.5,
+      "layer": "BOTTOM",
+      "rotation": 0.0
+    },
+    {
+      "reference": "R21",
+      "x": 20.0,
+      "y": 61.5,
+      "layer": "BOTTOM",
+      "rotation": 90.0
+    },
+    {
+      "reference": "R15",
+      "x": 19.0,
+      "y": 57.99999999999999,
+      "layer": "BOTTOM",
+      "rotation": 90.0
+    },
+    {
+      "reference": "C11",
+      "x": 37.0,
+      "y": 5.05,
+      "layer": "BOTTOM",
+      "rotation": 0.0
+    },
+    {
+      "reference": "RV7",
+      "x": 15.999999999999998,
+      "y": -0.0,
+      "layer": "BOTTOM",
+      "rotation": 0.0
+    },
+    {
+      "reference": "R19",
+      "x": 4.499999999999999,
+      "y": 57.99999999999999,
+      "layer": "BOTTOM",
+      "rotation": 90.0
+    },
+    {
+      "reference": "C10",
+      "x": 28.5,
+      "y": 6.9,
+      "layer": "BOTTOM",
+      "rotation": 180.0
+    },
+    {
+      "reference": "C2",
+      "x": 25.5,
+      "y": 17.999999999999996,
+      "layer": "BOTTOM",
+      "rotation": 180.0
+    },
+    {
+      "reference": "U7",
+      "x": 32.99999999999999,
+      "y": 6.0,
+      "layer": "BOTTOM",
+      "rotation": 0.0
+    },
+    {
+      "reference": "U2",
+      "x": 27.0,
+      "y": 14.0,
+      "layer": "BOTTOM",
+      "rotation": 0.0
+    },
+    {
+      "reference": "R3",
+      "x": 22.999999999999996,
+      "y": 33.5,
+      "layer": "BOTTOM",
+      "rotation": 270.0
+    },
+    {
+      "reference": "C6",
+      "x": 5.859999999999999,
+      "y": 34.699999999999996,
+      "layer": "BOTTOM",
+      "rotation": 90.0
+    },
+    {
+      "reference": "R4",
+      "x": 51.0,
+      "y": 1.9999999999999998,
+      "layer": "BOTTOM",
+      "rotation": 0.0
+    },
+    {
+      "reference": "TP4",
+      "x": 7.499999999999999,
+      "y": 69.0,
+      "layer": "BOTTOM",
+      "rotation": 0.0
+    },
+    {
+      "reference": "R6",
+      "x": 8.799999999999999,
+      "y": 31.999999999999996,
+      "layer": "BOTTOM",
+      "rotation": 0.0
+    },
+    {
+      "reference": "F1",
+      "x": 31.0,
+      "y": 0.9999999999999999,
+      "layer": "BOTTOM",
+      "rotation": 180.0
+    },
+    {
+      "reference": "J2",
+      "x": 71.22999999999999,
+      "y": 8.999999999999998,
+      "layer": "BOTTOM",
+      "rotation": 90.0
+    },
+    {
+      "reference": "R7",
+      "x": 25.299999999999997,
+      "y": 55.5,
+      "layer": "BOTTOM",
+      "rotation": 180.0
+    },
+    {
+      "reference": "C8",
+      "x": 19.0,
+      "y": 71.445,
+      "layer": "BOTTOM",
+      "rotation": 0.0
+    },
+    {
+      "reference": "R16",
+      "x": 15.999999999999998,
+      "y": 57.99999999999999,
+      "layer": "BOTTOM",
+      "rotation": 90.0
+    },
+    {
+      "reference": "R11",
+      "x": 20.0,
+      "y": 90.0,
+      "layer": "BOTTOM",
+      "rotation": 0.0
+    },
+    {
+      "reference": "C3",
+      "x": 25.999999999999996,
+      "y": 11.0,
+      "layer": "BOTTOM",
+      "rotation": 0.0
+    },
+    {
+      "reference": "R14",
+      "x": 25.999999999999996,
+      "y": 3.9999999999999996,
+      "layer": "BOTTOM",
+      "rotation": 0.0
+    },
+    {
+      "reference": "C9",
+      "x": 11.499999999999998,
+      "y": 34.5,
+      "layer": "BOTTOM",
+      "rotation": 90.0
+    },
+    {
+      "reference": "R18",
+      "x": 10.0,
+      "y": 57.99999999999999,
+      "layer": "BOTTOM",
+      "rotation": 90.0
+    },
+    {
+      "reference": "SW5",
+      "x": 81.0,
+      "y": 63.99999999999999,
+      "layer": "BOTTOM",
+      "rotation": 90.0
+    },
+    {
+      "reference": "C4",
+      "x": 25.999999999999996,
+      "y": 8.7,
+      "layer": "BOTTOM",
+      "rotation": 0.0
+    },
+    {
+      "reference": "U4",
+      "x": 43.0,
+      "y": 7.999999999999999,
+      "layer": "BOTTOM",
+      "rotation": 270.0
+    },
+    {
+      "reference": "TP1",
+      "x": 25.999999999999996,
+      "y": 22.999999999999996,
+      "layer": "BOTTOM",
+      "rotation": 0.0
+    },
+    {
+      "reference": "R12",
+      "x": 48.0,
+      "y": 90.0,
+      "layer": "BOTTOM",
+      "rotation": 0.0
+    }
+  ]
+}
