@@ -1,0 +1,3878 @@
+[
+  {
+    "target": "U1",
+    "other": "TP2",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 13.486,
+      "geometry1": {
+        "bbox": {
+          "max_x": 22.75,
+          "max_y": 55.11,
+          "min_x": 3.25,
+          "min_y": 35.95
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 31.0,
+          "max_y": 24.0,
+          "min_x": 29.0,
+          "min_y": 22.0
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U1",
+      "ref2": "TP2",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U1",
+    "other": "R2",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 4.77,
+      "geometry1": {
+        "bbox": {
+          "max_x": 22.75,
+          "max_y": 55.11,
+          "min_x": 3.25,
+          "min_y": 35.95
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 30.48,
+          "max_y": 43.73,
+          "min_x": 27.52,
+          "min_y": 42.270001
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U1",
+      "ref2": "R2",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U1",
+    "other": "R10",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 51.942,
+      "geometry1": {
+        "bbox": {
+          "max_x": 22.75,
+          "max_y": 55.11,
+          "min_x": 3.25,
+          "min_y": 35.95
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 77.48,
+          "max_y": 31.73,
+          "min_x": 74.52,
+          "min_y": 30.27
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U1",
+      "ref2": "R10",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U1",
+    "other": "C1",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 19.87,
+      "geometry1": {
+        "bbox": {
+          "max_x": 22.75,
+          "max_y": 55.11,
+          "min_x": 3.25,
+          "min_y": 35.95
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 25.2,
+          "max_y": 16.08,
+          "min_x": 21.8,
+          "min_y": 14.12
+        },
+        "rotation_deg": 180.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U1",
+      "ref2": "C1",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U1",
+    "other": "R13",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 62.024,
+      "geometry1": {
+        "bbox": {
+          "max_x": 22.75,
+          "max_y": 55.11,
+          "min_x": 3.25,
+          "min_y": 35.95
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 77.48,
+          "max_y": 90.73,
+          "min_x": 74.52,
+          "min_y": 89.27
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U1",
+      "ref2": "R13",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U1",
+    "other": "R1",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 23.859,
+      "geometry1": {
+        "bbox": {
+          "max_x": 22.75,
+          "max_y": 55.11,
+          "min_x": 3.25,
+          "min_y": 35.95
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 31.98,
+          "max_y": 12.93,
+          "min_x": 29.02,
+          "min_y": 11.469999999999999
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U1",
+      "ref2": "R1",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U1",
+    "other": "R5",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 39.629,
+      "geometry1": {
+        "bbox": {
+          "max_x": 22.75,
+          "max_y": 55.11,
+          "min_x": 3.25,
+          "min_y": 35.95
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 52.48,
+          "max_y": 6.73,
+          "min_x": 49.52,
+          "min_y": 5.27
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U1",
+      "ref2": "R5",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U1",
+    "other": "U3",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 18.693,
+      "geometry1": {
+        "bbox": {
+          "max_x": 22.75,
+          "max_y": 55.11,
+          "min_x": 3.25,
+          "min_y": 35.95
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 46.699999,
+          "max_y": 74.2,
+          "min_x": 39.299999,
+          "min_y": 63.8
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U1",
+      "ref2": "U3",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U1",
+    "other": "D1",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 15.676,
+      "geometry1": {
+        "bbox": {
+          "max_x": 22.75,
+          "max_y": 55.11,
+          "min_x": 3.25,
+          "min_y": 35.95
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 36.2,
+          "max_y": 23.15,
+          "min_x": 31.8,
+          "min_y": 20.849999
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U1",
+      "ref2": "D1",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U1",
+    "other": "TP5",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 55.774,
+      "geometry1": {
+        "bbox": {
+          "max_x": 22.75,
+          "max_y": 55.11,
+          "min_x": 3.25,
+          "min_y": 35.95
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 79.0,
+          "max_y": 23.0,
+          "min_x": 77.0,
+          "min_y": 21.0
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U1",
+      "ref2": "TP5",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U1",
+    "other": "R8",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 4.22,
+      "geometry1": {
+        "bbox": {
+          "max_x": 22.75,
+          "max_y": 55.11,
+          "min_x": 3.25,
+          "min_y": 35.95
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 21.48,
+          "max_y": 31.73,
+          "min_x": 18.52,
+          "min_y": 30.27
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U1",
+      "ref2": "R8",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U1",
+    "other": "TP7",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 44.64,
+      "geometry1": {
+        "bbox": {
+          "max_x": 22.75,
+          "max_y": 55.11,
+          "min_x": 3.25,
+          "min_y": 35.95
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 69.0,
+          "max_y": 63.0,
+          "min_x": 67.0,
+          "min_y": 61.0
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U1",
+      "ref2": "TP7",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U1",
+    "other": "R20",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 32.77,
+      "geometry1": {
+        "bbox": {
+          "max_x": 22.75,
+          "max_y": 55.11,
+          "min_x": 3.25,
+          "min_y": 35.95
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 58.48,
+          "max_y": 52.73,
+          "min_x": 55.52,
+          "min_y": 51.27
+        },
+        "rotation_deg": 180.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U1",
+      "ref2": "R20",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U1",
+    "other": "SW6",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 59.453,
+      "geometry1": {
+        "bbox": {
+          "max_x": 22.75,
+          "max_y": 55.11,
+          "min_x": 3.25,
+          "min_y": 35.95
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 83.1,
+          "max_y": 85.35,
+          "min_x": 78.9,
+          "min_y": 74.65
+        },
+        "rotation_deg": 90.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U1",
+      "ref2": "SW6",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U1",
+    "other": "J1",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 35.574,
+      "geometry1": {
+        "bbox": {
+          "max_x": 22.75,
+          "max_y": 55.11,
+          "min_x": 3.25,
+          "min_y": 35.95
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 48.25,
+          "max_y": 3.67,
+          "min_x": 37.7,
+          "min_y": -6.5
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U1",
+      "ref2": "J1",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U1",
+    "other": "TP6",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 40.679,
+      "geometry1": {
+        "bbox": {
+          "max_x": 22.75,
+          "max_y": 55.11,
+          "min_x": 3.25,
+          "min_y": 35.95
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 65.0,
+          "max_y": 63.0,
+          "min_x": 63.0,
+          "min_y": 61.0
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U1",
+      "ref2": "TP6",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U1",
+    "other": "TP3",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 47.89,
+      "geometry1": {
+        "bbox": {
+          "max_x": 22.75,
+          "max_y": 55.11,
+          "min_x": 3.25,
+          "min_y": 35.95
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 6.0,
+          "max_y": 105.0,
+          "min_x": 4.0,
+          "min_y": 103.0
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U1",
+      "ref2": "TP3",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U1",
+    "other": "C7",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 4.77,
+      "geometry1": {
+        "bbox": {
+          "max_x": 22.75,
+          "max_y": 55.11,
+          "min_x": 3.25,
+          "min_y": 35.95
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 30.48,
+          "max_y": 46.73,
+          "min_x": 27.52,
+          "min_y": 45.270001
+        },
+        "rotation_deg": 180.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U1",
+      "ref2": "C7",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U1",
+    "other": "R17",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 32.77,
+      "geometry1": {
+        "bbox": {
+          "max_x": 22.75,
+          "max_y": 55.11,
+          "min_x": 3.25,
+          "min_y": 35.95
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 58.48,
+          "max_y": 46.73,
+          "min_x": 55.52,
+          "min_y": 45.27
+        },
+        "rotation_deg": 180.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U1",
+      "ref2": "R17",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U1",
+    "other": "C5",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 4.55,
+      "geometry1": {
+        "bbox": {
+          "max_x": 22.75,
+          "max_y": 55.11,
+          "min_x": 3.25,
+          "min_y": 35.95
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 30.7,
+          "max_y": 55.98,
+          "min_x": 27.3,
+          "min_y": 54.02
+        },
+        "rotation_deg": 180.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U1",
+      "ref2": "C5",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U1",
+    "other": "R9",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 24.142,
+      "geometry1": {
+        "bbox": {
+          "max_x": 22.75,
+          "max_y": 55.11,
+          "min_x": 3.25,
+          "min_y": 35.95
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 49.48,
+          "max_y": 31.73,
+          "min_x": 46.52,
+          "min_y": 30.27
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U1",
+      "ref2": "R9",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U1",
+    "other": "U6",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 5.51,
+      "geometry1": {
+        "bbox": {
+          "max_x": 22.75,
+          "max_y": 55.11,
+          "min_x": 3.25,
+          "min_y": 35.95
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 61.713,
+          "max_y": 57.16,
+          "min_x": 28.259999999999998,
+          "min_y": 35.84
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U1",
+      "ref2": "U6",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U1",
+    "other": "R21",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 32.77,
+      "geometry1": {
+        "bbox": {
+          "max_x": 22.75,
+          "max_y": 55.11,
+          "min_x": 3.25,
+          "min_y": 35.95
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 58.48,
+          "max_y": 54.73,
+          "min_x": 55.52,
+          "min_y": 53.27
+        },
+        "rotation_deg": 180.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U1",
+      "ref2": "R21",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U1",
+    "other": "R15",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 32.77,
+      "geometry1": {
+        "bbox": {
+          "max_x": 22.75,
+          "max_y": 55.11,
+          "min_x": 3.25,
+          "min_y": 35.95
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 58.48,
+          "max_y": 42.73,
+          "min_x": 55.52,
+          "min_y": 41.27
+        },
+        "rotation_deg": 180.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U1",
+      "ref2": "R15",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U1",
+    "other": "C11",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 32.761,
+      "geometry1": {
+        "bbox": {
+          "max_x": 22.75,
+          "max_y": 55.11,
+          "min_x": 3.25,
+          "min_y": 35.95
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 38.48,
+          "max_y": 5.7800009999999995,
+          "min_x": 35.52,
+          "min_y": 4.32
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U1",
+      "ref2": "C11",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U1",
+    "other": "RV7",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 27.95,
+      "geometry1": {
+        "bbox": {
+          "max_x": 22.75,
+          "max_y": 55.11,
+          "min_x": 3.25,
+          "min_y": 35.95
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 22.6,
+          "max_y": 8.0,
+          "min_x": 9.4,
+          "min_y": -4.75
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U1",
+      "ref2": "RV7",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U1",
+    "other": "R19",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 32.77,
+      "geometry1": {
+        "bbox": {
+          "max_x": 22.75,
+          "max_y": 55.11,
+          "min_x": 3.25,
+          "min_y": 35.95
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 58.48,
+          "max_y": 50.73,
+          "min_x": 55.52,
+          "min_y": 49.27
+        },
+        "rotation_deg": 180.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U1",
+      "ref2": "R19",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U1",
+    "other": "C10",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 28.64,
+      "geometry1": {
+        "bbox": {
+          "max_x": 22.75,
+          "max_y": 55.11,
+          "min_x": 3.25,
+          "min_y": 35.95
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 29.98,
+          "max_y": 7.629999000000001,
+          "min_x": 27.02,
+          "min_y": 6.17
+        },
+        "rotation_deg": 180.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U1",
+      "ref2": "C10",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U1",
+    "other": "C2",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 17.267,
+      "geometry1": {
+        "bbox": {
+          "max_x": 22.75,
+          "max_y": 55.11,
+          "min_x": 3.25,
+          "min_y": 35.95
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 26.98,
+          "max_y": 18.730001,
+          "min_x": 24.02,
+          "min_y": 17.27
+        },
+        "rotation_deg": 180.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U1",
+      "ref2": "C2",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U1",
+    "other": "U7",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 29.416,
+      "geometry1": {
+        "bbox": {
+          "max_x": 22.75,
+          "max_y": 55.11,
+          "min_x": 3.25,
+          "min_y": 35.95
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 35.05,
+          "max_y": 7.7,
+          "min_x": 30.95,
+          "min_y": 4.3
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U1",
+      "ref2": "U7",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U1",
+    "other": "U2",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 20.686,
+      "geometry1": {
+        "bbox": {
+          "max_x": 22.75,
+          "max_y": 55.11,
+          "min_x": 3.25,
+          "min_y": 35.95
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 28.675,
+          "max_y": 15.425,
+          "min_x": 25.325,
+          "min_y": 12.575
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U1",
+      "ref2": "U2",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U1",
+    "other": "R3",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 4.77,
+      "geometry1": {
+        "bbox": {
+          "max_x": 22.75,
+          "max_y": 55.11,
+          "min_x": 3.25,
+          "min_y": 35.95
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 30.48,
+          "max_y": 41.73,
+          "min_x": 27.52,
+          "min_y": 40.27
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U1",
+      "ref2": "R3",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U1",
+    "other": "C6",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 4.77,
+      "geometry1": {
+        "bbox": {
+          "max_x": 22.75,
+          "max_y": 55.11,
+          "min_x": 3.25,
+          "min_y": 35.95
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 30.48,
+          "max_y": 50.73,
+          "min_x": 27.52,
+          "min_y": 49.270001
+        },
+        "rotation_deg": 180.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U1",
+      "ref2": "C6",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U1",
+    "other": "R4",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 42.664,
+      "geometry1": {
+        "bbox": {
+          "max_x": 22.75,
+          "max_y": 55.11,
+          "min_x": 3.25,
+          "min_y": 35.95
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 52.48,
+          "max_y": 2.73,
+          "min_x": 49.52,
+          "min_y": 1.27
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U1",
+      "ref2": "R4",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U1",
+    "other": "TP4",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 19.215,
+      "geometry1": {
+        "bbox": {
+          "max_x": 22.75,
+          "max_y": 55.11,
+          "min_x": 3.25,
+          "min_y": 35.95
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 39.0,
+          "max_y": 70.0,
+          "min_x": 37.0,
+          "min_y": 68.0
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U1",
+      "ref2": "TP4",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U1",
+    "other": "R6",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 6.77,
+      "geometry1": {
+        "bbox": {
+          "max_x": 22.75,
+          "max_y": 55.11,
+          "min_x": 3.25,
+          "min_y": 35.95
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 32.48,
+          "max_y": 38.73,
+          "min_x": 29.52,
+          "min_y": 37.27
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U1",
+      "ref2": "R6",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U1",
+    "other": "F1",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 33.255,
+      "geometry1": {
+        "bbox": {
+          "max_x": 22.75,
+          "max_y": 55.11,
+          "min_x": 3.25,
+          "min_y": 35.95
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 34.755,
+          "max_y": 3.0000000000000004,
+          "min_x": 27.245,
+          "min_y": -1.0000000000000004
+        },
+        "rotation_deg": 180.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U1",
+      "ref2": "F1",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U1",
+    "other": "J2",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 39.277,
+      "geometry1": {
+        "bbox": {
+          "max_x": 22.75,
+          "max_y": 55.11,
+          "min_x": 3.25,
+          "min_y": 35.95
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 73.82000000000001,
+          "max_y": 16.85,
+          "min_x": 57.07000000000001,
+          "min_y": -17.35
+        },
+        "rotation_deg": 90.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U1",
+      "ref2": "J2",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U1",
+    "other": "R7",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 30.77,
+      "geometry1": {
+        "bbox": {
+          "max_x": 22.75,
+          "max_y": 55.11,
+          "min_x": 3.25,
+          "min_y": 35.95
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 56.48,
+          "max_y": 38.73,
+          "min_x": 53.52,
+          "min_y": 37.27
+        },
+        "rotation_deg": 180.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U1",
+      "ref2": "R7",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U1",
+    "other": "C8",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 26.773,
+      "geometry1": {
+        "bbox": {
+          "max_x": 22.75,
+          "max_y": 55.11,
+          "min_x": 3.25,
+          "min_y": 35.95
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 50.48,
+          "max_y": 66.729999,
+          "min_x": 47.52,
+          "min_y": 65.27
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U1",
+      "ref2": "C8",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U1",
+    "other": "R16",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 32.77,
+      "geometry1": {
+        "bbox": {
+          "max_x": 22.75,
+          "max_y": 55.11,
+          "min_x": 3.25,
+          "min_y": 35.95
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 58.48,
+          "max_y": 44.73,
+          "min_x": 55.52,
+          "min_y": 43.27
+        },
+        "rotation_deg": 180.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U1",
+      "ref2": "R16",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U1",
+    "other": "R11",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 34.16,
+      "geometry1": {
+        "bbox": {
+          "max_x": 22.75,
+          "max_y": 55.11,
+          "min_x": 3.25,
+          "min_y": 35.95
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 21.48,
+          "max_y": 90.73,
+          "min_x": 18.52,
+          "min_y": 89.27
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U1",
+      "ref2": "R11",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U1",
+    "other": "C3",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 24.02,
+      "geometry1": {
+        "bbox": {
+          "max_x": 22.75,
+          "max_y": 55.11,
+          "min_x": 3.25,
+          "min_y": 35.95
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 27.7,
+          "max_y": 11.98,
+          "min_x": 24.3,
+          "min_y": 10.02
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U1",
+      "ref2": "C3",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U1",
+    "other": "R14",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 31.27,
+      "geometry1": {
+        "bbox": {
+          "max_x": 22.75,
+          "max_y": 55.11,
+          "min_x": 3.25,
+          "min_y": 35.95
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 27.48,
+          "max_y": 4.73,
+          "min_x": 24.52,
+          "min_y": 3.27
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U1",
+      "ref2": "R14",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U1",
+    "other": "C9",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 4.77,
+      "geometry1": {
+        "bbox": {
+          "max_x": 22.75,
+          "max_y": 55.11,
+          "min_x": 3.25,
+          "min_y": 35.95
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 30.48,
+          "max_y": 52.729999,
+          "min_x": 27.52,
+          "min_y": 51.27
+        },
+        "rotation_deg": 180.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U1",
+      "ref2": "C9",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U1",
+    "other": "R18",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 32.77,
+      "geometry1": {
+        "bbox": {
+          "max_x": 22.75,
+          "max_y": 55.11,
+          "min_x": 3.25,
+          "min_y": 35.95
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 58.48,
+          "max_y": 48.73,
+          "min_x": 55.52,
+          "min_y": 47.27
+        },
+        "rotation_deg": 180.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U1",
+      "ref2": "R18",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U1",
+    "other": "SW5",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 56.261,
+      "geometry1": {
+        "bbox": {
+          "max_x": 22.75,
+          "max_y": 55.11,
+          "min_x": 3.25,
+          "min_y": 35.95
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 83.1,
+          "max_y": 69.35,
+          "min_x": 78.9,
+          "min_y": 58.65
+        },
+        "rotation_deg": 90.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U1",
+      "ref2": "SW5",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U1",
+    "other": "C4",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 26.579,
+      "geometry1": {
+        "bbox": {
+          "max_x": 22.75,
+          "max_y": 55.11,
+          "min_x": 3.25,
+          "min_y": 35.95
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 27.48,
+          "max_y": 9.43,
+          "min_x": 24.52,
+          "min_y": 7.969999999999999
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U1",
+      "ref2": "C4",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U1",
+    "other": "U4",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 31.858,
+      "geometry1": {
+        "bbox": {
+          "max_x": 22.75,
+          "max_y": 55.11,
+          "min_x": 3.25,
+          "min_y": 35.95
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 44.7,
+          "max_y": 10.05,
+          "min_x": 41.3,
+          "min_y": 5.95
+        },
+        "rotation_deg": -90.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U1",
+      "ref2": "U4",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U1",
+    "other": "TP1",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 12.16,
+      "geometry1": {
+        "bbox": {
+          "max_x": 22.75,
+          "max_y": 55.11,
+          "min_x": 3.25,
+          "min_y": 35.95
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 27.0,
+          "max_y": 24.0,
+          "min_x": 25.0,
+          "min_y": 22.0
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U1",
+      "ref2": "TP1",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U1",
+    "other": "R12",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 41.616,
+      "geometry1": {
+        "bbox": {
+          "max_x": 22.75,
+          "max_y": 55.11,
+          "min_x": 3.25,
+          "min_y": 35.95
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 49.48,
+          "max_y": 90.73,
+          "min_x": 46.52,
+          "min_y": 89.27
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U1",
+      "ref2": "R12",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U6",
+    "other": "TP2",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 11.84,
+      "geometry1": {
+        "bbox": {
+          "max_x": 61.713,
+          "max_y": 57.16,
+          "min_x": 28.259999999999998,
+          "min_y": 35.84
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 31.0,
+          "max_y": 24.0,
+          "min_x": 29.0,
+          "min_y": 22.0
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U6",
+      "ref2": "TP2",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U6",
+    "other": "R2",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 0.0,
+      "geometry1": {
+        "bbox": {
+          "max_x": 61.713,
+          "max_y": 57.16,
+          "min_x": 28.259999999999998,
+          "min_y": 35.84
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 30.48,
+          "max_y": 43.73,
+          "min_x": 27.52,
+          "min_y": 42.270001
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": true,
+      "ref1": "U6",
+      "ref2": "R2",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U6",
+    "other": "R10",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 13.45,
+      "geometry1": {
+        "bbox": {
+          "max_x": 61.713,
+          "max_y": 57.16,
+          "min_x": 28.259999999999998,
+          "min_y": 35.84
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 77.48,
+          "max_y": 31.73,
+          "min_x": 74.52,
+          "min_y": 30.27
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U6",
+      "ref2": "R10",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U6",
+    "other": "C1",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 19.996,
+      "geometry1": {
+        "bbox": {
+          "max_x": 61.713,
+          "max_y": 57.16,
+          "min_x": 28.259999999999998,
+          "min_y": 35.84
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 25.2,
+          "max_y": 16.08,
+          "min_x": 21.8,
+          "min_y": 14.12
+        },
+        "rotation_deg": 180.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U6",
+      "ref2": "C1",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U6",
+    "other": "R13",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 34.57,
+      "geometry1": {
+        "bbox": {
+          "max_x": 61.713,
+          "max_y": 57.16,
+          "min_x": 28.259999999999998,
+          "min_y": 35.84
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 77.48,
+          "max_y": 90.73,
+          "min_x": 74.52,
+          "min_y": 89.27
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U6",
+      "ref2": "R13",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U6",
+    "other": "U1",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 5.51,
+      "geometry1": {
+        "bbox": {
+          "max_x": 61.713,
+          "max_y": 57.16,
+          "min_x": 28.259999999999998,
+          "min_y": 35.84
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 22.75,
+          "max_y": 55.11,
+          "min_x": 3.25,
+          "min_y": 35.95
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U6",
+      "ref2": "U1",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U6",
+    "other": "R1",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 22.91,
+      "geometry1": {
+        "bbox": {
+          "max_x": 61.713,
+          "max_y": 57.16,
+          "min_x": 28.259999999999998,
+          "min_y": 35.84
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 31.98,
+          "max_y": 12.93,
+          "min_x": 29.02,
+          "min_y": 11.469999999999999
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U6",
+      "ref2": "R1",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U6",
+    "other": "R5",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 29.11,
+      "geometry1": {
+        "bbox": {
+          "max_x": 61.713,
+          "max_y": 57.16,
+          "min_x": 28.259999999999998,
+          "min_y": 35.84
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 52.48,
+          "max_y": 6.73,
+          "min_x": 49.52,
+          "min_y": 5.27
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U6",
+      "ref2": "R5",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U6",
+    "other": "U3",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 6.64,
+      "geometry1": {
+        "bbox": {
+          "max_x": 61.713,
+          "max_y": 57.16,
+          "min_x": 28.259999999999998,
+          "min_y": 35.84
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 46.699999,
+          "max_y": 74.2,
+          "min_x": 39.299999,
+          "min_y": 63.8
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U6",
+      "ref2": "U3",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U6",
+    "other": "D1",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 12.69,
+      "geometry1": {
+        "bbox": {
+          "max_x": 61.713,
+          "max_y": 57.16,
+          "min_x": 28.259999999999998,
+          "min_y": 35.84
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 36.2,
+          "max_y": 23.15,
+          "min_x": 31.8,
+          "min_y": 20.849999
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U6",
+      "ref2": "D1",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U6",
+    "other": "TP5",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 19.964,
+      "geometry1": {
+        "bbox": {
+          "max_x": 61.713,
+          "max_y": 57.16,
+          "min_x": 28.259999999999998,
+          "min_y": 35.84
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 79.0,
+          "max_y": 23.0,
+          "min_x": 77.0,
+          "min_y": 21.0
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U6",
+      "ref2": "TP5",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U6",
+    "other": "R8",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 7.928,
+      "geometry1": {
+        "bbox": {
+          "max_x": 61.713,
+          "max_y": 57.16,
+          "min_x": 28.259999999999998,
+          "min_y": 35.84
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 21.48,
+          "max_y": 31.73,
+          "min_x": 18.52,
+          "min_y": 30.27
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U6",
+      "ref2": "R8",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U6",
+    "other": "TP7",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 6.534,
+      "geometry1": {
+        "bbox": {
+          "max_x": 61.713,
+          "max_y": 57.16,
+          "min_x": 28.259999999999998,
+          "min_y": 35.84
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 69.0,
+          "max_y": 63.0,
+          "min_x": 67.0,
+          "min_y": 61.0
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U6",
+      "ref2": "TP7",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U6",
+    "other": "R20",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 0.0,
+      "geometry1": {
+        "bbox": {
+          "max_x": 61.713,
+          "max_y": 57.16,
+          "min_x": 28.259999999999998,
+          "min_y": 35.84
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 58.48,
+          "max_y": 52.73,
+          "min_x": 55.52,
+          "min_y": 51.27
+        },
+        "rotation_deg": 180.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": true,
+      "ref1": "U6",
+      "ref2": "R20",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U6",
+    "other": "SW6",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 24.521,
+      "geometry1": {
+        "bbox": {
+          "max_x": 61.713,
+          "max_y": 57.16,
+          "min_x": 28.259999999999998,
+          "min_y": 35.84
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 83.1,
+          "max_y": 85.35,
+          "min_x": 78.9,
+          "min_y": 74.65
+        },
+        "rotation_deg": 90.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U6",
+      "ref2": "SW6",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U6",
+    "other": "J1",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 32.17,
+      "geometry1": {
+        "bbox": {
+          "max_x": 61.713,
+          "max_y": 57.16,
+          "min_x": 28.259999999999998,
+          "min_y": 35.84
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 48.25,
+          "max_y": 3.67,
+          "min_x": 37.7,
+          "min_y": -6.5
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U6",
+      "ref2": "J1",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U6",
+    "other": "TP6",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 4.05,
+      "geometry1": {
+        "bbox": {
+          "max_x": 61.713,
+          "max_y": 57.16,
+          "min_x": 28.259999999999998,
+          "min_y": 35.84
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 65.0,
+          "max_y": 63.0,
+          "min_x": 63.0,
+          "min_y": 61.0
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U6",
+      "ref2": "TP6",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U6",
+    "other": "TP3",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 50.959,
+      "geometry1": {
+        "bbox": {
+          "max_x": 61.713,
+          "max_y": 57.16,
+          "min_x": 28.259999999999998,
+          "min_y": 35.84
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 6.0,
+          "max_y": 105.0,
+          "min_x": 4.0,
+          "min_y": 103.0
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U6",
+      "ref2": "TP3",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U6",
+    "other": "C7",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 0.0,
+      "geometry1": {
+        "bbox": {
+          "max_x": 61.713,
+          "max_y": 57.16,
+          "min_x": 28.259999999999998,
+          "min_y": 35.84
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 30.48,
+          "max_y": 46.73,
+          "min_x": 27.52,
+          "min_y": 45.270001
+        },
+        "rotation_deg": 180.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": true,
+      "ref1": "U6",
+      "ref2": "C7",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U6",
+    "other": "R17",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 0.0,
+      "geometry1": {
+        "bbox": {
+          "max_x": 61.713,
+          "max_y": 57.16,
+          "min_x": 28.259999999999998,
+          "min_y": 35.84
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 58.48,
+          "max_y": 46.73,
+          "min_x": 55.52,
+          "min_y": 45.27
+        },
+        "rotation_deg": 180.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": true,
+      "ref1": "U6",
+      "ref2": "R17",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U6",
+    "other": "C5",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 0.0,
+      "geometry1": {
+        "bbox": {
+          "max_x": 61.713,
+          "max_y": 57.16,
+          "min_x": 28.259999999999998,
+          "min_y": 35.84
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 30.7,
+          "max_y": 55.98,
+          "min_x": 27.3,
+          "min_y": 54.02
+        },
+        "rotation_deg": 180.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": true,
+      "ref1": "U6",
+      "ref2": "C5",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U6",
+    "other": "R9",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 4.11,
+      "geometry1": {
+        "bbox": {
+          "max_x": 61.713,
+          "max_y": 57.16,
+          "min_x": 28.259999999999998,
+          "min_y": 35.84
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 49.48,
+          "max_y": 31.73,
+          "min_x": 46.52,
+          "min_y": 30.27
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U6",
+      "ref2": "R9",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U6",
+    "other": "R21",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 0.0,
+      "geometry1": {
+        "bbox": {
+          "max_x": 61.713,
+          "max_y": 57.16,
+          "min_x": 28.259999999999998,
+          "min_y": 35.84
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 58.48,
+          "max_y": 54.73,
+          "min_x": 55.52,
+          "min_y": 53.27
+        },
+        "rotation_deg": 180.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": true,
+      "ref1": "U6",
+      "ref2": "R21",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U6",
+    "other": "R15",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 0.0,
+      "geometry1": {
+        "bbox": {
+          "max_x": 61.713,
+          "max_y": 57.16,
+          "min_x": 28.259999999999998,
+          "min_y": 35.84
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 58.48,
+          "max_y": 42.73,
+          "min_x": 55.52,
+          "min_y": 41.27
+        },
+        "rotation_deg": 180.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": true,
+      "ref1": "U6",
+      "ref2": "R15",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U6",
+    "other": "C11",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 30.06,
+      "geometry1": {
+        "bbox": {
+          "max_x": 61.713,
+          "max_y": 57.16,
+          "min_x": 28.259999999999998,
+          "min_y": 35.84
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 38.48,
+          "max_y": 5.7800009999999995,
+          "min_x": 35.52,
+          "min_y": 4.32
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U6",
+      "ref2": "C11",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U6",
+    "other": "RV7",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 28.41,
+      "geometry1": {
+        "bbox": {
+          "max_x": 61.713,
+          "max_y": 57.16,
+          "min_x": 28.259999999999998,
+          "min_y": 35.84
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 22.6,
+          "max_y": 8.0,
+          "min_x": 9.4,
+          "min_y": -4.75
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U6",
+      "ref2": "RV7",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U6",
+    "other": "R19",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 0.0,
+      "geometry1": {
+        "bbox": {
+          "max_x": 61.713,
+          "max_y": 57.16,
+          "min_x": 28.259999999999998,
+          "min_y": 35.84
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 58.48,
+          "max_y": 50.73,
+          "min_x": 55.52,
+          "min_y": 49.27
+        },
+        "rotation_deg": 180.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": true,
+      "ref1": "U6",
+      "ref2": "R19",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U6",
+    "other": "C10",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 28.21,
+      "geometry1": {
+        "bbox": {
+          "max_x": 61.713,
+          "max_y": 57.16,
+          "min_x": 28.259999999999998,
+          "min_y": 35.84
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 29.98,
+          "max_y": 7.629999000000001,
+          "min_x": 27.02,
+          "min_y": 6.17
+        },
+        "rotation_deg": 180.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U6",
+      "ref2": "C10",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U6",
+    "other": "C2",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 17.158,
+      "geometry1": {
+        "bbox": {
+          "max_x": 61.713,
+          "max_y": 57.16,
+          "min_x": 28.259999999999998,
+          "min_y": 35.84
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 26.98,
+          "max_y": 18.730001,
+          "min_x": 24.02,
+          "min_y": 17.27
+        },
+        "rotation_deg": 180.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U6",
+      "ref2": "C2",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U6",
+    "other": "U7",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 28.14,
+      "geometry1": {
+        "bbox": {
+          "max_x": 61.713,
+          "max_y": 57.16,
+          "min_x": 28.259999999999998,
+          "min_y": 35.84
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 35.05,
+          "max_y": 7.7,
+          "min_x": 30.95,
+          "min_y": 4.3
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U6",
+      "ref2": "U7",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U6",
+    "other": "U2",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 20.415,
+      "geometry1": {
+        "bbox": {
+          "max_x": 61.713,
+          "max_y": 57.16,
+          "min_x": 28.259999999999998,
+          "min_y": 35.84
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 28.675,
+          "max_y": 15.425,
+          "min_x": 25.325,
+          "min_y": 12.575
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U6",
+      "ref2": "U2",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U6",
+    "other": "R3",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 0.0,
+      "geometry1": {
+        "bbox": {
+          "max_x": 61.713,
+          "max_y": 57.16,
+          "min_x": 28.259999999999998,
+          "min_y": 35.84
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 30.48,
+          "max_y": 41.73,
+          "min_x": 27.52,
+          "min_y": 40.27
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": true,
+      "ref1": "U6",
+      "ref2": "R3",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U6",
+    "other": "C6",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 0.0,
+      "geometry1": {
+        "bbox": {
+          "max_x": 61.713,
+          "max_y": 57.16,
+          "min_x": 28.259999999999998,
+          "min_y": 35.84
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 30.48,
+          "max_y": 50.73,
+          "min_x": 27.52,
+          "min_y": 49.270001
+        },
+        "rotation_deg": 180.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": true,
+      "ref1": "U6",
+      "ref2": "C6",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U6",
+    "other": "R4",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 33.11,
+      "geometry1": {
+        "bbox": {
+          "max_x": 61.713,
+          "max_y": 57.16,
+          "min_x": 28.259999999999998,
+          "min_y": 35.84
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 52.48,
+          "max_y": 2.73,
+          "min_x": 49.52,
+          "min_y": 1.27
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U6",
+      "ref2": "R4",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U6",
+    "other": "TP4",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 10.84,
+      "geometry1": {
+        "bbox": {
+          "max_x": 61.713,
+          "max_y": 57.16,
+          "min_x": 28.259999999999998,
+          "min_y": 35.84
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 39.0,
+          "max_y": 70.0,
+          "min_x": 37.0,
+          "min_y": 68.0
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U6",
+      "ref2": "TP4",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U6",
+    "other": "R6",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 0.0,
+      "geometry1": {
+        "bbox": {
+          "max_x": 61.713,
+          "max_y": 57.16,
+          "min_x": 28.259999999999998,
+          "min_y": 35.84
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 32.48,
+          "max_y": 38.73,
+          "min_x": 29.52,
+          "min_y": 37.27
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": true,
+      "ref1": "U6",
+      "ref2": "R6",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U6",
+    "other": "F1",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 32.84,
+      "geometry1": {
+        "bbox": {
+          "max_x": 61.713,
+          "max_y": 57.16,
+          "min_x": 28.259999999999998,
+          "min_y": 35.84
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 34.755,
+          "max_y": 3.0000000000000004,
+          "min_x": 27.245,
+          "min_y": -1.0000000000000004
+        },
+        "rotation_deg": 180.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U6",
+      "ref2": "F1",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U6",
+    "other": "J2",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 18.99,
+      "geometry1": {
+        "bbox": {
+          "max_x": 61.713,
+          "max_y": 57.16,
+          "min_x": 28.259999999999998,
+          "min_y": 35.84
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 73.82000000000001,
+          "max_y": 16.85,
+          "min_x": 57.07000000000001,
+          "min_y": -17.35
+        },
+        "rotation_deg": 90.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U6",
+      "ref2": "J2",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U6",
+    "other": "R7",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 0.0,
+      "geometry1": {
+        "bbox": {
+          "max_x": 61.713,
+          "max_y": 57.16,
+          "min_x": 28.259999999999998,
+          "min_y": 35.84
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 56.48,
+          "max_y": 38.73,
+          "min_x": 53.52,
+          "min_y": 37.27
+        },
+        "rotation_deg": 180.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": true,
+      "ref1": "U6",
+      "ref2": "R7",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U6",
+    "other": "C8",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 8.11,
+      "geometry1": {
+        "bbox": {
+          "max_x": 61.713,
+          "max_y": 57.16,
+          "min_x": 28.259999999999998,
+          "min_y": 35.84
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 50.48,
+          "max_y": 66.729999,
+          "min_x": 47.52,
+          "min_y": 65.27
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U6",
+      "ref2": "C8",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U6",
+    "other": "R16",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 0.0,
+      "geometry1": {
+        "bbox": {
+          "max_x": 61.713,
+          "max_y": 57.16,
+          "min_x": 28.259999999999998,
+          "min_y": 35.84
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 58.48,
+          "max_y": 44.73,
+          "min_x": 55.52,
+          "min_y": 43.27
+        },
+        "rotation_deg": 180.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": true,
+      "ref1": "U6",
+      "ref2": "R16",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U6",
+    "other": "R11",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 32.818,
+      "geometry1": {
+        "bbox": {
+          "max_x": 61.713,
+          "max_y": 57.16,
+          "min_x": 28.259999999999998,
+          "min_y": 35.84
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 21.48,
+          "max_y": 90.73,
+          "min_x": 18.52,
+          "min_y": 89.27
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U6",
+      "ref2": "R11",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U6",
+    "other": "C3",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 23.867,
+      "geometry1": {
+        "bbox": {
+          "max_x": 61.713,
+          "max_y": 57.16,
+          "min_x": 28.259999999999998,
+          "min_y": 35.84
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 27.7,
+          "max_y": 11.98,
+          "min_x": 24.3,
+          "min_y": 10.02
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U6",
+      "ref2": "C3",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U6",
+    "other": "R14",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 31.12,
+      "geometry1": {
+        "bbox": {
+          "max_x": 61.713,
+          "max_y": 57.16,
+          "min_x": 28.259999999999998,
+          "min_y": 35.84
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 27.48,
+          "max_y": 4.73,
+          "min_x": 24.52,
+          "min_y": 3.27
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U6",
+      "ref2": "R14",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U6",
+    "other": "C9",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 0.0,
+      "geometry1": {
+        "bbox": {
+          "max_x": 61.713,
+          "max_y": 57.16,
+          "min_x": 28.259999999999998,
+          "min_y": 35.84
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 30.48,
+          "max_y": 52.729999,
+          "min_x": 27.52,
+          "min_y": 51.27
+        },
+        "rotation_deg": 180.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": true,
+      "ref1": "U6",
+      "ref2": "C9",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U6",
+    "other": "R18",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 0.0,
+      "geometry1": {
+        "bbox": {
+          "max_x": 61.713,
+          "max_y": 57.16,
+          "min_x": 28.259999999999998,
+          "min_y": 35.84
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 58.48,
+          "max_y": 48.73,
+          "min_x": 55.52,
+          "min_y": 47.27
+        },
+        "rotation_deg": 180.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": true,
+      "ref1": "U6",
+      "ref2": "R18",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U6",
+    "other": "SW5",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 17.251,
+      "geometry1": {
+        "bbox": {
+          "max_x": 61.713,
+          "max_y": 57.16,
+          "min_x": 28.259999999999998,
+          "min_y": 35.84
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 83.1,
+          "max_y": 69.35,
+          "min_x": 78.9,
+          "min_y": 58.65
+        },
+        "rotation_deg": 90.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U6",
+      "ref2": "SW5",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U6",
+    "other": "C4",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 26.422,
+      "geometry1": {
+        "bbox": {
+          "max_x": 61.713,
+          "max_y": 57.16,
+          "min_x": 28.259999999999998,
+          "min_y": 35.84
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 27.48,
+          "max_y": 9.43,
+          "min_x": 24.52,
+          "min_y": 7.969999999999999
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U6",
+      "ref2": "C4",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U6",
+    "other": "U4",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 25.79,
+      "geometry1": {
+        "bbox": {
+          "max_x": 61.713,
+          "max_y": 57.16,
+          "min_x": 28.259999999999998,
+          "min_y": 35.84
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 44.7,
+          "max_y": 10.05,
+          "min_x": 41.3,
+          "min_y": 5.95
+        },
+        "rotation_deg": -90.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U6",
+      "ref2": "U4",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U6",
+    "other": "TP1",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 11.907,
+      "geometry1": {
+        "bbox": {
+          "max_x": 61.713,
+          "max_y": 57.16,
+          "min_x": 28.259999999999998,
+          "min_y": 35.84
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 27.0,
+          "max_y": 24.0,
+          "min_x": 25.0,
+          "min_y": 22.0
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U6",
+      "ref2": "TP1",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  },
+  {
+    "target": "U6",
+    "other": "R12",
+    "result": {
+      "applicable": true,
+      "available": true,
+      "courtyard_clearance_mm": 32.11,
+      "geometry1": {
+        "bbox": {
+          "max_x": 61.713,
+          "max_y": 57.16,
+          "min_x": 28.259999999999998,
+          "min_y": 35.84
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "geometry2": {
+        "bbox": {
+          "max_x": 49.48,
+          "max_y": 90.73,
+          "min_x": 46.52,
+          "min_y": 89.27
+        },
+        "rotation_deg": 0.0,
+        "source": "authored_courtyard_bbox"
+      },
+      "measurement": "courtyard_bbox_edge_to_edge",
+      "mode": "courtyard",
+      "note": "Axis-aligned board-space hull distance between authored courtyards; zero with overlaps=true means the hulls overlap. This is not copper clearance; use run_drc for electrical clearance.",
+      "overlaps": false,
+      "ref1": "U6",
+      "ref2": "R12",
+      "side1": "back",
+      "side2": "back",
+      "source": "saved_file"
+    }
+  }
+]

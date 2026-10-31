@@ -1,0 +1,9 @@
+{
+  "content": [
+    {
+      "text": "{\"count\":2,\"fallback_reason\":{\"kind\":\"transport_unreachable\",\"message\":\"KiCad IPC is unreachable and no exact-board sibling lock was present.\"},\"placements\":[{\"reference\":\"U1\",\"rotation\":0.0,\"x\":13.0,\"y\":46.0},{\"reference\":\"U6\",\"rotation\":0.0,\"x\":44.0,\"y\":46.5}],\"source\":\"file\",\"warning\":\"KiCad IPC was unreachable, so Konnect could not contact a live editor; no exact-board sibling lock was present. This board has not been observed live during the current Konnect server session, so Konnect edited the saved board file directly. If KiCad crashed or was force-quit before this server started, reconcile any unsaved work before relying on this change. Reload the file in KiCad before editing it there.\"}",
+      "type": "text"
+    }
+  ],
+  "isError": false
+}

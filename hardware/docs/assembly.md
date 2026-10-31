@@ -1,5 +1,12 @@
 # Assemblaggio DIY — ESP-DubSiren
 
+**Studio #38, 31 ottobre 2026:** il PCB attivo propone U1 a sinistra e U6
+sotto il display. Le immagini e le coordinate #35/#36 qui richiamate sono
+la base precedente. Per lo stack e la sequenza **DAC prima, display dopo**
+usare la [revisione #38](issue-38-rear-placement.md#montaggio-e-manutenzione-alternativa-minima-di-fissaggio),
+ancora da qualificare su pezzi fisici; non applicare un montaggio ravvicinato
+DAC/display sulla sola base di questa guida.
+
 Guida per il prototipo standalone **86 × 126 mm**, angoli R3, unico progetto
 [KiCad](../kicad/ESP-DubSiren.kicad_pro). **Non fabbricare né alimentare il PCB
 attuale: manca il routing.** Questa procedura si applicherà dopo completamento

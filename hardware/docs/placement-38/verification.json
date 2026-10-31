@@ -1,0 +1,546 @@
+{
+  "source": "Konnect saved_file pad/courtyard queries and native KiCad GenCAD/DRC exports",
+  "footprints": 68,
+  "numbered_pads": 240,
+  "moved": [
+    "R2",
+    "U1",
+    "U3",
+    "R20",
+    "C7",
+    "R17",
+    "C5",
+    "U6",
+    "R21",
+    "R15",
+    "R19",
+    "R3",
+    "C6",
+    "TP4",
+    "R6",
+    "R7",
+    "C8",
+    "R16",
+    "C9",
+    "R18"
+  ],
+  "pad_geometry_net_identity_preserved": true,
+  "native_gencad_sections_identical": {
+    "BOARD": true,
+    "PADS": false,
+    "PADSTACKS": false,
+    "SIGNALS": true,
+    "TRACKS": true,
+    "ROUTES": true
+  },
+  "track_routes_empty": true,
+  "same_side_courtyard_overlaps": [],
+  "front_through_pad_to_moved_back_courtyard_overlaps": [],
+  "nearest_front_pad_hull_to_moved_back_courtyard_mm": [
+    [
+      0.7900000000000063,
+      "U6",
+      "U5",
+      ""
+    ],
+    [
+      0.7900000000000063,
+      "U6",
+      "U5",
+      ""
+    ],
+    [
+      0.7900000000000063,
+      "U6",
+      "U5",
+      ""
+    ],
+    [
+      0.7900000000000063,
+      "U6",
+      "U5",
+      ""
+    ],
+    [
+      1.3201515064567402,
+      "R6",
+      "RV1",
+      "1"
+    ],
+    [
+      1.7098000000000013,
+      "U6",
+      "U5",
+      "1"
+    ],
+    [
+      1.7098000000000013,
+      "U6",
+      "U5",
+      "10"
+    ],
+    [
+      1.7098000000000013,
+      "U6",
+      "U5",
+      "11"
+    ],
+    [
+      1.7098000000000013,
+      "U6",
+      "U5",
+      "2"
+    ],
+    [
+      1.7098000000000013,
+      "U6",
+      "U5",
+      "3"
+    ]
+  ],
+  "m3_intrusions": [],
+  "u5_u6_hole_center_min_mm": 5.982113950603169,
+  "u5_u6_candidate_44_hole_center_min_mm": 4.078686960040085,
+  "equal_4mm_hardware_nominal_edge_gap_mm": 1.9821139506031686,
+  "metrics_straight_lines_not_routed_lengths": [
+    {
+      "path": "USB DM U4-MCU",
+      "endpoints": "U4.6 -> U1.13",
+      "before_mm": 31.029,
+      "after_mm": 35.834
+    },
+    {
+      "path": "USB DP U4-MCU",
+      "endpoints": "U4.4 -> U1.14",
+      "before_mm": 30.354,
+      "after_mm": 36.228
+    },
+    {
+      "path": "USB DM U4-series",
+      "endpoints": "U4.6 -> R2.1",
+      "before_mm": 36.595,
+      "after_mm": 32.369
+    },
+    {
+      "path": "USB DP U4-series",
+      "endpoints": "U4.4 -> R3.1",
+      "before_mm": 35.554,
+      "after_mm": 31.511
+    },
+    {
+      "path": "USB DM series-MCU",
+      "endpoints": "R2.2 -> U1.13",
+      "before_mm": 5.852,
+      "after_mm": 2.925
+    },
+    {
+      "path": "USB DP series-MCU",
+      "endpoints": "R3.2 -> U1.14",
+      "before_mm": 5.403,
+      "after_mm": 3.488
+    },
+    {
+      "path": "I2S BCLK",
+      "endpoints": "U1.9 -> U6.5",
+      "before_mm": 29.143,
+      "after_mm": 30.563
+    },
+    {
+      "path": "I2S LRCK",
+      "endpoints": "U1.10 -> U6.3",
+      "before_mm": 30.662,
+      "after_mm": 24.225
+    },
+    {
+      "path": "I2S DIN",
+      "endpoints": "U1.11 -> U6.4",
+      "before_mm": 30.258,
+      "after_mm": 25.492
+    },
+    {
+      "path": "OUTL AUDIO_MONO",
+      "endpoints": "U6.6 -> J2.T",
+      "before_mm": 75.382,
+      "after_mm": 37.965
+    },
+    {
+      "path": "ADC MUX",
+      "endpoints": "U3.3 -> U1.4",
+      "before_mm": 21.252,
+      "after_mm": 31.726
+    },
+    {
+      "path": "ADC cap-MCU",
+      "endpoints": "C9.1 -> U1.4",
+      "before_mm": 4.689,
+      "after_mm": 3.676
+    },
+    {
+      "path": "VDD 100n U1",
+      "endpoints": "C6.1 -> U1.2",
+      "before_mm": 5.467,
+      "after_mm": 1.775
+    },
+    {
+      "path": "VDD bulk U1",
+      "endpoints": "C5.1 -> U1.2",
+      "before_mm": 4.685,
+      "after_mm": 3.812
+    },
+    {
+      "path": "VDD MUX",
+      "endpoints": "C8.1 -> U3.16",
+      "before_mm": 7.937,
+      "after_mm": 2.75
+    },
+    {
+      "path": "5V source-DAC",
+      "endpoints": "U2.2 -> U6.1",
+      "before_mm": 48.603,
+      "after_mm": 26.23
+    },
+    {
+      "path": "ADC output-testpoint",
+      "endpoints": "U3.3 -> TP4.1",
+      "before_mm": 3.163,
+      "after_mm": 3.026
+    }
+  ],
+  "courtyard_bboxes": {
+    "U1": {
+      "max_x": 23.05,
+      "max_y": 55.75,
+      "min_x": 3.8900000000000006,
+      "min_y": 36.25
+    },
+    "TP2": {
+      "max_x": 31.0,
+      "max_y": 24.0,
+      "min_x": 29.0,
+      "min_y": 22.0
+    },
+    "R2": {
+      "max_x": 20.559998999999998,
+      "max_y": 34.98,
+      "min_x": 19.099999999999998,
+      "min_y": 32.02
+    },
+    "R10": {
+      "max_x": 77.48,
+      "max_y": 31.73,
+      "min_x": 74.52,
+      "min_y": 30.27
+    },
+    "C1": {
+      "max_x": 25.2,
+      "max_y": 16.08,
+      "min_x": 21.8,
+      "min_y": 14.12
+    },
+    "R13": {
+      "max_x": 77.48,
+      "max_y": 90.73,
+      "min_x": 74.52,
+      "min_y": 89.27
+    },
+    "R1": {
+      "max_x": 31.98,
+      "max_y": 12.93,
+      "min_x": 29.02,
+      "min_y": 11.469999999999999
+    },
+    "R5": {
+      "max_x": 52.48,
+      "max_y": 6.73,
+      "min_x": 49.52,
+      "min_y": 5.27
+    },
+    "U3": {
+      "max_x": 16.699999,
+      "max_y": 72.2,
+      "min_x": 9.299999,
+      "min_y": 61.8
+    },
+    "D1": {
+      "max_x": 36.2,
+      "max_y": 23.15,
+      "min_x": 31.8,
+      "min_y": 20.849999
+    },
+    "TP5": {
+      "max_x": 79.0,
+      "max_y": 23.0,
+      "min_x": 77.0,
+      "min_y": 21.0
+    },
+    "R8": {
+      "max_x": 21.48,
+      "max_y": 31.73,
+      "min_x": 18.52,
+      "min_y": 30.27
+    },
+    "TP7": {
+      "max_x": 69.0,
+      "max_y": 63.0,
+      "min_x": 67.0,
+      "min_y": 61.0
+    },
+    "R20": {
+      "max_x": 7.93,
+      "max_y": 59.48,
+      "min_x": 6.470000000000001,
+      "min_y": 56.52
+    },
+    "SW6": {
+      "max_x": 83.1,
+      "max_y": 85.35,
+      "min_x": 78.9,
+      "min_y": 74.65
+    },
+    "J1": {
+      "max_x": 48.25,
+      "max_y": 3.67,
+      "min_x": 37.7,
+      "min_y": -6.5
+    },
+    "TP6": {
+      "max_x": 65.0,
+      "max_y": 63.0,
+      "min_x": 63.0,
+      "min_y": 61.0
+    },
+    "TP3": {
+      "max_x": 6.0,
+      "max_y": 105.0,
+      "min_x": 4.0,
+      "min_y": 103.0
+    },
+    "C7": {
+      "max_x": 9.529999,
+      "max_y": 35.98,
+      "min_x": 8.07,
+      "min_y": 33.02
+    },
+    "R17": {
+      "max_x": 13.73,
+      "max_y": 59.48,
+      "min_x": 12.27,
+      "min_y": 56.52
+    },
+    "C5": {
+      "max_x": 3.48,
+      "max_y": 36.2,
+      "min_x": 1.52,
+      "min_y": 32.8
+    },
+    "R9": {
+      "max_x": 49.48,
+      "max_y": 31.73,
+      "min_x": 46.52,
+      "min_y": 30.27
+    },
+    "U6": {
+      "max_x": 61.713,
+      "max_y": 57.16,
+      "min_x": 28.259999999999998,
+      "min_y": 35.84
+    },
+    "R21": {
+      "max_x": 20.73,
+      "max_y": 62.98,
+      "min_x": 19.27,
+      "min_y": 60.02
+    },
+    "R15": {
+      "max_x": 19.73,
+      "max_y": 59.48,
+      "min_x": 18.27,
+      "min_y": 56.52
+    },
+    "C11": {
+      "max_x": 38.48,
+      "max_y": 5.7800009999999995,
+      "min_x": 35.52,
+      "min_y": 4.32
+    },
+    "RV7": {
+      "max_x": 22.6,
+      "max_y": 8.0,
+      "min_x": 9.4,
+      "min_y": -4.75
+    },
+    "R19": {
+      "max_x": 5.23,
+      "max_y": 59.48,
+      "min_x": 3.77,
+      "min_y": 56.52
+    },
+    "C10": {
+      "max_x": 29.98,
+      "max_y": 7.629999000000001,
+      "min_x": 27.02,
+      "min_y": 6.17
+    },
+    "C2": {
+      "max_x": 26.98,
+      "max_y": 18.730001,
+      "min_x": 24.02,
+      "min_y": 17.27
+    },
+    "U7": {
+      "max_x": 35.05,
+      "max_y": 7.7,
+      "min_x": 30.95,
+      "min_y": 4.3
+    },
+    "U2": {
+      "max_x": 28.675,
+      "max_y": 15.425,
+      "min_x": 25.325,
+      "min_y": 12.575
+    },
+    "R3": {
+      "max_x": 23.73,
+      "max_y": 34.98,
+      "min_x": 22.27,
+      "min_y": 32.02
+    },
+    "C6": {
+      "max_x": 6.589999000000001,
+      "max_y": 36.18,
+      "min_x": 5.130000000000001,
+      "min_y": 33.220000000000006
+    },
+    "R4": {
+      "max_x": 52.48,
+      "max_y": 2.73,
+      "min_x": 49.52,
+      "min_y": 1.27
+    },
+    "TP4": {
+      "max_x": 8.5,
+      "max_y": 70.0,
+      "min_x": 6.5,
+      "min_y": 68.0
+    },
+    "R6": {
+      "max_x": 10.280000000000001,
+      "max_y": 32.73,
+      "min_x": 7.32,
+      "min_y": 31.27
+    },
+    "F1": {
+      "max_x": 34.755,
+      "max_y": 3.0000000000000004,
+      "min_x": 27.245,
+      "min_y": -1.0000000000000004
+    },
+    "J2": {
+      "max_x": 73.82000000000001,
+      "max_y": 16.85,
+      "min_x": 57.07000000000001,
+      "min_y": -17.35
+    },
+    "R7": {
+      "max_x": 26.78,
+      "max_y": 56.23,
+      "min_x": 23.82,
+      "min_y": 54.77
+    },
+    "C8": {
+      "max_x": 20.48,
+      "max_y": 72.174999,
+      "min_x": 17.52,
+      "min_y": 70.71499999999999
+    },
+    "R16": {
+      "max_x": 16.73,
+      "max_y": 59.48,
+      "min_x": 15.27,
+      "min_y": 56.52
+    },
+    "R11": {
+      "max_x": 21.48,
+      "max_y": 90.73,
+      "min_x": 18.52,
+      "min_y": 89.27
+    },
+    "C3": {
+      "max_x": 27.7,
+      "max_y": 11.98,
+      "min_x": 24.3,
+      "min_y": 10.02
+    },
+    "R14": {
+      "max_x": 27.48,
+      "max_y": 4.73,
+      "min_x": 24.52,
+      "min_y": 3.27
+    },
+    "C9": {
+      "max_x": 12.23,
+      "max_y": 35.98,
+      "min_x": 10.770001,
+      "min_y": 33.02
+    },
+    "R18": {
+      "max_x": 10.73,
+      "max_y": 59.48,
+      "min_x": 9.27,
+      "min_y": 56.52
+    },
+    "SW5": {
+      "max_x": 83.1,
+      "max_y": 69.35,
+      "min_x": 78.9,
+      "min_y": 58.65
+    },
+    "C4": {
+      "max_x": 27.48,
+      "max_y": 9.43,
+      "min_x": 24.52,
+      "min_y": 7.969999999999999
+    },
+    "U4": {
+      "max_x": 44.7,
+      "max_y": 10.05,
+      "min_x": 41.3,
+      "min_y": 5.95
+    },
+    "TP1": {
+      "max_x": 27.0,
+      "max_y": 24.0,
+      "min_x": 25.0,
+      "min_y": 22.0
+    },
+    "R12": {
+      "max_x": 49.48,
+      "max_y": 90.73,
+      "min_x": 46.52,
+      "min_y": 89.27
+    }
+  },
+  "drc": {
+    "before": {
+      "warning:silk_edge_clearance": 11,
+      "warning:lib_footprint_mismatch": 64,
+      "warning:silk_overlap": 13,
+      "warning:silk_over_copper": 27
+    },
+    "after": {
+      "error:npth_inside_courtyard": 4,
+      "error:pth_inside_courtyard": 14,
+      "warning:silk_edge_clearance": 11,
+      "warning:lib_footprint_mismatch": 64,
+      "warning:silk_overlap": 4,
+      "warning:silk_over_copper": 13
+    }
+  },
+  "pcb_sha256": "18071a8a3104b410ba28ebea4b8c64b05f7e63d50f047a343c214c413686ddcc",
+  "unique_numbered_reference_pad_pairs": 237,
+  "signal_mst_comparison": {
+    "method": "Euclidean MST per net, excludes GND, +5V, +3V3 and unconnected nets; lower bound, not routing prediction",
+    "before_mm": 1412.5746546185449,
+    "after_mm": 1692.015705898157
+  }
+}

@@ -1,5 +1,9 @@
 # Issue #35 — proposta PCB standalone
 
+**Aggiornamento 31 ottobre 2026:** lo [studio #38](issue-38-rear-placement.md)
+modifica il placement posteriore nell'unico PCB attivo. Le viste e le coordinate
+qui sotto documentano la base #35; bordo e comandi frontali restano invariati.
+
 Proposta del **30 ottobre 2026**, nell'unico [PCB attivo](../kicad/ESP-DubSiren.kicad_pcb):
 **86 × 126 mm, angoli R3, quattro fori M3, nessun routing/via/zona**.
 È il punto di revisione del placement, non un assieme qualificato o un file fabbricabile.
