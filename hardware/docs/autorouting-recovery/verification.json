@@ -1,0 +1,1187 @@
+{
+  "segments": 820,
+  "vias": 67,
+  "new_drc_errors": 0,
+  "baseline_geometric_errors": 18,
+  "unconnected": 0,
+  "narrow_segments": 113,
+  "net_stats": {
+    "GND": {
+      "segments": 190,
+      "vias": 8,
+      "length_mm": 541.7738,
+      "widths_mm": [
+        0.127,
+        0.15,
+        0.2
+      ]
+    },
+    "/POT6": {
+      "segments": 7,
+      "vias": 0,
+      "length_mm": 69.5467,
+      "widths_mm": [
+        0.15,
+        0.2
+      ]
+    },
+    "/POT6_TOP": {
+      "segments": 3,
+      "vias": 0,
+      "length_mm": 5.8176,
+      "widths_mm": [
+        0.2
+      ]
+    },
+    "/POT2": {
+      "segments": 9,
+      "vias": 1,
+      "length_mm": 51.1147,
+      "widths_mm": [
+        0.15,
+        0.2
+      ]
+    },
+    "/POT2_TOP": {
+      "segments": 4,
+      "vias": 0,
+      "length_mm": 7.4037,
+      "widths_mm": [
+        0.2
+      ]
+    },
+    "/POT5": {
+      "segments": 8,
+      "vias": 0,
+      "length_mm": 37.9166,
+      "widths_mm": [
+        0.2
+      ]
+    },
+    "/POT5_TOP": {
+      "segments": 3,
+      "vias": 0,
+      "length_mm": 5.8176,
+      "widths_mm": [
+        0.2
+      ]
+    },
+    "/POT3": {
+      "segments": 17,
+      "vias": 2,
+      "length_mm": 91.9209,
+      "widths_mm": [
+        0.15,
+        0.2
+      ]
+    },
+    "/POT3_TOP": {
+      "segments": 3,
+      "vias": 0,
+      "length_mm": 5.4034,
+      "widths_mm": [
+        0.2
+      ]
+    },
+    "/ENC_A": {
+      "segments": 15,
+      "vias": 2,
+      "length_mm": 77.3267,
+      "widths_mm": [
+        0.2
+      ]
+    },
+    "/ENC_B": {
+      "segments": 14,
+      "vias": 2,
+      "length_mm": 84.0268,
+      "widths_mm": [
+        0.2
+      ]
+    },
+    "/ENC_SW": {
+      "segments": 16,
+      "vias": 3,
+      "length_mm": 85.4986,
+      "widths_mm": [
+        0.2
+      ]
+    },
+    "/POT1": {
+      "segments": 5,
+      "vias": 2,
+      "length_mm": 41.4957,
+      "widths_mm": [
+        0.2
+      ]
+    },
+    "/POT1_TOP": {
+      "segments": 3,
+      "vias": 0,
+      "length_mm": 5.4034,
+      "widths_mm": [
+        0.2
+      ]
+    },
+    "/BTN4": {
+      "segments": 14,
+      "vias": 2,
+      "length_mm": 103.9088,
+      "widths_mm": [
+        0.2
+      ]
+    },
+    "/BTN2": {
+      "segments": 15,
+      "vias": 3,
+      "length_mm": 52.3627,
+      "widths_mm": [
+        0.2
+      ]
+    },
+    "/POT4": {
+      "segments": 10,
+      "vias": 1,
+      "length_mm": 23.9775,
+      "widths_mm": [
+        0.15,
+        0.2
+      ]
+    },
+    "/POT4_TOP": {
+      "segments": 3,
+      "vias": 0,
+      "length_mm": 5.8176,
+      "widths_mm": [
+        0.2
+      ]
+    },
+    "+3V3": {
+      "segments": 91,
+      "vias": 6,
+      "length_mm": 298.3373,
+      "widths_mm": [
+        0.3998,
+        0.6,
+        0.8
+      ]
+    },
+    "/SPI_SCK": {
+      "segments": 7,
+      "vias": 1,
+      "length_mm": 23.3429,
+      "widths_mm": [
+        0.15,
+        0.2
+      ]
+    },
+    "/SPI_MOSI": {
+      "segments": 8,
+      "vias": 0,
+      "length_mm": 28.5224,
+      "widths_mm": [
+        0.15,
+        0.2
+      ]
+    },
+    "/TFT_CS": {
+      "segments": 11,
+      "vias": 0,
+      "length_mm": 33.317,
+      "widths_mm": [
+        0.15,
+        0.2
+      ]
+    },
+    "/TFT_RST": {
+      "segments": 8,
+      "vias": 3,
+      "length_mm": 54.2071,
+      "widths_mm": [
+        0.2
+      ]
+    },
+    "/TFT_DC": {
+      "segments": 19,
+      "vias": 2,
+      "length_mm": 55.1616,
+      "widths_mm": [
+        0.127,
+        0.2
+      ]
+    },
+    "/TFT_LITE": {
+      "segments": 15,
+      "vias": 0,
+      "length_mm": 41.0914,
+      "widths_mm": [
+        0.15,
+        0.2
+      ]
+    },
+    "/BTN1": {
+      "segments": 15,
+      "vias": 1,
+      "length_mm": 46.5458,
+      "widths_mm": [
+        0.15,
+        0.2
+      ]
+    },
+    "/BTN3": {
+      "segments": 14,
+      "vias": 2,
+      "length_mm": 83.8162,
+      "widths_mm": [
+        0.15,
+        0.2
+      ]
+    },
+    "/USB_DM_CONN": {
+      "segments": 24,
+      "vias": 1,
+      "length_mm": 43.5303,
+      "widths_mm": [
+        0.45,
+        0.6
+      ]
+    },
+    "/USB_DM_MCU": {
+      "segments": 1,
+      "vias": 0,
+      "length_mm": 2.925,
+      "widths_mm": [
+        0.6
+      ]
+    },
+    "+5V": {
+      "segments": 18,
+      "vias": 1,
+      "length_mm": 54.3647,
+      "widths_mm": [
+        0.3998,
+        0.6,
+        0.8
+      ]
+    },
+    "/ESP_EN": {
+      "segments": 36,
+      "vias": 0,
+      "length_mm": 105.0248,
+      "widths_mm": [
+        0.15,
+        0.2
+      ]
+    },
+    "/ADC_MUX": {
+      "segments": 15,
+      "vias": 2,
+      "length_mm": 39.9933,
+      "widths_mm": [
+        0.15,
+        0.2
+      ]
+    },
+    "/MUX_S0": {
+      "segments": 6,
+      "vias": 2,
+      "length_mm": 30.5782,
+      "widths_mm": [
+        0.15,
+        0.2
+      ]
+    },
+    "/MUX_S1": {
+      "segments": 6,
+      "vias": 2,
+      "length_mm": 28.7927,
+      "widths_mm": [
+        0.15,
+        0.2
+      ]
+    },
+    "/I2S_BCLK": {
+      "segments": 7,
+      "vias": 0,
+      "length_mm": 36.0997,
+      "widths_mm": [
+        0.2
+      ]
+    },
+    "/I2S_LRCK": {
+      "segments": 8,
+      "vias": 2,
+      "length_mm": 26.8343,
+      "widths_mm": [
+        0.2
+      ]
+    },
+    "/I2S_DIN": {
+      "segments": 5,
+      "vias": 0,
+      "length_mm": 27.9558,
+      "widths_mm": [
+        0.2
+      ]
+    },
+    "/USB_DP_MCU": {
+      "segments": 3,
+      "vias": 0,
+      "length_mm": 3.8155,
+      "widths_mm": [
+        0.6
+      ]
+    },
+    "/MUX_S2": {
+      "segments": 5,
+      "vias": 2,
+      "length_mm": 23.1499,
+      "widths_mm": [
+        0.15,
+        0.2
+      ]
+    },
+    "/BOOT": {
+      "segments": 21,
+      "vias": 0,
+      "length_mm": 82.5191,
+      "widths_mm": [
+        0.15,
+        0.2
+      ]
+    },
+    "/UART_RX": {
+      "segments": 12,
+      "vias": 2,
+      "length_mm": 68.4481,
+      "widths_mm": [
+        0.2
+      ]
+    },
+    "/UART_TX": {
+      "segments": 11,
+      "vias": 4,
+      "length_mm": 80.1138,
+      "widths_mm": [
+        0.2
+      ]
+    },
+    "/VOUT_S": {
+      "segments": 8,
+      "vias": 0,
+      "length_mm": 4.3471,
+      "widths_mm": [
+        0.15,
+        0.2
+      ]
+    },
+    "/USB_CC2": {
+      "segments": 9,
+      "vias": 1,
+      "length_mm": 8.3979,
+      "widths_mm": [
+        0.15,
+        0.2
+      ]
+    },
+    "/MASTER": {
+      "segments": 15,
+      "vias": 1,
+      "length_mm": 84.0173,
+      "widths_mm": [
+        0.15,
+        0.2
+      ]
+    },
+    "/VBUS_PROTECTED": {
+      "segments": 14,
+      "vias": 2,
+      "length_mm": 27.5398,
+      "widths_mm": [
+        0.601,
+        0.8
+      ]
+    },
+    "/AUDIO_MONO": {
+      "segments": 6,
+      "vias": 1,
+      "length_mm": 54.2864,
+      "widths_mm": [
+        0.2
+      ]
+    },
+    "/VBUS_RAW": {
+      "segments": 20,
+      "vias": 1,
+      "length_mm": 33.764,
+      "widths_mm": [
+        0.6,
+        0.8
+      ]
+    },
+    "/USB_CC1": {
+      "segments": 12,
+      "vias": 1,
+      "length_mm": 16.1136,
+      "widths_mm": [
+        0.15,
+        0.2
+      ]
+    },
+    "/USB_DP_CONN": {
+      "segments": 23,
+      "vias": 1,
+      "length_mm": 58.8341,
+      "widths_mm": [
+        0.6
+      ]
+    },
+    "/VBUS_SLEW_CT": {
+      "segments": 1,
+      "vias": 0,
+      "length_mm": 2.0875,
+      "widths_mm": [
+        0.2
+      ]
+    },
+    "/POT7_TOP": {
+      "segments": 7,
+      "vias": 0,
+      "length_mm": 14.08,
+      "widths_mm": [
+        0.15,
+        0.2
+      ]
+    }
+  },
+  "changed_original_segments": [
+    {
+      "uuid": "4da830ad-373e-4661-97ae-051a67d19fe9",
+      "before": {
+        "net": "GND",
+        "a": [
+          23866300,
+          14299000
+        ],
+        "z": [
+          24115200,
+          14050100
+        ],
+        "layer": 2,
+        "width": 120000,
+        "drill": null
+      },
+      "after": {
+        "net": "GND",
+        "a": [
+          23866300,
+          14299000
+        ],
+        "z": [
+          24115200,
+          14050100
+        ],
+        "layer": 2,
+        "width": 127000,
+        "drill": null
+      }
+    },
+    {
+      "uuid": "62355e24-d7b0-4362-aa34-bf89b08bdac9",
+      "before": {
+        "net": "GND",
+        "a": [
+          22550000,
+          14299000
+        ],
+        "z": [
+          23866300,
+          14299000
+        ],
+        "layer": 2,
+        "width": 120000,
+        "drill": null
+      },
+      "after": {
+        "net": "GND",
+        "a": [
+          22550000,
+          14299000
+        ],
+        "z": [
+          23866300,
+          14299000
+        ],
+        "layer": 2,
+        "width": 127000,
+        "drill": null
+      }
+    },
+    {
+      "uuid": "465d5ff7-9a50-420a-91e8-cea32322c7fb",
+      "before": {
+        "net": "/POT5",
+        "a": [
+          32159800,
+          77409800
+        ],
+        "z": [
+          16774900,
+          77409800
+        ],
+        "layer": 2,
+        "width": 200000,
+        "drill": null
+      },
+      "after": {
+        "net": "/POT5",
+        "a": [
+          32159799,
+          77409800
+        ],
+        "z": [
+          24000000,
+          77409800
+        ],
+        "layer": 2,
+        "width": 200000,
+        "drill": null
+      }
+    },
+    {
+      "uuid": "b208ed5e-701b-4c0a-81ea-b3fcc9a53579",
+      "before": {
+        "net": "/ENC_B",
+        "a": [
+          71297900,
+          47797900
+        ],
+        "z": [
+          39187400,
+          47797900
+        ],
+        "layer": 2,
+        "width": 200000,
+        "drill": null
+      },
+      "after": {
+        "net": "/ENC_B",
+        "a": [
+          71297900,
+          48097900
+        ],
+        "z": [
+          66900000,
+          48097900
+        ],
+        "layer": 2,
+        "width": 200000,
+        "drill": null
+      }
+    },
+    {
+      "uuid": "d9d002ee-3942-4be9-af66-6ef02704e46d",
+      "before": {
+        "net": "/ENC_B",
+        "a": [
+          77500000,
+          54000000
+        ],
+        "z": [
+          71297900,
+          47797900
+        ],
+        "layer": 2,
+        "width": 200000,
+        "drill": null
+      },
+      "after": {
+        "net": "/ENC_B",
+        "a": [
+          77500000,
+          54000000
+        ],
+        "z": [
+          71297900,
+          48097900
+        ],
+        "layer": 2,
+        "width": 200000,
+        "drill": null
+      }
+    },
+    {
+      "uuid": "5367cd81-8ccd-49a8-92db-7ae263589804",
+      "before": {
+        "net": "/TFT_DC",
+        "a": [
+          48207100,
+          58619600
+        ],
+        "z": [
+          44688800,
+          55101300
+        ],
+        "layer": 2,
+        "width": 120000,
+        "drill": null
+      },
+      "after": {
+        "net": "/TFT_DC",
+        "a": [
+          48207100,
+          58619600
+        ],
+        "z": [
+          44688800,
+          55101300
+        ],
+        "layer": 2,
+        "width": 127000,
+        "drill": null
+      }
+    },
+    {
+      "uuid": "e8d3770c-8380-4225-bbfc-9e0922bd063d",
+      "before": {
+        "net": "/TFT_DC",
+        "a": [
+          44688800,
+          55101300
+        ],
+        "z": [
+          44605700,
+          55101300
+        ],
+        "layer": 2,
+        "width": 120000,
+        "drill": null
+      },
+      "after": {
+        "net": "/TFT_DC",
+        "a": [
+          44688800,
+          55101300
+        ],
+        "z": [
+          44605700,
+          55101300
+        ],
+        "layer": 2,
+        "width": 127000,
+        "drill": null
+      }
+    },
+    {
+      "uuid": "087979f9-ed14-47ab-8bf0-13d595c3c31a",
+      "before": {
+        "net": "/BTN1",
+        "a": [
+          20475500,
+          81077100
+        ],
+        "z": [
+          20475500,
+          59735000
+        ],
+        "layer": 0,
+        "width": 200000,
+        "drill": null
+      },
+      "after": {
+        "net": "/BTN1",
+        "a": [
+          20475500,
+          81077100
+        ],
+        "z": [
+          20475500,
+          78300000
+        ],
+        "layer": 0,
+        "width": 200000,
+        "drill": null
+      }
+    },
+    {
+      "uuid": "4e727e86-f97f-4e07-a82e-d9cc58c3971a",
+      "before": {
+        "net": "/MASTER",
+        "a": [
+          9522800,
+          28536000
+        ],
+        "z": [
+          9522800,
+          18602500
+        ],
+        "layer": 0,
+        "width": 200000,
+        "drill": null
+      },
+      "after": {
+        "net": "/MASTER",
+        "a": [
+          9522800,
+          28536000
+        ],
+        "z": [
+          9522800,
+          20100000
+        ],
+        "layer": 0,
+        "width": 200000,
+        "drill": null
+      }
+    },
+    {
+      "uuid": "7d191ca6-b783-4984-9ab3-8295c870ed16",
+      "before": {
+        "net": "/MASTER",
+        "a": [
+          9522800,
+          18354700
+        ],
+        "z": [
+          10400200,
+          17477300
+        ],
+        "layer": 0,
+        "width": 150000,
+        "drill": null
+      },
+      "after": {
+        "net": "/MASTER",
+        "a": [
+          9872800,
+          18354700
+        ],
+        "z": [
+          10400200,
+          17477300
+        ],
+        "layer": 0,
+        "width": 150000,
+        "drill": null
+      }
+    },
+    {
+      "uuid": "fcbc8810-aa85-46fe-b7f4-2658b256c9d6",
+      "before": {
+        "net": "/MASTER",
+        "a": [
+          9522800,
+          18602500
+        ],
+        "z": [
+          9522800,
+          18354700
+        ],
+        "layer": 0,
+        "width": 150000,
+        "drill": null
+      },
+      "after": {
+        "net": "/MASTER",
+        "a": [
+          9872800,
+          18602500
+        ],
+        "z": [
+          9872800,
+          18354700
+        ],
+        "layer": 0,
+        "width": 150000,
+        "drill": null
+      }
+    },
+    {
+      "uuid": "92168e73-8eec-47c4-8c71-22d51777b772",
+      "before": {
+        "net": "/USB_DP_CONN",
+        "a": [
+          43950000,
+          12755400
+        ],
+        "z": [
+          36450700,
+          20254700
+        ],
+        "layer": 2,
+        "width": 600000,
+        "drill": null
+      },
+      "after": {
+        "net": "/USB_DP_CONN",
+        "a": [
+          43950000,
+          13205400
+        ],
+        "z": [
+          36900700,
+          20254700
+        ],
+        "layer": 2,
+        "width": 600000,
+        "drill": null
+      }
+    },
+    {
+      "uuid": "aa3ceba3-5003-4b1f-a0a3-6425ba260f1b",
+      "before": {
+        "net": "/USB_DP_CONN",
+        "a": [
+          43950000,
+          9137500
+        ],
+        "z": [
+          43950000,
+          12755400
+        ],
+        "layer": 2,
+        "width": 600000,
+        "drill": null
+      },
+      "after": {
+        "net": "/USB_DP_CONN",
+        "a": [
+          43950000,
+          9137500
+        ],
+        "z": [
+          43950000,
+          13205400
+        ],
+        "layer": 2,
+        "width": 600000,
+        "drill": null
+      }
+    },
+    {
+      "uuid": "f6c967de-44dd-426a-a53a-20270888bb86",
+      "before": {
+        "net": "/USB_DP_CONN",
+        "a": [
+          36450700,
+          20254700
+        ],
+        "z": [
+          35527500,
+          20254700
+        ],
+        "layer": 2,
+        "width": 600000,
+        "drill": null
+      },
+      "after": {
+        "net": "/USB_DP_CONN",
+        "a": [
+          36900700,
+          20254700
+        ],
+        "z": [
+          35527500,
+          20254700
+        ],
+        "layer": 2,
+        "width": 600000,
+        "drill": null
+      }
+    },
+    {
+      "uuid": "1c2bd2c6-249b-4ace-98d4-d38b61ad8684",
+      "before": {
+        "net": "/POT7_TOP",
+        "a": [
+          21084500,
+          -2322900
+        ],
+        "z": [
+          26825000,
+          3417600
+        ],
+        "layer": 2,
+        "width": 200000,
+        "drill": null
+      },
+      "after": {
+        "net": "/POT7_TOP",
+        "a": [
+          21584500,
+          -2322900
+        ],
+        "z": [
+          26825000,
+          2917600
+        ],
+        "layer": 2,
+        "width": 200000,
+        "drill": null
+      }
+    },
+    {
+      "uuid": "3906a760-f1d8-4493-bccf-b59501721cb7",
+      "before": {
+        "net": "/POT7_TOP",
+        "a": [
+          26825000,
+          3417600
+        ],
+        "z": [
+          26825000,
+          4000000
+        ],
+        "layer": 2,
+        "width": 200000,
+        "drill": null
+      },
+      "after": {
+        "net": "/POT7_TOP",
+        "a": [
+          26825000,
+          2917600
+        ],
+        "z": [
+          26825000,
+          4000000
+        ],
+        "layer": 2,
+        "width": 200000,
+        "drill": null
+      }
+    },
+    {
+      "uuid": "698b8fda-d7f6-49bb-aafa-9b66709a8513",
+      "before": {
+        "net": "/POT7_TOP",
+        "a": [
+          20950200,
+          -2322900
+        ],
+        "z": [
+          21084500,
+          -2322900
+        ],
+        "layer": 2,
+        "width": 200000,
+        "drill": null
+      },
+      "after": {
+        "net": "/POT7_TOP",
+        "a": [
+          20950200,
+          -2322900
+        ],
+        "z": [
+          21584500,
+          -2322900
+        ],
+        "layer": 2,
+        "width": 200000,
+        "drill": null
+      }
+    }
+  ],
+  "added_segments": [
+    {
+      "uuid": "00e557f5-8b4e-424b-83bf-568a115c6f67",
+      "net": "/POT5",
+      "a": [
+        19800000,
+        77709800
+      ],
+      "z": [
+        19500000,
+        77409800
+      ],
+      "layer": 2,
+      "width": 200000,
+      "drill": null
+    },
+    {
+      "uuid": "3cab0f81-f306-4536-ba54-6e9394a4ece3",
+      "net": "/POT5",
+      "a": [
+        19500000,
+        77409800
+      ],
+      "z": [
+        16774899,
+        77409800
+      ],
+      "layer": 2,
+      "width": 200000,
+      "drill": null
+    },
+    {
+      "uuid": "4d01d3e3-1b66-4ee6-ac5f-80fb2076166b",
+      "net": "/POT5",
+      "a": [
+        23700000,
+        77709800
+      ],
+      "z": [
+        19800000,
+        77709800
+      ],
+      "layer": 2,
+      "width": 200000,
+      "drill": null
+    },
+    {
+      "uuid": "7ee31328-ab57-4342-b1cb-1540dd70226f",
+      "net": "/POT5",
+      "a": [
+        24000000,
+        77409800
+      ],
+      "z": [
+        23700000,
+        77709800
+      ],
+      "layer": 2,
+      "width": 200000,
+      "drill": null
+    },
+    {
+      "uuid": "34b6cbd9-22b4-4fd3-9203-81f9f86544c1",
+      "net": "/ENC_B",
+      "a": [
+        66599999,
+        47797900
+      ],
+      "z": [
+        39187400,
+        47797900
+      ],
+      "layer": 2,
+      "width": 200000,
+      "drill": null
+    },
+    {
+      "uuid": "d0b021c4-ab1e-4bea-8dde-9d6a004ee949",
+      "net": "/ENC_B",
+      "a": [
+        66900000,
+        48097900
+      ],
+      "z": [
+        66599999,
+        47797900
+      ],
+      "layer": 2,
+      "width": 200000,
+      "drill": null
+    },
+    {
+      "uuid": "68de476e-e1b1-4fde-bb0f-9cd5d9bbb9de",
+      "net": "/BTN1",
+      "a": [
+        20475500,
+        78300000
+      ],
+      "z": [
+        20075500,
+        77900000
+      ],
+      "layer": 0,
+      "width": 200000,
+      "drill": null
+    },
+    {
+      "uuid": "c5fa6a1e-30c7-459f-8058-5b39003822df",
+      "net": "/BTN1",
+      "a": [
+        20475500,
+        73700000
+      ],
+      "z": [
+        20475500,
+        59735000
+      ],
+      "layer": 0,
+      "width": 200000,
+      "drill": null
+    },
+    {
+      "uuid": "d5eeec1c-f9f1-4413-a1da-0d98d4575532",
+      "net": "/BTN1",
+      "a": [
+        20075500,
+        74100000
+      ],
+      "z": [
+        20475500,
+        73700000
+      ],
+      "layer": 0,
+      "width": 200000,
+      "drill": null
+    },
+    {
+      "uuid": "e95b76cd-de34-47d7-9b62-43e92c0c0406",
+      "net": "/BTN1",
+      "a": [
+        20075500,
+        77900000
+      ],
+      "z": [
+        20075500,
+        74100000
+      ],
+      "layer": 0,
+      "width": 200000,
+      "drill": null
+    },
+    {
+      "uuid": "656d6772-e7f4-4004-a369-9c2b48c0ed04",
+      "net": "/MASTER",
+      "a": [
+        9872800,
+        19750000
+      ],
+      "z": [
+        9872800,
+        18602500
+      ],
+      "layer": 0,
+      "width": 200000,
+      "drill": null
+    },
+    {
+      "uuid": "f96656e2-c3f1-4056-a176-df698af967c4",
+      "net": "/MASTER",
+      "a": [
+        9522800,
+        20100000
+      ],
+      "z": [
+        9872800,
+        19750000
+      ],
+      "layer": 0,
+      "width": 200000,
+      "drill": null
+    }
+  ],
+  "all_original_vias_unchanged": true,
+  "footprints_pads_netlist_placement_graphics_arcs_keepouts_unchanged": true,
+  "via_sizes": [
+    {
+      "diameter_mm": 0.6,
+      "drill_mm": 0.3,
+      "count": 57
+    },
+    {
+      "diameter_mm": 0.7,
+      "drill_mm": 0.3,
+      "count": 10
+    }
+  ],
+  "source_and_references_sha256": {
+    "tmp\\autorouting-first-trial\\native\\ESP-DubSiren.kicad_pcb": "56bf0748482ef7df8d5d0f6b17395e50d83a8ebe19a36a609285b0107ba664fa",
+    "hardware\\kicad\\ESP-DubSiren.kicad_pcb": "18071a8a3104b410ba28ebea4b8c64b05f7e63d50f047a343c214c413686ddcc",
+    "hardware\\kicad\\ESP-DubSiren-mixed-diagnostic.kicad_pcb": "0764ee2c7d9772f598a4ce1b180565121287560ee6922ffc44f22bdd6b942693"
+  }
+}
