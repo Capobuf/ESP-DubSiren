@@ -5,6 +5,13 @@ Proposta del **31 ottobre 2026**, ramo `codex/issue-38-rear-placement`, nell'uni
 non consolidata e PCB non fabbricabile.** Nessun routing, via, zona, Gerber,
 cambiamento di schema, BOM o firmware.
 
+**Integrazione header nella issue, ricontrollata il 31 ottobre:** il
+[nuovo esame SLxG1](issue-38-header-stack-review.md) documenta il riferimento
+commerciale 2,50/3,00/6,10 mm. Con il lato corto U6 nella portante rimangono
+1,10 mm nominali fra punta pin e piano U5, prima dei volumi contrapposti.
+La sezione è aggiornata a questa prova. Le altezze locali del retro U5,
+l'accoppiamento dei fori e la ferramenta restano da qualificare.
+
 Il DAC scompare dal lato sinistro del frontale, ma lo stack display/DAC resta
 **INCOMPLETO**: 18 errori DRC documentano i terminali e i fissaggi sotto U5.
 Il beneficio elettrico principale è l'uscita audio più corta; il ratsnest globale
@@ -134,9 +141,10 @@ La sezione distingue:
 - `g6`: distanza carrier B.Cu–PCB DAC, includendo header e ferramenta.
 
 **Precisazione dell'utente, 31 ottobre 2026:** il display è sempre saldato
-tramite header. Questo è il montaggio di riferimento. Il tipo e l'altezza
-dell'header non sono ancora identificati: non si assume dal termine «header»
-che sia presente uno zoccolo sfilabile. Il controllo DRC qui riportato è in
+tramite header. L'integrazione successiva identifica **SL11G1** per U5 e
+**SL8G1/SL6G1** per U6 come riferimento commerciale dello studio, senza
+attribuirne le quote ai pin Adafruit inclusi. Non comprende uno zoccolo
+sfilabile. Il controllo DRC qui riportato è in
 pianta e non valuta la separazione verticale creata dall'header; i 18 errori
 non dimostrano da soli una collisione nell'assieme montato.
 
@@ -148,8 +156,8 @@ La maschera non rende accettabile il contatto o la pressione sulla scocca SD.
 ## Montaggio e manutenzione: alternativa minima di fissaggio
 
 La proposta non assume un display appoggiato sul DAC. L'alternativa minima
-al montaggio ravvicinato del candidato è **U6 a Y46,5 e U5 rialzato sui suoi
-quattro fori**, con separazione ricavata dalle misure sopra. Non aggiunge
+al montaggio ravvicinato del candidato è **U6 a Y46,5 e U5 sostenuto tramite
+i suoi fori**, con separazione ricavata dalle misure sopra. Non aggiunge
 staffe, box o fori. Non è ancora un kit di ferramenta selezionato e approvato.
 
 Sequenza da qualificare sul campione prima di consolidare il placement:
@@ -163,21 +171,21 @@ Sequenza da qualificare sul campione prima di consolidare il placement:
 3. Montare **DAC prima**: il fronte privo del display lascia accesso ai suoi
    14 giunti. Saldare, pulire, ispezionare e misurare la massima sporgenza
    effettiva dei pin/giunti e delle teste. Non tagliare pin a una quota inventata.
-4. Per il montaggio U5 tramite header confermato dall'utente, qualificare
-   la possibilità di una connessione **sfilabile a 11 poli** e quattro
-   distanziali isolanti sui fori esistenti. Servono corpo dell'header, innesto
-   utile e altezza corrispondenti a `g5`: il relativo articolo non è selezionato
-   né aggiunto alla BOM elettrica. Controllare in particolare l'angolo VIN:
-   il margine al rame con ingombro Ø4 è solo circa 0,21 mm e anche il corpo
-   dello zoccolo può interferire con la ferramenta.
+4. Presentare U5 con lo **SL11G1 di riferimento**, senza assumere uno zoccolo
+   sfilabile. Provare il distacco nominale 2,50 mm e il verso dei terminali
+   come nel [ricontrollo header](issue-38-header-stack-review.md). Non si
+   confermano quattro colonne Ø4: l'inviluppo plastico passa troppo vicino
+   ai due fori inferiori per presumerne la compatibilità. Il margine al rame
+   vicino a VIN resta inoltre circa 0,21 mm con ingombro Ø4. Nessun articolo
+   aggiunto alla BOM elettrica.
 5. Montare **display dopo**, serrando la PCB del breakout senza premere
    vetro, backlight o flex e senza piegarlo per raggiungere i distanziali.
    Verificare anche accesso laterale alla microSD e all'eventuale flex.
-6. Per manutenzione: togliere alimentazione, svitare U5 e sfilarlo verticalmente
-   sostenendo la PCB, non il vetro. Tornano accessibili giunti e teste U6;
-   si può quindi intervenire sul DAC. Se i pin dell'header sono saldati a
-   entrambe le schede senza zoccolo, occorre dissaldarli per rimuovere U5:
-   la manutenzione sfilabile descritta qui resta una proposta da qualificare.
+6. Per manutenzione con SL11G1 saldato a entrambe le schede: togliere
+   alimentazione, dissaldare i suoi 11 contatti dal lato accessibile e liberare
+   i fissaggi, sostenendo la PCB del display. Accesso con utensile e facilità
+   di rimozione restano da qualificare. Non è una connessione sfilabile;
+   rimuovere U5 rende di nuovo accessibili giunti e teste U6.
 
 Se non si trova lo spazio per header/fissaggi o il rialzo richiesto non è
 accettabile, lo stack rimane non valido: non sostituirlo con un generico

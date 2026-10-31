@@ -17,6 +17,8 @@ Il solo progetto attivo resta quello nella cartella `kicad`.
   ESP32 a sinistra e DAC sotto U5, [fronte prima/dopo](docs/placement-38/F-comparison.png)
   e [retro prima/dopo](docs/placement-38/B-comparison.png). Stack non qualificato:
   18 errori DRC U6 sotto U5; nessun routing. Attende revisione dell'utente.
+  [Ricontrollo header SLxG1](docs/issue-38-header-stack-review.md): prova del
+  distacco 2,50 mm, verso dei pin, saldatura e compatibilità ancora da verificare.
 - [Vista superiore](docs/layout-35/F-layout.png),
   [vista inferiore](docs/layout-35/B-layout.png),
   [render superiore](docs/layout-35/top-3d.png),

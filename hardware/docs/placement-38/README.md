@@ -17,6 +17,10 @@ alternativi: nessun secondo file `.kicad_pcb` è stato creato.
   geometrico e di connettività. Le lunghezze sono rette/MST, non routing.
 - PNG/SVG di confronto, ratsnest e stack: derivati esplicativi, non output
   produttivi né prove di altezze.
+- `header-study.json`: calcoli e inviluppi per il riferimento commerciale
+  SLxG1 aggiunto alla issue; [riesame](../issue-38-header-stack-review.md).
+  La sezione aggiornata distingue la prova nominale da 2,50 mm dalle altezze
+  dei moduli ancora ignote. I dati non qualificano gli header inclusi Adafruit.
 
 Per rigenerare verifiche sui dati esportati e tavole, dalla radice del repository:
 

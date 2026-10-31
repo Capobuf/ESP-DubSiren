@@ -1,0 +1,172 @@
+{
+  "issue": "https://github.com/Capobuf/ESP-DubSiren/issues/38",
+  "datasheet": "https://mm.digikey.com/Volume0/opasdata/d220001/medias/docus/6161/SLxxG1x.pdf",
+  "scope": "Commercial dimensional reference only; no approval of supplied Adafruit headers or BOM modification",
+  "source_PCB_sha256": "18071a8a3104b410ba28ebea4b8c64b05f7e63d50f047a343c214c413686ddcc",
+  "documented_mm": {
+    "pitch": 2.54,
+    "square_pin": 0.64,
+    "body_height": 2.5,
+    "body_plan_width": 2.54,
+    "short_pin": 3.0,
+    "long_pin": 6.1,
+    "recommended_drill": 1.02,
+    "A_B_tolerance": 0.25,
+    "body_height_general_tolerance": 0.2
+  },
+  "project_nominal_mm": {
+    "carrier_thickness": 1.6,
+    "current_U5_U6_drill": 1.0
+  },
+  "calculated_mm": {
+    "short_pin_protrusion": 1.4,
+    "long_pin_protrusion": 4.5,
+    "bare_budget_short_pin": 1.1,
+    "bare_budget_long_pin": -2.0,
+    "bare_budget_short_pin_min_header_tolerances_only": 0.6499999999999999,
+    "bare_budget_short_pin_max_header_tolerances_only": 1.5500000000000003,
+    "nominal_pin_diagonal": 0.905096679918781,
+    "nominal_drill_minus_pin_diagonal": 0.09490332008121904
+  },
+  "nominal_header_body_hulls": {
+    "SL11G1": {
+      "min_x": 30.046,
+      "max_x": 57.986,
+      "min_y": 58.565,
+      "max_y": 61.105000000000004
+    },
+    "SL8G1": {
+      "min_x": 33.839999999999996,
+      "max_x": 54.160000000000004,
+      "min_y": 37.61,
+      "max_y": 40.150000000000006
+    },
+    "SL6G1": {
+      "min_x": 36.379999999999995,
+      "max_x": 51.620000000000005,
+      "min_y": 52.849999999999994,
+      "max_y": 55.39
+    }
+  },
+  "hull_assumption": "Rectangular, centered nominal envelope inferred from overall 2.54*N drawing; end chamfers, exact end registration and manufacturing tolerances are not resolved",
+  "support_checks": [
+    {
+      "header": "SL11G1",
+      "hole": [
+        28.140999,
+        33.8
+      ],
+      "distance_hole_center_to_nominal_body_hull_mm": 24.838161240518613,
+      "nominal_gap_with_4mm_circular_support_mm": 22.838161240518613
+    },
+    {
+      "header": "SL11G1",
+      "hole": [
+        28.140999,
+        59.2
+      ],
+      "distance_hole_center_to_nominal_body_hull_mm": 1.9050009999999986,
+      "nominal_gap_with_4mm_circular_support_mm": -0.09499900000000139
+    },
+    {
+      "header": "SL11G1",
+      "hole": [
+        59.891,
+        33.8
+      ],
+      "distance_hole_center_to_nominal_body_hull_mm": 24.838161163822093,
+      "nominal_gap_with_4mm_circular_support_mm": 22.838161163822093
+    },
+    {
+      "header": "SL11G1",
+      "hole": [
+        59.891,
+        59.2
+      ],
+      "distance_hole_center_to_nominal_body_hull_mm": 1.9050000000000011,
+      "nominal_gap_with_4mm_circular_support_mm": -0.09499999999999886
+    },
+    {
+      "header": "SL8G1",
+      "hole": [
+        31.3,
+        38.88
+      ],
+      "distance_hole_center_to_nominal_body_hull_mm": 2.5399999999999956,
+      "nominal_gap_with_4mm_circular_support_mm": 0.5399999999999956
+    },
+    {
+      "header": "SL8G1",
+      "hole": [
+        31.3,
+        54.12
+      ],
+      "distance_hole_center_to_nominal_body_hull_mm": 14.199031657123657,
+      "nominal_gap_with_4mm_circular_support_mm": 12.199031657123657
+    },
+    {
+      "header": "SL8G1",
+      "hole": [
+        56.7,
+        38.88
+      ],
+      "distance_hole_center_to_nominal_body_hull_mm": 2.539999999999999,
+      "nominal_gap_with_4mm_circular_support_mm": 0.5399999999999991
+    },
+    {
+      "header": "SL8G1",
+      "hole": [
+        56.7,
+        54.12
+      ],
+      "distance_hole_center_to_nominal_body_hull_mm": 14.199031657123657,
+      "nominal_gap_with_4mm_circular_support_mm": 12.199031657123657
+    },
+    {
+      "header": "SL6G1",
+      "hole": [
+        31.3,
+        38.88
+      ],
+      "distance_hole_center_to_nominal_body_hull_mm": 14.864968886613914,
+      "nominal_gap_with_4mm_circular_support_mm": 12.864968886613914
+    },
+    {
+      "header": "SL6G1",
+      "hole": [
+        31.3,
+        54.12
+      ],
+      "distance_hole_center_to_nominal_body_hull_mm": 5.079999999999995,
+      "nominal_gap_with_4mm_circular_support_mm": 3.0799999999999947
+    },
+    {
+      "header": "SL6G1",
+      "hole": [
+        56.7,
+        38.88
+      ],
+      "distance_hole_center_to_nominal_body_hull_mm": 14.864968886613916,
+      "nominal_gap_with_4mm_circular_support_mm": 12.864968886613916
+    },
+    {
+      "header": "SL6G1",
+      "hole": [
+        56.7,
+        54.12
+      ],
+      "distance_hole_center_to_nominal_body_hull_mm": 5.079999999999998,
+      "nominal_gap_with_4mm_circular_support_mm": 3.0799999999999983
+    }
+  ],
+  "unknowns": [
+    "actual supplied header dimensions",
+    "breakout PCB thicknesses t5/t6",
+    "local U5 underside heights at U6 pins/screw locations",
+    "solder and pin trim envelopes",
+    "U6 jack solder protrusion toward carrier",
+    "hardware geometry and tolerances",
+    "required solder lead protrusion / qualified process"
+  ],
+  "minimum_height_rule": "g5_min > max_xy(h_U5(xy)+h_U6_front(xy)) + verified assembly margin; no numeric minimum is established without the missing Z dimensions"
+}
