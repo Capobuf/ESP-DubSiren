@@ -151,7 +151,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "https://bourns.com/docs/product-datasheets/ptvptt.pdf"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -162,7 +162,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Potentiometer"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -173,7 +173,42 @@
 				)
 			)
 		)
+		(property "MPN" "PTV111-3420A-B203"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "74e8102b-c68a-46b9-a2af-769946f024fe")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "Bourns"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "0c94757d-837c-4eb0-bc89-5227a93fd581")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property ki_fp_filters "Potentiometer*")
 		(path "/38d01846-cbd9-4653-92b9-709a649645ec")
+		(sheetname "/")
+		(sheetfile "ESP-DubSiren.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "3" "2")
+			)
+		)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_rect
 			(start -6.1 -6.8)
@@ -391,6 +426,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "GND")
+			(pinfunction "1_1")
+			(pintype "passive")
 			(uuid "75c97f13-b138-4f7a-a0d4-d48484eab73b")
 		)
 		(pad "2" thru_hole circle
@@ -400,6 +437,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "/POT6")
+			(pinfunction "2_2")
+			(pintype "passive")
 			(uuid "3907c6f7-370c-401e-8eee-fd824eb5d86c")
 		)
 		(pad "3" thru_hole circle
@@ -409,6 +448,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "/POT6_TOP")
+			(pinfunction "3_3")
+			(pintype "passive")
 			(uuid "ac8d2b8b-f4f7-4bfb-b261-d9627d48a46c")
 		)
 		(embedded_fonts no)
@@ -442,7 +483,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "https://bourns.com/docs/product-datasheets/ptvptt.pdf"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -453,7 +494,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Potentiometer"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -464,7 +505,42 @@
 				)
 			)
 		)
+		(property "MPN" "PTV111-3420A-B203"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "60eb3ed4-e971-4bbd-a9a4-ba7757c8cd08")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "Bourns"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "156a0002-590b-40be-a10d-ec34657a2b11")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property ki_fp_filters "Potentiometer*")
 		(path "/4ae809e6-6c46-478f-a38a-73793732e91a")
+		(sheetname "/")
+		(sheetfile "ESP-DubSiren.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "3" "2")
+			)
+		)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_rect
 			(start -6.1 -6.8)
@@ -682,6 +758,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "GND")
+			(pinfunction "1_1")
+			(pintype "passive")
 			(uuid "3367faf9-3c8d-4ee5-bb2b-68f57c1302a8")
 		)
 		(pad "2" thru_hole circle
@@ -691,6 +769,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "/POT2")
+			(pinfunction "2_2")
+			(pintype "passive")
 			(uuid "5ec0a467-7405-4bd8-9aad-6700c6a1518b")
 		)
 		(pad "3" thru_hole circle
@@ -700,6 +780,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "/POT2_TOP")
+			(pinfunction "3_3")
+			(pintype "passive")
 			(uuid "e2628bca-4b74-4bfe-92b7-1beb07f96691")
 		)
 		(embedded_fonts no)
@@ -830,7 +912,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "https://bourns.com/docs/product-datasheets/ptvptt.pdf"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -841,7 +923,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Potentiometer"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -852,7 +934,42 @@
 				)
 			)
 		)
+		(property "MPN" "PTV111-3420A-B203"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "c8216c5c-53e9-41b2-bde3-aa9972c68057")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "Bourns"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "2e972fb1-ca47-4903-95d7-54d782c93829")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property ki_fp_filters "Potentiometer*")
 		(path "/688cd874-36fa-46c1-98eb-aab7fdc435bf")
+		(sheetname "/")
+		(sheetfile "ESP-DubSiren.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "3" "2")
+			)
+		)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_rect
 			(start -6.1 -6.8)
@@ -1070,6 +1187,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "GND")
+			(pinfunction "1_1")
+			(pintype "passive")
 			(uuid "37bf24cf-fc28-46ad-b049-dc703f4ab847")
 		)
 		(pad "2" thru_hole circle
@@ -1079,6 +1198,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "/POT5")
+			(pinfunction "2_2")
+			(pintype "passive")
 			(uuid "e676d679-ef94-4af9-9a0c-42b7767c051f")
 		)
 		(pad "3" thru_hole circle
@@ -1088,6 +1209,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "/POT5_TOP")
+			(pinfunction "3_3")
+			(pintype "passive")
 			(uuid "d8be0b4c-fd03-435e-9f79-1f5651ff4e12")
 		)
 		(embedded_fonts no)
@@ -1121,7 +1244,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "https://bourns.com/docs/product-datasheets/ptvptt.pdf"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -1132,7 +1255,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Potentiometer"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -1143,7 +1266,42 @@
 				)
 			)
 		)
+		(property "MPN" "PTV111-3420A-B203"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "3d1d05f8-8151-493a-b30f-018bdb4daec7")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "Bourns"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "e6f07806-8bea-4d69-be12-0b690601c208")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property ki_fp_filters "Potentiometer*")
 		(path "/c3433abf-eda6-41bd-9f65-24934117e252")
+		(sheetname "/")
+		(sheetfile "ESP-DubSiren.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "3" "2")
+			)
+		)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_rect
 			(start -6.1 -6.8)
@@ -1361,6 +1519,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "GND")
+			(pinfunction "1_1")
+			(pintype "passive")
 			(uuid "3b1f22e6-0a32-4fbd-9455-b65de93d743e")
 		)
 		(pad "2" thru_hole circle
@@ -1370,6 +1530,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "/POT3")
+			(pinfunction "2_2")
+			(pintype "passive")
 			(uuid "02d6d65f-c67b-407b-b121-5ab6e146d4a0")
 		)
 		(pad "3" thru_hole circle
@@ -1379,6 +1541,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "/POT3_TOP")
+			(pinfunction "3_3")
+			(pintype "passive")
 			(uuid "2d4810b4-dd72-4f33-95f6-29728c78b2b4")
 		)
 		(embedded_fonts no)
@@ -1412,7 +1576,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "https://www.bourns.com/docs/product-datasheets/pec11r.pdf"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -1423,7 +1587,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Rotary encoder, dual channel, incremental quadrate outputs, with switch"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -1434,7 +1598,42 @@
 				)
 			)
 		)
+		(property "MPN" "PEC11R-4120F-S0018"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "d85375ca-29bb-4a77-8239-282638705ffd")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "Bourns"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "fcefebb3-e21d-4a16-8573-b12c3d175d14")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property ki_fp_filters "RotaryEncoder*Switch*")
 		(path "/4eb3ef57-4144-4750-8497-0c0db9d296f7")
+		(sheetname "/")
+		(sheetfile "ESP-DubSiren.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "A" "C" "B" "S1" "S2")
+			)
+		)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_rect
 			(start -3.6 -8.1)
@@ -1666,6 +1865,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "/ENC_A")
+			(pinfunction "A_A")
+			(pintype "passive")
 			(uuid "35dc01b9-116b-4748-b1fa-9453e89e4fe1")
 		)
 		(pad "B" thru_hole circle
@@ -1675,6 +1876,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "/ENC_B")
+			(pinfunction "B_B")
+			(pintype "passive")
 			(uuid "8635e853-daec-4bb5-bbd0-ff17653b9057")
 		)
 		(pad "C" thru_hole circle
@@ -1684,6 +1887,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "GND")
+			(pinfunction "C_C")
+			(pintype "passive")
 			(uuid "7672d707-6f4d-4f10-9500-6eaa2eefcc12")
 		)
 		(pad "S1" thru_hole circle
@@ -1693,6 +1898,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "/ENC_SW")
+			(pinfunction "S1_S1")
+			(pintype "passive")
 			(uuid "18663329-b9e1-4324-94a8-29e9d87d857a")
 		)
 		(pad "S2" thru_hole circle
@@ -1702,6 +1909,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "GND")
+			(pinfunction "S2_S2")
+			(pintype "passive")
 			(uuid "c9d7c50f-dec3-4dcb-85f9-13e12f6bc402")
 		)
 		(embedded_fonts no)
@@ -1735,7 +1944,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "https://bourns.com/docs/product-datasheets/ptvptt.pdf"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -1746,7 +1955,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Potentiometer"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -1757,7 +1966,42 @@
 				)
 			)
 		)
+		(property "MPN" "PTV111-3420A-B203"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "bf865257-2b31-4b01-80ea-3bbdd63a3eac")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "Bourns"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "d3572bc0-4db9-4017-a36d-dd181ec5f0c6")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property ki_fp_filters "Potentiometer*")
 		(path "/2daacd46-c429-429c-a123-3ca8ef9a8875")
+		(sheetname "/")
+		(sheetfile "ESP-DubSiren.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "3" "2")
+			)
+		)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_rect
 			(start -6.1 -6.8)
@@ -1975,6 +2219,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "GND")
+			(pinfunction "1_1")
+			(pintype "passive")
 			(uuid "c1c8cb0b-2eca-444e-b637-cfded63d3629")
 		)
 		(pad "2" thru_hole circle
@@ -1984,6 +2230,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "/POT1")
+			(pinfunction "2_2")
+			(pintype "passive")
 			(uuid "ba926a7a-bd44-41df-9a37-b5c56e99f6e6")
 		)
 		(pad "3" thru_hole circle
@@ -1993,6 +2241,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "/POT1_TOP")
+			(pinfunction "3_3")
+			(pintype "passive")
 			(uuid "0d4717f6-d48a-4a74-91a4-e27ec6dd1f29")
 		)
 		(embedded_fonts no)
@@ -2026,7 +2276,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "https://www.mouser.com/PCN/CHERRY_MX1A_11NW_EOL.pdf"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -2037,7 +2287,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Single Pole Single Throw (SPST) switch"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -2048,7 +2298,41 @@
 				)
 			)
 		)
+		(property "MPN" "MX2A-11NW"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "1ce46123-b005-4784-8f81-1494be739c20")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "CHERRY"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "ab5d3277-b31b-40c1-b193-6ac3baacbdff")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
 		(path "/e50cd161-8ba9-47c1-b032-a5a3e2dca50e")
+		(sheetname "/")
+		(sheetfile "ESP-DubSiren.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
 			(start -9.525 -1.905)
@@ -2250,6 +2534,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "/BTN4")
+			(pinfunction "A_1")
+			(pintype "passive")
 			(uuid "8c291e19-23e1-47b8-978c-84b835ca14be")
 		)
 		(pad "2" thru_hole circle
@@ -2259,6 +2545,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "GND")
+			(pinfunction "B_2")
+			(pintype "passive")
 			(uuid "921dccf3-f892-497e-b36a-d50c20facc1a")
 		)
 		(embedded_fonts no)
@@ -2389,7 +2677,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "https://www.mouser.com/PCN/CHERRY_MX1A_11NW_EOL.pdf"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -2400,7 +2688,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Single Pole Single Throw (SPST) switch"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -2411,7 +2699,41 @@
 				)
 			)
 		)
+		(property "MPN" "MX2A-11NW"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "771d60e5-cae6-4216-8029-96c2aeacc9e3")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "CHERRY"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "c378fd5f-cef0-4343-9fc7-2bcec0470800")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
 		(path "/496e4239-b2be-49aa-978a-dd4c74d7ef99")
+		(sheetname "/")
+		(sheetfile "ESP-DubSiren.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
 			(start -9.525 -1.905)
@@ -2613,6 +2935,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "/BTN2")
+			(pinfunction "A_1")
+			(pintype "passive")
 			(uuid "2a84552b-532d-4a45-bd84-ff686d79ea03")
 		)
 		(pad "2" thru_hole circle
@@ -2622,6 +2946,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "GND")
+			(pinfunction "B_2")
+			(pintype "passive")
 			(uuid "edd6a3ad-e79b-4246-b974-ea0219f0f530")
 		)
 		(embedded_fonts no)
@@ -2655,7 +2981,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "https://bourns.com/docs/product-datasheets/ptvptt.pdf"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -2666,7 +2992,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Potentiometer"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -2677,7 +3003,42 @@
 				)
 			)
 		)
+		(property "MPN" "PTV111-3420A-B203"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "ac7198a3-34b1-4232-bd21-5c13b31cef24")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "Bourns"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "902a8ac1-2a6f-48d3-af3f-d3fd6b653086")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property ki_fp_filters "Potentiometer*")
 		(path "/95f0fa21-e38b-4ea2-8c90-a2b3ebc8c97a")
+		(sheetname "/")
+		(sheetfile "ESP-DubSiren.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "3" "2")
+			)
+		)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_rect
 			(start -6.1 -6.8)
@@ -2895,6 +3256,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "GND")
+			(pinfunction "1_1")
+			(pintype "passive")
 			(uuid "bf7176bd-3ad4-438c-9dff-64f6c3bc5ca9")
 		)
 		(pad "2" thru_hole circle
@@ -2904,6 +3267,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "/POT4")
+			(pinfunction "2_2")
+			(pintype "passive")
 			(uuid "9109ecc1-0979-4fd3-8d2d-658c689a3a4e")
 		)
 		(pad "3" thru_hole circle
@@ -2913,6 +3278,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "/POT4_TOP")
+			(pinfunction "3_3")
+			(pintype "passive")
 			(uuid "c67b6074-3814-4bf7-a30e-c44e940bab9a")
 		)
 		(embedded_fonts no)
@@ -3043,7 +3410,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "https://learn.adafruit.com/adafruit-1-47-round-rectangle-tft-display?view=all"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -3065,7 +3432,54 @@
 				)
 			)
 		)
+		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "c6f3b777-8199-446c-ae21-554cd02552a3")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "MPN" "5393"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "18210087-dbfd-4518-820f-d2d2c106f402")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "Adafruit"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "4521fedf-9fcb-4e3d-966f-380823d4429b")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
 		(path "/0f752a3f-c86f-4374-a86a-d945935cf589")
+		(sheetname "/")
+		(sheetfile "ESP-DubSiren.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "4" "6" "7" "8" "9" "10" "11" "1" "3" "2" "5")
+			)
+		)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
 			(start -18.415001 12.7)
@@ -3854,6 +4268,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "+3V3")
+			(pinfunction "VIN_1")
+			(pintype "power_in")
 			(uuid "b1463ad0-62cd-4216-9fd8-66e94bdd51d6")
 		)
 		(pad "2" thru_hole circle
@@ -3863,6 +4279,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "unconnected-(U5-3V3_OUT-Pad2)")
+			(pinfunction "3V3_OUT_2")
+			(pintype "power_out+no_connect")
 			(uuid "346334a2-5d68-4904-920b-7985f5ba2139")
 		)
 		(pad "3" thru_hole circle
@@ -3872,6 +4290,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "GND")
+			(pinfunction "GND_3")
+			(pintype "power_in")
 			(uuid "7cc60519-f996-446c-8c7e-12e2f2a50c16")
 		)
 		(pad "4" thru_hole circle
@@ -3881,6 +4301,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "/SPI_SCK")
+			(pinfunction "SCK_4")
+			(pintype "input")
 			(uuid "64b48428-9801-4061-856b-643ce3d21902")
 		)
 		(pad "5" thru_hole circle
@@ -3890,6 +4312,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "unconnected-(U5-MISO_SD-Pad5)")
+			(pinfunction "MISO_SD_5")
+			(pintype "output+no_connect")
 			(uuid "cdd90433-bd7b-4ddf-b749-1bae946307be")
 		)
 		(pad "6" thru_hole circle
@@ -3899,6 +4323,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "/SPI_MOSI")
+			(pinfunction "MOSI_6")
+			(pintype "input")
 			(uuid "9ac8587c-6ff3-4c74-b767-e288b995fbd1")
 		)
 		(pad "7" thru_hole circle
@@ -3908,6 +4334,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "/TFT_CS")
+			(pinfunction "TFT_CS_7")
+			(pintype "input")
 			(uuid "ed2e1e66-4f50-4216-bd43-0c39ce818beb")
 		)
 		(pad "8" thru_hole circle
@@ -3917,6 +4345,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "/TFT_RST")
+			(pinfunction "TFT_RST_8")
+			(pintype "input")
 			(uuid "56bba5ea-a3d5-46ff-a51f-00575a6a5c95")
 		)
 		(pad "9" thru_hole circle
@@ -3926,6 +4356,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "/TFT_DC")
+			(pinfunction "TFT_DC_9")
+			(pintype "input")
 			(uuid "76467b33-9552-4d1f-8fe6-728d6cfb9b48")
 		)
 		(pad "10" thru_hole circle
@@ -3935,6 +4367,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "unconnected-(U5-SD_CS-Pad10)")
+			(pinfunction "SD_CS_10")
+			(pintype "input+no_connect")
 			(uuid "507ceda1-278a-41e2-880e-e6307fe24c93")
 		)
 		(pad "11" thru_hole circle
@@ -3944,6 +4378,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "/TFT_LITE")
+			(pinfunction "LITE_11")
+			(pintype "input")
 			(uuid "f6f9c9e2-24c3-4dcb-89e8-bd509c44f3a8")
 		)
 		(embedded_fonts no)
@@ -3977,7 +4413,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "https://www.mouser.com/PCN/CHERRY_MX1A_11NW_EOL.pdf"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -3988,7 +4424,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Single Pole Single Throw (SPST) switch"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -3999,7 +4435,41 @@
 				)
 			)
 		)
+		(property "MPN" "MX2A-11NW"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "bef6dd1e-218f-45d9-a8a6-1a1207312b8b")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "CHERRY"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "c59fad22-f5ba-4d12-9aba-4251fdac7030")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
 		(path "/b12c4792-1501-4d7f-925b-c7dbf9072832")
+		(sheetname "/")
+		(sheetfile "ESP-DubSiren.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
 			(start -9.525 -1.905)
@@ -4201,6 +4671,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "/BTN1")
+			(pinfunction "A_1")
+			(pintype "passive")
 			(uuid "2e6e4963-7a0e-4d1a-a59f-b210c4b20d06")
 		)
 		(pad "2" thru_hole circle
@@ -4210,6 +4682,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "GND")
+			(pinfunction "B_2")
+			(pintype "passive")
 			(uuid "68bd4377-cdf2-4c50-bbed-10533f5d4e97")
 		)
 		(embedded_fonts no)
@@ -4243,7 +4717,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "https://www.mouser.com/PCN/CHERRY_MX1A_11NW_EOL.pdf"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -4254,7 +4728,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Single Pole Single Throw (SPST) switch"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -4265,7 +4739,41 @@
 				)
 			)
 		)
+		(property "MPN" "MX2A-11NW"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "a1960f37-7da5-4274-9b74-1ef0ec189378")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "CHERRY"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "6b0dfe07-7575-4585-b4b8-bb8f71773144")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
 		(path "/046702f2-b6a1-4b24-902e-3316bbdd067c")
+		(sheetname "/")
+		(sheetfile "ESP-DubSiren.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
 			(start -9.525 -1.905)
@@ -4467,6 +4975,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "/BTN3")
+			(pinfunction "A_1")
+			(pintype "passive")
 			(uuid "7acf6644-0c7a-46ad-a984-6550d4a4229e")
 		)
 		(pad "2" thru_hole circle
@@ -4476,6 +4986,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "GND")
+			(pinfunction "B_2")
+			(pintype "passive")
 			(uuid "985fc2bf-56a9-4ab5-bebe-44314129b6c4")
 		)
 		(embedded_fonts no)
@@ -4620,7 +5132,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "test point"
 			(at 0 0 0)
 			(layer "B.Fab")
 			(hide yes)
@@ -4632,7 +5144,58 @@
 				(justify mirror)
 			)
 		)
+		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "bf987a4a-0dc5-479a-9ed6-66b195d31ffd")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "MPN" "PCB test pad"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "ff6661ca-2539-4514-b2bf-fd7eae13fb47")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "PCB"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "bad78e70-345c-45e0-854c-b0ac5e55f900")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property ki_fp_filters "Pin* Test*")
 		(path "/65339695-26bc-410e-89da-ec4679801a3a")
+		(sheetname "/")
+		(sheetfile "ESP-DubSiren.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1")
+			)
+		)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
 			(center 0 0)
@@ -4674,6 +5237,8 @@
 			(size 1 1)
 			(layers "B.Cu" "B.Mask")
 			(net "+3V3")
+			(pinfunction "1_1")
+			(pintype "passive")
 			(uuid "ab8e1e46-47f6-43e5-b2bc-1a326e771df9")
 		)
 		(embedded_fonts no)
@@ -4721,7 +5286,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Resistor"
 			(at 0 0 90)
 			(layer "B.Fab")
 			(hide yes)
@@ -4733,7 +5298,58 @@
 				(justify mirror)
 			)
 		)
+		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
+			(at 0 0 270)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "fbc6c9e5-7a6f-44f0-bd0d-0cefac039173")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "MPN" "RC0603JR-0722RL"
+			(at 0 0 270)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "d4277fa2-7774-4929-9483-db9108191766")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "Yageo"
+			(at 0 0 270)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "0c605291-2fe3-46ae-a1e1-43d6462b7326")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property ki_fp_filters "R_*")
 		(path "/148febbe-8577-4a49-b7aa-7d730d4812ff")
+		(sheetname "/")
+		(sheetfile "ESP-DubSiren.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
 			(start -0.237258 0.522501)
@@ -4796,6 +5412,7 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "/USB_DM_CONN")
+			(pintype "passive")
 			(uuid "e76bcd53-fa50-4f98-a5b6-b8fcaf1259a0")
 		)
 		(pad "2" smd roundrect
@@ -4804,6 +5421,7 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "/USB_DM_MCU")
+			(pintype "passive")
 			(uuid "87b13826-9618-4a1d-8187-3e839b1cb5cf")
 		)
 		(embedded_fonts no)
@@ -4851,7 +5469,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Resistor"
 			(at 0 0 0)
 			(layer "B.Fab")
 			(hide yes)
@@ -4863,7 +5481,58 @@
 				(justify mirror)
 			)
 		)
+		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "b3b37c67-a26b-4b71-9cd1-a8c8aedddab6")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "MPN" "RC0603FR-074K7L"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "12f39c42-8e00-4dfc-950e-8c6a5e5c4e79")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "Yageo"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "808fb8f3-97bf-46f9-8298-d12a36d2d13a")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property ki_fp_filters "R_*")
 		(path "/2a0adf5b-de4e-4650-bfb2-eba635b26ed4")
+		(sheetname "/")
+		(sheetfile "ESP-DubSiren.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
 			(start -0.237258 -0.5225)
@@ -4926,6 +5595,7 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "+3V3")
+			(pintype "passive")
 			(uuid "24ac84e0-4445-4739-aa04-904e078504a3")
 		)
 		(pad "2" smd roundrect
@@ -4934,6 +5604,7 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "/POT3_TOP")
+			(pintype "passive")
 			(uuid "6b2f1e1a-a16c-4a67-a3cd-fd530ac7a4c7")
 		)
 		(embedded_fonts no)
@@ -4981,7 +5652,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Unpolarized capacitor"
 			(at 0 0 0)
 			(layer "B.Fab")
 			(hide yes)
@@ -4993,7 +5664,58 @@
 				(justify mirror)
 			)
 		)
+		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "ede42a26-3cc6-479a-9a62-3615fef06772")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "MPN" "CL21A226MPCLRNC"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "fd56a0fd-e029-4e9c-a3f5-553dd9b6374e")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "Samsung"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "f97a056e-06db-40f1-8c71-8cffa12a5345")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property ki_fp_filters "C_*")
 		(path "/c9a20b30-f9b2-41c7-b2e6-3667108fe517")
+		(sheetname "/")
+		(sheetfile "ESP-DubSiren.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
 			(start -0.261252 0.735)
@@ -5056,6 +5778,7 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "+5V")
+			(pintype "passive")
 			(uuid "b31a679e-de6a-408e-b124-0f8f5491b554")
 		)
 		(pad "2" smd roundrect
@@ -5064,6 +5787,7 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "GND")
+			(pintype "passive")
 			(uuid "2333ef96-2339-4de0-bc14-9de74072a503")
 		)
 		(embedded_fonts no)
@@ -5111,7 +5835,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Resistor"
 			(at 0 0 0)
 			(layer "B.Fab")
 			(hide yes)
@@ -5123,7 +5847,58 @@
 				(justify mirror)
 			)
 		)
+		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "fdfbc5a0-e180-42f2-ab14-250df291587c")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "MPN" "RC0603FR-074K7L"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "35bf8741-7959-4965-ad48-1228e6a77c36")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "Yageo"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "81c71324-004a-440d-9db7-ba1ce77bbd48")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property ki_fp_filters "R_*")
 		(path "/9eb814be-2c44-4bd4-a612-21bf0787c4bc")
+		(sheetname "/")
+		(sheetfile "ESP-DubSiren.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
 			(start -0.237258 -0.5225)
@@ -5186,6 +5961,7 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "+3V3")
+			(pintype "passive")
 			(uuid "71777d2b-24af-4ddf-8c25-41d8473deb33")
 		)
 		(pad "2" smd roundrect
@@ -5194,6 +5970,7 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "/POT6_TOP")
+			(pintype "passive")
 			(uuid "e73f33d6-a724-4276-92ed-f1d9ceb8c8b0")
 		)
 		(embedded_fonts no)
@@ -5229,7 +6006,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "https://www.espressif.com/sites/default/files/documentation/esp32-s3-wroom-1_wroom-1u_datasheet_en.pdf"
 			(at 0 0 90)
 			(layer "B.Fab")
 			(hide yes)
@@ -5253,7 +6030,60 @@
 				(justify mirror)
 			)
 		)
+		(property "MPN" "ESP32-S3-WROOM-1U-N16R8"
+			(at 0 0 270)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "9963b10d-ebe6-4085-a029-839beade0208")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "Espressif"
+			(at 0 0 270)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "6c372a90-4fdf-47c0-8bce-b980706b5cfd")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
+			(at 0 0 270)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "5ea497b8-5cda-4f2a-a70e-3fdc4632c539")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
 		(path "/db108e7f-d969-486f-a109-ffaf00374473")
+		(sheetname "/")
+		(sheetfile "ESP-DubSiren.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "3" "27" "39" "38" "15" "4" "5" "6" "7" "12" "17" "18" "19" "20"
+					"21" "22" "8" "9" "1" "2" "40" "41" "37" "36" "10" "11" "13" "14" "23"
+					"28" "29" "30" "31" "32" "33" "34" "35" "26" "16" "24" "25"
+				)
+			)
+		)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
 			(start -8 9.8)
@@ -5358,6 +6188,8 @@
 			(size 1.5 0.9)
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(net "GND")
+			(pinfunction "GND_1")
+			(pintype "power_in")
 			(uuid "0787ab58-48e9-48b2-ae10-e7b9a804f51d")
 		)
 		(pad "2" smd rect
@@ -5365,6 +6197,8 @@
 			(size 1.5 0.9)
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(net "+3V3")
+			(pinfunction "3V3_2")
+			(pintype "power_in")
 			(uuid "81d50fd9-6647-4085-9233-93c64fdd84e4")
 		)
 		(pad "3" smd rect
@@ -5372,6 +6206,8 @@
 			(size 1.5 0.9)
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(net "/ESP_EN")
+			(pinfunction "EN_3")
+			(pintype "input")
 			(uuid "8af50532-64a2-423b-aae1-715a256c5b42")
 		)
 		(pad "4" smd rect
@@ -5379,6 +6215,8 @@
 			(size 1.5 0.9)
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(net "/ADC_MUX")
+			(pinfunction "IO4_4")
+			(pintype "bidirectional")
 			(uuid "25ffb46e-a148-47b3-83b9-5ab9a6136a77")
 		)
 		(pad "5" smd rect
@@ -5386,6 +6224,8 @@
 			(size 1.5 0.9)
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(net "/MUX_S0")
+			(pinfunction "IO5_5")
+			(pintype "bidirectional")
 			(uuid "c62a0918-1392-4990-bfc5-80985c0c7f7f")
 		)
 		(pad "6" smd rect
@@ -5393,6 +6233,8 @@
 			(size 1.5 0.9)
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(net "/MUX_S1")
+			(pinfunction "IO6_6")
+			(pintype "bidirectional")
 			(uuid "098850cf-b263-48ee-b15a-256907968e79")
 		)
 		(pad "7" smd rect
@@ -5400,6 +6242,8 @@
 			(size 1.5 0.9)
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(net "/TFT_RST")
+			(pinfunction "IO7_7")
+			(pintype "bidirectional")
 			(uuid "1f216aab-5818-49c2-9599-0a84afe31211")
 		)
 		(pad "8" smd rect
@@ -5407,6 +6251,8 @@
 			(size 1.5 0.9)
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(net "unconnected-(U1-IO15-Pad8)")
+			(pinfunction "IO15_8")
+			(pintype "bidirectional+no_connect")
 			(uuid "6c90c6ca-5c24-4a96-9acd-90174813b83d")
 		)
 		(pad "9" smd rect
@@ -5414,6 +6260,8 @@
 			(size 1.5 0.9)
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(net "/I2S_BCLK")
+			(pinfunction "IO16_9")
+			(pintype "bidirectional")
 			(uuid "968073fe-8ca0-43e4-b54a-3377df6d31af")
 		)
 		(pad "10" smd rect
@@ -5421,6 +6269,8 @@
 			(size 1.5 0.9)
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(net "/I2S_LRCK")
+			(pinfunction "IO17_10")
+			(pintype "bidirectional")
 			(uuid "0e1d2768-5047-4a89-8b2e-c35102ffd210")
 		)
 		(pad "11" smd rect
@@ -5428,6 +6278,8 @@
 			(size 1.5 0.9)
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(net "/I2S_DIN")
+			(pinfunction "IO18_11")
+			(pintype "bidirectional")
 			(uuid "4afc7303-e5ca-456a-9f3c-9bb05c12b4b2")
 		)
 		(pad "12" smd rect
@@ -5435,6 +6287,8 @@
 			(size 1.5 0.9)
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(net "/TFT_DC")
+			(pinfunction "IO8_12")
+			(pintype "bidirectional")
 			(uuid "79df9d05-a607-43a8-a010-51204cd72c67")
 		)
 		(pad "13" smd rect
@@ -5442,6 +6296,8 @@
 			(size 1.5 0.9)
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(net "/USB_DM_MCU")
+			(pinfunction "USB_D-_13")
+			(pintype "bidirectional")
 			(uuid "abd48d41-7f60-4062-b8ee-422bcb7dbe8f")
 		)
 		(pad "14" smd rect
@@ -5449,6 +6305,8 @@
 			(size 1.5 0.9)
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(net "/USB_DP_MCU")
+			(pinfunction "USB_D+_14")
+			(pintype "bidirectional")
 			(uuid "7d5bb3f8-cf1b-4bb4-ad6b-9855ae02aeca")
 		)
 		(pad "15" smd rect
@@ -5456,6 +6314,8 @@
 			(size 1.5 0.9)
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(net "unconnected-(U1-IO3-Pad15)")
+			(pinfunction "IO3_15")
+			(pintype "bidirectional+no_connect")
 			(uuid "771423c9-3df7-45a6-a9dd-0538dfa981b6")
 		)
 		(pad "16" smd rect
@@ -5463,6 +6323,8 @@
 			(size 1.5 0.9)
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(net "unconnected-(U1-IO46-Pad16)")
+			(pinfunction "IO46_16")
+			(pintype "bidirectional+no_connect")
 			(uuid "247d0fc5-fae2-4e8f-a5b6-6bbf37062954")
 		)
 		(pad "17" smd rect
@@ -5470,6 +6332,8 @@
 			(size 1.5 0.9)
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(net "/TFT_CS")
+			(pinfunction "IO9_17")
+			(pintype "bidirectional")
 			(uuid "3481a8f2-610b-4ce4-b078-a4599f354794")
 		)
 		(pad "18" smd rect
@@ -5477,6 +6341,8 @@
 			(size 1.5 0.9)
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(net "/MUX_S2")
+			(pinfunction "IO10_18")
+			(pintype "bidirectional")
 			(uuid "89029bcd-b782-4667-a965-6baaf18e54b8")
 		)
 		(pad "19" smd rect
@@ -5484,6 +6350,8 @@
 			(size 1.5 0.9)
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(net "/SPI_MOSI")
+			(pinfunction "IO11_19")
+			(pintype "bidirectional")
 			(uuid "6ab62dad-af8a-4f9b-be29-0ccbae8096d6")
 		)
 		(pad "20" smd rect
@@ -5491,6 +6359,8 @@
 			(size 1.5 0.9)
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(net "/SPI_SCK")
+			(pinfunction "IO12_20")
+			(pintype "bidirectional")
 			(uuid "598a0f95-fae5-4f37-95da-0b9ed1358f57")
 		)
 		(pad "21" smd rect
@@ -5498,6 +6368,8 @@
 			(size 1.5 0.9)
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(net "unconnected-(U1-IO13-Pad21)")
+			(pinfunction "IO13_21")
+			(pintype "bidirectional+no_connect")
 			(uuid "062eedfd-153c-47ed-9f1c-5d66d9b1b248")
 		)
 		(pad "22" smd rect
@@ -5505,6 +6377,8 @@
 			(size 1.5 0.9)
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(net "/TFT_LITE")
+			(pinfunction "IO14_22")
+			(pintype "bidirectional")
 			(uuid "f4d02862-c91e-4f33-b23c-09b2884482de")
 		)
 		(pad "23" smd rect
@@ -5512,6 +6386,8 @@
 			(size 1.5 0.9)
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(net "unconnected-(U1-IO21-Pad23)")
+			(pinfunction "IO21_23")
+			(pintype "bidirectional+no_connect")
 			(uuid "4acc3347-4f93-4f71-bc51-a991793778dd")
 		)
 		(pad "24" smd rect
@@ -5519,6 +6395,8 @@
 			(size 1.5 0.9)
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(net "unconnected-(U1-IO47-Pad24)")
+			(pinfunction "IO47_24")
+			(pintype "bidirectional+no_connect")
 			(uuid "0184872e-d7ae-4f30-b938-d7a4e66eefc8")
 		)
 		(pad "25" smd rect
@@ -5526,6 +6404,8 @@
 			(size 1.5 0.9)
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(net "unconnected-(U1-IO48-Pad25)")
+			(pinfunction "IO48_25")
+			(pintype "bidirectional+no_connect")
 			(uuid "d1b4187b-0462-4464-bf36-1af81449a493")
 		)
 		(pad "26" smd rect
@@ -5533,6 +6413,8 @@
 			(size 1.5 0.9)
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(net "unconnected-(U1-IO45-Pad26)")
+			(pinfunction "IO45_26")
+			(pintype "bidirectional+no_connect")
 			(uuid "1c402f10-c880-4b91-8c18-b31dcee794b9")
 		)
 		(pad "27" smd rect
@@ -5540,6 +6422,8 @@
 			(size 1.5 0.9)
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(net "/BOOT")
+			(pinfunction "IO0_27")
+			(pintype "bidirectional")
 			(uuid "c6be9a87-6332-4cb2-97a5-0f26aec70956")
 		)
 		(pad "28" smd rect
@@ -5547,6 +6431,8 @@
 			(size 1.5 0.9)
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(net "unconnected-(U1-RESERVED_IO35-Pad28)")
+			(pinfunction "RESERVED_IO35_28")
+			(pintype "no_connect")
 			(uuid "5cfa554b-83db-491f-9f4e-0d5f52150755")
 		)
 		(pad "29" smd rect
@@ -5554,6 +6440,8 @@
 			(size 1.5 0.9)
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(net "unconnected-(U1-RESERVED_IO36-Pad29)")
+			(pinfunction "RESERVED_IO36_29")
+			(pintype "no_connect")
 			(uuid "4d5ee469-0fe9-4fd1-8553-9414c6fb471a")
 		)
 		(pad "30" smd rect
@@ -5561,6 +6449,8 @@
 			(size 1.5 0.9)
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(net "unconnected-(U1-RESERVED_IO37-Pad30)")
+			(pinfunction "RESERVED_IO37_30")
+			(pintype "no_connect")
 			(uuid "687c02b5-a8a3-4547-a5ea-cdf17d1a50f3")
 		)
 		(pad "31" smd rect
@@ -5568,6 +6458,8 @@
 			(size 1.5 0.9)
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(net "/BTN1")
+			(pinfunction "IO38_31")
+			(pintype "bidirectional")
 			(uuid "bcaeeb86-b52f-441a-943b-d4c047c5d24f")
 		)
 		(pad "32" smd rect
@@ -5575,6 +6467,8 @@
 			(size 1.5 0.9)
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(net "/BTN2")
+			(pinfunction "IO39_32")
+			(pintype "bidirectional")
 			(uuid "56c2bdcb-a5a7-419e-bc86-1b165567f27d")
 		)
 		(pad "33" smd rect
@@ -5582,6 +6476,8 @@
 			(size 1.5 0.9)
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(net "/BTN3")
+			(pinfunction "IO40_33")
+			(pintype "bidirectional")
 			(uuid "b0ade221-348b-4cc5-ac47-dc71276aa173")
 		)
 		(pad "34" smd rect
@@ -5589,6 +6485,8 @@
 			(size 1.5 0.9)
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(net "/BTN4")
+			(pinfunction "IO41_34")
+			(pintype "bidirectional")
 			(uuid "d67ecf97-cfaa-4c1d-b6bc-42551bd985d4")
 		)
 		(pad "35" smd rect
@@ -5596,6 +6494,8 @@
 			(size 1.5 0.9)
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(net "/ENC_SW")
+			(pinfunction "IO42_35")
+			(pintype "bidirectional")
 			(uuid "cf80c19b-77f8-4f30-8125-25ec07fc4903")
 		)
 		(pad "36" smd rect
@@ -5603,6 +6503,8 @@
 			(size 1.5 0.9)
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(net "/UART_RX")
+			(pinfunction "RXD0_36")
+			(pintype "bidirectional")
 			(uuid "b8c8dabe-ec34-4047-aa51-1145a4a683c0")
 		)
 		(pad "37" smd rect
@@ -5610,6 +6512,8 @@
 			(size 1.5 0.9)
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(net "/UART_TX")
+			(pinfunction "TXD0_37")
+			(pintype "bidirectional")
 			(uuid "89e78b81-91e1-40cd-aa61-3ffaed16a45d")
 		)
 		(pad "38" smd rect
@@ -5617,6 +6521,8 @@
 			(size 1.5 0.9)
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(net "/ENC_B")
+			(pinfunction "IO2_38")
+			(pintype "bidirectional")
 			(uuid "f5de34de-9e37-423e-90ca-a7f10ada6a6c")
 		)
 		(pad "39" smd rect
@@ -5624,6 +6530,8 @@
 			(size 1.5 0.9)
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(net "/ENC_A")
+			(pinfunction "IO1_39")
+			(pintype "bidirectional")
 			(uuid "db06e88f-d089-494e-b208-565f70db928b")
 		)
 		(pad "40" smd rect
@@ -5631,6 +6539,8 @@
 			(size 1.5 0.9)
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(net "GND")
+			(pinfunction "GND_40")
+			(pintype "passive")
 			(uuid "b0f90504-1189-4632-aa13-26ffb8a631c0")
 		)
 		(pad "41" smd rect
@@ -5638,6 +6548,8 @@
 			(size 3.7 3.7)
 			(layers "B.Cu" "B.Mask")
 			(net "GND")
+			(pinfunction "GND_41")
+			(pintype "passive")
 			(uuid "b4587f01-8357-4f56-b11e-c157e9594800")
 		)
 		(embedded_fonts no)
@@ -5685,7 +6597,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Resistor"
 			(at 0 0 0)
 			(layer "B.Fab")
 			(hide yes)
@@ -5697,7 +6609,58 @@
 				(justify mirror)
 			)
 		)
+		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "c91b0e9d-bee4-45ba-89bc-e111c0bc4809")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "MPN" "NRC06J100TRF"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "44db49ab-f860-4056-a2f1-da6cbad0edfa")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "NIC"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "a31b92c2-31ad-4cec-913b-4cf3f5359998")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property ki_fp_filters "R_*")
 		(path "/324f224d-e104-4827-92d6-1fc0d19322ed")
+		(sheetname "/")
+		(sheetfile "ESP-DubSiren.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
 			(start -0.237258 -0.5225)
@@ -5760,6 +6723,7 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "+3V3")
+			(pintype "passive")
 			(uuid "0b2cc3b6-5f20-41df-8f82-a5562f01919d")
 		)
 		(pad "2" smd roundrect
@@ -5768,6 +6732,7 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "/VOUT_S")
+			(pintype "passive")
 			(uuid "bd3ec819-a842-45cf-9952-1ef60a45a2e2")
 		)
 		(embedded_fonts no)
@@ -5815,7 +6780,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Resistor"
 			(at 0 0 0)
 			(layer "B.Fab")
 			(hide yes)
@@ -5827,7 +6792,58 @@
 				(justify mirror)
 			)
 		)
+		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "7e24bb48-82bf-4a89-8f25-bda7718b9f14")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "MPN" "AC0603FR-075K1L"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "3a7c056e-f614-4a4c-8b41-a1b57661b3ca")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "Yageo"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "760a28d6-9a73-4e56-8725-06dcc0166c80")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property ki_fp_filters "R_*")
 		(path "/ce96e7cd-1c45-4f62-9d9e-6b176fad920e")
+		(sheetname "/")
+		(sheetfile "ESP-DubSiren.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
 			(start -0.237258 -0.5225)
@@ -5890,6 +6906,7 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "/USB_CC2")
+			(pintype "passive")
 			(uuid "7ff30973-736f-4a72-9356-e95eebc154fb")
 		)
 		(pad "2" smd roundrect
@@ -5898,6 +6915,7 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "GND")
+			(pintype "passive")
 			(uuid "418bf861-9805-49ae-ab2a-16bd1dd4eb44")
 		)
 		(embedded_fonts no)
@@ -5933,7 +6951,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "https://toshiba.semicon-storage.com/us/semiconductor/product/general-purpose-logic-ics/detail.74HC4051D.html"
 			(at 0 0 0)
 			(layer "B.Fab")
 			(hide yes)
@@ -5945,7 +6963,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "8-channel analog multiplexer/demultiplexer, DIP-16/SOIC-16/TSSOP-16"
 			(at 0 0 0)
 			(layer "B.Fab")
 			(hide yes)
@@ -5957,7 +6975,60 @@
 				(justify mirror)
 			)
 		)
+		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "2ed6f540-a2ac-4d4d-8d2c-dbbd559b040e")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "MPN" "74HC4051D"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "8f30d006-8c61-4b99-a61e-b6d06dd45ec1")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "Toshiba"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "5824b305-5d8a-4966-af7c-2d59a90802c4")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property ki_fp_filters "DIP*W7.62mm* SOIC*3.9x9.9mm*P1.27mm* SOIC*5.3x10.2mm*P1.27mm* TSSOP*4.4x5mm*P0.65mm*")
 		(path "/f03751d9-9a2f-4097-a114-7f59578447c1")
+		(sheetname "/")
+		(sheetfile "ESP-DubSiren.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "3" "11" "10" "9" "6" "16" "8" "7" "13" "14" "15" "12" "1" "5"
+					"2" "4"
+				)
+			)
+		)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
 			(start -2.060001 -5.06)
@@ -6182,6 +7253,8 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "/POT5")
+			(pinfunction "A4_1")
+			(pintype "passive")
 			(uuid "0acc4d86-3532-4c87-93e2-eda8652b64a5")
 		)
 		(pad "2" smd roundrect
@@ -6190,6 +7263,8 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "/MASTER")
+			(pinfunction "A6_2")
+			(pintype "passive")
 			(uuid "40f3c1b0-e84c-4852-9a1a-ea283d5b01aa")
 		)
 		(pad "3" smd roundrect
@@ -6198,6 +7273,8 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "/ADC_MUX")
+			(pinfunction "A_3")
+			(pintype "passive")
 			(uuid "3f707843-2b01-4a4d-8e9c-c24c62290c11")
 		)
 		(pad "4" smd roundrect
@@ -6206,6 +7283,8 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "GND")
+			(pinfunction "A7_4")
+			(pintype "passive")
 			(uuid "6b30e26e-50fb-4564-bd9c-0cefbf40a22d")
 		)
 		(pad "5" smd roundrect
@@ -6214,6 +7293,8 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "/POT6")
+			(pinfunction "A5_5")
+			(pintype "passive")
 			(uuid "f56cb776-7faf-4230-9752-58dbf16db629")
 		)
 		(pad "6" smd roundrect
@@ -6222,6 +7303,8 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "GND")
+			(pinfunction "~{E}_6")
+			(pintype "input")
 			(uuid "8a0c0b52-e030-4457-be8a-028f5c844bfa")
 		)
 		(pad "7" smd roundrect
@@ -6230,6 +7313,8 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "GND")
+			(pinfunction "VEE_7")
+			(pintype "power_in")
 			(uuid "b772efc2-d13f-4da4-9e2d-a19e41ea134e")
 		)
 		(pad "8" smd roundrect
@@ -6238,6 +7323,8 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "GND")
+			(pinfunction "GND_8")
+			(pintype "power_in")
 			(uuid "3825a035-8c5a-4fa5-80b9-73c989e0ca82")
 		)
 		(pad "9" smd roundrect
@@ -6246,6 +7333,8 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "/MUX_S2")
+			(pinfunction "S2_9")
+			(pintype "input")
 			(uuid "5c12c218-743e-4724-bf3e-01d83927de7d")
 		)
 		(pad "10" smd roundrect
@@ -6254,6 +7343,8 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "/MUX_S1")
+			(pinfunction "S1_10")
+			(pintype "input")
 			(uuid "e7977d1d-969d-4a10-bd10-80c622cb8815")
 		)
 		(pad "11" smd roundrect
@@ -6262,6 +7353,8 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "/MUX_S0")
+			(pinfunction "S0_11")
+			(pintype "input")
 			(uuid "8cd61e8e-75f9-4d88-a320-a09b7eb47806")
 		)
 		(pad "12" smd roundrect
@@ -6270,6 +7363,8 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "/POT4")
+			(pinfunction "A3_12")
+			(pintype "passive")
 			(uuid "1f2d4d6a-3ae5-4612-8bcb-10b269c32391")
 		)
 		(pad "13" smd roundrect
@@ -6278,6 +7373,8 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "/POT1")
+			(pinfunction "A0_13")
+			(pintype "passive")
 			(uuid "cd1ebcb5-baa9-44f0-ae3a-d05bce9bbed2")
 		)
 		(pad "14" smd roundrect
@@ -6286,6 +7383,8 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "/POT2")
+			(pinfunction "A1_14")
+			(pintype "passive")
 			(uuid "91e79efe-75aa-4531-a5f0-df79a02ae5c6")
 		)
 		(pad "15" smd roundrect
@@ -6294,6 +7393,8 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "/POT3")
+			(pinfunction "A2_15")
+			(pintype "passive")
 			(uuid "f30ece1d-1b20-4e38-9153-a271e622b053")
 		)
 		(pad "16" smd roundrect
@@ -6302,6 +7403,8 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "+3V3")
+			(pinfunction "VCC_16")
+			(pintype "power_in")
 			(uuid "7cd03ba7-3ad4-4e8a-b902-ab7e5b2d0c0d")
 		)
 		(embedded_fonts no)
@@ -6337,7 +7440,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "https://www.panjit.com.cn/upload/datasheet/SMF5.0A_SERIES.pdf"
 			(at 0 0 0)
 			(layer "B.Fab")
 			(hide yes)
@@ -6349,7 +7452,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Zener diode"
 			(at 0 0 0)
 			(layer "B.Fab")
 			(hide yes)
@@ -6361,7 +7464,58 @@
 				(justify mirror)
 			)
 		)
+		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "bf1e795a-c51b-44ed-85b6-3ccd664d8ab1")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "MPN" "SMF5.0A_R1_00001"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "d4f3623e-8eec-40be-898f-8406d67e2e67")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "PANJIT"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "e6c1c802-d2fe-494b-8d02-0ca422cdd990")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property ki_fp_filters "TO-???* *_Diode_* *SingleDiode* D_*")
 		(path "/619dff73-dc76-419c-9114-e555647eef01")
+		(sheetname "/")
+		(sheetfile "ESP-DubSiren.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
 			(start -2.21 -1)
@@ -6562,6 +7716,8 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.2272727273)
 			(net "/VBUS_PROTECTED")
+			(pinfunction "K_1")
+			(pintype "passive")
 			(uuid "fd8215ae-5fed-4b70-8d86-61df8f196ec9")
 		)
 		(pad "2" smd roundrect
@@ -6570,6 +7726,8 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.2272727273)
 			(net "GND")
+			(pinfunction "A_2")
+			(pintype "passive")
 			(uuid "dedfc3a5-ede2-45fb-9fc1-b15984f10594")
 		)
 		(embedded_fonts no)
@@ -6617,7 +7775,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "test point"
 			(at 0 0 0)
 			(layer "B.Fab")
 			(hide yes)
@@ -6629,7 +7787,58 @@
 				(justify mirror)
 			)
 		)
+		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "44d634e2-413b-4960-a465-58c0085734bd")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "MPN" "PCB test pad"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "0c6c3ee4-231c-43e1-8aa3-45aae8e13de7")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "PCB"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "b45adc7b-9acf-4fc6-b221-80049cc37672")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property ki_fp_filters "Pin* Test*")
 		(path "/2cf02d1d-9a02-4651-a3b1-6ecc52405324")
+		(sheetname "/")
+		(sheetfile "ESP-DubSiren.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1")
+			)
+		)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
 			(center 0 0)
@@ -6671,6 +7880,8 @@
 			(size 1 1)
 			(layers "B.Cu" "B.Mask")
 			(net "/AUDIO_MONO")
+			(pinfunction "1_1")
+			(pintype "passive")
 			(uuid "14411dc2-2973-4f7c-9241-305af43f4db5")
 		)
 		(embedded_fonts no)
@@ -6718,7 +7929,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Resistor"
 			(at 0 0 0)
 			(layer "B.Fab")
 			(hide yes)
@@ -6730,7 +7941,58 @@
 				(justify mirror)
 			)
 		)
+		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "24ef5a70-752c-4e34-a129-c2c3f623c249")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "MPN" "RC0603FR-074K7L"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "165d13bd-f5f0-48e2-84bb-797dceddd5d8")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "Yageo"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "ec926929-5f0a-48a5-aaa2-536817f6149e")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property ki_fp_filters "R_*")
 		(path "/60739ebc-79c2-46fd-a72d-707e33c25261")
+		(sheetname "/")
+		(sheetfile "ESP-DubSiren.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
 			(start -0.237258 -0.5225)
@@ -6793,6 +8055,7 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "+3V3")
+			(pintype "passive")
 			(uuid "288b8318-1fb3-41f9-98c7-6c9998c279db")
 		)
 		(pad "2" smd roundrect
@@ -6801,6 +8064,7 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "/POT1_TOP")
+			(pintype "passive")
 			(uuid "317b6c7d-b2ee-4dde-a415-fed99c4ca7a9")
 		)
 		(embedded_fonts no)
@@ -6848,7 +8112,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "test point"
 			(at 0 0 0)
 			(layer "B.Fab")
 			(hide yes)
@@ -6860,7 +8124,58 @@
 				(justify mirror)
 			)
 		)
+		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "35e92d8b-d4f8-40c4-976c-73f5e810306d")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "MPN" "PCB test pad"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "4dd7229c-dc57-4f6a-b159-c5638b050115")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "PCB"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "fd3fa67d-9d03-421c-9937-04c5eaff566d")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property ki_fp_filters "Pin* Test*")
 		(path "/55892c47-af5f-4c16-ac95-d5085aeb3cca")
+		(sheetname "/")
+		(sheetfile "ESP-DubSiren.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1")
+			)
+		)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
 			(center 0 0)
@@ -6902,6 +8217,8 @@
 			(size 1 1)
 			(layers "B.Cu" "B.Mask")
 			(net "/UART_RX")
+			(pinfunction "1_1")
+			(pintype "passive")
 			(uuid "317e3712-a1c2-44aa-a333-5c49770e96f5")
 		)
 		(embedded_fonts no)
@@ -6949,7 +8266,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Resistor"
 			(at 0 0 90)
 			(layer "B.Fab")
 			(hide yes)
@@ -6961,7 +8278,58 @@
 				(justify mirror)
 			)
 		)
+		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "655a6388-d918-46e9-8a48-c9b556761b35")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "MPN" "RC0603JR-0710KL"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "01a307d3-0633-408b-94fc-dc5461ee1bf5")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "Yageo"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "94aeeb37-96d3-4824-bf58-a2973683a39b")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property ki_fp_filters "R_*")
 		(path "/7aa84155-3d96-4ade-a6ac-2665162c873b")
+		(sheetname "/")
+		(sheetfile "ESP-DubSiren.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
 			(start -0.237258 -0.5225)
@@ -7024,6 +8392,7 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "+3V3")
+			(pintype "passive")
 			(uuid "a947843d-5459-4028-8877-cfb628080570")
 		)
 		(pad "2" smd roundrect
@@ -7032,6 +8401,7 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "/ENC_B")
+			(pintype "passive")
 			(uuid "37a7a9dc-4ec4-40ca-a24b-b813c0927266")
 		)
 		(embedded_fonts no)
@@ -7067,7 +8437,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "https://www.ckswitches.com/media/2779/pts636.pdf"
 			(at 0 0 90)
 			(layer "B.Fab")
 			(hide yes)
@@ -7079,7 +8449,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Push button switch, generic, two pins"
 			(at 0 0 90)
 			(layer "B.Fab")
 			(hide yes)
@@ -7091,7 +8461,57 @@
 				(justify mirror)
 			)
 		)
+		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "31bc4051-3649-498d-a1a7-8cc18d7d314d")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "MPN" "PTS636SM43SMTR LFS"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "d0783d91-4557-4f6e-971a-890c34925136")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "C&K/Littelfuse"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "ffe050b3-7652-41a6-a348-d0399bc72e36")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
 		(path "/bf67916a-f1a8-4723-85f4-52aa0240028b")
+		(sheetname "/")
+		(sheetfile "ESP-DubSiren.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
 			(start -3.12 -1.87)
@@ -7141,6 +8561,8 @@
 			(size 2 1.5)
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(net "/BOOT")
+			(pinfunction "1_1")
+			(pintype "passive")
 			(uuid "b59ead9f-b261-4329-8607-17536a9931b8")
 		)
 		(pad "2" smd rect
@@ -7148,6 +8570,8 @@
 			(size 2 1.5)
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(net "GND")
+			(pinfunction "2_2")
+			(pintype "passive")
 			(uuid "6a4cb60a-a6ea-42f4-ac77-7c7899ff9543")
 		)
 		(embedded_fonts no)
@@ -7183,7 +8607,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "https://az.y-ic.com/datasheet/e9/USB4085-GF-A.pdf"
 			(at 0 0 0)
 			(layer "B.Fab")
 			(hide yes)
@@ -7195,7 +8619,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "USB 2.0-only 16P Type-C Receptacle connector"
 			(at 0 0 0)
 			(layer "B.Fab")
 			(hide yes)
@@ -7207,7 +8631,60 @@
 				(justify mirror)
 			)
 		)
+		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "de351b93-71f8-428b-97f1-5ab72c6a4113")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "MPN" "USB4085-GF-A"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "f0182447-4798-428f-8acf-b621084f07a2")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "GCT"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "2193b74d-8cfb-4796-b12e-6a72abfe0630")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property ki_fp_filters "USB*C*Receptacle*")
 		(path "/295ca065-6f6a-47c1-840d-982c05701a2b")
+		(sheetname "/")
+		(sheetfile "ESP-DubSiren.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "SH" "A1" "A12" "B1" "B12" "A4" "A9" "B4" "B9" "A5" "B5" "A7" "B7"
+					"A6" "B6" "A8" "B8"
+				)
+			)
+		)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
 			(start -1.62 -8.73)
@@ -7379,6 +8856,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "GND")
+			(pinfunction "GND_A1")
+			(pintype "passive")
 			(uuid "ed328a9e-4340-4705-9c5a-7e4da19647e9")
 		)
 		(pad "A4" thru_hole circle
@@ -7388,6 +8867,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "/VBUS_RAW")
+			(pinfunction "VBUS_A4")
+			(pintype "passive")
 			(uuid "ea312f1f-e944-4d5f-a41f-54b6a1bb3e13")
 		)
 		(pad "A5" thru_hole circle
@@ -7397,6 +8878,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "/USB_CC1")
+			(pinfunction "CC1_A5")
+			(pintype "bidirectional")
 			(uuid "fab8461e-2bc5-44b9-9a97-6065c1808563")
 		)
 		(pad "A6" thru_hole circle
@@ -7406,6 +8889,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "/USB_DP_CONN")
+			(pinfunction "D+_A6")
+			(pintype "bidirectional")
 			(uuid "4f19d69f-0b8d-4a69-8b8c-1555b3e99af1")
 		)
 		(pad "A7" thru_hole circle
@@ -7415,6 +8900,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "/USB_DM_CONN")
+			(pinfunction "D-_A7")
+			(pintype "bidirectional")
 			(uuid "b797ac65-f0ec-413a-90b5-53ba05c9cae7")
 		)
 		(pad "A8" thru_hole circle
@@ -7424,6 +8911,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "unconnected-(J1-SBU1-PadA8)")
+			(pinfunction "SBU1_A8")
+			(pintype "bidirectional+no_connect")
 			(uuid "357b9749-8573-4869-8ac3-206dda60efc0")
 		)
 		(pad "A9" thru_hole circle
@@ -7433,6 +8922,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "/VBUS_RAW")
+			(pinfunction "VBUS_A9")
+			(pintype "passive")
 			(uuid "5d7b5182-605a-44ec-959b-6a276b127966")
 		)
 		(pad "A12" thru_hole circle
@@ -7442,6 +8933,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "GND")
+			(pinfunction "GND_A12")
+			(pintype "passive")
 			(uuid "f05b415b-6ae7-4875-8c5a-21517ee36601")
 		)
 		(pad "B1" thru_hole circle
@@ -7451,6 +8944,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "GND")
+			(pinfunction "GND_B1")
+			(pintype "passive")
 			(uuid "0e632a02-3e11-4a20-8d29-6c2c5714dcf1")
 		)
 		(pad "B4" thru_hole circle
@@ -7460,6 +8955,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "/VBUS_RAW")
+			(pinfunction "VBUS_B4")
+			(pintype "passive")
 			(uuid "032dcf1b-bb02-4157-97d2-8d1367f8e2e8")
 		)
 		(pad "B5" thru_hole circle
@@ -7469,6 +8966,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "/USB_CC2")
+			(pinfunction "CC2_B5")
+			(pintype "bidirectional")
 			(uuid "c5837afd-4878-40cb-9d64-1ff3bd39b0f2")
 		)
 		(pad "B6" thru_hole circle
@@ -7478,6 +8977,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "/USB_DP_CONN")
+			(pinfunction "D+_B6")
+			(pintype "bidirectional")
 			(uuid "44c9ac70-71c8-4edd-b17c-ffe1931077a8")
 		)
 		(pad "B7" thru_hole circle
@@ -7487,6 +8988,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "/USB_DM_CONN")
+			(pinfunction "D-_B7")
+			(pintype "bidirectional")
 			(uuid "d59f9374-7da0-48de-98fd-fec008a83b01")
 		)
 		(pad "B8" thru_hole circle
@@ -7496,6 +8999,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "unconnected-(J1-SBU2-PadB8)")
+			(pinfunction "SBU2_B8")
+			(pintype "bidirectional+no_connect")
 			(uuid "cbfc4619-2ed8-49f7-8c34-fbfe05fb1b13")
 		)
 		(pad "B9" thru_hole circle
@@ -7505,6 +9010,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "/VBUS_RAW")
+			(pinfunction "VBUS_B9")
+			(pintype "passive")
 			(uuid "03cd5090-e2dc-4a34-851d-05af4d0f3de0")
 		)
 		(pad "B12" thru_hole circle
@@ -7514,6 +9021,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "GND")
+			(pinfunction "GND_B12")
+			(pintype "passive")
 			(uuid "b8cf51b3-137b-42ce-aa2e-0d084a1347b5")
 		)
 		(pad "SH" thru_hole oval
@@ -7523,6 +9032,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "GND")
+			(pinfunction "SHIELD_SH")
+			(pintype "passive")
 			(uuid "66ac512d-2ca7-4556-a6b4-f918b102b997")
 		)
 		(pad "SH" thru_hole oval
@@ -7532,6 +9043,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "GND")
+			(pinfunction "SHIELD_SH")
+			(pintype "passive")
 			(uuid "8148a733-9bcd-4048-b40d-0475d6aec180")
 		)
 		(pad "SH" thru_hole oval
@@ -7541,6 +9054,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "GND")
+			(pinfunction "SHIELD_SH")
+			(pintype "passive")
 			(uuid "715b0d00-0b6a-461e-8ac8-da4a4855f44c")
 		)
 		(pad "SH" thru_hole oval
@@ -7550,6 +9065,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "GND")
+			(pinfunction "SHIELD_SH")
+			(pintype "passive")
 			(uuid "f8b9f420-ca21-4417-a655-696156497cc4")
 		)
 		(embedded_fonts no)
@@ -7597,7 +9114,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "test point"
 			(at 0 0 0)
 			(layer "B.Fab")
 			(hide yes)
@@ -7609,7 +9126,58 @@
 				(justify mirror)
 			)
 		)
+		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "65189de7-081f-4502-8634-64cad25acce0")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "MPN" "PCB test pad"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "7bfc1ccb-acb0-4b85-817d-4ad09318a5a2")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "PCB"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "920bd57c-f926-4bc6-a97c-f30881d3f709")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property ki_fp_filters "Pin* Test*")
 		(path "/967955b2-0f6a-49f6-9f00-8eeb37527f35")
+		(sheetname "/")
+		(sheetfile "ESP-DubSiren.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1")
+			)
+		)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
 			(center 0 0)
@@ -7651,6 +9219,8 @@
 			(size 1 1)
 			(layers "B.Cu" "B.Mask")
 			(net "/UART_TX")
+			(pinfunction "1_1")
+			(pintype "passive")
 			(uuid "0e44d1b5-7fbc-424a-b02c-006b84d9c5df")
 		)
 		(embedded_fonts no)
@@ -7698,7 +9268,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "test point"
 			(at 0 0 0)
 			(layer "B.Fab")
 			(hide yes)
@@ -7710,7 +9280,58 @@
 				(justify mirror)
 			)
 		)
+		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "9b523a16-21d5-4ea1-ac3a-938ac72b5c7d")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "MPN" "PCB test pad"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "6de06840-af70-4b6e-84c1-c03286319d7c")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "PCB"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "6f9f4048-8d3c-4239-a065-7fde463cd4bf")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property ki_fp_filters "Pin* Test*")
 		(path "/338042f8-7bbd-4b97-9e9c-e99c32c07bd8")
+		(sheetname "/")
+		(sheetfile "ESP-DubSiren.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1")
+			)
+		)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
 			(center 0 0)
@@ -7752,6 +9373,8 @@
 			(size 1 1)
 			(layers "B.Cu" "B.Mask")
 			(net "GND")
+			(pinfunction "1_1")
+			(pintype "passive")
 			(uuid "ca0fab12-66cd-49e6-9d60-0cf2c631c28a")
 		)
 		(embedded_fonts no)
@@ -7799,7 +9422,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Unpolarized capacitor"
 			(at 0 0 90)
 			(layer "B.Fab")
 			(hide yes)
@@ -7811,7 +9434,58 @@
 				(justify mirror)
 			)
 		)
+		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "63584cd0-8d9e-4b3b-bb6c-c0583a5c061b")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "MPN" "CL10B105MO8NNWC"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "48ae8751-70de-48c2-b83f-b2fec16b75be")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "Samsung"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "c63fe904-706d-456b-b306-457dd8522508")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property ki_fp_filters "C_*")
 		(path "/1c754a9f-926c-4b42-9adf-b788b79c959c")
+		(sheetname "/")
+		(sheetfile "ESP-DubSiren.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
 			(start -0.14058 -0.51)
@@ -7874,6 +9548,7 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "/ESP_EN")
+			(pintype "passive")
 			(uuid "4269d44c-3484-4261-a4c6-ee5692bfe319")
 		)
 		(pad "2" smd roundrect
@@ -7882,6 +9557,7 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "GND")
+			(pintype "passive")
 			(uuid "ced6f33d-6a31-46bd-ae60-e07717acf027")
 		)
 		(embedded_fonts no)
@@ -7929,7 +9605,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Resistor"
 			(at 0 0 90)
 			(layer "B.Fab")
 			(hide yes)
@@ -7941,7 +9617,58 @@
 				(justify mirror)
 			)
 		)
+		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "07cbcd02-c925-48c8-9382-884883fd7f70")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "MPN" "RC0603JR-0710KL"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "6e233e9a-3301-45e8-ad81-1d2837b7705a")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "Yageo"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "2e2c4b83-50fe-478e-92b4-fcd2e38f8f78")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property ki_fp_filters "R_*")
 		(path "/6033d996-2ed4-4e8e-9f05-c0762cf2ed59")
+		(sheetname "/")
+		(sheetfile "ESP-DubSiren.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
 			(start -0.237258 -0.5225)
@@ -8004,6 +9731,7 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "+3V3")
+			(pintype "passive")
 			(uuid "96203259-fdee-494b-bb89-13c76f90e426")
 		)
 		(pad "2" smd roundrect
@@ -8012,6 +9740,7 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "/BTN3")
+			(pintype "passive")
 			(uuid "248b604a-bfdc-47a5-94a7-b54fa936b512")
 		)
 		(embedded_fonts no)
@@ -8059,7 +9788,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Unpolarized capacitor"
 			(at 0 0 90)
 			(layer "B.Fab")
 			(hide yes)
@@ -8071,7 +9800,58 @@
 				(justify mirror)
 			)
 		)
+		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "e7339741-7839-41d5-acff-223e15d071b1")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "MPN" "CL21A226MPCLRNC"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "dd0fddd6-daa5-4a50-aca4-388698c65f1e")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "Samsung"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "44741ec5-3274-4939-846d-575a1f12611a")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property ki_fp_filters "C_*")
 		(path "/d0eca9ee-a24f-4f63-ab1d-c116df83df86")
+		(sheetname "/")
+		(sheetfile "ESP-DubSiren.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
 			(start -0.261252 -0.735)
@@ -8134,6 +9914,7 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "+3V3")
+			(pintype "passive")
 			(uuid "625b4ff1-56c1-45df-be36-a09b24d9645e")
 		)
 		(pad "2" smd roundrect
@@ -8142,6 +9923,7 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "GND")
+			(pintype "passive")
 			(uuid "66c209fd-4c9a-4f98-a67d-349e8eb91510")
 		)
 		(embedded_fonts no)
@@ -8189,7 +9971,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Resistor"
 			(at 0 0 0)
 			(layer "B.Fab")
 			(hide yes)
@@ -8201,7 +9983,58 @@
 				(justify mirror)
 			)
 		)
+		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "fd91b5bd-44b4-4c59-acb8-87c83cb247ab")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "MPN" "RC0603FR-074K7L"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "8c796d29-383e-49bc-8991-276c5491e13b")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "Yageo"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "e02d1236-3e3c-460a-a9e3-40ccc4b7cc51")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property ki_fp_filters "R_*")
 		(path "/99b0918c-7063-4e59-b892-c447458f1ff8")
+		(sheetname "/")
+		(sheetfile "ESP-DubSiren.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
 			(start -0.237258 -0.5225)
@@ -8264,6 +10097,7 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "+3V3")
+			(pintype "passive")
 			(uuid "0cc0b616-a5c0-4390-92f1-0bff10c01e0a")
 		)
 		(pad "2" smd roundrect
@@ -8272,6 +10106,7 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "/POT2_TOP")
+			(pintype "passive")
 			(uuid "5d001c8c-2afe-4647-9e13-15d8e60b2943")
 		)
 		(embedded_fonts no)
@@ -8307,7 +10142,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "https://learn.adafruit.com/adafruit-pcm510x-i2s-dac?view=all"
 			(at 0 0 0)
 			(layer "B.Fab")
 			(hide yes)
@@ -8331,7 +10166,57 @@
 				(justify mirror)
 			)
 		)
+		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "2766de14-5291-43cf-a26f-0822eb1c6cdd")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "MPN" "6250"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "d0e1674e-82ef-4136-8fa6-6d2189f302d8")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "Adafruit"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "c4a09fb6-01ec-41dc-be89-b147343442ba")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
 		(path "/d632ff63-fe8c-428f-a61c-85277eb5b748")
+		(sheetname "/")
+		(sheetfile "ESP-DubSiren.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "3" "4" "5" "10" "11" "12" "13" "14" "1" "2" "7" "9" "6" "8")
+			)
+		)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
 			(start -15.24 -7.62)
@@ -8728,6 +10613,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "+5V")
+			(pinfunction "VIN_1")
+			(pintype "power_in")
 			(uuid "edd33ff2-d31b-4cc9-b6f1-4190e0f9de33")
 		)
 		(pad "2" thru_hole circle
@@ -8737,6 +10624,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "GND")
+			(pinfunction "AGND_2")
+			(pintype "power_in")
 			(uuid "3b08723b-30eb-4028-a4fb-eef3800b36f1")
 		)
 		(pad "3" thru_hole circle
@@ -8746,6 +10635,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "/I2S_LRCK")
+			(pinfunction "WSEL_3")
+			(pintype "input")
 			(uuid "b718aeb2-bfd2-420f-a8d8-216c3cc82401")
 		)
 		(pad "4" thru_hole circle
@@ -8755,6 +10646,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "/I2S_DIN")
+			(pinfunction "DIN_4")
+			(pintype "input")
 			(uuid "a8859f7f-e7b1-4067-bc72-a67964e41ee4")
 		)
 		(pad "5" thru_hole circle
@@ -8764,6 +10657,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "/I2S_BCLK")
+			(pinfunction "BCLK_5")
+			(pintype "input")
 			(uuid "06c2a157-3c5f-454e-95f3-4b678e3db20d")
 		)
 		(pad "6" thru_hole circle
@@ -8773,6 +10668,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "/AUDIO_MONO")
+			(pinfunction "OUTL_6")
+			(pintype "output")
 			(uuid "735d8734-05da-4528-85cc-88488da0db0c")
 		)
 		(pad "7" thru_hole circle
@@ -8782,6 +10679,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "GND")
+			(pinfunction "AGND_7")
+			(pintype "passive")
 			(uuid "a3a3bf81-2f90-4e7e-9901-ec671ddd6b1b")
 		)
 		(pad "8" thru_hole circle
@@ -8791,6 +10690,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "unconnected-(U6-OUTR-Pad8)")
+			(pinfunction "OUTR_8")
+			(pintype "output+no_connect")
 			(uuid "ba06e3ac-a91d-4d8f-a760-bd01465736fb")
 		)
 		(pad "9" thru_hole circle
@@ -8800,6 +10701,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "unconnected-(U6-3V3_OUT-Pad9)")
+			(pinfunction "3V3_OUT_9")
+			(pintype "power_out+no_connect")
 			(uuid "7fe3db55-5bc2-4b21-890f-cf74d560a24c")
 		)
 		(pad "10" thru_hole circle
@@ -8809,6 +10712,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "unconnected-(U6-FORMAT-Pad10)")
+			(pinfunction "FORMAT_10")
+			(pintype "input+no_connect")
 			(uuid "6252e3c0-385b-4f0a-ad29-881ad0b38e2d")
 		)
 		(pad "11" thru_hole circle
@@ -8818,6 +10723,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "unconnected-(U6-MUTE-Pad11)")
+			(pinfunction "MUTE_11")
+			(pintype "input+no_connect")
 			(uuid "2f592453-2a9f-4ba7-bdc5-80b318f2f771")
 		)
 		(pad "12" thru_hole circle
@@ -8827,6 +10734,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "unconnected-(U6-MCLK-Pad12)")
+			(pinfunction "MCLK_12")
+			(pintype "input+no_connect")
 			(uuid "3c7bad74-dcc8-4606-a234-372411b48540")
 		)
 		(pad "13" thru_hole circle
@@ -8836,6 +10745,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "unconnected-(U6-FILTER-Pad13)")
+			(pinfunction "FILTER_13")
+			(pintype "input+no_connect")
 			(uuid "6f4540a4-5bad-4ec0-8e24-452828b9b559")
 		)
 		(pad "14" thru_hole circle
@@ -8845,6 +10756,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "unconnected-(U6-DEMPH-Pad14)")
+			(pinfunction "DEMPH_14")
+			(pintype "input+no_connect")
 			(uuid "0da68ad1-c70e-4a1d-a750-2afb22259449")
 		)
 		(embedded_fonts no)
@@ -8892,7 +10805,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Resistor"
 			(at 0 0 90)
 			(layer "B.Fab")
 			(hide yes)
@@ -8904,7 +10817,58 @@
 				(justify mirror)
 			)
 		)
+		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "8797e808-5e5f-4c14-bacd-e05fe4a88459")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "MPN" "RC0603JR-0710KL"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "c89272ae-1efa-48c6-94ba-b0813e14d717")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "Yageo"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "15616590-447d-44bd-ad4b-1d6bc79e0e73")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property ki_fp_filters "R_*")
 		(path "/97d18b83-7eff-4971-b761-c36e2b105ec8")
+		(sheetname "/")
+		(sheetfile "ESP-DubSiren.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
 			(start -0.237258 -0.5225)
@@ -8967,6 +10931,7 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "+3V3")
+			(pintype "passive")
 			(uuid "e05d3c31-f9a0-440a-8a2c-f8e302b33a03")
 		)
 		(pad "2" smd roundrect
@@ -8975,6 +10940,7 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "/ENC_SW")
+			(pintype "passive")
 			(uuid "f11ade51-b924-4350-83f0-edd5bb02ac5f")
 		)
 		(embedded_fonts no)
@@ -9022,7 +10988,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Resistor"
 			(at 0 0 90)
 			(layer "B.Fab")
 			(hide yes)
@@ -9034,7 +11000,58 @@
 				(justify mirror)
 			)
 		)
+		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "4d407341-fa73-4411-a939-bd821ca46078")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "MPN" "RC0603JR-0710KL"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "d8d9b25c-ffcb-4df2-aae7-c9caf67c9150")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "Yageo"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "95f19c2c-432e-4118-90ab-d87311f20130")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property ki_fp_filters "R_*")
 		(path "/892dc2ee-a519-4a1c-b05e-2e2038ab7f7f")
+		(sheetname "/")
+		(sheetfile "ESP-DubSiren.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
 			(start -0.237258 -0.5225)
@@ -9097,6 +11114,7 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "+3V3")
+			(pintype "passive")
 			(uuid "f1eb0214-a894-407b-b450-1bd501e3af5f")
 		)
 		(pad "2" smd roundrect
@@ -9105,6 +11123,7 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "/BTN1")
+			(pintype "passive")
 			(uuid "9a5cc9b3-0ea2-4d4f-97d5-4eb98ab262be")
 		)
 		(embedded_fonts no)
@@ -9140,7 +11159,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "https://search.murata.co.jp/Ceramy/image/img/A01X/G101/ENG/GRM1885C1H103JA01-01A.pdf"
 			(at 0 0 0)
 			(layer "B.Fab")
 			(hide yes)
@@ -9152,7 +11171,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Unpolarized capacitor"
 			(at 0 0 0)
 			(layer "B.Fab")
 			(hide yes)
@@ -9164,7 +11183,44 @@
 				(justify mirror)
 			)
 		)
+		(property "MPN" "GRM1885C1H103JA01D"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "fae41697-d1a5-4715-9ae9-27bf1de17e3e")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "Murata"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "d1c8749c-0a5c-4f4c-aab7-c87a1acfe443")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property ki_fp_filters "C_*")
 		(path "/2e406d8b-9525-4389-99dd-5cabf33ed1a6")
+		(sheetname "/")
+		(sheetfile "ESP-DubSiren.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
 			(start -0.14058 -0.51)
@@ -9227,6 +11283,7 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "/VBUS_SLEW_CT")
+			(pintype "passive")
 			(uuid "c3b032d2-fc1d-4fe1-a2e8-4ca55fc4c589")
 		)
 		(pad "2" smd roundrect
@@ -9235,6 +11292,7 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "GND")
+			(pintype "passive")
 			(uuid "f2762176-0df0-4e1c-ad51-fc266a49c25b")
 		)
 		(embedded_fonts no)
@@ -9270,7 +11328,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "https://bourns.com/docs/product-datasheets/ptvptt.pdf"
 			(at 0 0 0)
 			(layer "B.Fab")
 			(hide yes)
@@ -9282,7 +11340,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Potentiometer"
 			(at 0 0 0)
 			(layer "B.Fab")
 			(hide yes)
@@ -9294,7 +11352,44 @@
 				(justify mirror)
 			)
 		)
+		(property "MPN" "PTV111-1420A-B103"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "718d6c72-aaa3-4876-b131-06f8c371f03f")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "Bourns"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "0054884a-3777-4880-8fdf-2a8973fd12ef")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property ki_fp_filters "Potentiometer*")
 		(path "/cb4d7428-575a-4c1a-b4b9-354b701272a1")
+		(sheetname "/")
+		(sheetfile "ESP-DubSiren.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "3" "2")
+			)
+		)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_rect
 			(start -6.1 7.6)
@@ -9512,6 +11607,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "GND")
+			(pinfunction "1_1")
+			(pintype "passive")
 			(uuid "7cb7fe91-c176-4f66-80dd-e88ba598372e")
 		)
 		(pad "2" thru_hole circle
@@ -9521,6 +11618,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "/MASTER")
+			(pinfunction "2_2")
+			(pintype "passive")
 			(uuid "cf874502-0b5c-4aea-a85f-847a8a9639ea")
 		)
 		(pad "3" thru_hole circle
@@ -9530,6 +11629,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "/POT7_TOP")
+			(pinfunction "3_3")
+			(pintype "passive")
 			(uuid "11baaf41-34c8-4551-b3c8-bfb06633045c")
 		)
 		(embedded_fonts no)
@@ -9577,7 +11678,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Resistor"
 			(at 0 0 90)
 			(layer "B.Fab")
 			(hide yes)
@@ -9589,7 +11690,58 @@
 				(justify mirror)
 			)
 		)
+		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "d20521e7-c91e-46dc-b9b5-a04a2a8a436f")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "MPN" "RC0603JR-0710KL"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "abd0c3e4-7be5-44d9-a148-f16c77e5e397")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "Yageo"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "edb5285d-78e2-40ac-a9fb-c09e39af42fa")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property ki_fp_filters "R_*")
 		(path "/cfe627d1-c5eb-4227-8bef-c1f9ef305cf9")
+		(sheetname "/")
+		(sheetfile "ESP-DubSiren.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
 			(start -0.237258 -0.5225)
@@ -9652,6 +11804,7 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "+3V3")
+			(pintype "passive")
 			(uuid "36953045-46d7-4fef-8b5a-4ef177b549e2")
 		)
 		(pad "2" smd roundrect
@@ -9660,6 +11813,7 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "/ENC_A")
+			(pintype "passive")
 			(uuid "d5187687-85b7-4159-9fe7-abb43b8b00f0")
 		)
 		(embedded_fonts no)
@@ -9695,7 +11849,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "https://product.samsungsem.com/mlcc/CL10B105MO8NNW.do"
 			(at 0 0 0)
 			(layer "B.Fab")
 			(hide yes)
@@ -9707,7 +11861,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Unpolarized capacitor"
 			(at 0 0 0)
 			(layer "B.Fab")
 			(hide yes)
@@ -9719,7 +11873,44 @@
 				(justify mirror)
 			)
 		)
+		(property "MPN" "CL10B105MO8NNWC"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "cee55215-74ed-41f2-af35-314d31757ad1")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "Samsung"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "618dd048-e74c-4b6a-9289-025241602aec")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property ki_fp_filters "C_*")
 		(path "/4a6069dd-0de4-4705-9e3a-c6a40f05c10f")
+		(sheetname "/")
+		(sheetfile "ESP-DubSiren.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
 			(start -0.14058 0.51)
@@ -9782,6 +11973,7 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "/VBUS_PROTECTED")
+			(pintype "passive")
 			(uuid "e78a265e-d60f-40b3-98a6-7557633afcc0")
 		)
 		(pad "2" smd roundrect
@@ -9790,6 +11982,7 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "GND")
+			(pintype "passive")
 			(uuid "dea76217-99df-4b33-9713-0867847866e9")
 		)
 		(embedded_fonts no)
@@ -9837,7 +12030,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Unpolarized capacitor"
 			(at 0 0 0)
 			(layer "B.Fab")
 			(hide yes)
@@ -9849,7 +12042,58 @@
 				(justify mirror)
 			)
 		)
+		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "a983ffaa-8563-4e91-9eb6-c0fda340dd22")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "MPN" "CL10B104KO8NNNC"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "9408731f-a59b-4f2f-9a74-ebd3f92f4cc6")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "Samsung"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "c4dbff93-0051-42b1-b38d-61a4d51dedea")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property ki_fp_filters "C_*")
 		(path "/f648a026-a576-43b4-b342-f83ada1a04b7")
+		(sheetname "/")
+		(sheetfile "ESP-DubSiren.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
 			(start -0.14058 0.509999)
@@ -9912,6 +12156,7 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "+5V")
+			(pintype "passive")
 			(uuid "e0f4543c-2ecf-4cea-aedc-aaa381fdf4ac")
 		)
 		(pad "2" smd roundrect
@@ -9920,6 +12165,7 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "GND")
+			(pintype "passive")
 			(uuid "0bb03d0e-ac05-4acc-a675-6775e598d98e")
 		)
 		(embedded_fonts no)
@@ -9955,7 +12201,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "https://www.ti.com/lit/ds/symlink/tps22918.pdf"
 			(at 0 0 0)
 			(layer "B.Fab")
 			(hide yes)
@@ -9979,7 +12225,43 @@
 				(justify mirror)
 			)
 		)
+		(property "MPN" "TPS22918DBVR"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "3ca14cba-b386-48a6-ab4c-0dcd1dddde20")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "Texas Instruments"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "e25a820e-3db3-4b4c-895f-74b3fda0d0ae")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
 		(path "/97d41348-e313-4950-a6ef-7d19717f96ab")
+		(sheetname "/")
+		(sheetfile "ESP-DubSiren.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "3" "2" "6" "5" "4")
+			)
+		)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
 			(start -0.91 -1.56)
@@ -10204,6 +12486,8 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "/VBUS_PROTECTED")
+			(pinfunction "VIN_1")
+			(pintype "power_in")
 			(uuid "4fdc5d68-8369-4c9b-ae6a-ba4ae6c823b5")
 		)
 		(pad "2" smd roundrect
@@ -10212,6 +12496,8 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "GND")
+			(pinfunction "GND_2")
+			(pintype "power_in")
 			(uuid "b27a4d32-15e6-4083-82f5-d677da4c1c3a")
 		)
 		(pad "3" smd roundrect
@@ -10220,6 +12506,8 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "/VBUS_PROTECTED")
+			(pinfunction "ON_3")
+			(pintype "input")
 			(uuid "5bf68852-88b9-4d3f-a12b-737c1fd7481b")
 		)
 		(pad "4" smd roundrect
@@ -10228,6 +12516,8 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "/VBUS_SLEW_CT")
+			(pinfunction "CT_4")
+			(pintype "passive")
 			(uuid "cb817004-ea97-4ed2-bc65-9081436b1b60")
 		)
 		(pad "5" smd roundrect
@@ -10236,6 +12526,8 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "unconnected-(U7-QOD-Pad5)")
+			(pinfunction "QOD_5")
+			(pintype "passive+no_connect")
 			(uuid "b4faa0ec-6cb4-4b60-903c-3e3950a40943")
 		)
 		(pad "6" smd roundrect
@@ -10244,6 +12536,8 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "+5V")
+			(pinfunction "VOUT_6")
+			(pintype "power_out")
 			(uuid "4cf0afd3-1b4b-41ed-841a-246c96a952fb")
 		)
 		(embedded_fonts no)
@@ -10279,7 +12573,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "https://www.monolithicpower.com/en/documentview/productdocument/index/version/2/document_type/Datasheet/lang/en/sku/MPM3612GLQ-33/document_id/11833/"
 			(at 0 0 0)
 			(layer "B.Fab")
 			(hide yes)
@@ -10303,7 +12597,57 @@
 				(justify mirror)
 			)
 		)
+		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "5d02b780-fcd0-4060-8af3-ea7d84092693")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "MPN" "MPM3612GLQ-33-Z"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "c5e51737-9d25-4c98-9c49-66f9ca0884f6")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "MPS"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "7f9ac128-24fa-4174-91b6-d835982b168c")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
 		(path "/1334b857-009d-4cd1-9022-c23145f29c05")
+		(sheetname "/")
+		(sheetfile "ESP-DubSiren.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "2" "1" "3" "EP" "4" "5" "6" "8" "7")
+			)
+		)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_rect
 			(start -1.575 1.325)
@@ -10366,6 +12710,8 @@
 			(size 0.625 0.4)
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(net "+5V")
+			(pinfunction "EN_1")
+			(pintype "input")
 			(uuid "8d20c14a-e0af-4933-99d4-501f792444bf")
 		)
 		(pad "2" smd rect
@@ -10373,6 +12719,8 @@
 			(size 0.625 0.4)
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(net "+5V")
+			(pinfunction "VIN_2")
+			(pintype "power_in")
 			(uuid "e9980d6a-229a-4c62-8d07-aad94d1a15d6")
 		)
 		(pad "3" smd rect
@@ -10380,6 +12728,8 @@
 			(size 0.625 0.4)
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(net "GND")
+			(pinfunction "GND_3")
+			(pintype "power_in")
 			(uuid "6b7f1081-6ab4-44ab-887a-08e706d7458d")
 		)
 		(pad "4" smd rect
@@ -10387,6 +12737,8 @@
 			(size 0.625 0.4)
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(net "+3V3")
+			(pinfunction "VOUT_4")
+			(pintype "power_out")
 			(uuid "50401acc-0aab-477b-b40b-925768813e27")
 		)
 		(pad "5" smd rect
@@ -10394,6 +12746,8 @@
 			(size 0.625 0.4)
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(net "+3V3")
+			(pinfunction "VOUT_5")
+			(pintype "passive")
 			(uuid "416c5999-214d-4f46-a438-057cf8aba438")
 		)
 		(pad "6" smd rect
@@ -10401,6 +12755,8 @@
 			(size 0.625 0.4)
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(net "/VOUT_S")
+			(pinfunction "VOUT_S_6")
+			(pintype "input")
 			(uuid "c0524ad1-1e71-405e-b76b-57f38ff19592")
 		)
 		(pad "7" smd rect
@@ -10408,6 +12764,8 @@
 			(size 0.625 0.4)
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(net "unconnected-(U2-PG-Pad7)")
+			(pinfunction "PG_7")
+			(pintype "open_collector+no_connect")
 			(uuid "1b5fe881-c079-43b7-8bce-3961139de683")
 		)
 		(pad "8" smd rect
@@ -10415,6 +12773,8 @@
 			(size 0.625 0.4)
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(net "unconnected-(U2-VCC-Pad8)")
+			(pinfunction "VCC_8")
+			(pintype "power_out+no_connect")
 			(uuid "f864caac-a62f-44d5-8c9e-ed9d9589b99c")
 		)
 		(pad "EP" smd rect
@@ -10422,6 +12782,8 @@
 			(size 1.1 1.9)
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(net "GND")
+			(pinfunction "EP_GND_EP")
+			(pintype "passive")
 			(uuid "fa46761c-8b7f-4be2-b728-6b74adfb787a")
 		)
 		(embedded_fonts no)
@@ -10469,7 +12831,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Resistor"
 			(at 0 0 90)
 			(layer "B.Fab")
 			(hide yes)
@@ -10481,7 +12843,58 @@
 				(justify mirror)
 			)
 		)
+		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
+			(at 0 0 270)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "e49680d1-5e43-4f79-9841-dccb4121f76c")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "MPN" "RC0603JR-0722RL"
+			(at 0 0 270)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "4534819f-32f3-4d11-bb1a-5fabaeb9b715")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "Yageo"
+			(at 0 0 270)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "ac4ccd69-c80c-415a-b90a-f13ac28324a5")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property ki_fp_filters "R_*")
 		(path "/5241af7e-d6ec-4428-b666-729afb8d1d66")
+		(sheetname "/")
+		(sheetfile "ESP-DubSiren.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
 			(start -0.237258 0.5225)
@@ -10544,6 +12957,7 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "/USB_DP_CONN")
+			(pintype "passive")
 			(uuid "70a97e8b-9d14-4b84-b126-9d392362a5b5")
 		)
 		(pad "2" smd roundrect
@@ -10552,6 +12966,7 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "/USB_DP_MCU")
+			(pintype "passive")
 			(uuid "3f8df39e-f74e-44de-ac74-4f286427e010")
 		)
 		(embedded_fonts no)
@@ -10599,7 +13014,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Unpolarized capacitor"
 			(at 0 0 90)
 			(layer "B.Fab")
 			(hide yes)
@@ -10611,7 +13026,58 @@
 				(justify mirror)
 			)
 		)
+		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "7c613349-ab74-4681-b36b-602bb1b7b43d")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "MPN" "CL10B104KO8NNNC"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "7d824ac7-16c0-46ca-9979-f8aeeee6a97d")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "Samsung"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "21a66e56-7226-4d6e-a8e6-2ed08d7c29a1")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property ki_fp_filters "C_*")
 		(path "/977c8a54-9744-4a1b-be42-8cf3829bd4ff")
+		(sheetname "/")
+		(sheetfile "ESP-DubSiren.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
 			(start -0.14058 -0.51)
@@ -10674,6 +13140,7 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "+3V3")
+			(pintype "passive")
 			(uuid "82e8a437-17d7-4ef3-a089-a7e31d941af6")
 		)
 		(pad "2" smd roundrect
@@ -10682,6 +13149,7 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "GND")
+			(pintype "passive")
 			(uuid "b481442e-76bc-4b0b-b6a3-8d86f6b12e56")
 		)
 		(embedded_fonts no)
@@ -10729,7 +13197,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Resistor"
 			(at 0 0 0)
 			(layer "B.Fab")
 			(hide yes)
@@ -10741,7 +13209,58 @@
 				(justify mirror)
 			)
 		)
+		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "ac5009e4-cd91-4345-bc92-e0e6e2548e32")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "MPN" "AC0603FR-075K1L"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "0e7e56ba-5fa3-4897-a38f-68f8ca5247e0")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "Yageo"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "a80c9d37-3568-43db-bcc4-2d18f2f6359f")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property ki_fp_filters "R_*")
 		(path "/ad6df11e-4ede-463d-9c3c-176ddea0cd85")
+		(sheetname "/")
+		(sheetfile "ESP-DubSiren.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
 			(start -0.237258 -0.5225)
@@ -10804,6 +13323,7 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "/USB_CC1")
+			(pintype "passive")
 			(uuid "0c10e2b6-d710-447d-98fb-d05c473063fe")
 		)
 		(pad "2" smd roundrect
@@ -10812,6 +13332,7 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "GND")
+			(pintype "passive")
 			(uuid "9223f16a-63e6-46a9-b69a-34e5f8cfce46")
 		)
 		(embedded_fonts no)
@@ -10859,7 +13380,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "test point"
 			(at 0 0 0)
 			(layer "B.Fab")
 			(hide yes)
@@ -10871,7 +13392,58 @@
 				(justify mirror)
 			)
 		)
+		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "77363e99-607d-464a-9dcf-e8a21c50c62f")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "MPN" "PCB test pad"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "153ffb44-ea17-4cc1-b969-b0b68cd319ac")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "PCB"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "c304556b-17a9-4131-bfef-6d751a49ed9c")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property ki_fp_filters "Pin* Test*")
 		(path "/f1aec80b-c573-4d89-a822-c248913fe856")
+		(sheetname "/")
+		(sheetfile "ESP-DubSiren.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1")
+			)
+		)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
 			(center 0 0)
@@ -10913,6 +13485,8 @@
 			(size 1 1)
 			(layers "B.Cu" "B.Mask")
 			(net "/ADC_MUX")
+			(pinfunction "1_1")
+			(pintype "passive")
 			(uuid "5856f6a7-8930-4094-9825-9bbb47df2816")
 		)
 		(embedded_fonts no)
@@ -10960,7 +13534,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Resistor"
 			(at 0 0 0)
 			(layer "B.Fab")
 			(hide yes)
@@ -10972,7 +13546,58 @@
 				(justify mirror)
 			)
 		)
+		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "918cecaf-a504-4e2d-b0cf-f8c95dd609d3")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "MPN" "RC0603JR-0710KL"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "0045a7cd-e004-4c6c-a713-5fd96e1c226b")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "Yageo"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "553011a8-ad1e-4d44-8470-b3e922998434")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property ki_fp_filters "R_*")
 		(path "/f5056b7a-a121-4e51-9070-9ad5e9ae96b2")
+		(sheetname "/")
+		(sheetfile "ESP-DubSiren.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
 			(start -0.237258 -0.5225)
@@ -11035,6 +13660,7 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "+3V3")
+			(pintype "passive")
 			(uuid "8dab602f-0a42-45aa-88b9-9222adf9b518")
 		)
 		(pad "2" smd roundrect
@@ -11043,6 +13669,7 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "/ESP_EN")
+			(pintype "passive")
 			(uuid "b5f6b188-ae9a-4434-9bf1-835b08df44e8")
 		)
 		(embedded_fonts no)
@@ -11078,7 +13705,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "https://www.belfuse.com/resources/datasheets/circuitprotection/ds-cp-0zcg-series.pdf"
 			(at 0 0 0)
 			(layer "B.Fab")
 			(hide yes)
@@ -11090,7 +13717,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Resettable fuse, polymeric positive temperature coefficient"
 			(at 0 0 0)
 			(layer "B.Fab")
 			(hide yes)
@@ -11102,7 +13729,58 @@
 				(justify mirror)
 			)
 		)
+		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "3d8cf5cf-13fe-4e03-bb51-36549282343a")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "MPN" "0ZCG0110CF2B"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "7115d1fb-7a92-4549-a7bd-decf8f8e7707")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "Bel"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "8b7069dd-e750-4c05-9876-971ad4b56fcb")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property ki_fp_filters "*polyfuse* *PTC*")
 		(path "/4d1fa772-387c-43d4-a0ee-87fbb1d188cc")
+		(sheetname "/")
+		(sheetfile "ESP-DubSiren.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_rect
 			(start -3.655 1.9)
@@ -11154,6 +13832,7 @@
 			(size 1.78 3.5)
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(net "/VBUS_RAW")
+			(pintype "passive")
 			(uuid "641e4048-adca-4d91-a46c-b3cbf315842b")
 		)
 		(pad "2" smd rect
@@ -11161,6 +13840,7 @@
 			(size 1.78 3.5)
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(net "/VBUS_PROTECTED")
+			(pintype "passive")
 			(uuid "c2e9987d-d7b5-40b0-b014-369c1663eb71")
 		)
 		(embedded_fonts no)
@@ -11198,7 +13878,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "https://www.neutrik.com/media/8561/download/st-nrj4hf.PDF?v=2"
 			(at 0 0 90)
 			(layer "B.Fab")
 			(hide yes)
@@ -11222,7 +13902,58 @@
 				(justify mirror)
 			)
 		)
+		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "0c7088b6-b692-485f-9cb7-edaaeb63556d")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "MPN" "NRJ4HF"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "47753292-0f34-4177-8bea-4e473f5fedbb")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "Neutrik"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "0e57f512-0bba-4675-a424-949ed2cc23ac")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property ki_fp_filters "Jack*")
 		(path "/f727f866-3400-412d-b500-80456e99ba10")
+		(sheetname "/")
+		(sheetfile "ESP-DubSiren.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "S" "SN" "T" "TN")
+			)
+		)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
 			(start -7.47 -13.78)
@@ -11455,6 +14186,7 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "GND")
+			(pintype "passive")
 			(uuid "f5578535-d80c-4142-82b2-8cc4b482d835")
 		)
 		(pad "SN" thru_hole circle
@@ -11464,6 +14196,7 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "unconnected-(J2-PadSN)")
+			(pintype "passive+no_connect")
 			(uuid "76f98e47-b878-453c-8a86-11fce36b9ea0")
 		)
 		(pad "T" thru_hole circle
@@ -11473,6 +14206,7 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "/AUDIO_MONO")
+			(pintype "passive")
 			(uuid "6c2491f0-faba-44f7-bb67-809b67f700f8")
 		)
 		(pad "TN" thru_hole circle
@@ -11482,6 +14216,7 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "unconnected-(J2-PadTN)")
+			(pintype "passive+no_connect")
 			(uuid "cec238bc-136e-4c40-8e09-d05ffbf8a863")
 		)
 		(embedded_fonts no)
@@ -11540,7 +14275,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Resistor"
 			(at 0 0 0)
 			(layer "B.Fab")
 			(hide yes)
@@ -11552,7 +14287,58 @@
 				(justify mirror)
 			)
 		)
+		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "f327ee26-1e5a-4374-aabd-8df5f3d3de68")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "MPN" "RC0603JR-0710KL"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "5f3a3b50-a480-4d46-abc8-ad2f685a9e7a")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "Yageo"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "b75c54f4-2a4c-45be-911a-4010228cd8a4")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property ki_fp_filters "R_*")
 		(path "/5464926c-f378-4655-96bb-38edb3d9cb70")
+		(sheetname "/")
+		(sheetfile "ESP-DubSiren.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
 			(start -0.237258 0.5225)
@@ -11615,6 +14401,7 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "+3V3")
+			(pintype "passive")
 			(uuid "f1ff183e-8471-42bd-a2ed-e7c889bb27be")
 		)
 		(pad "2" smd roundrect
@@ -11623,6 +14410,7 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "/BOOT")
+			(pintype "passive")
 			(uuid "386332ed-abc3-482d-8fcd-3f45636ecbb0")
 		)
 		(embedded_fonts no)
@@ -11670,7 +14458,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Unpolarized capacitor"
 			(at 0 0 0)
 			(layer "B.Fab")
 			(hide yes)
@@ -11682,7 +14470,58 @@
 				(justify mirror)
 			)
 		)
+		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "c1f486f9-0fc8-49e6-9704-66bf2f4953b5")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "MPN" "CL10B104KO8NNNC"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "392feeff-5ff0-427d-8199-d7f17380b223")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "Samsung"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "69c145c3-2517-4261-920e-1d9f1d34aae7")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property ki_fp_filters "C_*")
 		(path "/b3f6900f-88e9-49d5-b140-d29b05f4d04c")
+		(sheetname "/")
+		(sheetfile "ESP-DubSiren.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
 			(start -0.14058 -0.51)
@@ -11745,6 +14584,7 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "+3V3")
+			(pintype "passive")
 			(uuid "9caac0cf-ca1d-4dd9-a025-c330daf76c0e")
 		)
 		(pad "2" smd roundrect
@@ -11753,6 +14593,7 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "GND")
+			(pintype "passive")
 			(uuid "ea62435d-2b8b-4cc1-aaed-8f5308a7cf0a")
 		)
 		(embedded_fonts no)
@@ -11800,7 +14641,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Resistor"
 			(at 0 0 90)
 			(layer "B.Fab")
 			(hide yes)
@@ -11812,7 +14653,58 @@
 				(justify mirror)
 			)
 		)
+		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "40f39088-bf44-4afa-9542-4a2ee1fce523")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "MPN" "RC0603JR-0710KL"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "7c95a4d0-b53b-4cc9-bbaf-8d051ace9a36")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "Yageo"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "e6dad89e-5968-4971-8342-ed4ffee6a4ea")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property ki_fp_filters "R_*")
 		(path "/baf9ea89-ac77-4f6e-8021-a3cbd7c1955d")
+		(sheetname "/")
+		(sheetfile "ESP-DubSiren.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
 			(start -0.237258 -0.5225)
@@ -11875,6 +14767,7 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "+3V3")
+			(pintype "passive")
 			(uuid "44c6728e-e9c5-4a45-9095-db32f15060f9")
 		)
 		(pad "2" smd roundrect
@@ -11883,6 +14776,7 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "/BTN2")
+			(pintype "passive")
 			(uuid "b7d2d13b-7d9b-46e4-949c-6159fe2549e6")
 		)
 		(embedded_fonts no)
@@ -11930,7 +14824,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Resistor"
 			(at 0 0 0)
 			(layer "B.Fab")
 			(hide yes)
@@ -11942,7 +14836,58 @@
 				(justify mirror)
 			)
 		)
+		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "9cf0ae18-3f7f-47d5-8da2-02b2297bf260")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "MPN" "RC0603FR-074K7L"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "2351bd57-92b3-4048-b28a-b96ed79274ab")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "Yageo"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "8b71e870-8c60-434c-afe0-87ceb17d22a1")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property ki_fp_filters "R_*")
 		(path "/b461b4fa-00a3-4565-af6b-7c12af045272")
+		(sheetname "/")
+		(sheetfile "ESP-DubSiren.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
 			(start -0.237258 -0.5225)
@@ -12005,6 +14950,7 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "+3V3")
+			(pintype "passive")
 			(uuid "ab4fe14d-cebb-46e2-9d0e-1073e95d9bbd")
 		)
 		(pad "2" smd roundrect
@@ -12013,6 +14959,7 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "/POT4_TOP")
+			(pintype "passive")
 			(uuid "33e86a59-9ab8-42cb-baf5-555ea62e67cc")
 		)
 		(embedded_fonts no)
@@ -12060,7 +15007,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Unpolarized capacitor"
 			(at 0 0 0)
 			(layer "B.Fab")
 			(hide yes)
@@ -12072,7 +15019,58 @@
 				(justify mirror)
 			)
 		)
+		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "bed183ab-8701-4118-b251-2035ffcd60e5")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "MPN" "CL21A226MPCLRNC"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "67ff6f24-d534-4ddb-80ef-edfdd23fc0ba")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "Samsung"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "60e752e7-d2b7-433f-8907-390302d0187a")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property ki_fp_filters "C_*")
 		(path "/400c114d-ff89-4b37-b4f7-79403515d9ba")
+		(sheetname "/")
+		(sheetfile "ESP-DubSiren.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
 			(start -0.261252 -0.735)
@@ -12135,6 +15133,7 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "+3V3")
+			(pintype "passive")
 			(uuid "9073395f-2dc0-4c79-a51b-33337ec8e7b9")
 		)
 		(pad "2" smd roundrect
@@ -12143,6 +15142,7 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "GND")
+			(pintype "passive")
 			(uuid "77c290d4-4d29-441d-a435-f9b438c8f5eb")
 		)
 		(embedded_fonts no)
@@ -12190,7 +15190,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Resistor"
 			(at 0 0 0)
 			(layer "B.Fab")
 			(hide yes)
@@ -12202,7 +15202,58 @@
 				(justify mirror)
 			)
 		)
+		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "eeb67ab0-3a30-44a6-a0bc-1d6ca95b3f33")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "MPN" "RC0603FR-074K7L"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "a902a03e-aef4-4a39-9771-cd79b6267d82")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "Yageo"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "fc41b0c9-faee-4632-ac9f-398e448bbc95")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property ki_fp_filters "R_*")
 		(path "/136d2d65-ba3e-49d6-8df6-cd53c388c855")
+		(sheetname "/")
+		(sheetfile "ESP-DubSiren.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
 			(start -0.237258 -0.5225)
@@ -12265,6 +15316,7 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "+3V3")
+			(pintype "passive")
 			(uuid "98c91d6a-0a67-4139-b46d-166824ecc4aa")
 		)
 		(pad "2" smd roundrect
@@ -12273,6 +15325,7 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "/POT7_TOP")
+			(pintype "passive")
 			(uuid "bfa3012e-df8b-487c-9094-e08f5119dd96")
 		)
 		(embedded_fonts no)
@@ -12320,7 +15373,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Unpolarized capacitor"
 			(at 0 0 90)
 			(layer "B.Fab")
 			(hide yes)
@@ -12332,7 +15385,58 @@
 				(justify mirror)
 			)
 		)
+		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "9154c818-1b59-4b34-9f15-856816f8a8d4")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "MPN" "CL10B104KO8NNNC"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "eb203608-97ea-45e4-9fde-661fb995198f")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "Samsung"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "5e4615b7-92c7-4429-b606-b6b09c0504bc")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property ki_fp_filters "C_*")
 		(path "/16f62888-9582-459d-ad2b-52f7ec680874")
+		(sheetname "/")
+		(sheetfile "ESP-DubSiren.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
 			(start -0.14058 -0.509999)
@@ -12395,6 +15499,7 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "/ADC_MUX")
+			(pintype "passive")
 			(uuid "c70cb434-a217-4744-b52a-1645c7222d72")
 		)
 		(pad "2" smd roundrect
@@ -12403,6 +15508,7 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "GND")
+			(pintype "passive")
 			(uuid "c78f3844-658d-4133-9935-280860d016a1")
 		)
 		(embedded_fonts no)
@@ -12450,7 +15556,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Resistor"
 			(at 0 0 90)
 			(layer "B.Fab")
 			(hide yes)
@@ -12462,7 +15568,58 @@
 				(justify mirror)
 			)
 		)
+		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "efd751d2-5aff-4269-a71c-d404b397610d")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "MPN" "RC0603JR-0710KL"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "4333e0b2-103b-4bd9-86f6-54f1b5bd3906")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "Yageo"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "910c061c-a090-4f34-92d2-d376e22443a9")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property ki_fp_filters "R_*")
 		(path "/930d954e-fbca-40cb-87d1-3eef317263ea")
+		(sheetname "/")
+		(sheetfile "ESP-DubSiren.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
 			(start -0.237258 -0.5225)
@@ -12525,6 +15682,7 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "+3V3")
+			(pintype "passive")
 			(uuid "4daa7ea3-7924-4a32-96de-7f171a4fa45b")
 		)
 		(pad "2" smd roundrect
@@ -12533,6 +15691,7 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "/BTN4")
+			(pintype "passive")
 			(uuid "6a0a5db7-0723-4e76-be18-0a0ef7d08adb")
 		)
 		(embedded_fonts no)
@@ -12568,7 +15727,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "https://www.ckswitches.com/media/2779/pts636.pdf"
 			(at 0 0 90)
 			(layer "B.Fab")
 			(hide yes)
@@ -12580,7 +15739,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Push button switch, generic, two pins"
 			(at 0 0 90)
 			(layer "B.Fab")
 			(hide yes)
@@ -12592,7 +15751,57 @@
 				(justify mirror)
 			)
 		)
+		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "81c30db6-1d29-4876-b90f-8b9a943bc9cb")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "MPN" "PTS636SM43SMTR LFS"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "bf2c395d-b200-497c-934f-67f769e44ebb")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "C&K/Littelfuse"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "f6d5aeb4-e8a2-49a2-b6f9-943f4b907ce6")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
 		(path "/efd8de97-635f-4f7e-a712-67e4b8c76a7b")
+		(sheetname "/")
+		(sheetfile "ESP-DubSiren.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
 			(start -3.12 -1.87)
@@ -12642,6 +15851,8 @@
 			(size 2 1.5)
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(net "/ESP_EN")
+			(pinfunction "1_1")
+			(pintype "passive")
 			(uuid "bcf89444-5dd7-4d2f-a5f6-57bf1ad8a459")
 		)
 		(pad "2" smd rect
@@ -12649,6 +15860,8 @@
 			(size 2 1.5)
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(net "GND")
+			(pinfunction "2_2")
+			(pintype "passive")
 			(uuid "11e627b7-91dd-4cd3-8d1a-92e698478ea4")
 		)
 		(embedded_fonts no)
@@ -12696,7 +15909,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Unpolarized capacitor"
 			(at 0 0 0)
 			(layer "B.Fab")
 			(hide yes)
@@ -12708,7 +15921,58 @@
 				(justify mirror)
 			)
 		)
+		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "85fabd7f-21c4-484f-9ed0-5bf549f2192e")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "MPN" "CL10B104KO8NNNC"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "a6ac3258-7d52-4d27-a018-2fac4bcf0add")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "Samsung"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "608a7ebf-3bc3-437d-9ff4-c2b5ac9847a5")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property ki_fp_filters "C_*")
 		(path "/a013b2b5-e0b6-4c3e-b953-6e6af008ed62")
+		(sheetname "/")
+		(sheetfile "ESP-DubSiren.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
 			(start -0.14058 -0.51)
@@ -12771,6 +16035,7 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "+3V3")
+			(pintype "passive")
 			(uuid "b8fe24d9-09df-4f1c-8438-110e8839f49c")
 		)
 		(pad "2" smd roundrect
@@ -12779,6 +16044,7 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "GND")
+			(pintype "passive")
 			(uuid "4678a193-9b3b-4692-a527-f18aa0839079")
 		)
 		(embedded_fonts no)
@@ -12814,7 +16080,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "https://www.slkoric.com/upload/file/1782371251_7008.PDF"
 			(at 0 0 90)
 			(layer "B.Fab")
 			(hide yes)
@@ -12826,7 +16092,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Very low capacitance ESD protection diode, 2 data-line, SOT-23-6"
 			(at 0 0 90)
 			(layer "B.Fab")
 			(hide yes)
@@ -12838,7 +16104,58 @@
 				(justify mirror)
 			)
 		)
+		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
+			(at 0 0 270)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "57f23792-3ab4-4931-a7e0-d0eec50f55d3")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "MPN" "USBLC6-2SC6"
+			(at 0 0 270)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "c751b11d-b84c-42ae-bb13-320197a3578e")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "SLKOR"
+			(at 0 0 270)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "654e64bb-85d4-4d9b-bcfc-012f9de4efa8")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property ki_fp_filters "SOT?23*")
 		(path "/927d4489-7225-44c5-83f8-a18d0cd1016e")
+		(sheetname "/")
+		(sheetfile "ESP-DubSiren.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "3" "5" "2" "6" "4")
+			)
+		)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
 			(start -0.91 1.56)
@@ -13063,6 +16380,8 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "/USB_DM_CONN")
+			(pinfunction "I/O1_1")
+			(pintype "passive")
 			(uuid "6343d132-1aaf-4691-9cfc-5f07e8f31627")
 		)
 		(pad "2" smd roundrect
@@ -13071,6 +16390,8 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "GND")
+			(pinfunction "GND_2")
+			(pintype "passive")
 			(uuid "a868bf98-be2d-4bd2-b67a-ca928b28174e")
 		)
 		(pad "3" smd roundrect
@@ -13079,6 +16400,8 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "/USB_DP_CONN")
+			(pinfunction "I/O2_3")
+			(pintype "passive")
 			(uuid "eee7e2bd-2de8-49ae-80d9-c75f847e72bc")
 		)
 		(pad "4" smd roundrect
@@ -13087,6 +16410,8 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "/USB_DP_CONN")
+			(pinfunction "I/O2_4")
+			(pintype "passive")
 			(uuid "72cdca2d-3238-4c9c-8363-68f2396351ff")
 		)
 		(pad "5" smd roundrect
@@ -13095,6 +16420,8 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "/VBUS_RAW")
+			(pinfunction "VBUS_5")
+			(pintype "passive")
 			(uuid "ac782b0b-74b8-46d3-9d98-26efadfe0838")
 		)
 		(pad "6" smd roundrect
@@ -13103,6 +16430,8 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "/USB_DM_CONN")
+			(pinfunction "I/O1_6")
+			(pintype "passive")
 			(uuid "b35e9236-0231-4722-a011-5d15a47ce5dd")
 		)
 		(embedded_fonts no)
@@ -13150,7 +16479,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "test point"
 			(at 0 0 0)
 			(layer "B.Fab")
 			(hide yes)
@@ -13162,7 +16491,58 @@
 				(justify mirror)
 			)
 		)
+		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "3f6e450a-f79c-499d-9a07-1943df42922b")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "MPN" "PCB test pad"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "1677ea9c-0092-4845-b32a-50591afa8796")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "PCB"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "b3075161-e82a-495f-9d43-3618108a49a5")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property ki_fp_filters "Pin* Test*")
 		(path "/acb7e464-59c5-4929-9ae7-ba5f3fa5da3c")
+		(sheetname "/")
+		(sheetfile "ESP-DubSiren.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1")
+			)
+		)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
 			(center 0 0)
@@ -13204,6 +16584,8 @@
 			(size 1 1)
 			(layers "B.Cu" "B.Mask")
 			(net "+5V")
+			(pinfunction "1_1")
+			(pintype "passive")
 			(uuid "e76c490f-0d70-4960-a6a4-bdf99690b59d")
 		)
 		(embedded_fonts no)
@@ -13251,7 +16633,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Resistor"
 			(at 0 0 0)
 			(layer "B.Fab")
 			(hide yes)
@@ -13263,7 +16645,58 @@
 				(justify mirror)
 			)
 		)
+		(property "DesignStatus" "INTERIM - incomplete controls and USB power qualification"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "a041c5f2-e2ab-4070-b4de-aa511fa7c0df")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "MPN" "RC0603FR-074K7L"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "7bae7777-5969-488e-a25b-439e19b0eb3b")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "Yageo"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "0f8084c0-b0e9-493e-9b5b-f1b1f837477e")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property ki_fp_filters "R_*")
 		(path "/520bb992-c7bd-40d0-9801-a05634189888")
+		(sheetname "/")
+		(sheetfile "ESP-DubSiren.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
 			(start -0.237258 -0.5225)
@@ -13326,6 +16759,7 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "+3V3")
+			(pintype "passive")
 			(uuid "ce585e91-fff5-4f5a-a0af-97088f368c95")
 		)
 		(pad "2" smd roundrect
@@ -13334,6 +16768,7 @@
 			(layers "B.Cu" "B.Mask" "B.Paste")
 			(roundrect_rratio 0.25)
 			(net "/POT5_TOP")
+			(pintype "passive")
 			(uuid "cae5796c-3b91-4ace-8f2d-299714cc24ab")
 		)
 		(embedded_fonts no)
