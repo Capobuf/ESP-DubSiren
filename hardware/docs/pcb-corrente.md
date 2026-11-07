@@ -42,19 +42,30 @@ differenze di libreria 8 (J2, TP1–TP7).
 
 ## Asole di fissaggio Bourns
 
-**Da correggere prima dei Gerber.** Il confronto dei modelli Bourns con il corpo
-della scheda e con i disegni "Recommended PCB layout" mostra tre footprint con
-asole non conformi:
+**Corrette il 7 novembre 2026.** Il confronto dei modelli Bourns con il corpo
+della scheda e con i disegni "Recommended PCB layout" mostrava tre footprint con
+asole non conformi, ora allineate nella libreria locale e sul PCB:
 
-| Footprint (riferimenti) | Disegno Bourns | Footprint attuale | Corretto |
+| Footprint (riferimenti) | Disegno Bourns | Prima | Ora |
 |---|---|---|---|
 | `Bourns_PTV111-3` (RV1–RV6) | 13,6 mm **fra i bordi esterni**, asola 2,0×2,1 ([PTV/PTT](../cad/sources/Bourns-PTV-PTT.pdf), p.2) | centri ±6,8 (X 5,8–7,8) | centri ±5,8 (X 4,8–6,8) |
 | `Bourns_PTV111-1` (RV7) | 10,2 mm **fra i bordi interni**, asola 2,0×2,1 (p.2) | centri ±5,1 (X 4,1–6,1) | centri ±6,1 (X 5,1–7,1) |
 | `Bourns_PEC11R-4120F-S0018` (SW7) | 13,2 mm fra i bordi esterni, asola **1,8 (X) × 2,6 (Y)** ([PEC11R](../cad/sources/PEC11R.pdf), p.2) | 2,6 (X) × 1,8 (Y), centri ±6,6 | 1,8×2,6, centri ±5,7 |
 
-Con le asole attuali le gambe dei modelli Bourns attraversano il materiale per
-tutto lo spessore (PTV111-3: 0,43 mm³ per gamba; PEC11R: 0,25 mm³ sulla lunghezza
-della gamba, 2,5 mm contro un'asola di 1,8). Con le asole corrette resta solo il
-dente dell'aggancio a scatto, sul fondo della scheda. La correzione, provata su
-una copia, genera **8 errori di distanza rame-bordo** (piste BTN1, MASTER,
-USB_DP_CONN, ENC_B, POT7_TOP): servono modifiche al routing.
+Con le asole precedenti le gambe dei modelli Bourns attraversavano il materiale per
+tutto lo spessore (PTV111-3: 0,43 mm³ per gamba; PEC11R: gamba lunga 2,5 mm contro
+un'asola di 1,8). Ora resta solo il dente dell'aggancio a scatto sulla faccia
+opposta della scheda (0,14–0,18 mm³ per gamba), cioè la ritenzione prevista.
+
+Lo spostamento ha richiesto deviazioni locali di cinque piste, con le stesse
+larghezze: MASTER (F.Cu, a destra dell'asola sinistra di RV1, x=11,0), BTN1
+(F.Cu, a sinistra dell'asola destra di RV4, x=19,0), USB_DP_CONN (B.Cu, 0,6 mm,
+diagonale spostata sotto l'asola sinistra di RV2; si allontana da USB_DM_CONN),
+POT7_TOP (B.Cu, sopra l'asola destra di RV7) e ENC_B (B.Cu, y=48,5 sotto l'asola
+sinistra di SW7). Modifiche applicate tramite Konnect MCP sul PCB aperto in KiCad.
+
+| DRC dopo la correzione | Esito |
+|---|---|
+| Errori | **0** (18 U5/U6 esclusi) |
+| Connessioni aperte / parità | **0 / 0** |
+| Avvisi | 28 serigrafia (#36), 8 differenze di libreria (J2, TP1–TP7) |

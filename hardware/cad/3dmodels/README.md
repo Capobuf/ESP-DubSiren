@@ -29,9 +29,9 @@ e gli spessori di vetro e modulo TFT non sono documentati. TP1–TP7 e H1–H4 n
 ## Verifica
 
 In uno STEP esportato da KiCad (origine 0,0) ogni foro di RV1–RV7, SW1–SW4 e SW7
-contiene un pin del modello. Il confronto col corpo della scheda ha mostrato
-un'interferenza delle gambe di fissaggio con le asole attuali dei footprint
-`Bourns_PTV111-3`, `Bourns_PTV111-1` e `Bourns_PEC11R-4120F-S0018`.
+contiene un pin del modello. Il confronto col corpo della scheda ha portato a
+correggere le asole dei footprint `Bourns_PTV111-3`, `Bourns_PTV111-1` e
+`Bourns_PEC11R-4120F-S0018`: ora resta solo il dente dell'aggancio a scatto.
 Vedi [pcb-corrente.md](../../docs/pcb-corrente.md#asole-di-fissaggio-bourns).
 
 ## STEP per gruppo
