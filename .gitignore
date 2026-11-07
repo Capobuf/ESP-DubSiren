@@ -23,3 +23,6 @@ artifacts/echo-decay/*.wav
 
 # Reproducible offline listening comparisons
 artifacts/offline-issues-5-12/*.wav
+
+# Regenerable per-group STEP exports (hardware/cad/3dmodels/README.md)
+hardware/cad/step-gruppi/

@@ -20,4 +20,9 @@
   (fp_circle (center -1.9750 -0.9750) (end -1.8250 -0.9750) (stroke (width 0.1) (type solid)) (fill solid) (layer "F.SilkS"))
   (fp_text reference "REF**" (at 0.0000 -2.4250 0) (layer "F.SilkS") (effects (font (size 1 1) (thickness 0.15))))
   (fp_text value "MPS_MPM3612GLQ-33_LGA-8-1EP_3x3mm" (at 0.0000 2.4250 0) (layer "F.Fab") (effects (font (size 1 1) (thickness 0.15))))
+  (model "${KIPRJMOD}/../cad/3dmodels/MPS_MPM3612GLQ-33_envelope.step"
+    (offset (xyz 0 0 0))
+    (scale (xyz 1 1 1))
+    (rotate (xyz 0 0 0))
+  )
 )

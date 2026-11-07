@@ -31,3 +31,30 @@ campi `DesignStatus`, `MPN` e `Description` senza toccare rame, posizioni, pad o
 
 Le copie `-recovered-diagnostic` e `-mixed-diagnostic` restano in `hardware/kicad`
 come storico; il PCB di riferimento è `ESP-DubSiren.kicad_pcb`.
+
+## Modelli 3D (7 novembre 2026)
+
+Tutti i footprint hanno tipo SMD/THT e modello 3D, tranne U5 (nessuno STEP
+Adafruit, spessori non documentati), TP1–TP7 e H1–H4. Provenienza, quote e
+comandi per gli STEP per gruppo: [cad/3dmodels](../cad/3dmodels/README.md).
+DRC dopo l'assegnazione: 0 errori non esclusi, 0 connessioni aperte, 0 parità;
+differenze di libreria 8 (J2, TP1–TP7).
+
+## Asole di fissaggio Bourns
+
+**Da correggere prima dei Gerber.** Il confronto dei modelli Bourns con il corpo
+della scheda e con i disegni "Recommended PCB layout" mostra tre footprint con
+asole non conformi:
+
+| Footprint (riferimenti) | Disegno Bourns | Footprint attuale | Corretto |
+|---|---|---|---|
+| `Bourns_PTV111-3` (RV1–RV6) | 13,6 mm **fra i bordi esterni**, asola 2,0×2,1 ([PTV/PTT](../cad/sources/Bourns-PTV-PTT.pdf), p.2) | centri ±6,8 (X 5,8–7,8) | centri ±5,8 (X 4,8–6,8) |
+| `Bourns_PTV111-1` (RV7) | 10,2 mm **fra i bordi interni**, asola 2,0×2,1 (p.2) | centri ±5,1 (X 4,1–6,1) | centri ±6,1 (X 5,1–7,1) |
+| `Bourns_PEC11R-4120F-S0018` (SW7) | 13,2 mm fra i bordi esterni, asola **1,8 (X) × 2,6 (Y)** ([PEC11R](../cad/sources/PEC11R.pdf), p.2) | 2,6 (X) × 1,8 (Y), centri ±6,6 | 1,8×2,6, centri ±5,7 |
+
+Con le asole attuali le gambe dei modelli Bourns attraversano il materiale per
+tutto lo spessore (PTV111-3: 0,43 mm³ per gamba; PEC11R: 0,25 mm³ sulla lunghezza
+della gamba, 2,5 mm contro un'asola di 1,8). Con le asole corrette resta solo il
+dente dell'aggancio a scatto, sul fondo della scheda. La correzione, provata su
+una copia, genera **8 errori di distanza rame-bordo** (piste BTN1, MASTER,
+USB_DP_CONN, ENC_B, POT7_TOP): servono modifiche al routing.

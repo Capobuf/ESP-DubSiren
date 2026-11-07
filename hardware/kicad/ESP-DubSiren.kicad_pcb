@@ -454,6 +454,17 @@
 			(uuid "ac8d2b8b-f4f7-4bfb-b261-d9627d48a46c")
 		)
 		(embedded_fonts no)
+		(model "${KIPRJMOD}/../cad/3dmodels/Bourns_PTV111-3420A.step"
+			(offset
+				(xyz 0 0 0)
+			)
+			(scale
+				(xyz 1 1 1)
+			)
+			(rotate
+				(xyz 0 0 0)
+			)
+		)
 	)
 	(footprint "ESP-DubSiren-V2-Mechanical:Bourns_PTV111-3"
 		(layer "F.Cu")
@@ -787,6 +798,17 @@
 			(uuid "e2628bca-4b74-4bfe-92b7-1beb07f96691")
 		)
 		(embedded_fonts no)
+		(model "${KIPRJMOD}/../cad/3dmodels/Bourns_PTV111-3420A.step"
+			(offset
+				(xyz 0 0 0)
+			)
+			(scale
+				(xyz 1 1 1)
+			)
+			(rotate
+				(xyz 0 0 0)
+			)
+		)
 	)
 	(footprint "MountingHole:MountingHole_3.2mm_M3"
 		(layer "F.Cu")
@@ -1217,6 +1239,17 @@
 			(uuid "d8be0b4c-fd03-435e-9f79-1f5651ff4e12")
 		)
 		(embedded_fonts no)
+		(model "${KIPRJMOD}/../cad/3dmodels/Bourns_PTV111-3420A.step"
+			(offset
+				(xyz 0 0 0)
+			)
+			(scale
+				(xyz 1 1 1)
+			)
+			(rotate
+				(xyz 0 0 0)
+			)
+		)
 	)
 	(footprint "ESP-DubSiren-V2-Mechanical:Bourns_PTV111-3"
 		(layer "F.Cu")
@@ -1550,6 +1583,17 @@
 			(uuid "2d4810b4-dd72-4f33-95f6-29728c78b2b4")
 		)
 		(embedded_fonts no)
+		(model "${KIPRJMOD}/../cad/3dmodels/Bourns_PTV111-3420A.step"
+			(offset
+				(xyz 0 0 0)
+			)
+			(scale
+				(xyz 1 1 1)
+			)
+			(rotate
+				(xyz 0 0 0)
+			)
+		)
 	)
 	(footprint "ESP-DubSiren-V2-Mechanical:Bourns_PEC11R-4120F-S0018"
 		(layer "F.Cu")
@@ -1919,6 +1963,17 @@
 			(uuid "c9d7c50f-dec3-4dcb-85f9-13e12f6bc402")
 		)
 		(embedded_fonts no)
+		(model "${KIPRJMOD}/../cad/3dmodels/Bourns_PEC11R-4120F-S0018.step"
+			(offset
+				(xyz 0 0 0)
+			)
+			(scale
+				(xyz 1 1 1)
+			)
+			(rotate
+				(xyz 0 0 0)
+			)
+		)
 	)
 	(footprint "ESP-DubSiren-V2-Mechanical:Bourns_PTV111-3"
 		(layer "F.Cu")
@@ -2252,6 +2307,17 @@
 			(uuid "0d4717f6-d48a-4a74-91a4-e27ec6dd1f29")
 		)
 		(embedded_fonts no)
+		(model "${KIPRJMOD}/../cad/3dmodels/Bourns_PTV111-3420A.step"
+			(offset
+				(xyz 0 0 0)
+			)
+			(scale
+				(xyz 1 1 1)
+			)
+			(rotate
+				(xyz 0 0 0)
+			)
+		)
 	)
 	(footprint "Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB"
 		(layer "F.Cu")
@@ -2557,7 +2623,7 @@
 			(uuid "921dccf3-f892-497e-b36a-d50c20facc1a")
 		)
 		(embedded_fonts no)
-		(model "${KICAD10_3DMODEL_DIR}/Button_Switch_Keyboard.3dshapes/SW_Cherry_MX_1.00u_PCB.step"
+		(model "${KIPRJMOD}/../cad/3dmodels/CHERRY_MX2A-11NW_simplified.step"
 			(offset
 				(xyz 0 0 0)
 			)
@@ -2970,7 +3036,7 @@
 			(uuid "edd6a3ad-e79b-4246-b974-ea0219f0f530")
 		)
 		(embedded_fonts no)
-		(model "${KICAD10_3DMODEL_DIR}/Button_Switch_Keyboard.3dshapes/SW_Cherry_MX_1.00u_PCB.step"
+		(model "${KIPRJMOD}/../cad/3dmodels/CHERRY_MX2A-11NW_simplified.step"
 			(offset
 				(xyz 0 0 0)
 			)
@@ -3314,6 +3380,17 @@
 			(uuid "c67b6074-3814-4bf7-a30e-c44e940bab9a")
 		)
 		(embedded_fonts no)
+		(model "${KIPRJMOD}/../cad/3dmodels/Bourns_PTV111-3420A.step"
+			(offset
+				(xyz 0 0 0)
+			)
+			(scale
+				(xyz 1 1 1)
+			)
+			(rotate
+				(xyz 0 0 0)
+			)
+		)
 	)
 	(footprint "MountingHole:MountingHole_3.2mm_M3"
 		(layer "F.Cu")
@@ -4720,7 +4797,7 @@
 			(uuid "68bd4377-cdf2-4c50-bbed-10533f5d4e97")
 		)
 		(embedded_fonts no)
-		(model "${KICAD10_3DMODEL_DIR}/Button_Switch_Keyboard.3dshapes/SW_Cherry_MX_1.00u_PCB.step"
+		(model "${KIPRJMOD}/../cad/3dmodels/CHERRY_MX2A-11NW_simplified.step"
 			(offset
 				(xyz 0 0 0)
 			)
@@ -5036,7 +5113,7 @@
 			(uuid "985fc2bf-56a9-4ab5-bebe-44314129b6c4")
 		)
 		(embedded_fonts no)
-		(model "${KICAD10_3DMODEL_DIR}/Button_Switch_Keyboard.3dshapes/SW_Cherry_MX_1.00u_PCB.step"
+		(model "${KIPRJMOD}/../cad/3dmodels/CHERRY_MX2A-11NW_simplified.step"
 			(offset
 				(xyz 0 0 0)
 			)
@@ -6658,9 +6735,9 @@
 			(uuid "b4587f01-8357-4f56-b11e-c157e9594800")
 		)
 		(embedded_fonts no)
-		(model "${KICAD10_3DMODEL_DIR}/RF_Module.3dshapes/ESP32-S3-WROOM-1U.step"
+		(model "${KIPRJMOD}/../cad/3dmodels/vendor/ESP32-S3-WROOM-1U.STEP"
 			(offset
-				(xyz 0 0 0)
+				(xyz -9 -9.6 0)
 			)
 			(scale
 				(xyz 1 1 1)
@@ -8764,6 +8841,17 @@
 			(uuid "6a4cb60a-a6ea-42f4-ac77-7c7899ff9543")
 		)
 		(embedded_fonts no)
+		(model "${KIPRJMOD}/../cad/3dmodels/CK_PTS636SM43SMTR_simplified.step"
+			(offset
+				(xyz 0 0 0)
+			)
+			(scale
+				(xyz 1 1 1)
+			)
+			(rotate
+				(xyz 0 0 0)
+			)
+		)
 	)
 	(footprint "Connector_USB:USB_C_Receptacle_GCT_USB4085"
 		(layer "B.Cu")
@@ -11011,6 +11099,17 @@
 			(uuid "0da68ad1-c70e-4a1d-a750-2afb22259449")
 		)
 		(embedded_fonts no)
+		(model "${KIPRJMOD}/../cad/3dmodels/Adafruit_6250_PCM510x_no_jack.step"
+			(offset
+				(xyz 0 0 2.5)
+			)
+			(scale
+				(xyz 1 1 1)
+			)
+			(rotate
+				(xyz 0 0 0)
+			)
+		)
 	)
 	(footprint "Resistor_SMD:R_0603_1608Metric"
 		(layer "B.Cu")
@@ -11921,6 +12020,17 @@
 			(uuid "11baaf41-34c8-4551-b3c8-bfb06633045c")
 		)
 		(embedded_fonts no)
+		(model "${KIPRJMOD}/../cad/3dmodels/Bourns_PTV111-1420A.step"
+			(offset
+				(xyz 0 0 0)
+			)
+			(scale
+				(xyz 1 1 1)
+			)
+			(rotate
+				(xyz 0 0 0)
+			)
+		)
 	)
 	(footprint "Resistor_SMD:R_0603_1608Metric"
 		(layer "B.Cu")
@@ -13123,6 +13233,17 @@
 			(uuid "fa46761c-8b7f-4be2-b728-6b74adfb787a")
 		)
 		(embedded_fonts no)
+		(model "${KIPRJMOD}/../cad/3dmodels/MPS_MPM3612GLQ-33_envelope.step"
+			(offset
+				(xyz 0 0 0)
+			)
+			(scale
+				(xyz 1 1 1)
+			)
+			(rotate
+				(xyz 0 0 0)
+			)
+		)
 	)
 	(footprint "Resistor_SMD:R_0603_1608Metric"
 		(layer "B.Cu")
@@ -14229,6 +14350,17 @@
 			(uuid "c2e9987d-d7b5-40b0-b014-369c1663eb71")
 		)
 		(embedded_fonts no)
+		(model "${KIPRJMOD}/../cad/3dmodels/Bel_0ZCG0110CF2B_envelope.step"
+			(offset
+				(xyz 0 0 0)
+			)
+			(scale
+				(xyz 1 1 1)
+			)
+			(rotate
+				(xyz 0 0 0)
+			)
+		)
 	)
 	(footprint "Connector_Audio:Jack_6.35mm_Neutrik_NRJ4HF_Horizontal"
 		(layer "B.Cu")
@@ -16347,6 +16479,17 @@
 			(uuid "11e627b7-91dd-4cd3-8d1a-92e698478ea4")
 		)
 		(embedded_fonts no)
+		(model "${KIPRJMOD}/../cad/3dmodels/CK_PTS636SM43SMTR_simplified.step"
+			(offset
+				(xyz 0 0 0)
+			)
+			(scale
+				(xyz 1 1 1)
+			)
+			(rotate
+				(xyz 0 0 0)
+			)
+		)
 	)
 	(footprint "Capacitor_SMD:C_0603_1608Metric"
 		(layer "B.Cu")

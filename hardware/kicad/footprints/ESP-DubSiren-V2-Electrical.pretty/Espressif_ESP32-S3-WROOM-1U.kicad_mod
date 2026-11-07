@@ -60,8 +60,8 @@
   (fp_poly (pts (xy -9.0000 -8.1300) (xy -8.0000 -9.1300) (xy 9.0000 -9.1300) (xy 9.0000 10.0700) (xy -9.0000 10.0700)) (stroke (width 0.1) (type solid)) (fill none) (layer "F.Fab"))
   (fp_text reference "REF**" (at 0.0000 -10.1100 0) (layer "F.SilkS") (effects (font (size 1 1) (thickness 0.15))))
   (fp_text value "Espressif_ESP32-S3-WROOM-1U" (at 0.0000 11.0500 0) (layer "F.Fab") (effects (font (size 1 1) (thickness 0.15))))
-  (model "${KICAD10_3DMODEL_DIR}/RF_Module.3dshapes/ESP32-S3-WROOM-1U.step"
-    (offset (xyz 0 0 0))
+  (model "${KIPRJMOD}/../cad/3dmodels/vendor/ESP32-S3-WROOM-1U.STEP"
+    (offset (xyz -9 -9.6 0))
     (scale (xyz 1 1 1))
     (rotate (xyz 0 0 0))
   )
