@@ -158,7 +158,11 @@ scarta le modifiche live e ripristina la memoria. Disponibili anche
 `PANEL SAVE 1..4` e `PANEL RECALL 1..4`. Un asterisco nel titolo SOUND indica
 una patch assente o modificata. Il retrigger dello stesso pad conserva gli edit
 live; passando a un altro pad si richiama la sua memoria salvata (se presente).
-Tornando al primo si perdono gli edit non salvati. Nessun autosave sonoro.
+Tornando al primo si perdono gli edit non salvati. Nessun autosave sonoro:
+i parametri restano live fino a SAVE PATCH. Famiglia e variante del pad sono
+invece assegnazioni del pulsante e vengono salvate sia dalla Home (encoder,
+scorciatoie BTN) sia dalla pagina SOUND, con la stessa attesa di 2 s prima
+della scrittura NVS.
 
 La patch contiene voce/variante, Tune, Rate, Depth, Decay, Sweep, parametri
 Lickshot, Tone/Contour, Syndrum, modulazione, retrigger e voicing. Echo e Master

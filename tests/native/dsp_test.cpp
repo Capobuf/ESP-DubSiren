@@ -2,6 +2,7 @@
 #ifdef NDEBUG
 #undef NDEBUG
 #endif
+#include <algorithm>
 #include <assert.h>
 #include <math.h>
 #include <memory>
@@ -196,10 +197,13 @@ void testParser() {
     assert(state.sweepAmount == 0.75f && state.sweepMs == 800.0f);
     assert(parser.parse("SET MODE GUNSHOT"));
     assert(store.snapshot().mode == SirenMode::Gunshot);
+    // Same +/-4 octave limit as the panel menu and stored patches.
+    assert(parser.parse("SET SYNDRUM_SWEEP -3.5"));
+    assert(store.snapshot().syndrumSweepOctaves == -3.5f);
     const auto validTransient = store.snapshot();
     assert(!parser.parse("SET SWEEP 1.1"));
     assert(!parser.parse("SET SWEEP_MS 49"));
-    assert(!parser.parse("SET SYNDRUM_SWEEP -3.1"));
+    assert(!parser.parse("SET SYNDRUM_SWEEP -4.1"));
     assert(!parser.parse("SET SYNDRUM_WAVE SAW"));
     state = store.snapshot();
     assert(state.mode == validTransient.mode &&
@@ -577,6 +581,15 @@ void testSyndrum() {
     }
     assert(memcmp(waveforms[0], waveforms[1], sizeof(waveforms[0])) != 0);
     assert(memcmp(waveforms[0], waveforms[2], sizeof(waveforms[0])) != 0);
+
+    // DECAY 0 from the menu still yields a short hit, like Gunshot.
+    auto shortHit = std::make_unique<AudioEngine>();
+    shortHit->begin();
+    ControlState zeroDecay = state;
+    zeroDecay.trigger = true;
+    zeroDecay.decayMs = 0.0f;
+    shortHit->render(zeroDecay, block, 480);
+    assert(blockRms(block, 480) > 100.0f);
 }
 
 void testGunshot() {
@@ -1045,6 +1058,25 @@ void testEchoLoop() {
         if (i >= 21600) energy += wet * wet;
     }
     assert(energy > 1.0);
+}
+
+void testFractionalEchoLoopKeepsHighs() {
+    // 223.7 ms is not a whole number of samples: the frozen loop must not
+    // be low-passed again on every pass.
+    auto delay = std::make_unique<Delay>();
+    delay->begin(223.7f, 50.0f, 19000.0f, kRate);
+    for (int i = 0; i < 12000; ++i) {
+        delay->process(0.35f * sinf(TWO_PI * 4000.0f * i / kRate), 0.0f, false, kRate);
+    }
+    double first = 0.0, last = 0.0;
+    constexpr int kLoopSamples = 20 * 48000;
+    for (int i = 0; i < kLoopSamples; ++i) {
+        const float wet = delay->process(0.0f, 0.0f, true, kRate);
+        if (i < 4800) first += wet * wet;
+        if (i >= kLoopSamples - 4800) last += wet * wet;
+    }
+    const double changeDb = 10.0 * log10(last / first);
+    assert(fabs(changeDb) < 1.0);
 }
 
 void testEchoCutPreservesLoop() {
@@ -1743,6 +1775,39 @@ void testDryToneAndContour() {
     }
 }
 
+void testProfileSwitchFadesDryTone() {
+    // Leaving Extended must fade the Tone filter out (5 ms), not drop it at
+    // once. Switch at several waveform phases and keep the worst step.
+    int steadyJump = 0, switchJump = 0;
+    for (int offset = 0; offset < 480; offset += 24) {
+        auto engine = std::make_unique<AudioEngine>();
+        engine->begin();
+        ControlState state;
+        state.profile = PerformanceProfile::Extended;
+        state.mode = SirenMode::Sine1;
+        state.hold = true;
+        state.dryToneHz = 500.0f;
+        state.echoLevel = 0.0f;
+        int16_t block[480];
+        int previous = 0;
+        for (int n = 0; n < 100; ++n) {
+            const size_t count = n == 0 ? 480 - offset : 480;
+            engine->render(state, block, count);
+            for (size_t i = 0; i < count; ++i) {
+                if (n >= 80) steadyJump = std::max(steadyJump, abs(block[i] - previous));
+                previous = block[i];
+            }
+        }
+        state.profile = PerformanceProfile::Classic;
+        engine->render(state, block, 8);
+        for (int i = 0; i < 8; ++i) {
+            switchJump = std::max(switchJump, abs(block[i] - previous));
+            previous = block[i];
+        }
+    }
+    assert(switchJump <= steadyJump * 1.2f);
+}
+
 void testColoredEchoDecay() {
     for (float feedback : {0.0f, .5f, .8f, .99f}) {
         auto delay = std::make_unique<Delay>(); delay->begin(50, 60, 19000, kRate, true);
@@ -1915,6 +1980,92 @@ void testPanelValidationAndCancelledClicks() {
     assert(strstr(parser.menuFooter(), "ECHO LEVEL") != nullptr);
     assert(parser.parse("ENCODER_ROTATE NEXT"));
     assert(strcmp(parser.menuFooter(), "TURN SELECT / PUSH OPEN") == 0);
+}
+
+void testPatchTransactionAndRemoteGates() {
+    ControlStore store;
+    CommandParser parser(store);
+    assert(parser.parse("SET PROFILE EXTENDED"));
+    assert(parser.parse("PANEL SAVE 1"));
+    char patch[512] = "PANEL PATCH 2";
+    for (unsigned i = 0; i < kSoundPatchValueCount; ++i) {
+        char value[32];
+        snprintf(value, sizeof(value), " %.9g", soundPatchValue(parser.panelSettings().patches[0], i));
+        strcat(patch, value);
+    }
+    // A malformed PATCH invalidates the staged restore; later valid lines
+    // must not be applied on their own.
+    const unsigned revision = parser.panelSettingsRevision();
+    assert(parser.parse("PANEL BEGIN"));
+    assert(!parser.parse("PANEL PATCH 1 1 2 x"));
+    assert(parser.parse(patch));
+    assert(!parser.parse("PANEL COMMIT"));
+    assert(!parser.panelSettings().patches[1].valid);
+    assert(parser.panelSettingsRevision() == revision);
+    assert(parser.parse("PANEL BEGIN"));
+    assert(parser.parse(patch));
+    assert(parser.parse("PANEL COMMIT"));
+    assert(parser.panelSettings().patches[1].valid);
+
+    // Legacy remote gates survive gate recomputation from panel events.
+    assert(parser.parse("HOLD 1"));
+    assert(parser.parse("MOD_UP 1"));
+    assert(parser.parse("ECHO_SPIN 1"));
+    assert(parser.parse("ENCODER_ROTATE NEXT"));
+    assert(parser.setPhysicalPad(4, true));
+    assert(parser.setPhysicalPad(4, false));
+    ControlState state = store.snapshot();
+    assert(state.hold && state.modUp && state.echoSpin);
+    assert(parser.parse("HOLD 0"));
+    assert(parser.parse("ENCODER_ROTATE NEXT"));
+    assert(!store.snapshot().hold && store.snapshot().modUp);
+    // A physically held pad must not keep remote gates alive on USB loss.
+    assert(parser.parse("HOLD 1"));
+    assert(parser.setPhysicalPad(1, true));
+    parser.resetRemoteInputs();
+    state = store.snapshot();
+    assert(!state.hold && !state.modUp && !state.echoSpin);
+    assert(parser.setPhysicalPad(1, false));
+    assert(parser.parse("HOLD 1"));
+    assert(parser.parse("SET PROFILE CLASSIC"));
+    assert(parser.parse("ENCODER_ROTATE NEXT"));
+    assert(!store.snapshot().hold);
+
+    // Device errors no longer hide NVS errors or the menu footer.
+    parser.setDeviceStatus("I2S WRITE FAILED");
+    parser.setPersistenceStatus("SAVE FAILED");
+    assert(strcmp(parser.persistenceStatus(), "SAVE FAILED") == 0);
+    assert(strcmp(parser.deviceStatus(), "I2S WRITE FAILED") == 0);
+    parser.setPersistenceStatus("");
+    assert(parser.parse("ENCODER_SWITCH 1"));
+    assert(parser.parse("ENCODER_SWITCH 0"));
+    assert(strcmp(parser.menuFooter(), "TURN SELECT / PUSH OPEN") == 0);
+}
+
+void testVariantSaveRule() {
+    // Pad family/variant persist from both Home and the SOUND menu; numeric
+    // sound edits stay live until SAVE PATCH.
+    ControlStore store;
+    CommandParser parser(store);
+    assert(parser.parse("SET PROFILE EXTENDED"));
+    auto click = [&]() { assert(parser.parse("ENCODER_SWITCH 1")); assert(parser.parse("ENCODER_SWITCH 0")); };
+    auto go = [&](const char *key) {
+        unsigned steps = 0;
+        while (strcmp(parser.menuItemKey(parser.menuIndex()), key) != 0) {
+            assert(++steps <= parser.menuItemCount()); assert(parser.parse("ENCODER_ROTATE NEXT"));
+        }
+        click();
+    };
+    unsigned revision = parser.panelSettingsRevision();
+    assert(parser.parse("ENCODER_ROTATE NEXT"));
+    assert(parser.panelSettingsRevision() == revision + 1);
+    click(); go("SOUND");
+    revision = parser.panelSettingsRevision();
+    go("VARIANT"); assert(parser.parse("ENCODER_ROTATE NEXT")); click();
+    assert(parser.panelSettingsRevision() > revision);
+    revision = parser.panelSettingsRevision();
+    go("TUNE"); assert(parser.parse("ENCODER_ROTATE NEXT")); click();
+    assert(parser.panelSettingsRevision() == revision);
 }
 
 void testTapTempo() {
@@ -2111,6 +2262,8 @@ int main() {
     testTempoControls();
     testTempoAudioContinuity();
     testPanelValidationAndCancelledClicks();
+    testPatchTransactionAndRemoteGates();
+    testVariantSaveRule();
     testPhysicalAndRemoteOwnership();
     testPadMemories();
     testPerformanceMenu();
@@ -2153,7 +2306,9 @@ int main() {
     testModeTransitionStartsContinuously();
     testDelay();
     testEchoLoop();
+    testFractionalEchoLoopKeepsHighs();
     testEchoCutPreservesLoop();
+    testProfileSwitchFadesDryTone();
     testEngine();
     testProfileKeepsTail();
     puts("native DSP tests passed");

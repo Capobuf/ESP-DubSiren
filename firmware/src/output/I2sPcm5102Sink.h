@@ -3,16 +3,17 @@
 #include <Arduino.h>
 #include <driver/i2s.h>
 
-#include "AudioSink.h"
+#include <stddef.h>
+#include <stdint.h>
 #include "Config.h"
 
-class I2sPcm5102Sink final : public AudioSink {
+class I2sPcm5102Sink {
 public:
     I2sPcm5102Sink();
-    ~I2sPcm5102Sink() override;
+    ~I2sPcm5102Sink();
 
-    bool begin() override;
-    bool write(const int16_t *samples, size_t count) override;
+    bool begin();
+    bool write(const int16_t *samples, size_t count);
     void silence();
 
 private:

@@ -6,16 +6,14 @@
 #include "DspUtils.h"
 #include "PerformanceConfig.h"
 
+static_assert(Config::kSampleRate == 48000,
+              "Delay::kBufferSamples and fixed smoothing coefficients assume 48 kHz");
+
 namespace {
 
 float clampFrequency(float frequency) {
     const float maximum = Config::kSampleRate * 0.45f;
     return frequency < 10.0f ? 10.0f : (frequency > maximum ? maximum : frequency);
-}
-
-int16_t toInt16(float value) {
-    const float limited = value < -1.0f ? -1.0f : (value > 1.0f ? 1.0f : value);
-    return static_cast<int16_t>(lrintf(limited * 32767.0f));
 }
 
 }  // namespace
@@ -226,7 +224,7 @@ void AudioEngine::renderSegment(const ControlState &liveControls, const Activati
         const float sweepLevel = sweepEnvelope_.next(
             controls.sweepMs, Config::kSampleRate);
         const float syndrumLevel = syndrumEnvelope_.next(
-            decayMs, Config::kSampleRate);
+            fmaxf(decayMs, PerformanceConfig::kGunshotMinDecayMs), Config::kSampleRate);
         float gunshotDecay = decayMs;
         if (gunshotDecay < PerformanceConfig::kGunshotMinDecayMs) {
             gunshotDecay = PerformanceConfig::kGunshotMinDecayMs;
@@ -354,7 +352,7 @@ void AudioEngine::renderSegment(const ControlState &liveControls, const Activati
         float filterMix = dryFilterMix_.next();
         if (dryFilterMix_.target() == 0.0f && filterMix < .00001f) dryFilterMix_.reset(filterMix = 0.0f);
         const float filteredDry = dryFilter_.process(dry);
-        if (!classic && filterMix > 0.0f) dry += (filteredDry - dry) * filterMix;
+        if (filterMix > 0.0f) dry += (filteredDry - dry) * filterMix;
         lastDry_ = dry;
 
         const float wet = delay_.process(dry, feedback, echoLoop,

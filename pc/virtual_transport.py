@@ -1,4 +1,5 @@
 import ctypes
+import importlib.util
 import json
 import queue
 import subprocess
@@ -8,19 +9,17 @@ import time
 from collections.abc import Callable
 from pathlib import Path
 
+from protocol import put_latest
+
 
 VIRTUAL_DEVICE = "Virtual ESP"
 ROOT = Path(__file__).resolve().parents[1]
 BUILD_SCRIPT = ROOT / "virtual_esp" / "build.py"
-
-
-def _library_path() -> Path:
-    build_dir = ROOT / "virtual_esp" / "bin"
-    if sys.platform == "win32":
-        return build_dir / "virtual_esp.dll"
-    if sys.platform == "darwin":
-        return build_dir / "libvirtual_esp.dylib"
-    return build_dir / "libvirtual_esp.so"
+_spec = importlib.util.spec_from_file_location("virtual_esp_build", BUILD_SCRIPT)
+_build = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(_build)
+# A loaded DLL cannot be relinked (Windows locks it) nor reloaded by ctypes.
+_library_loaded = False
 
 
 class VirtualTransport:
@@ -125,6 +124,13 @@ class VirtualTransport:
             self._command_callback({"command": command, "accepted": accepted})
 
     def _build_if_needed(self) -> None:
+        if _library_loaded:
+            if _build.needs_build(_build.library_path()):
+                raise RuntimeError(
+                    "Virtual ESP sources changed after the library was loaded: "
+                    "restart the GUI to rebuild it."
+                )
+            return
         result = subprocess.run(
             [sys.executable, str(BUILD_SCRIPT), "--if-needed"],
             cwd=ROOT,
@@ -136,7 +142,9 @@ class VirtualTransport:
             raise RuntimeError(f"Virtual ESP build failed:\n{details}")
 
     def _load_library(self) -> None:
-        library = ctypes.CDLL(str(_library_path()))
+        global _library_loaded
+        library = ctypes.CDLL(str(_build.library_path()))
+        _library_loaded = True
         library.virtual_esp_init.argtypes = []
         library.virtual_esp_init.restype = ctypes.c_int
         library.virtual_esp_command.argtypes = [ctypes.c_char_p]
@@ -417,7 +425,7 @@ class VirtualTransport:
                     ctypes.addressof(buffer),
                     self._block_samples * ctypes.sizeof(ctypes.c_int16),
                 )
-                self._put_latest(pcm)
+                put_latest(self._audio_queue, pcm)
 
             deadline += period
             remaining = deadline - time.perf_counter()
@@ -426,15 +434,3 @@ class VirtualTransport:
             elif remaining < -period:
                 deadline = time.perf_counter()
 
-    def _put_latest(self, pcm: bytes) -> None:
-        try:
-            self._audio_queue.put_nowait(pcm)
-        except queue.Full:
-            try:
-                self._audio_queue.get_nowait()
-            except queue.Empty:
-                pass
-            try:
-                self._audio_queue.put_nowait(pcm)
-            except queue.Full:
-                pass

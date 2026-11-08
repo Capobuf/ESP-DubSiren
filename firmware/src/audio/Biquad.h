@@ -6,7 +6,6 @@ public:
     void setHighPass(float cutoffHz, float sampleRate, float q);
     void setLowPass(float cutoffHz, float sampleRate, float q);
     float process(float input);
-    void reset();
 
 private:
     void setCoefficients(float b0, float b1, float b2, float a0, float a1,

@@ -2,15 +2,16 @@
 
 #include <Arduino.h>
 
-#include "AudioSink.h"
+#include <stddef.h>
+#include <stdint.h>
 
-class UsbPcmSink final : public AudioSink {
+class UsbPcmSink {
 public:
     UsbPcmSink();
-    ~UsbPcmSink() override;
+    ~UsbPcmSink();
 
-    bool begin() override;
-    bool write(const int16_t *samples, size_t count) override;
+    bool begin();
+    bool write(const int16_t *samples, size_t count);
     bool writeStatus(const char *payload, size_t length);
     bool writeCommandResult(const char *command, size_t length, bool accepted);
 

@@ -6,15 +6,6 @@
 #include "DspUtils.h"
 #include "PerformanceConfig.h"
 
-namespace {
-
-int16_t floatToInt16(float value) {
-    const float limited = value < -1.0f ? -1.0f : (value > 1.0f ? 1.0f : value);
-    return static_cast<int16_t>(lrintf(limited * 32767.0f));
-}
-
-}  // namespace
-
 Delay::Delay()
     : writeIndex_(0), delayMs_(360.0f), highPassHz_(60.0f),
       lowPassHz_(7000.0f), filterUpdateCountdown_(0),
@@ -92,7 +83,9 @@ float Delay::process(float dry, float feedback, bool echoLoop,
     const float flat = flatMix_.next() * (1.0f - color);
     const float filtered = shaped + (delayed - shaped) * flat;
     if (echoLoop) {
-        buffer_[writeIndex_] = floatToInt16(delayed);
+        // Copy the stored sample: re-writing the interpolated read would
+        // low-pass and shrink the frozen loop on every pass at fractional times.
+        buffer_[writeIndex_] = buffer_[fraction < 0.5f ? i0 : i1];
     } else {
         const float drive = PerformanceConfig::kFeedbackSaturationDrive * (1.0f + 2.0f * color);
         const float bias = drive * PerformanceConfig::kFeedbackSaturationAsymmetry;
@@ -104,7 +97,7 @@ float Delay::process(float dry, float feedback, bool echoLoop,
             (1.5f * drive);
         const float feedbackInput = softClip(dry + saturatedFeedback);
         // Truncate toward zero: rounding can sustain a few LSBs indefinitely.
-        // LOOP keeps its separate rounded copy to preserve frozen contents.
+        // LOOP copies raw samples instead, so frozen contents stay unchanged.
         buffer_[writeIndex_] = static_cast<int16_t>(feedbackInput * 32767.0f);
     }
     writeIndex_ = (writeIndex_ + 1) % kBufferSamples;

@@ -24,6 +24,7 @@ public:
     void setPhysicalEncoderPressed(bool down) { physicalEncoder_ = down; performance_.setEncoderPressed(down || remoteEncoder_); }
     void setRemoteEncoderPressed(bool down) { remoteEncoder_ = down; performance_.setEncoderPressed(down || physicalEncoder_); }
     void resetRemoteInputs() {
+        performance_.clearRemoteGates();
         bool physicalActive = physicalEncoder_;
         for (bool down : physicalPads_) physicalActive |= down;
         if (!physicalActive) {
@@ -65,7 +66,7 @@ public:
         return performance_.menuItemValue(index);
     }
     const char *menuTitle() const { return performance_.menuTitle(); }
-    const char *menuFooter() const { return deviceStatus_[0] ? deviceStatus_ : performance_.menuFooter(); }
+    const char *menuFooter() const { return performance_.menuFooter(); }
     const char *overlayTitle() const { return performance_.overlayTitle(); }
     const char *overlayValue() const { return performance_.overlayValue(); }
     unsigned selectedPad() const { return performance_.selectedPad(); }
@@ -100,9 +101,8 @@ public:
         snprintf(deviceStatus_, sizeof(deviceStatus_), "%s", status);
         performance_.notifyControlsChanged();
     }
-    const char *persistenceStatus() const {
-        return deviceStatus_[0] ? deviceStatus_ : performance_.persistenceStatus();
-    }
+    const char *persistenceStatus() const { return performance_.persistenceStatus(); }
+    const char *deviceStatus() const { return deviceStatus_; }
     const char *buttonActionNameFor(PerformanceProfile profile,
                                     unsigned button) const {
         return performance_.buttonActionNameFor(profile, button);
@@ -133,7 +133,6 @@ private:
     static bool parseProfileName(const char *text, PerformanceProfile &profile);
     static bool parsePotTargetName(const char *text, PotTarget &target);
     static bool parseButtonActionName(const char *text, ButtonAction &action);
-    static bool parsePanelSoundName(const char *text, PanelSound &sound);
     bool parsePanelCommand(const String &command);
 
     bool physicalPads_[4] = {}, remotePads_[4] = {};

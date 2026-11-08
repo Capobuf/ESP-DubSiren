@@ -116,7 +116,7 @@ CONTROL_SPECS = {
         50.0, 3000.0, 650.0, lambda value: f"{value:.0f} ms", "power", 2.0
     ),
     "SYNDRUM_SWEEP": ControlSpec(
-        -3.0, 3.0, 2.0, lambda value: f"{value:+.2f} oct"
+        -4.0, 4.0, 2.0, lambda value: f"{value:+.2f} oct"
     ),
     "DELAY_MS": ControlSpec(
         50.0, 1000.0, 360.0, lambda value: f"{value:.0f} ms", "logarithmic"

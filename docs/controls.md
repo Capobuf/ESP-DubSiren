@@ -67,9 +67,9 @@ remain available in Extended/debug and leave the FLAT bypass.
 Classic uses a finite linear anti-click gate: 2 ms attack and at most 3 ms
 release, reaching exact zero (rounding tolerance: one sample). TRIGGER OR HOLD
 opens it. DECAY, Dynamic Sweep, legacy voicing selection, automatic RISE/DIVE
-retrigger, Spin and Loop cannot alter this baseline. Classic does not replay queued
-sub-block taps after release; taps wholly between audio snapshots may be
-missed. Commands are applied at a 480-sample block boundary (up to 10 ms),
+retrigger, Spin and Loop cannot alter this baseline. Classic also replays queued
+sub-block taps: a tap pressed and released between audio snapshots still opens
+the gate for the 2 ms attack before the 3 ms release. Commands are applied at a 480-sample block boundary (up to 10 ms),
 plus output buffering: the 3 ms bound describes DSP fade time, not total
 host-to-speaker latency.
 

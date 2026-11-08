@@ -138,7 +138,7 @@ class OutputRoutingTests(unittest.TestCase):
         app = make_app("PC")
         app.pending_sends["TUNE_HZ"] = "timer-1"
         app.momentary_active.add("TRIGGER")
-        app.ui_events.put(("status", {"protocol": 1}))
+        app.ui_events.put(("transport_status", (app.transport, {"protocol": 1})))
 
         app.disconnect()
 

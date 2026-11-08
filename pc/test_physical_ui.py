@@ -1,6 +1,7 @@
 import json
 import tempfile
 import unittest
+from types import SimpleNamespace
 from unittest.mock import patch
 from pathlib import Path
 
@@ -17,6 +18,7 @@ from physical_ui import (
     load_panel_config,
     migrate_panel_config,
     panel_settings_commands,
+    panel_settings_signature,
     save_panel_config,
 )
 
@@ -329,6 +331,46 @@ class PhysicalUiTests(unittest.TestCase):
             app._handle_status({"protocol": 1, "panel": panel})
         self.assertIn(("DEPTH", "1.50 oct"), overlays)
         self.assertEqual(app.parameter_values["LFO_DEPTH_OCT"], 1.5)
+
+    def test_restore_signature_ignores_fields_the_restore_does_not_send(self):
+        saved = sample_settings()
+        restored = json.loads(json.dumps(saved))
+        # Classic BTN2 is HOLD: its leftover sound is not restored.
+        restored["profiles"]["CLASSIC"]["buttons"][1]["sound"] = "PING"
+        # Classic POT3 is CONTINUOUS: its zones are reset by TARGET.
+        restored["profiles"]["CLASSIC"]["pots"][2]["zones"] = [0.1, 0.4, 0.9]
+        self.assertEqual(panel_settings_signature(saved), panel_settings_signature(restored))
+        restored["profiles"]["EXTENDED"]["buttons"][0]["sound"] = "PING"
+        self.assertNotEqual(panel_settings_signature(saved), panel_settings_signature(restored))
+
+    def test_status_during_master_drag_keeps_the_value_to_send(self):
+        for pending, dragging in ((True, False), (False, True)):
+            app = make_app()
+            app.overlay_token = None
+            app._show_overlay = lambda *_args: None
+            app.parameter_values["MASTER"] = 0.8
+            app.dials["MASTER"].dragging = dragging
+            if pending:
+                app.pending_sends["MASTER"] = "after-1"
+            panel = json.loads(json.dumps(app.panel_state))
+            panel["display"]["master"] = 0.7
+            with patch("app.DubSirenApp._handle_status"):
+                app._handle_status({"protocol": 1, "panel": panel})
+            self.assertEqual(app.parameter_values["MASTER"], 0.8)
+        app.pending_sends.clear()
+        app.dials["MASTER"].dragging = False
+        with patch("app.DubSirenApp._handle_status"):
+            app._handle_status({"protocol": 1, "panel": panel})
+        self.assertEqual(app.parameter_values["MASTER"], 0.7)
+
+    def test_shifted_key_release_still_releases_pad(self):
+        app = make_app()
+        app._key_releases = {}
+        app._key_press(SimpleNamespace(keycode=49, keysym="1"),
+                       lambda: app._pad_down(1, "key-1"), lambda: app._pad_up(1, "key-1"))
+        app._key_release(SimpleNamespace(keycode=16, keysym="Shift_L"))
+        app._key_release(SimpleNamespace(keycode=49, keysym="exclam"))
+        self.assertEqual(app.commands, ["PAD 1 1", "PAD 1 0"])
 
     def test_wrong_protocol_does_not_apply_panel_settings(self):
         app = make_app()

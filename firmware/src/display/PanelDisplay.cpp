@@ -109,14 +109,16 @@ void PanelDisplay::renderHome(const ControlState &state, bool linked) {
                     ? "" : String(rateZones ? " - " : "") + decimal(state.lfoRateHz, 2) + " Hz"),
                  2, kOffWhite);
         if (state.tempo.echoSync) drawText(16, 122, String("ECHO ") + echoText, 1, kOffWhite);
-        String status = controller_.persistenceStatus();
+        const char *alert = controller_.persistenceStatus()[0]
+            ? controller_.persistenceStatus() : controller_.deviceStatus();
+        String status = alert;
         if (!status.length() && tempoStatus[0]) status = tempoStatus;
         if (!status.length()) {
             status = state.hold ? "HOLD  " : "";
             status += state.echoCut ? "ECHO CUT" : state.echoLevel > 0.0f ? "ECHO" : "DRY";
         }
         drawText(16, 139, status, status.length() > 18 ? 1 : 2,
-                 controller_.persistenceStatus()[0] ? kRed : kAmber);
+                 alert[0] ? kRed : kAmber);
         if (focus_ != Focus::None) {
             const char *labels[] = {"", "PITCH", "RATE", "DEPTH", "ECHO LEVEL",
                 "ECHO TIME", "ECHO FEEDBACK", "FILTER", "MASTER"};
@@ -147,7 +149,9 @@ void PanelDisplay::renderHome(const ControlState &state, bool linked) {
             ? overlayLabel_ : labels[static_cast<unsigned>(focus_)], 1, kMuted);
         drawText(22, 92, overlayValue_, 3, kOffWhite);
     }
-    String status = controller_.persistenceStatus();
+    const char *alert = controller_.persistenceStatus()[0]
+        ? controller_.persistenceStatus() : controller_.deviceStatus();
+    String status = alert;
     if (!status.length() && tempoStatus[0]) status = tempoStatus;
     if (!status.length()) {
         if (state.hold) status += "HOLD ";
@@ -158,7 +162,7 @@ void PanelDisplay::renderHome(const ControlState &state, bool linked) {
     }
     if (!status.length()) status = "SYSTEM READY";
     drawText(16, 149, status, 1,
-             controller_.persistenceStatus()[0] || state.echoLoop ? kRed : kChartreuse);
+             alert[0] || state.echoLoop ? kRed : kChartreuse);
 }
 
 void PanelDisplay::renderMenu(const ControlState &state) {

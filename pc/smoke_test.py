@@ -10,6 +10,10 @@ import time
 from transport import SerialTransport
 
 
+# Factory Classic LOW/MID/HIGH, firmware PerformanceConfig::kClassicPitchHz.
+CLASSIC_PITCH_HZ = (261.63, 392.00, 587.33)
+
+
 def samples(pcm: bytes) -> tuple[int, ...]:
     return struct.unpack(f"<{len(pcm) // 2}h", pcm)
 
@@ -260,17 +264,17 @@ class SmokeTest:
         self.send("MOD_UP 0", "MOD_DOWN 0")
         print("MANUAL", {"up_hz": hz_up, "down_hz": hz_down, "both_hz": hz_both})
 
+        # SET PROFILE releases Hold: send it again after every profile change.
         self.send("SET MODE SINE1", "SET CLASSIC_MOD MANUAL",
-                  "SET PROFILE CLASSIC")
+                  "SET PROFILE CLASSIC", "HOLD 1")
         classic_hz = []
         for pitch in ("LOW", "MID", "HIGH"):
             self.send(f"SET CLASSIC_PITCH {pitch}")
             self.settle(0.20)
             classic_hz.append(metrics(self.grab(40))[2])
-        assert 105 <= classic_hz[0] <= 115
-        assert 215 <= classic_hz[1] <= 225
-        assert 430 <= classic_hz[2] <= 450
-        self.send("SET PROFILE EXTENDED", "SET LFO_DEPTH_OCT 0",
+        for measured, expected in zip(classic_hz, CLASSIC_PITCH_HZ):
+            assert abs(measured - expected) <= expected * 0.03, (measured, expected)
+        self.send("SET PROFILE EXTENDED", "HOLD 1", "SET LFO_DEPTH_OCT 0",
                   "SET TUNE_HZ 220")
         self.settle(0.20)
         assert 215 <= metrics(self.grab(30))[2] <= 225

@@ -13,7 +13,18 @@ public:
     enum class DisplayMode : uint8_t { Home, Menu };
     enum class MenuPage : uint8_t { Root, Setup, Sound, Mod, Echo, Pots, Pot, Buttons, Button, Encoder, Reset };
 
+    // Legacy TRIGGER/HOLD/MOD/ECHO commands, kept separate so panel events
+    // recomputing the gate from physical buttons do not cancel them.
+    struct RemoteGates {
+        bool trigger = false, hold = false, modUp = false, modDown = false,
+             echoCut = false, echoSpin = false;
+    };
+
     explicit PerformanceController(ControlStore &controls);
+    static bool parseSound(const String &text, PanelSound &sound);
+    static void applyEchoFilter(ControlState &state, float value);
+    RemoteGates &remoteGates() { return remoteGates_; }
+    void clearRemoteGates();
 
     void setProfile(PerformanceProfile profile);
     void notifyControlsChanged() { changed(); }
@@ -128,7 +139,6 @@ private:
         int direction = 0;
     };
 
-    static bool parseSound(const String &text, PanelSound &sound);
     void applySound(ControlState &state, unsigned buttonIndex, bool activate);
     static void captureActivation(ControlState &state);
     void updateGate(ControlState &state);
@@ -158,7 +168,6 @@ private:
     float mapPosition(const PotConfig &config, float position) const;
     void formatTargetValue(PotTarget target, const ControlState &state,
                            char *buffer, unsigned size) const;
-    static void applyEchoFilter(ControlState &state, float value);
     void changed();
 
     ControlStore &controls_;
@@ -181,6 +190,7 @@ private:
     bool modifierUsed_ = false;
     bool holdToggle_ = false;
     bool soundLatchArmed_ = false;
+    RemoteGates remoteGates_;
     PickupState pickup_[6];
     bool tapStarted_ = false;
     uint32_t lastTapUs_ = 0;

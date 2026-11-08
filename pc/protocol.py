@@ -1,4 +1,5 @@
 import json
+import queue
 import struct
 from dataclasses import dataclass
 
@@ -56,8 +57,6 @@ class PacketParser:
                 break
             payload = bytes(self._buffer[HEADER.size:total_length])
             del self._buffer[:total_length]
-            if packet_type == TYPE_AUDIO and length != AUDIO_PAYLOAD_BYTES:
-                continue
             packets.append(Packet(packet_type, sequence, payload))
         return packets
 
@@ -76,3 +75,18 @@ def decode_status(packet: Packet) -> dict:
     if not isinstance(status, dict):
         raise ValueError("status must be a JSON object")
     return status
+
+
+def put_latest(audio_queue: queue.Queue[bytes], pcm: bytes) -> None:
+    """Queue a block, dropping the oldest one when the player falls behind."""
+    try:
+        audio_queue.put_nowait(pcm)
+    except queue.Full:
+        try:
+            audio_queue.get_nowait()
+        except queue.Empty:
+            pass
+        try:
+            audio_queue.put_nowait(pcm)
+        except queue.Full:
+            pass

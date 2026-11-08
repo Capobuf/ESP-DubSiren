@@ -39,7 +39,7 @@ SET DECAY_MS <0..3000>
 SET SWEEP <0..1>
 SET SWEEP_MS <50..3000>
 SET SYNDRUM_WAVE SINE|TRIANGLE|SQUARE
-SET SYNDRUM_SWEEP <-3..3>
+SET SYNDRUM_SWEEP <-4..4>
 SET DELAY_MS <50..1000>
 SET FEEDBACK <0..1.05>
 SET ECHO_LEVEL <0..1>
@@ -113,6 +113,9 @@ The Classic menu offers Extended or Back. Extended retains the old pad bank,
 priority/combination gestures, with a return to Classic. Only a physically
 held, unconsumed BTN1 enables its Depth rotation gesture; latched Hold does not.
 `PANEL_RESET` releases momentaries and preserves intentional Hold and delay.
+`TRIGGER`, `HOLD`, `MOD_UP`, `MOD_DOWN`, `ECHO_CUT` and `ECHO_SPIN` are kept as
+remote states OR-ed with the panel buttons, so a later panel event does not
+cancel them; `PANEL_RESET`, USB loss, host silence and profile changes clear them.
 `PAD_CONFIG` stores Extended pad assignments without activating Extended.
 Profile switching releases momentaries and Hold, preserving echo contents.
 
@@ -223,8 +226,9 @@ profiles, pots, buttons and menu rows. `panel.display` is logical state, not pix
 dimensions, Home/Menu mode, menu cursor/edit state, ordered row keys, current
 Depth, Echo Loop, profile, voice, confirmed pitch/rate labels, Hold, Echo Cut
 and Extended tuneHz/rateHz. Firmware sends an updated STATUS packet when controller
-or menu state changes and at least once per second after HELLO while USB has
-space available. Failed periodic sends are retried no faster than every 200 ms.
+or menu state changes, at most every 200 ms, and at least once per second after
+HELLO while USB has space available; accepted commands no longer trigger an
+immediate STATUS. Failed periodic sends are retried no faster than every 200 ms.
 These are additive status/command changes: existing
 commands, packet framing, and protocol version 1 remain compatible.
 
@@ -235,6 +239,9 @@ plus `title`, `footer` and `overlay`. Renderers consume these strings rather
 than reconstructing menu presentation. Effective pitch/rate/echo/master values
 and `liveTranspose` are included for connection reconstruction.
 `panel.persistenceStatus` is non-empty when NVS loading or saving failed.
+`panel.deviceStatus` separately reports I2S, panel-input or audio-task errors.
+NVS is written once the settings revision has been stable for 2 s; a failed
+write is retried after another 2 s.
 
 There is no CRC because USB is the reliable transport. The Python parser scans
 again for `DS` after invalid data or lost framing and rejects AUDIO payloads of
@@ -250,6 +257,9 @@ Stop Audio/Disconnect del client inviano entrambi i comandi di disabilitazione,
 silenziano USB e I2S, e lasciano il DSP attivo. Connect mantiene le uscite mute
 fino a Start Audio. La rimozione improvvisa di USB rilascia i comandi remoti
 momentanei, conserva quelli fisici e non cambia l'abilitazione locale.
+Lo stesso rilascio avviene se un host collegato non invia byte per 3 s (app
+terminata con il cavo inserito): `SerialTransport` invia una riga vuota ogni
+secondo come keepalive, ignorata dal firmware e senza COMMAND_RESULT.
 Le nuove metriche e la configurazione del pannello sono in [standalone](standalone.md).
 
 ## Tap tempo

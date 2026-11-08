@@ -16,7 +16,7 @@ class ControlRangeTests(unittest.TestCase):
             "DECAY_MS": (0.0, 1500.0),
             "SWEEP": (0.0, 1.0),
             "SWEEP_MS": (50.0, 3000.0),
-            "SYNDRUM_SWEEP": (-3.0, 3.0),
+            "SYNDRUM_SWEEP": (-4.0, 4.0),
             "FEEDBACK": (0.0, 1.05),
             "HPF_HZ": (50.0, 4000.0),
             "LPF_HZ": (400.0, 16000.0),
