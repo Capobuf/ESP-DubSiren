@@ -13,7 +13,7 @@ sono recuperabili dallo storico Git.
 | Manopole acquistate | [Cliff K85M / CL170805B](../cad/sources/Cliff-K85M.pdf), [Same Sky SAK-023](../cad/sources/SameSky-SAK-023.pdf), [Davies 1100](../cad/sources/Davies-Catalog-Instrument-Knobs.pdf); identificazione nell'[ordine sorgente](acquisti.csv) |
 | Ferramenta M9 da valutare | [Alps RKZ00023UA](../cad/sources/Alps-RKZ00023UA-hardware.pdf): riferimento dimensionale alternativo, non una scelta di montaggio approvata |
 | ESP32 e multiplexer | [ESP32-S3-WROOM-1/1U](esp32-s3-wroom-1_wroom-1u_datasheet_en.pdf), [Toshiba 74HC4051D](74HC4051D_datasheet_en_20201203.pdf) |
-| Alimentazione | [MPS MPM3612GLQ-33](MPM3612GLQ-33.pdf), [Bel 0ZCG](ds-cp-0zcg-series.pdf), [TI TPS22918](TI-TPS22918.pdf); [dati originali DC-bias Samsung CL21A226MPCLRNC](Samsung-CL21A226MPCLRNC-DCBias.json) |
+| Alimentazione | [MPS MPM3612GLQ-33](MPM3612GLQ-33.pdf), [Bel 0ZCG](ds-cp-0zcg-series.pdf), [TI TPS22918](TI-TPS22918.pdf); [dati originali DC-bias Samsung CL21A226MPCLRNC](Samsung-CL21A226MPCLRNC-DCBias.json), il 22 µF precedente: per il Taiyo Yuden LMK212BJ226MG-T montato su C1, C3, C5 non ci sono dati DC-bias ufficiali: il configuratore TY-COMPAS non elenca il codice (ricerca dell'8/11/2026). La scheda di LMK212BBJ226MG è di un altro codice e non va usata al suo posto |
 | USB | [GCT USB4085 RevB](GCT-USB4085-RevB.pdf), [PCN GCT](GCT-USB4085-PCN20230426.pdf), [SLKOR USBLC6-2SC6](SLKOR-USBLC6-2SC6.pdf). I documenti ST eliminati non descrivono il componente SLKOR montato |
 | Altri componenti dello schema | [C&K PTS636](CK-PTS636.pdf), [Murata GRM1885C1H103JA01](Murata-GRM1885C1H103JA01.pdf), [Yageo RC0603FR-074K7L](Yageo-RC0603FR-074K7L.pdf) |
 

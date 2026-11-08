@@ -5914,7 +5914,7 @@
 				(justify mirror)
 			)
 		)
-		(property "MPN" "CL21A226MPCLRNC"
+		(property "MPN" "LMK212BJ226MG-T"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "B.Fab")
@@ -5928,7 +5928,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Manufacturer" "Samsung"
+		(property "Manufacturer" "Taiyo Yuden"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "B.Fab")
@@ -10206,7 +10206,7 @@
 				(justify mirror)
 			)
 		)
-		(property "MPN" "CL21A226MPCLRNC"
+		(property "MPN" "LMK212BJ226MG-T"
 			(at 0 0 90)
 			(unlocked yes)
 			(layer "B.Fab")
@@ -10220,7 +10220,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Manufacturer" "Samsung"
+		(property "Manufacturer" "Taiyo Yuden"
 			(at 0 0 90)
 			(unlocked yes)
 			(layer "B.Fab")
@@ -12567,7 +12567,7 @@
 				(justify mirror)
 			)
 		)
-		(property "MPN" "CL10B104KO8NNNC"
+		(property "MPN" "C0603C104K4RACTU"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "B.Fab")
@@ -12581,7 +12581,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Manufacturer" "Samsung"
+		(property "Manufacturer" "KEMET"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "B.Fab")
@@ -13599,7 +13599,7 @@
 				(justify mirror)
 			)
 		)
-		(property "MPN" "CL10B104KO8NNNC"
+		(property "MPN" "C0603C104K4RACTU"
 			(at 0 0 90)
 			(unlocked yes)
 			(layer "B.Fab")
@@ -13613,7 +13613,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Manufacturer" "Samsung"
+		(property "Manufacturer" "KEMET"
 			(at 0 0 90)
 			(unlocked yes)
 			(layer "B.Fab")
@@ -15103,7 +15103,7 @@
 				(justify mirror)
 			)
 		)
-		(property "MPN" "CL10B104KO8NNNC"
+		(property "MPN" "C0603C104K4RACTU"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "B.Fab")
@@ -15117,7 +15117,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Manufacturer" "Samsung"
+		(property "Manufacturer" "KEMET"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "B.Fab")
@@ -15688,7 +15688,7 @@
 				(justify mirror)
 			)
 		)
-		(property "MPN" "CL21A226MPCLRNC"
+		(property "MPN" "LMK212BJ226MG-T"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "B.Fab")
@@ -15702,7 +15702,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Manufacturer" "Samsung"
+		(property "Manufacturer" "Taiyo Yuden"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "B.Fab")
@@ -16078,7 +16078,7 @@
 				(justify mirror)
 			)
 		)
-		(property "MPN" "CL10B104KO8NNNC"
+		(property "MPN" "C0603C104K4RACTU"
 			(at 0 0 90)
 			(unlocked yes)
 			(layer "B.Fab")
@@ -16092,7 +16092,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Manufacturer" "Samsung"
+		(property "Manufacturer" "KEMET"
 			(at 0 0 90)
 			(unlocked yes)
 			(layer "B.Fab")
@@ -16650,7 +16650,7 @@
 				(justify mirror)
 			)
 		)
-		(property "MPN" "CL10B104KO8NNNC"
+		(property "MPN" "C0603C104K4RACTU"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "B.Fab")
@@ -16664,7 +16664,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Manufacturer" "Samsung"
+		(property "Manufacturer" "KEMET"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "B.Fab")
