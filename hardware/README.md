@@ -2,7 +2,7 @@
 
 PCB desktop a vista, unico progetto KiCad attivo. Instradato, con DRC a 0 errori
 (18 esclusioni volute per lo stack U5/U6), 0 connessioni aperte e schema allineato.
-Non ancora ordinato: Gerber e forature non sono stati generati.
+Gerber e forature per JLCPCB generati l'8/11/2026 in [fab/](fab/), non ancora ordinati.
 
 ## File
 
@@ -11,6 +11,7 @@ Non ancora ordinato: Gerber e forature non sono stati generati.
 | Progetto, schema, PCB | [kicad/ESP-DubSiren.kicad_pro](kicad/ESP-DubSiren.kicad_pro), [schema](kicad/ESP-DubSiren.kicad_sch), [PCB](kicad/ESP-DubSiren.kicad_pcb) |
 | Librerie locali | [footprint](kicad/footprints/), [simboli](kicad/symbols/) |
 | Riferimento tecnico del PCB | [docs/pcb.md](docs/pcb.md) |
+| Gerber e forature JLCPCB | [fab/ESP-DubSiren-JLCPCB-2026-11-08.zip](fab/ESP-DubSiren-JLCPCB-2026-11-08.zip), file singoli e mappe fori in [fab/ESP-DubSiren-JLCPCB-2026-11-08/](fab/ESP-DubSiren-JLCPCB-2026-11-08/) |
 | Montaggio DIY | [docs/assembly.md](docs/assembly.md) |
 | Distinta e acquisti | [docs/BOM.csv](docs/BOM.csv), [docs/acquisti.csv](docs/acquisti.csv) |
 | Datasheet e disegni | [docs/sources.md](docs/sources.md), [cad/sources/](cad/sources/) |
@@ -44,4 +45,3 @@ Non ancora ordinato: Gerber e forature non sono stati generati.
 - Stack U5/U6: altezza reale fra display e DAC.
 - Fit di manopole, keycap e distanziali; stabilità degli appoggi.
 - Ripple delle alimentazioni, rumore audio, I²S e display sull'hardware reale.
-- Prima dell'ordine: export di Gerber e forature e controllo del PCB in KiCad.

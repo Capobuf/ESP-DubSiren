@@ -32,6 +32,32 @@ Il viewer 3D usa questi colori con "Use board stackup colors"
 Le 18 esclusioni, motivate nel [progetto](../kicad/ESP-DubSiren.kicad_pro), sono
 i fori di U6 dentro il courtyard di U5: lo stack DAC dietro display è voluto.
 
+## Produzione
+
+Export dell'8/11/2026 con KiCad 10.0.6, da caricare così com'è:
+[ESP-DubSiren-JLCPCB-2026-11-08.zip](../fab/ESP-DubSiren-JLCPCB-2026-11-08.zip).
+
+- Gerber RS-274X X2 con estensioni Protel: F/B.Cu, F/B.Mask, F/B.Silkscreen,
+  Edge.Cuts (`.gm1`). Pasta non inclusa: serve solo per stencil o assemblaggio.
+- Forature Excellon in mm, origine assoluta, formato decimale, asole in modo
+  alternativo; PTH e NPTH separati, con mappe PDF nella cartella dell'export.
+- Fori: 177 vie da 0,3 mm; PTH 16 × 0,4, 4 asole 0,6 (guscio J1), 25 × 1,0,
+  5 × 1,05, 28 × 1,1, 12 × 1,5; NPTH 8 × 1,7, 2 × 2,0, 8 × 2,5, 1 × 3,0,
+  4 × 3,2, 4 × 4,0. Contorno unico 86 × 126 mm con 16 asole fresate (pot, encoder).
+- Riempimento delle zone verificato prima dell'export: identico a quello salvato.
+
+Controllo aggiuntivo con i minimi JLCPCB per 2 strati
+([capacità](https://jlcpcb.com/capabilities/pcb-capabilities/), consultate l'8/11/2026):
+foro PTH–rame 0,28 mm, NPTH–rame 0,2 mm, foro–foro 0,45 mm, testo serigrafia
+≥1 mm, spaziatura pad 0,13 mm per maschera nera. Tutti rispettati, tranne:
+
+| Scostamento | Motivo |
+|---|---|
+| Anello dei fori di J1 0,15 mm (JLCPCB: minimo 0,18) | Fori Ø0,40 e pad 0,70 come raccomandato da [GCT](GCT-USB4085-RevB.pdf); con passo 0,85 mm non si può allargare |
+| Linee di serigrafia 0,10–0,12 mm e sigle con tratto 0,125 mm (JLCPCB: ≥0,15) | Solo estetico: le scritte possono risultare sottili |
+
+Nell'ordine: 2 strati, 1,6 mm, rame 1 oz, maschera nera, serigrafia bianca, ENIG.
+
 ## Alimentazione e USB
 
 | Punto | Valutazione |
