@@ -116,3 +116,29 @@ save(Part.makeBox(4.73, 3.41, 1.30, Vector(-2.365, -1.705, 0)), "Bel_0ZCG0110CF2
 
 # MPS MPM3612GLQ-33: LGA 3 x 3 x 2 mm package (datasheet p.1).
 save(Part.makeBox(3.0, 3.0, 2.0, Vector(-1.5, -1.5, 0)), "MPS_MPM3612GLQ-33_envelope.step")
+
+# Knobs, fully pushed on: bore bottom on the shaft tip of the model above.
+# Same Sky SAK-023 on SW7. Vendor frame: axis +Y, core bottom Y=-1.1, bore bottom Y=8.1,
+# D flat at Z=+1.5. Rx(+90) then Rz(-90): (x,y,z) -> (-z, -x, y), flat to -X like the
+# PEC11R shaft; bore bottom to the shaft tip Z=26.6.
+save(moved(rotated(read("Same_Sky_SAK-023.step"), (X, 90), (Z, -90)), z=26.6 - 8.1), "Same_Sky_SAK-023_on_PEC11R.step")
+
+# Davies 1100 on RV1-RV6, envelope from the Davies catalog table (inches): skirt A=25/32,
+# body C=21/32, height B=15/32, 1/4" bore D=13/32 deep. Flutes, cap and set screw omitted.
+# shortcut: skirt height not dimensioned, 2.1 mm read off the drawing proportions; measure a real knob.
+IN = 25.4
+z0 = 27.4 - 13 / 32 * IN  # PTV111-3 shaft tip at Z=27.4
+s = Part.makeCylinder(25 / 64 * IN, 2.1, Vector(0, 0, z0)).fuse(
+    Part.makeCylinder(21 / 64 * IN, 15 / 32 * IN, Vector(0, 0, z0)))
+s = s.cut(Part.makeCylinder(IN / 8, 13 / 32 * IN, Vector(0, 0, z0))).removeSplitter()
+save(s, "Davies_1100_envelope_on_PTV111-3.step")
+
+# Cliff K85M CL170805B on RV7, envelope from the Cliff drawing: skirt D14 x 3.5 with a
+# D12 x 2.5 recess, body 11.2 -> 10.0 A/F (as diameters) up to 17.0, D6 bore with a
+# 5.0 A/F flat, 12.5 deep. Marker line (to 17.8) omitted. Built along +Z, flat at -Y.
+bore = Part.makeCylinder(3.0, 12.5).common(Part.makeBox(6, 5, 12.5, Vector(-3, -2, 0)))
+s = Part.makeCylinder(7.0, 3.5).cut(Part.makeCylinder(6.0, 2.5)).fuse(
+    Part.makeCone(5.6, 5.0, 13.5, Vector(0, 0, 3.5)))
+s = s.cut(bore).removeSplitter()
+# Rx(+90): +Z -> -Y (PTV111-1 shaft axis X=0, Z=10, tip Y=-27.5), flat -Y -> -Z like the shaft.
+save(moved(rotated(s, (X, 90)), y=-27.5 + 12.5, z=10.0), "Cliff_K85M_CL170805B_envelope_on_PTV111-1.step")

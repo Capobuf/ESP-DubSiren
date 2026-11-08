@@ -467,6 +467,17 @@
 				(xyz 0 0 0)
 			)
 		)
+		(model "${KIPRJMOD}/../cad/3dmodels/Davies_1100_envelope_on_PTV111-3.step"
+			(offset
+				(xyz 0 0 0)
+			)
+			(scale
+				(xyz 1 1 1)
+			)
+			(rotate
+				(xyz 0 0 0)
+			)
+		)
 	)
 	(footprint "ESP-DubSiren-V2-Mechanical:Bourns_PTV111-3"
 		(layer "F.Cu")
@@ -801,6 +812,17 @@
 		)
 		(embedded_fonts no)
 		(model "${KIPRJMOD}/../cad/3dmodels/Bourns_PTV111-3420A.step"
+			(offset
+				(xyz 0 0 0)
+			)
+			(scale
+				(xyz 1 1 1)
+			)
+			(rotate
+				(xyz 0 0 0)
+			)
+		)
+		(model "${KIPRJMOD}/../cad/3dmodels/Davies_1100_envelope_on_PTV111-3.step"
 			(offset
 				(xyz 0 0 0)
 			)
@@ -1252,6 +1274,17 @@
 				(xyz 0 0 0)
 			)
 		)
+		(model "${KIPRJMOD}/../cad/3dmodels/Davies_1100_envelope_on_PTV111-3.step"
+			(offset
+				(xyz 0 0 0)
+			)
+			(scale
+				(xyz 1 1 1)
+			)
+			(rotate
+				(xyz 0 0 0)
+			)
+		)
 	)
 	(footprint "ESP-DubSiren-V2-Mechanical:Bourns_PTV111-3"
 		(layer "F.Cu")
@@ -1586,6 +1619,17 @@
 		)
 		(embedded_fonts no)
 		(model "${KIPRJMOD}/../cad/3dmodels/Bourns_PTV111-3420A.step"
+			(offset
+				(xyz 0 0 0)
+			)
+			(scale
+				(xyz 1 1 1)
+			)
+			(rotate
+				(xyz 0 0 0)
+			)
+		)
+		(model "${KIPRJMOD}/../cad/3dmodels/Davies_1100_envelope_on_PTV111-3.step"
 			(offset
 				(xyz 0 0 0)
 			)
@@ -1976,6 +2020,17 @@
 				(xyz 0 0 0)
 			)
 		)
+		(model "${KIPRJMOD}/../cad/3dmodels/Same_Sky_SAK-023_on_PEC11R.step"
+			(offset
+				(xyz 0 0 0)
+			)
+			(scale
+				(xyz 1 1 1)
+			)
+			(rotate
+				(xyz 0 0 0)
+			)
+		)
 	)
 	(footprint "ESP-DubSiren-V2-Mechanical:Bourns_PTV111-3"
 		(layer "F.Cu")
@@ -2310,6 +2365,17 @@
 		)
 		(embedded_fonts no)
 		(model "${KIPRJMOD}/../cad/3dmodels/Bourns_PTV111-3420A.step"
+			(offset
+				(xyz 0 0 0)
+			)
+			(scale
+				(xyz 1 1 1)
+			)
+			(rotate
+				(xyz 0 0 0)
+			)
+		)
+		(model "${KIPRJMOD}/../cad/3dmodels/Davies_1100_envelope_on_PTV111-3.step"
 			(offset
 				(xyz 0 0 0)
 			)
@@ -3383,6 +3449,17 @@
 		)
 		(embedded_fonts no)
 		(model "${KIPRJMOD}/../cad/3dmodels/Bourns_PTV111-3420A.step"
+			(offset
+				(xyz 0 0 0)
+			)
+			(scale
+				(xyz 1 1 1)
+			)
+			(rotate
+				(xyz 0 0 0)
+			)
+		)
+		(model "${KIPRJMOD}/../cad/3dmodels/Davies_1100_envelope_on_PTV111-3.step"
 			(offset
 				(xyz 0 0 0)
 			)
@@ -12023,6 +12100,17 @@
 		)
 		(embedded_fonts no)
 		(model "${KIPRJMOD}/../cad/3dmodels/Bourns_PTV111-1420A.step"
+			(offset
+				(xyz 0 0 0)
+			)
+			(scale
+				(xyz 1 1 1)
+			)
+			(rotate
+				(xyz 0 0 0)
+			)
+		)
+		(model "${KIPRJMOD}/../cad/3dmodels/Cliff_K85M_CL170805B_envelope_on_PTV111-1.step"
 			(offset
 				(xyz 0 0 0)
 			)
