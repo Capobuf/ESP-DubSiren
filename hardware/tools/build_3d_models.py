@@ -72,7 +72,7 @@ save(moved(rotated(s, (X, 180)), y=-1.3, z=10.0), "Bourns_PTV111-1420A.step")
 # Rx(+90) then Rz(180): (x,y,z) -> (-x, z, y); seat to Z=0.
 save(moved(rotated(read("pec11r-4x20f-sxxxx.stp"), (X, 90), (Z, 180)), z=5.5), "Bourns_PEC11R-4120F-S0018.step")
 
-# Adafruit 6250 without the PJ-332A jack (removed in assembly, docs/u5-u6-stack.md).
+# Adafruit 6250 without the PJ-332A jack (removed in assembly, see hardware/README.md).
 # Vendor frame: board 30.48 x 20.32 from origin, bottom face Z=0; centre = footprint origin.
 doc = FreeCAD.newDocument("dac")
 Import.insert(os.path.join(VENDOR, "Adafruit_6250_PCM510x_I2S_DAC.step"), doc.Name)

@@ -119,8 +119,7 @@ and GPIO14 backlight held high. Initialization is `init(172, 320)` with
 rotation 1 (320x172), as specified in the
 [Adafruit guide](https://learn.adafruit.com/adafruit-1-47-round-rectangle-tft-display/arduino-wiring-test).
 The library supplies the centered panel offsets. Physical operation remains
-unverified; the [current PCB](../hardware/README.md) is a draft, and its final
-routing and mounting remain pending issue #14.
+unverified on the [current PCB](../hardware/README.md).
 
 Rendering runs from `loop()`, never from `audioTask`. Home and Menu redraw on
 state changes, at most once every 100 ms; temporary parameter text expires
@@ -132,10 +131,7 @@ Text is drawn directly, with no display buffer or PSRAM requirement.
 The desktop panel draws text with Tk; its existing control callbacks manage
 parameter overlays. Audio, controls and VirtualESP synthesis remain unchanged.
 
-The current hardware documentation identifies U5 as the Adafruit 5393 SPI
-display. The earlier J3/I²C description does not describe the active design.
-PCB routing and physical operation remain unverified; see the
-[hardware status](../hardware/README.md).
+On the PCB, U5 is the Adafruit 5393 SPI display.
 
 ## Menu performance (#10)
 

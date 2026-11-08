@@ -54,10 +54,10 @@
   (pad "" smd rect (at -0.1 -2.09) (size 0.9 0.9) (layers "F.Paste")  )
   (pad "" smd rect (at -0.1 -0.69) (size 0.9 0.9) (layers "F.Paste")  )
   (pad "" smd rect (at -0.1 0.71) (size 0.9 0.9) (layers "F.Paste")  )
-  (fp_rect (start -9.7500 -9.1100) (end 9.7500 10.0500) (stroke (width 0.05) (type solid)) (fill none) (layer "F.CrtYd"))
+  (fp_rect (start -9.7500 -9.8500) (end 9.7500 10.3500) (stroke (width 0.05) (type solid)) (fill none) (layer "F.CrtYd"))
   (fp_line (start -8 -9.8) (end 8 -9.8) (stroke (width 0.12) (type solid)) (layer "F.SilkS"))
   (fp_circle (center -9.8 -8.41) (end -9.68 -8.41) (stroke (width 0.12) (type solid)) (fill solid) (layer "F.SilkS"))
-  (fp_poly (pts (xy -9.0000 -8.1300) (xy -8.0000 -9.1300) (xy 9.0000 -9.1300) (xy 9.0000 10.0700) (xy -9.0000 10.0700)) (stroke (width 0.1) (type solid)) (fill none) (layer "F.Fab"))
+  (fp_poly (pts (xy -9.0000 -8.6000) (xy -8.0000 -9.6000) (xy 9.0000 -9.6000) (xy 9.0000 9.6000) (xy -9.0000 9.6000)) (stroke (width 0.1) (type solid)) (fill none) (layer "F.Fab"))
   (fp_text reference "REF**" (at 0.0000 -10.1100 0) (layer "F.SilkS") (effects (font (size 1 1) (thickness 0.15))))
   (fp_text value "Espressif_ESP32-S3-WROOM-1U" (at 0.0000 11.0500 0) (layer "F.Fab") (effects (font (size 1 1) (thickness 0.15))))
   (model "${KIPRJMOD}/../cad/3dmodels/vendor/ESP32-S3-WROOM-1U.STEP"

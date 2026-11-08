@@ -159,8 +159,6 @@ sono pubblicati come artefatti del run, separati per ambiente. Non viene
 eseguito alcun upload su scheda. Le versioni firmware sono fissate in
 `firmware/platformio.ini`; la CI usa PlatformIO 6.2.0.
 
-Riscontri, issue e limiti della verifica: [review del repository](docs/repository-review.md).
-
 ```powershell
 pc\.venv\Scripts\python.exe -m unittest discover -s pc -p "test_*.py" -f
 pc\.venv\Scripts\python.exe tests\native\run.py
@@ -176,22 +174,13 @@ del testo ST7789 e devono restare sotto il budget display di 100.000 µs.
 
 ## Hardware
 
-Il progetto è destinato a un **PCB desktop standalone a vista**, senza Hammond
-né altra custodia obbligatoria: ESP32-S3-WROOM-1U, DAC Adafruit 6250 e display
-Adafruit 5393, solder mask nera e quattro fissaggi M3.
+**PCB desktop a vista** 86 × 126 mm, senza custodia obbligatoria:
+ESP32-S3-WROOM-1U, DAC Adafruit 6250 e display Adafruit 5393, solder mask nero
+con finitura ENIG, quattro fissaggi M3. Il PCB è instradato e passa il DRC; il
+montaggio fisico resta da provare sul prototipo.
 
-Il layout KiCad aggiornato è **86 × 126 mm**, con angoli R3 e senza routing:
-**nessun PCB fabbricabile**. Stack display/DAC, keycap, accoppiamenti delle
-manopole e montaggio fisico restano da qualificare.
-
-- [Decisioni e vincoli standalone](hardware/docs/pcb-standalone.md), [stato hardware](hardware/README.md).
-- [Verifica elettrica #34](hardware/docs/issue-34-electrical-review.md), [layout e ingombri #35](hardware/docs/issue-35-standalone-layout.md).
-- [Serigrafia #36 e anteprime](hardware/docs/issue-36-silkscreen-assembly.md),
-  [guida di montaggio DIY](hardware/docs/assembly.md): etichette frontali applicate;
-  completamento del retro e colori nel progetto ancora pendenti.
-
-Lo studio Hammond della [#14](https://github.com/Capobuf/ESP-DubSiren/issues/14)
-è storico e non costituisce un vincolo del progetto attuale.
+- [Hardware: stato, decisioni e file](hardware/README.md)
+- [Riferimento tecnico del PCB](hardware/docs/pcb.md), [guida di montaggio DIY](hardware/docs/assembly.md)
 
 Il firmware configura il 5393 con `init(172, 320)` e rotazione landscape,
 ottenendo un'area runtime di 320×172. Usa lo SPI hardware esistente:

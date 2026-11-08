@@ -21,7 +21,7 @@ MODELS = {
     "CK_PTS636SM43SMTR_LFS": (M + "CK_PTS636SM43SMTR_simplified.step", (0, 0, 0)),
     "Bel_0ZCG0110CF2B_1812": (M + "Bel_0ZCG0110CF2B_envelope.step", (0, 0, 0)),
     "MPS_MPM3612GLQ-33_LGA-8-1EP_3x3mm": (M + "MPS_MPM3612GLQ-33_envelope.step", (0, 0, 0)),
-    # 2.50 mm SLxG1 insulator between carrier and DAC (docs/issue-38-header-stack-review.md)
+    # 2.50 mm SLxG1 insulator between carrier and DAC (hardware/README.md)
     "Adafruit_6250_ComponentFace": (M + "Adafruit_6250_PCM510x_no_jack.step", (0, 0, 2.5)),
     # Espressif footprint uses offset (-9, -9.75, 0) with pad 1 at y=-8.26; ours has pad 1 at y=-8.41
     "Espressif_ESP32-S3-WROOM-1U": (M + "vendor/ESP32-S3-WROOM-1U.STEP", (-9, -9.60, 0)),

@@ -1,15 +1,11 @@
 # Fonti hardware
 
-Fonti conservate per lo schema attivo e la verifica standalone #34–#35.
-Gli studi Hammond della #14 sono storici: il contenitore non è più un requisito.
-I file originali spostati mantengono il contenuto; studi, rendering e report delle
-revisioni eliminate sono recuperabili dallo storico Git. I datasheet specifici
-per ciascun riferimento sono indicati anche in [BOM.csv](BOM.csv).
+Datasheet e disegni originali dei componenti montati. I datasheet di ciascun
+riferimento sono indicati anche in [BOM.csv](BOM.csv). Studi e report superati
+sono recuperabili dallo storico Git.
 
 | Uso | Fonte conservata / autorità |
 |---|---|
-| STORICO: contenitore dello studio #14, non richiesto per il PCB standalone | [STEP originale Hammond 29830PSLA](../cad/sources/Hammond_29830PSLA.stp); [disegno originale, rev. 03.01.2024](../cad/sources/Hammond_29830PSLA.pdf), [fonte Hammond](https://www.hammfg.com/files/parts/pdf/29830PSLA.pdf) |
-| STORICO: dual RCA RCJ-2123 sostituito, assente da BOM e assieme attivi | [STEP originale](../cad/sources/SameSky_RCJ-2123.step), [disegno RCJ-21](../cad/sources/rcj_21.pdf); [servizio CAD Same Sky](https://www.sameskydevices.com/product/resource/3dmodel/rcj-21-series/rcj-2123), [termini](https://www.sameskydevices.com/cad-model-terms) |
 | Display 5393 | [Eagle, licenza e revisione originali](../cad/sources/adafruit-5393/); [repository Adafruit](https://github.com/adafruit/Adafruit-1.47in-320x172-Round-Rectangle-TFT-PCB), commit `73022f63a4b82117093ff5c250c119b6720005df` |
 | DAC 6250 | [Eagle, licenza e revisione originali](../cad/sources/adafruit-6250/); [repository Adafruit](https://github.com/adafruit/Adafruit-PCM510x-I2S-DAC-PCB), commit `2edfe9e71b59e6acc73d0ab2b2f796149146ce74`; [PCM5102](pcm5102.pdf) |
 | Potenziometri ed encoder | [Bourns PTV/PTT](../cad/sources/Bourns-PTV-PTT.pdf), [PEC11R](../cad/sources/PEC11R.pdf); disegni dei componenti effettivi PTV111-3420A-B203, PTV111-1420A-B103 e PEC11R-4120F-S0018 |
@@ -21,12 +17,8 @@ per ciascun riferimento sono indicati anche in [BOM.csv](BOM.csv).
 | USB | [GCT USB4085 RevB](GCT-USB4085-RevB.pdf), [PCN GCT](GCT-USB4085-PCN20230426.pdf), [SLKOR USBLC6-2SC6](SLKOR-USBLC6-2SC6.pdf). I documenti ST eliminati non descrivono il componente SLKOR montato |
 | Altri componenti dello schema | [C&K PTS636](CK-PTS636.pdf), [Murata GRM1885C1H103JA01](Murata-GRM1885C1H103JA01.pdf), [Yageo RC0603FR-074K7L](Yageo-RC0603FR-074K7L.pdf) |
 
-La libreria RCA storica conserva la trasformazione rigida preesistente:
-`X = -x + 0.290298296874877`, `Y = z + 2.80222558586811`,
-`Z = y + 9.25535350182772` mm. È espressa nei parametri 3D del footprint;
-lo STEP originale resta integro. Nessuno degli STEP o dei disegni conservati
-dimostra il fit dell'assieme nell'Hammond. Non sono disponibili STEP originali
-completi dei breakout nelle revisioni Adafruit conservate.
+Non sono disponibili STEP originali completi dei breakout nelle revisioni
+Adafruit conservate.
 
 ## J2 attivo: Neutrik NRJ4HF (non NRJ4HF-1)
 
@@ -48,9 +40,5 @@ rotazioni **nella finestra KiCad** X=90, Y=0, Z=90 gradi; offset (16,95; -7,23; 
 Nel file KiCad i segni delle rotazioni sono opposti a quelli dell'interfaccia.
 Il file standard della libreria 3D KiCad non era disponibile nell'installazione.
 
-Il dado nel CAD è solo un inviluppo conservativo D17,45 x 4,75 mm (chiave 15),
-non uno STEP originale né una simulazione della filettatura. Il modello USB proviene
-invece dalla libreria KiCad installata `Connector_USB.3dshapes/USB_C_Receptacle_GCT_USB4085.step`.
-MASTER e DAC sono rappresentati solo dalle proiezioni dichiarate in assieme.
-Gli hash dei quattro originali Neutrik e le misure sono in
-[nrj4hf-validation.json](../cad/nrj4hf-validation.json).
+Il modello USB proviene dalla libreria KiCad installata
+`Connector_USB.3dshapes/USB_C_Receptacle_GCT_USB4085.step`.

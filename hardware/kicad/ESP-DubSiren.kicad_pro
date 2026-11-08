@@ -73,75 +73,75 @@
       "drc_exclusions": [
         [
           "npth_inside_courtyard|31300000|38880000|bbdf1fa0-e862-4bc8-9535-444aa0da6269|ac44242e-a954-4fac-8ecc-2bac3a33b423",
-          "Stack voluto: DAC U6 sul retro dietro il display U5 (fronte, header 2,50 mm). Pin U6 tagliati a filo prima di montare U5; nessun jack ne' viti sul DAC. Vedi hardware/docs/u5-u6-stack.md"
+          "Stack voluto: DAC U6 sul retro dietro il display U5 (fronte, header 2,50 mm). Pin U6 tagliati a filo prima di montare U5; nessun jack ne' viti sul DAC. Vedi hardware/docs/pcb.md"
         ],
         [
           "npth_inside_courtyard|31300000|54120000|560f659d-255a-46a6-a5ea-f56450cb4269|ac44242e-a954-4fac-8ecc-2bac3a33b423",
-          "Stack voluto: DAC U6 sul retro dietro il display U5 (fronte, header 2,50 mm). Pin U6 tagliati a filo prima di montare U5; nessun jack ne' viti sul DAC. Vedi hardware/docs/u5-u6-stack.md"
+          "Stack voluto: DAC U6 sul retro dietro il display U5 (fronte, header 2,50 mm). Pin U6 tagliati a filo prima di montare U5; nessun jack ne' viti sul DAC. Vedi hardware/docs/pcb.md"
         ],
         [
           "npth_inside_courtyard|56700000|38880000|8adf5e6a-8776-4e50-9df4-c11117f57cda|ac44242e-a954-4fac-8ecc-2bac3a33b423",
-          "Stack voluto: DAC U6 sul retro dietro il display U5 (fronte, header 2,50 mm). Pin U6 tagliati a filo prima di montare U5; nessun jack ne' viti sul DAC. Vedi hardware/docs/u5-u6-stack.md"
+          "Stack voluto: DAC U6 sul retro dietro il display U5 (fronte, header 2,50 mm). Pin U6 tagliati a filo prima di montare U5; nessun jack ne' viti sul DAC. Vedi hardware/docs/pcb.md"
         ],
         [
           "npth_inside_courtyard|56700000|54120000|0a3152be-0501-4b77-a05d-9d450ca25681|ac44242e-a954-4fac-8ecc-2bac3a33b423",
-          "Stack voluto: DAC U6 sul retro dietro il display U5 (fronte, header 2,50 mm). Pin U6 tagliati a filo prima di montare U5; nessun jack ne' viti sul DAC. Vedi hardware/docs/u5-u6-stack.md"
+          "Stack voluto: DAC U6 sul retro dietro il display U5 (fronte, header 2,50 mm). Pin U6 tagliati a filo prima di montare U5; nessun jack ne' viti sul DAC. Vedi hardware/docs/pcb.md"
         ],
         [
           "pth_inside_courtyard|35110000|38880000|edd33ff2-d31b-4cc9-b6f1-4190e0f9de33|ac44242e-a954-4fac-8ecc-2bac3a33b423",
-          "Stack voluto: DAC U6 sul retro dietro il display U5 (fronte, header 2,50 mm). Pin U6 tagliati a filo prima di montare U5; nessun jack ne' viti sul DAC. Vedi hardware/docs/u5-u6-stack.md"
+          "Stack voluto: DAC U6 sul retro dietro il display U5 (fronte, header 2,50 mm). Pin U6 tagliati a filo prima di montare U5; nessun jack ne' viti sul DAC. Vedi hardware/docs/pcb.md"
         ],
         [
           "pth_inside_courtyard|37650000|38880000|3b08723b-30eb-4028-a4fb-eef3800b36f1|ac44242e-a954-4fac-8ecc-2bac3a33b423",
-          "Stack voluto: DAC U6 sul retro dietro il display U5 (fronte, header 2,50 mm). Pin U6 tagliati a filo prima di montare U5; nessun jack ne' viti sul DAC. Vedi hardware/docs/u5-u6-stack.md"
+          "Stack voluto: DAC U6 sul retro dietro il display U5 (fronte, header 2,50 mm). Pin U6 tagliati a filo prima di montare U5; nessun jack ne' viti sul DAC. Vedi hardware/docs/pcb.md"
         ],
         [
           "pth_inside_courtyard|37650000|54120000|0da68ad1-c70e-4a1d-a750-2afb22259449|ac44242e-a954-4fac-8ecc-2bac3a33b423",
-          "Stack voluto: DAC U6 sul retro dietro il display U5 (fronte, header 2,50 mm). Pin U6 tagliati a filo prima di montare U5; nessun jack ne' viti sul DAC. Vedi hardware/docs/u5-u6-stack.md"
+          "Stack voluto: DAC U6 sul retro dietro il display U5 (fronte, header 2,50 mm). Pin U6 tagliati a filo prima di montare U5; nessun jack ne' viti sul DAC. Vedi hardware/docs/pcb.md"
         ],
         [
           "pth_inside_courtyard|40190000|38880000|b718aeb2-bfd2-420f-a8d8-216c3cc82401|ac44242e-a954-4fac-8ecc-2bac3a33b423",
-          "Stack voluto: DAC U6 sul retro dietro il display U5 (fronte, header 2,50 mm). Pin U6 tagliati a filo prima di montare U5; nessun jack ne' viti sul DAC. Vedi hardware/docs/u5-u6-stack.md"
+          "Stack voluto: DAC U6 sul retro dietro il display U5 (fronte, header 2,50 mm). Pin U6 tagliati a filo prima di montare U5; nessun jack ne' viti sul DAC. Vedi hardware/docs/pcb.md"
         ],
         [
           "pth_inside_courtyard|40190000|54120000|6f4540a4-5bad-4ec0-8e24-452828b9b559|ac44242e-a954-4fac-8ecc-2bac3a33b423",
-          "Stack voluto: DAC U6 sul retro dietro il display U5 (fronte, header 2,50 mm). Pin U6 tagliati a filo prima di montare U5; nessun jack ne' viti sul DAC. Vedi hardware/docs/u5-u6-stack.md"
+          "Stack voluto: DAC U6 sul retro dietro il display U5 (fronte, header 2,50 mm). Pin U6 tagliati a filo prima di montare U5; nessun jack ne' viti sul DAC. Vedi hardware/docs/pcb.md"
         ],
         [
           "pth_inside_courtyard|42730000|38880000|a8859f7f-e7b1-4067-bc72-a67964e41ee4|ac44242e-a954-4fac-8ecc-2bac3a33b423",
-          "Stack voluto: DAC U6 sul retro dietro il display U5 (fronte, header 2,50 mm). Pin U6 tagliati a filo prima di montare U5; nessun jack ne' viti sul DAC. Vedi hardware/docs/u5-u6-stack.md"
+          "Stack voluto: DAC U6 sul retro dietro il display U5 (fronte, header 2,50 mm). Pin U6 tagliati a filo prima di montare U5; nessun jack ne' viti sul DAC. Vedi hardware/docs/pcb.md"
         ],
         [
           "pth_inside_courtyard|42730000|54120000|3c7bad74-dcc8-4606-a234-372411b48540|ac44242e-a954-4fac-8ecc-2bac3a33b423",
-          "Stack voluto: DAC U6 sul retro dietro il display U5 (fronte, header 2,50 mm). Pin U6 tagliati a filo prima di montare U5; nessun jack ne' viti sul DAC. Vedi hardware/docs/u5-u6-stack.md"
+          "Stack voluto: DAC U6 sul retro dietro il display U5 (fronte, header 2,50 mm). Pin U6 tagliati a filo prima di montare U5; nessun jack ne' viti sul DAC. Vedi hardware/docs/pcb.md"
         ],
         [
           "pth_inside_courtyard|45270000|38880000|06c2a157-3c5f-454e-95f3-4b678e3db20d|ac44242e-a954-4fac-8ecc-2bac3a33b423",
-          "Stack voluto: DAC U6 sul retro dietro il display U5 (fronte, header 2,50 mm). Pin U6 tagliati a filo prima di montare U5; nessun jack ne' viti sul DAC. Vedi hardware/docs/u5-u6-stack.md"
+          "Stack voluto: DAC U6 sul retro dietro il display U5 (fronte, header 2,50 mm). Pin U6 tagliati a filo prima di montare U5; nessun jack ne' viti sul DAC. Vedi hardware/docs/pcb.md"
         ],
         [
           "pth_inside_courtyard|45270000|54120000|2f592453-2a9f-4ba7-bdc5-80b318f2f771|ac44242e-a954-4fac-8ecc-2bac3a33b423",
-          "Stack voluto: DAC U6 sul retro dietro il display U5 (fronte, header 2,50 mm). Pin U6 tagliati a filo prima di montare U5; nessun jack ne' viti sul DAC. Vedi hardware/docs/u5-u6-stack.md"
+          "Stack voluto: DAC U6 sul retro dietro il display U5 (fronte, header 2,50 mm). Pin U6 tagliati a filo prima di montare U5; nessun jack ne' viti sul DAC. Vedi hardware/docs/pcb.md"
         ],
         [
           "pth_inside_courtyard|47810000|38880000|735d8734-05da-4528-85cc-88488da0db0c|ac44242e-a954-4fac-8ecc-2bac3a33b423",
-          "Stack voluto: DAC U6 sul retro dietro il display U5 (fronte, header 2,50 mm). Pin U6 tagliati a filo prima di montare U5; nessun jack ne' viti sul DAC. Vedi hardware/docs/u5-u6-stack.md"
+          "Stack voluto: DAC U6 sul retro dietro il display U5 (fronte, header 2,50 mm). Pin U6 tagliati a filo prima di montare U5; nessun jack ne' viti sul DAC. Vedi hardware/docs/pcb.md"
         ],
         [
           "pth_inside_courtyard|47810000|54120000|6252e3c0-385b-4f0a-ad29-881ad0b38e2d|ac44242e-a954-4fac-8ecc-2bac3a33b423",
-          "Stack voluto: DAC U6 sul retro dietro il display U5 (fronte, header 2,50 mm). Pin U6 tagliati a filo prima di montare U5; nessun jack ne' viti sul DAC. Vedi hardware/docs/u5-u6-stack.md"
+          "Stack voluto: DAC U6 sul retro dietro il display U5 (fronte, header 2,50 mm). Pin U6 tagliati a filo prima di montare U5; nessun jack ne' viti sul DAC. Vedi hardware/docs/pcb.md"
         ],
         [
           "pth_inside_courtyard|50350000|38880000|a3a3bf81-2f90-4e7e-9901-ec671ddd6b1b|ac44242e-a954-4fac-8ecc-2bac3a33b423",
-          "Stack voluto: DAC U6 sul retro dietro il display U5 (fronte, header 2,50 mm). Pin U6 tagliati a filo prima di montare U5; nessun jack ne' viti sul DAC. Vedi hardware/docs/u5-u6-stack.md"
+          "Stack voluto: DAC U6 sul retro dietro il display U5 (fronte, header 2,50 mm). Pin U6 tagliati a filo prima di montare U5; nessun jack ne' viti sul DAC. Vedi hardware/docs/pcb.md"
         ],
         [
           "pth_inside_courtyard|50350000|54120000|7fe3db55-5bc2-4b21-890f-cf74d560a24c|ac44242e-a954-4fac-8ecc-2bac3a33b423",
-          "Stack voluto: DAC U6 sul retro dietro il display U5 (fronte, header 2,50 mm). Pin U6 tagliati a filo prima di montare U5; nessun jack ne' viti sul DAC. Vedi hardware/docs/u5-u6-stack.md"
+          "Stack voluto: DAC U6 sul retro dietro il display U5 (fronte, header 2,50 mm). Pin U6 tagliati a filo prima di montare U5; nessun jack ne' viti sul DAC. Vedi hardware/docs/pcb.md"
         ],
         [
           "pth_inside_courtyard|52890000|38880000|ba06e3ac-a91d-4d8f-a760-bd01465736fb|ac44242e-a954-4fac-8ecc-2bac3a33b423",
-          "Stack voluto: DAC U6 sul retro dietro il display U5 (fronte, header 2,50 mm). Pin U6 tagliati a filo prima di montare U5; nessun jack ne' viti sul DAC. Vedi hardware/docs/u5-u6-stack.md"
+          "Stack voluto: DAC U6 sul retro dietro il display U5 (fronte, header 2,50 mm). Pin U6 tagliati a filo prima di montare U5; nessun jack ne' viti sul DAC. Vedi hardware/docs/pcb.md"
         ]
       ],
       "meta": {

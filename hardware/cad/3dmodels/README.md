@@ -16,7 +16,7 @@ In KiCad hanno offset 0, rotazione 0 e scala 1, salvo dove indicato.
 | `Bourns_PTV111-1420A.step` | RV7 | Bourns, `ptv111-1x15a.stp` (PTV111-1415A) | Albero allungato di 5 mm (da 15 a 20 mm) nel tratto liscio Ø6, a 13 mm. Appoggio sui piedini a z=10 |
 | `Bourns_PEC11R-4120F-S0018.step` | SW7 | Bourns, [`pec11r-4x20f-sxxxx.stp`](https://bourns.com/resources/design-tools/engineering-files-list?folder=PEC11R) | L'intestazione interna dice PEC11-4220F-S0024: cambia solo il numero di detent, non l'esterno |
 | `vendor/ESP32-S3-WROOM-1U.STEP` | U1 | Espressif, [kicad-libraries](https://github.com/espressif/kicad-libraries) | Offset (−9; −9,60; 0): quello del footprint Espressif (−9,75) corretto di 0,15 mm, perché il pad 1 qui è a y=−8,41 invece di −8,26 |
-| `Adafruit_6250_PCM510x_no_jack.step` | U6 | Adafruit, [Adafruit_CAD_Parts/6250](https://github.com/adafruit/Adafruit_CAD_Parts/tree/main/6250%20PCM510x%20I2S%20DAC) | Senza jack PJ-332A, che viene rimosso ([u5-u6-stack.md](../../docs/u5-u6-stack.md)). Offset z=2,5 mm, l'isolante SLxG1. Header non modellati |
+| `Adafruit_6250_PCM510x_no_jack.step` | U6 | Adafruit, [Adafruit_CAD_Parts/6250](https://github.com/adafruit/Adafruit_CAD_Parts/tree/main/6250%20PCM510x%20I2S%20DAC) | Senza jack PJ-332A, che viene rimosso ([README hardware](../../README.md)). Offset z=2,5 mm, l'isolante SLxG1. Header non modellati |
 | `CHERRY_MX2A-11NW_simplified.step` | SW1–SW4 | **Creato** dai datasheet CHERRY in `../sources` | Cherry non pubblica uno STEP. Inviluppo: corpo 15,6×15,6 alto 11,6 mm, parte inferiore 14×14×5, stelo a croce 4×1,2 alto 3,6, pin 3,3 (totale 18,5). Croce e pin di contatto sono approssimati |
 | `CK_PTS636SM43SMTR_simplified.step` | SW5, SW6 | **Creato** da [CK-PTS636.pdf](../../docs/CK-PTS636.pdf), p.2 | Corpo 6,0×3,5×3,3, attuatore 3,0×1,5 fino a 4,3, terminali larghi 1,0 con ingombro totale 8,7. Spessore dei terminali (0,3) approssimato |
 | `Bel_0ZCG0110CF2B_envelope.step` | F1 | **Creato**: corpo massimo 4,73×3,41×1,30 | Solo inviluppo |
@@ -32,7 +32,7 @@ In uno STEP esportato da KiCad (origine 0,0) ogni foro di RV1–RV7, SW1–SW4 e
 contiene un pin del modello. Il confronto col corpo della scheda ha portato a
 correggere le asole dei footprint `Bourns_PTV111-3`, `Bourns_PTV111-1` e
 `Bourns_PEC11R-4120F-S0018`: ora resta solo il dente dell'aggancio a scatto.
-Vedi [pcb-corrente.md](../../docs/pcb-corrente.md#asole-di-fissaggio-bourns).
+Vedi [pcb.md](../../docs/pcb.md#footprint-locali).
 
 ## STEP per gruppo
 

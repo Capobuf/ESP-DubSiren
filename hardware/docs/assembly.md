@@ -1,17 +1,9 @@
 # Assemblaggio DIY — ESP-DubSiren
 
-**Studio #38, 31 ottobre 2026:** il PCB attivo propone U1 a sinistra e U6
-sotto il display. Le immagini e le coordinate #35/#36 qui richiamate sono
-la base precedente. Per lo stack e la sequenza **DAC prima, display dopo**
-usare la [revisione #38](issue-38-rear-placement.md#montaggio-e-manutenzione-alternativa-minima-di-fissaggio),
-ancora da qualificare su pezzi fisici; non applicare un montaggio ravvicinato
-DAC/display sulla sola base di questa guida.
-
-Guida per il prototipo standalone **86 × 126 mm**, angoli R3, unico progetto
-[KiCad](../kicad/ESP-DubSiren.kicad_pro). **Non fabbricare né alimentare il PCB
-attuale: manca il routing.** Questa procedura si applicherà dopo completamento
-dei collegamenti, DRC e revisione dell'utente. Quote di montaggio non misurate
-e accessori non identificati restano da qualificare, come nella [#35](issue-35-standalone-layout.md).
+Guida per il prototipo **86 × 126 mm** dell'unico progetto
+[KiCad](../kicad/ESP-DubSiren.kicad_pro). Decisioni e punti da verificare sono
+nel [README hardware](../README.md); quote e accessori non ancora misurati sul
+pezzo reale vanno provati prima di saldare.
 
 ## Riconoscere le due facce
 
@@ -19,11 +11,8 @@ Il bordo posteriore ospita USB-C, MASTER e jack mono; quello anteriore i quattro
 CHERRY. Tutte le coordinate qui sono **viste dal lato utente**, X verso destra,
 Y verso i pulsanti; una vista inferiore si legge specchiata.
 
-Per il riconoscimento usare le [preview top/bottom](assembly-36/review.png)
-e i disegni di montaggio [top](assembly-36/F-assembly.png) /
-[bottom](assembly-36/B-assembly.png). Le nuove scritte posteriori e la pulizia
-dei riferimenti esistenti non sono ancora applicate: non affidarsi soltanto
-alla serigrafia per orientare i componenti.
+Per orientarsi usare la vista 3D di KiCad o i livelli Fab del PCB, non soltanto
+la serigrafia.
 
 | Faccia | Parti montate |
 |---|---|
@@ -38,8 +27,8 @@ RV7 è sempre MASTER. Vedi [pannello e menu](../../docs/panel-ui.md).
 
 ## Componenti elettronici
 
-Usare la [BOM completa](BOM.csv), con MPN, produttore e footprint, confrontata
-con lo schema nella [#34](issue-34-electrical-review.md). Le quantità sotto
+Usare la [BOM completa](BOM.csv), con MPN, produttore e footprint, coerente con
+lo schema (il DRC con parità schema/PCB non segnala differenze). Le quantità sotto
 sono **da montare**, non quelle dei lotti acquistati: 57 componenti e 7 test pad
 realizzati nel rame. I quattro fori H1–H4 non sono componenti elettronici.
 
@@ -95,7 +84,7 @@ toccarlo; le due configurazioni seguenti sono alternative, non parti elettriche.
 
 **Geometrie di fissaggio:** bordo X=0…86, Y=−6…120 mm; H1/H2 a (5;−1),
 (81;−1), H3/H4 a (5;115), (81;115), Ø3,2 NPTH, interassi **76 × 116 mm**.
-Spessore di riferimento 1,6 mm, da confermare nell'ordine futuro. Rispettare
+Spessore 1,6 mm. Rispettare
 le riserve 8×8 mm su entrambe le facce: non aggiungere rame, fili o saldature.
 AF5,5 ha diagonale 6,35 mm, interna alla riserva; verificare anche le teste.
 
@@ -114,8 +103,7 @@ Controllare che non scivoli né si ribalti premendo i tasti o inserendo i cavi.
 
 ## Sequenza di montaggio
 
-1. **Prima del saldatore:** confrontare PCB e distinta della revisione instradata
-   approvata; fare un montaggio a secco di pot, encoder, CHERRY e breakout.
+1. **Prima del saldatore:** confrontare PCB e distinta; fare un montaggio a secco di pot, encoder, CHERRY e breakout.
    Verificare ganci/asole, keycap, manopole e accesso ai giunti su entrambe le
    facce. Servono lente/microscopio, flussante, multimetro e attrezzatura adatta
    ai package: U2 LGA e il pad centrale di U1 non sono saldature soltanto a punta.
@@ -132,11 +120,12 @@ Controllare che non scivoli né si ribalti premendo i tasti o inserendo i cavi.
 4. **Lato utente:** montare RV1–6, SW7 e SW1–4, in piano e senza piegare i pin
    per compensare fori non coincidenti. RV7 orizzontale non sostituisce un pot
    verticale. Provare la corsa dei quattro tasti prima dei keycap.
-5. **Breakout, per ultimi:** scegliere lo stack dopo la prova a secco descritta
-   sotto. Puntare prima pochi pin, controllare faccia, pin 1 e parallelismo;
-   completare solo se il modulo è sostenuto e non forza le saldature. Lasciare
-   accesso a ispezione e manutenzione. Non usare i soli pin come sostegno
-   meccanico contro le pressioni sul display o l'inserimento di spine nel DAC.
+5. **Breakout, per ultimi:** prima il DAC U6 sul retro, senza il suo jack
+   3,5 mm, con i pin tagliati a filo; poi il display U5 sul fronte (header da
+   2,50 mm, o più alto se la prova a secco lo richiede). Puntare prima pochi pin,
+   controllare faccia, pin 1 e parallelismo; completare solo se il modulo è
+   sostenuto e non forza le saldature. Non usare i soli pin come sostegno
+   meccanico contro le pressioni sul display.
 6. **Appoggi e comandi:** fissare i quattro supporti, montare manopole/keycap,
    senza spingere gli alberi verso la PCB. Misurare Hmax reale, margini sotto
    la scheda, corsa encoder e tasti. Nessuna parte elettronica sul banco,
@@ -150,7 +139,7 @@ Controllare che non scivoli né si ribalti premendo i tasti o inserendo i cavi.
 | D1 | Banda catodo verso pad 1 = VBUS_PROTECTED; pad 2 = GND |
 | U5/5393 | Vetro verso l'utente; pad 1 VIN = +3V3, pad 3 GND, pad 11 LITE. L'ordine va verificato sulle scritte del modulo: il footprint è visto dalla faccia display |
 | U6/6250 | Sul retro, ruotato 90° nel PCB; pad 1 VIN = +5V, 2/7 GND, 6 OUTL = AUDIO_MONO. Pad 8 OUTR non collegato; non unirlo a OUTL |
-| J2 | T = AUDIO_MONO, S = GND; TN/SN non collegati. La presa 3,5 mm sul DAC non è una seconda uscita di pannello prevista |
+| J2 | T = AUDIO_MONO, S = GND; TN/SN non collegati. La presa 3,5 mm del DAC viene rimossa |
 | RV / SW | Far coincidere anche ganci, guide e fori non elettrici. Non dedurre il centro CHERRY dall'anchor del pad 1 |
 
 ### Display e DAC: due facce da controllare
@@ -191,7 +180,7 @@ laterale con materiale idoneo, verificata sul pezzo. Nessuna cornice stampata
   a BOOT/RESET e TP; connettori liberi e pressione tasti senza flessione.
   MASTER al minimo, ingresso audio esterno scollegato per il primo avvio.
 
-## Primo avvio e smoke test (su futura scheda instradata)
+## Primo avvio e smoke test
 
 1. Alimentare da USB con corrente monitorata e limitazione adatta al prototipo;
    verificare la sorgente USB e l'assorbimento effettivo. PTC da 1,1 A e
@@ -222,11 +211,9 @@ laterale con materiale idoneo, verificata sul pezzo. Nessuna cornice stampata
    spazio sotto la scheda. Annotare tensioni, corrente, rumore, transitori e
    problemi: display, DAC e ADC del prototipo restano da qualificare sul reale.
 
-## Punti ancora aperti
+## Da provare sul pezzo reale
 
-Routing e DRC completo; revisione dell'utente; serigrafie residue dei footprint;
-impostazione colore nero/bianco nel progetto e nell'ordine futuro; header e
-stack dei due breakout; fissaggi display; Hmax con giunti e cavi; keycap e fit
-delle tre famiglie di manopole; stabilità degli appoggi e prove elettriche.
-La [consegna #36](issue-36-silkscreen-assembly.md) riporta serigrafie effettivamente
-applicate, anteprime e limiti dei tool. Questa guida non autorizza la produzione.
+Header e stack dei due breakout; fissaggi del display; Hmax con giunti e cavi;
+keycap e fit delle tre famiglie di manopole; stabilità degli appoggi e prove
+elettriche. Nell'ordine al fabbricante selezionare maschera nera, ENIG e
+serigrafia bianca, già impostati nel progetto.
