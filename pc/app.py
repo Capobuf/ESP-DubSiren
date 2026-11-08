@@ -82,13 +82,8 @@ class DubSirenApp:
         self.root.geometry(f"900x{min(740, self.root.winfo_screenheight() - 100)}")
         self.audio_queue: queue.Queue[bytes] = queue.Queue(maxsize=12)
         self.ui_events: queue.Queue[tuple[str, object]] = queue.Queue()
-        self._status_callback = (
-            lambda status: self.ui_events.put(("status", status))
-        )
-        self.transport = SerialTransport(
-            self.audio_queue,
-            self._status_callback,
-        )
+        # Placeholder until connect() builds the real transport with callbacks.
+        self.transport = SerialTransport(self.audio_queue)
         self.player = AudioPlayer(self.audio_queue)
         self.protocol_ok = False
         self.i2s_ready: bool | None = None
@@ -679,9 +674,7 @@ class DubSirenApp:
         try:
             while True:
                 event, payload = self.ui_events.get_nowait()
-                if event == "status":
-                    self._handle_status(payload)
-                elif event == "connected":
+                if event == "connected":
                     self._connection_finished(*payload)
                 elif event == "command_result":
                     transport, result = payload

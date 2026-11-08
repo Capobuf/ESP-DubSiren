@@ -46,6 +46,15 @@ bool discardCommand = false;
 Preferences panelPreferences;
 bool panelPreferencesReady = false;
 unsigned savedPanelSettingsRevision = 0;
+unsigned pendingPanelSettingsRevision = 0;
+uint32_t panelSettingsChangedMs = 0;
+// Flash writes stall the cache (and the audio task): save only once settings
+// have stopped changing, not on every encoder detent.
+constexpr uint32_t kPanelSaveSettleMs = 2000;
+// Without bytes from a linked host (the PC sends a keepalive every ~1 s),
+// release remote inputs: HWCDC stays connected while the cable is plugged.
+constexpr uint32_t kHostSilenceTimeoutMs = 3000;
+uint32_t lastHostByteMs = 0;
 
 String panelSettingsJson() {
     const PanelSettings &settings = commandParser.panelSettings();
@@ -126,16 +135,26 @@ void loadPanelSettings() {
 void savePanelSettingsIfNeeded() {
     const unsigned revision = commandParser.panelSettingsRevision();
     if (revision == savedPanelSettingsRevision) return;
-    savedPanelSettingsRevision = revision;
+    const uint32_t now = millis();
+    if (revision != pendingPanelSettingsRevision) {
+        pendingPanelSettingsRevision = revision;
+        panelSettingsChangedMs = now;
+        return;
+    }
+    if (now - panelSettingsChangedMs < kPanelSaveSettleMs) return;
     if (!panelPreferencesReady) {
+        savedPanelSettingsRevision = revision;
         commandParser.setPersistenceStatus("SAVE FAILED - NVS");
         return;
     }
     const PanelSettings &settings = commandParser.panelSettings();
-    if (panelPreferences.putBytes("settings", &settings, sizeof(settings)) != sizeof(settings))
+    if (panelPreferences.putBytes("settings", &settings, sizeof(settings)) != sizeof(settings)) {
+        panelSettingsChangedMs = now;  // retry after another settle period
         commandParser.setPersistenceStatus("SAVE FAILED");
-    else
+    } else {
+        savedPanelSettingsRevision = revision;
         commandParser.setPersistenceStatus("");
+    }
 }
 
 const char *outputModeName(OutputMode mode) {
@@ -238,6 +257,7 @@ bool sendStatus() {
         ",\"panel\":{\"revision\":" + commandParser.panelRevision() +
         ",\"settings\":" + panelSettingsJson() +
         ",\"persistenceStatus\":\"" + commandParser.persistenceStatus() + "\"" +
+        ",\"deviceStatus\":\"" + commandParser.deviceStatus() + "\"" +
         ",\"menuRevision\":" + commandParser.panelMenuRevision() +
         ",\"selectedPad\":" + commandParser.selectedPad() +
         ",\"currentPad\":" + commandParser.currentPad() +
@@ -305,13 +325,9 @@ void handleCommand(String command) {
             accepted = false;
         }
     } else {
-        const unsigned panelRevision = commandParser.panelRevision();
+        // STATUS follows from loop() at most every 200 ms: one per POT command
+        // would crowd the shared TX buffer and drop audio packets.
         accepted = commandParser.parse(command);
-        if (accepted &&
-            commandParser.panelRevision() != panelRevision) {
-            savePanelSettingsIfNeeded();
-            sendStatus();
-        }
     }
     pendingCommandResult = command;
     pendingCommandAccepted = accepted;
@@ -329,6 +345,7 @@ void pollCommands() {
     unsigned budget = 64;
     while (budget-- && Serial.available() > 0) {
         const char value = static_cast<char>(Serial.read());
+        lastHostByteMs = millis();
         if (value == '\n') {
             if (!discardCommand) handleCommand(commandBuffer);
             commandBuffer = "";
@@ -396,7 +413,7 @@ void setup() {
     Serial.begin(115200);
     Serial.setTxTimeoutMs(0);
     commandBuffer.reserve(512);
-    usbSink.begin();
+    if (!usbSink.begin()) commandParser.setDeviceStatus("USB SINK INIT FAILED");
     i2sReady = i2sSink.begin();
     if (!i2sReady) {
         outputMode.store(OutputMode::Pc, std::memory_order_relaxed);
@@ -409,7 +426,7 @@ void setup() {
 #endif
     if (xTaskCreatePinnedToCore(audioTask, "audio", 8192, nullptr, 2, nullptr, 1) != pdPASS)
         commandParser.setDeviceStatus("AUDIO TASK FAILED");
-    panelDisplay.begin();
+    if (!panelDisplay.begin()) commandParser.setDeviceStatus("DISPLAY INIT FAILED");
 }
 
 void loop() {
@@ -429,6 +446,16 @@ void loop() {
         discardCommand = false;
     }
     serialWasConnected = serialConnected;
+    static bool hostSilenceHandled = false;
+    if (hostLinked && millis() - lastHostByteMs > kHostSilenceTimeoutMs) {
+        if (!hostSilenceHandled) {
+            commandParser.resetRemoteInputs();
+            commandParser.parse("PANEL CANCEL");
+            hostSilenceHandled = true;
+        }
+    } else {
+        hostSilenceHandled = false;
+    }
     if (i2sWriteFailures.load()) commandParser.setDeviceStatus("I2S WRITE FAILED");
     static uint32_t lastStatusMs = 0;
     static uint32_t lastStatusAttemptMs = 0;

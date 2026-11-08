@@ -1,6 +1,15 @@
 #pragma once
 
 #include <math.h>
+#include <stdint.h>
+
+// arduino-esp32 defines TWO_PI as a double literal; keep the audio path in float.
+constexpr float kTwoPi = 6.28318531f;
+
+inline int16_t toInt16(float value) {
+    const float limited = value < -1.0f ? -1.0f : (value > 1.0f ? 1.0f : value);
+    return static_cast<int16_t>(lrintf(limited * 32767.0f));
+}
 
 inline float softClip(float value) {
     if (value <= -1.0f) return -1.0f;

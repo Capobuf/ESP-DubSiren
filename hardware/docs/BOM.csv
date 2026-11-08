@@ -1,13 +1,13 @@
 Reference,Value,Quantity,Footprint,MPN,Manufacturer,Datasheet,DNP,Purchasable,Notes
-C1,22u,1,Capacitor_SMD:C_0805_2012Metric,CL21A226MPCLRNC,Samsung,,,yes,Componente dello schema provvisorio; validazione hardware pendente
-C2,100n,1,Capacitor_SMD:C_0603_1608Metric,CL10B104KO8NNNC,Samsung,,,yes,Componente dello schema provvisorio; validazione hardware pendente
-C3,22u,1,Capacitor_SMD:C_0805_2012Metric,CL21A226MPCLRNC,Samsung,,,yes,Componente dello schema provvisorio; validazione hardware pendente
-C4,100n,1,Capacitor_SMD:C_0603_1608Metric,CL10B104KO8NNNC,Samsung,,,yes,Componente dello schema provvisorio; validazione hardware pendente
-C5,22u,1,Capacitor_SMD:C_0805_2012Metric,CL21A226MPCLRNC,Samsung,,,yes,Componente dello schema provvisorio; validazione hardware pendente
-C6,100n,1,Capacitor_SMD:C_0603_1608Metric,CL10B104KO8NNNC,Samsung,,,yes,Componente dello schema provvisorio; validazione hardware pendente
+C1,22u,1,Capacitor_SMD:C_0805_2012Metric,LMK212BJ226MG-T,Taiyo Yuden,,,yes,Componente dello schema provvisorio; validazione hardware pendente
+C2,100n,1,Capacitor_SMD:C_0603_1608Metric,C0603C104K4RACTU,KEMET,,,yes,Componente dello schema provvisorio; validazione hardware pendente
+C3,22u,1,Capacitor_SMD:C_0805_2012Metric,LMK212BJ226MG-T,Taiyo Yuden,,,yes,Componente dello schema provvisorio; validazione hardware pendente
+C4,100n,1,Capacitor_SMD:C_0603_1608Metric,C0603C104K4RACTU,KEMET,,,yes,Componente dello schema provvisorio; validazione hardware pendente
+C5,22u,1,Capacitor_SMD:C_0805_2012Metric,LMK212BJ226MG-T,Taiyo Yuden,,,yes,Componente dello schema provvisorio; validazione hardware pendente
+C6,100n,1,Capacitor_SMD:C_0603_1608Metric,C0603C104K4RACTU,KEMET,,,yes,Componente dello schema provvisorio; validazione hardware pendente
 C7,1u,1,Capacitor_SMD:C_0603_1608Metric,CL10B105MO8NNWC,Samsung,,,yes,Componente dello schema provvisorio; validazione hardware pendente
-C8,100n,1,Capacitor_SMD:C_0603_1608Metric,CL10B104KO8NNNC,Samsung,,,yes,Componente dello schema provvisorio; validazione hardware pendente
-C9,100n,1,Capacitor_SMD:C_0603_1608Metric,CL10B104KO8NNNC,Samsung,,,yes,Componente dello schema provvisorio; validazione hardware pendente
+C8,100n,1,Capacitor_SMD:C_0603_1608Metric,C0603C104K4RACTU,KEMET,,,yes,Componente dello schema provvisorio; validazione hardware pendente
+C9,100n,1,Capacitor_SMD:C_0603_1608Metric,C0603C104K4RACTU,KEMET,,,yes,Componente dello schema provvisorio; validazione hardware pendente
 C10,1u,1,Capacitor_SMD:C_0603_1608Metric,CL10B105MO8NNWC,Samsung,https://product.samsungsem.com/mlcc/CL10B105MO8NNW.do,,yes,Componente dello schema provvisorio; validazione hardware pendente
 C11,10n C0G 50V,1,Capacitor_SMD:C_0603_1608Metric,GRM1885C1H103JA01D,Murata,https://search.murata.co.jp/Ceramy/image/img/A01X/G101/ENG/GRM1885C1H103JA01-01A.pdf,,yes,Componente dello schema provvisorio; validazione hardware pendente
 D1,SMF5.0A,1,Diode_SMD:D_SOD-123F,SMF5.0A_R1_00001,PANJIT,https://www.panjit.com.cn/upload/datasheet/SMF5.0A_SERIES.pdf,,yes,Componente dello schema provvisorio; validazione hardware pendente

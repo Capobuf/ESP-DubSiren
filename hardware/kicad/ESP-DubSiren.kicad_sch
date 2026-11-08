@@ -11207,7 +11207,7 @@
 				)
 			)
 		)
-		(property "MPN" "CL21A226MPCLRNC"
+		(property "MPN" "LMK212BJ226MG-T"
 			(at 124.46 33.02 0)
 			(hide yes)
 			(effects
@@ -11216,7 +11216,7 @@
 				)
 			)
 		)
-		(property "Manufacturer" "Samsung"
+		(property "Manufacturer" "Taiyo Yuden"
 			(at 124.46 33.02 0)
 			(hide yes)
 			(effects
@@ -11296,7 +11296,7 @@
 				)
 			)
 		)
-		(property "MPN" "CL10B104KO8NNNC"
+		(property "MPN" "C0603C104K4RACTU"
 			(at 142.24 33.02 0)
 			(hide yes)
 			(effects
@@ -11305,7 +11305,7 @@
 				)
 			)
 		)
-		(property "Manufacturer" "Samsung"
+		(property "Manufacturer" "KEMET"
 			(at 142.24 33.02 0)
 			(hide yes)
 			(effects
@@ -11385,7 +11385,7 @@
 				)
 			)
 		)
-		(property "MPN" "CL21A226MPCLRNC"
+		(property "MPN" "LMK212BJ226MG-T"
 			(at 220.98 33.02 0)
 			(hide yes)
 			(effects
@@ -11394,7 +11394,7 @@
 				)
 			)
 		)
-		(property "Manufacturer" "Samsung"
+		(property "Manufacturer" "Taiyo Yuden"
 			(at 220.98 33.02 0)
 			(hide yes)
 			(effects
@@ -11474,7 +11474,7 @@
 				)
 			)
 		)
-		(property "MPN" "CL10B104KO8NNNC"
+		(property "MPN" "C0603C104K4RACTU"
 			(at 238.76 33.02 0)
 			(hide yes)
 			(effects
@@ -11483,7 +11483,7 @@
 				)
 			)
 		)
-		(property "Manufacturer" "Samsung"
+		(property "Manufacturer" "KEMET"
 			(at 238.76 33.02 0)
 			(hide yes)
 			(effects
@@ -11563,7 +11563,7 @@
 				)
 			)
 		)
-		(property "MPN" "CL21A226MPCLRNC"
+		(property "MPN" "LMK212BJ226MG-T"
 			(at 281.94 33.02 0)
 			(hide yes)
 			(effects
@@ -11572,7 +11572,7 @@
 				)
 			)
 		)
-		(property "Manufacturer" "Samsung"
+		(property "Manufacturer" "Taiyo Yuden"
 			(at 281.94 33.02 0)
 			(hide yes)
 			(effects
@@ -11652,7 +11652,7 @@
 				)
 			)
 		)
-		(property "MPN" "CL10B104KO8NNNC"
+		(property "MPN" "C0603C104K4RACTU"
 			(at 299.72 33.02 0)
 			(hide yes)
 			(effects
@@ -11661,7 +11661,7 @@
 				)
 			)
 		)
-		(property "Manufacturer" "Samsung"
+		(property "Manufacturer" "KEMET"
 			(at 299.72 33.02 0)
 			(hide yes)
 			(effects
@@ -11830,7 +11830,7 @@
 				)
 			)
 		)
-		(property "MPN" "CL10B104KO8NNNC"
+		(property "MPN" "C0603C104K4RACTU"
 			(at 269.24 195.58 0)
 			(hide yes)
 			(effects
@@ -11839,7 +11839,7 @@
 				)
 			)
 		)
-		(property "Manufacturer" "Samsung"
+		(property "Manufacturer" "KEMET"
 			(at 269.24 195.58 0)
 			(hide yes)
 			(effects
@@ -11919,7 +11919,7 @@
 				)
 			)
 		)
-		(property "MPN" "CL10B104KO8NNNC"
+		(property "MPN" "C0603C104K4RACTU"
 			(at 340.36 228.6 0)
 			(hide yes)
 			(effects
@@ -11928,7 +11928,7 @@
 				)
 			)
 		)
-		(property "Manufacturer" "Samsung"
+		(property "Manufacturer" "KEMET"
 			(at 340.36 228.6 0)
 			(hide yes)
 			(effects

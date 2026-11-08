@@ -2,7 +2,9 @@ import array
 import queue
 import time
 import unittest
+from unittest.mock import patch
 
+import virtual_transport
 from protocol import PROTOCOL_VERSION
 from virtual_transport import VIRTUAL_DEVICE, VirtualTransport
 
@@ -25,6 +27,17 @@ class VirtualTransportTests(unittest.TestCase):
         self.transport.send("SET DELAY_MS 400")
         self.assertEqual(results[-1], {"command": "SET DELAY_MS 400", "accepted": True})
         self.assertEqual(self.statuses[-1]["panel"]["display"]["delayMs"], 400)
+
+    def test_loaded_library_is_not_relinked_and_stale_sources_ask_for_restart(self):
+        self.transport.disconnect()
+        with patch("virtual_transport.subprocess.run") as run:
+            with patch.object(virtual_transport._build, "needs_build", return_value=True):
+                with self.assertRaisesRegex(RuntimeError, "restart the GUI"):
+                    self.transport.connect(VIRTUAL_DEVICE)
+            with patch.object(virtual_transport._build, "needs_build", return_value=False):
+                self.transport.connect(VIRTUAL_DEVICE)
+        run.assert_not_called()
+        self.assertTrue(self.transport.connected)
 
     def setUp(self):
         self.audio_queue = queue.Queue(maxsize=128)

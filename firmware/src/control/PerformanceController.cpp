@@ -183,6 +183,7 @@ void PerformanceController::setProfile(PerformanceProfile profile) {
     ControlState state = controls_.snapshot();
     if (state.profile == profile) return;
     holdToggle_ = false;
+    remoteGates_ = {};
     resetMomentaries();
     state = controls_.snapshot();
     state.hold = false;
@@ -396,17 +397,17 @@ void PerformanceController::updateGate(ControlState &state) {
             default: break;
         }
     }
-    state.trigger = trigger;
-    state.modUp = modUp;
-    state.modDown = modDown;
-    state.echoCut = echoCut;
-    state.echoSpin = echoSpin;
+    state.trigger = trigger || remoteGates_.trigger;
+    state.modUp = modUp || remoteGates_.modUp;
+    state.modDown = modDown || remoteGates_.modDown;
+    state.echoCut = echoCut || remoteGates_.echoCut;
+    state.echoSpin = echoSpin || remoteGates_.echoSpin;
     const unsigned soundIndex = activePad_ >= 0
         ? static_cast<unsigned>(activePad_) : currentPad_;
     const ButtonConfig &button = profile.buttons[soundIndex];
     const bool soundLatch = soundLatchArmed_ && button.action == ButtonAction::PlaySound &&
         button.latch && panelSoundSupportsLatch(button.sound);
-    state.hold = holdToggle_ || soundLatch;
+    state.hold = holdToggle_ || soundLatch || remoteGates_.hold;
     if (state.profile == PerformanceProfile::Extended && encoderPressed_ &&
         padDown_[3] && consumed_[3]) state.echoCut = true;
 }
@@ -742,6 +743,14 @@ void PerformanceController::rotateEncoder(int direction) {
             menuIndex_, direction, static_cast<int>(menuRowCount_)));
         changed();
     }
+}
+
+void PerformanceController::clearRemoteGates() {
+    remoteGates_ = {};
+    ControlState state = controls_.snapshot();
+    updateGate(state);
+    controls_.set(state);
+    changed();
 }
 
 void PerformanceController::resetMomentaries() {
@@ -1386,7 +1395,11 @@ void PerformanceController::pressMenuItem() {
             setMenuPage(MenuPage::Root);
             return;
         }
-        if (row != Row::Profile && menuPage_ != MenuPage::Sound && menuPage_ != MenuPage::Mod && menuPage_ != MenuPage::Echo) ++settingsRevision_;
+        // Pad family/variant are button assignments and persist like the Home
+        // encoder path; sound, MOD and ECHO values stay live until SAVE PATCH.
+        const bool assignment = row == Row::Sound || row == Row::Variant;
+        if (row != Row::Profile && (assignment || (menuPage_ != MenuPage::Sound &&
+            menuPage_ != MenuPage::Mod && menuPage_ != MenuPage::Echo))) ++settingsRevision_;
         changed();
         return;
     }

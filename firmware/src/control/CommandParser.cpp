@@ -139,16 +139,7 @@ bool CommandParser::parse(const String &rawCommand) {
             }
         } else if (name == "ECHO_FILTER") {
             if (value < -1.0f || value > 1.0f) return false;
-            state.echoFilterPosition = value;
-            using namespace PerformanceConfig;
-            const float amount = echoFilterAmount(value);
-            state.echoFilterFlat = amount == 0.0f;
-            state.highPassHz = value > 0.0f
-                ? kEchoHighPassMinHz * powf(kEchoHighPassMaxHz / kEchoHighPassMinHz, amount)
-                : kEchoHighPassMinHz;
-            state.lowPassHz = value < 0.0f
-                ? kEchoLowPassMaxHz * powf(kEchoLowPassMinHz / kEchoLowPassMaxHz, amount)
-                : kEchoLowPassMaxHz;
+            PerformanceController::applyEchoFilter(state, value);
         } else if (name == "TUNE_HZ") {
             state.tuneHz = clampValue(value, 30.0f, 9000.0f);
         } else if (name == "LFO_RATE_HZ") {
@@ -164,7 +155,7 @@ bool CommandParser::parse(const String &rawCommand) {
             if (value < 50.0f || value > 3000.0f) return false;
             state.sweepMs = value;
         } else if (name == "SYNDRUM_SWEEP") {
-            if (value < -3.0f || value > 3.0f) return false;
+            if (value < -4.0f || value > 4.0f) return false;
             state.syndrumSweepOctaves = value;
         } else if (name == "DELAY_MS") {
             state.delayMs = clampValue(value, PerformanceConfig::kEchoTimeMinMs,
@@ -207,25 +198,27 @@ bool CommandParser::parse(const String &rawCommand) {
         if (!parseBool(command.substring(separator + 1), value)) {
             return false;
         }
+        auto &remote = performance_.remoteGates();
         if (name == "TRIGGER") {
             if (value && !state.trigger) {
                 recordActivation(state);
             }
+            remote.trigger = value;
             state.trigger = value || physicalTrigger();
         } else if (name == "HOLD") {
-            state.hold = value;
+            state.hold = remote.hold = value;
         } else if (name == "MOD_UP") {
-            state.modUp = value;
+            state.modUp = remote.modUp = value;
         } else if (name == "MOD_DOWN") {
-            state.modDown = value;
+            state.modDown = remote.modDown = value;
         } else if (name == "ECHO_CUT") {
-            state.echoCut = value;
+            state.echoCut = remote.echoCut = value;
         } else if (name == "MODULATION") {
             state.modulationEnabled = value;
         } else if (name == "RETRIGGER") {
             state.retrigger = value;
         } else if (name == "ECHO_SPIN") {
-            state.echoSpin = value;
+            state.echoSpin = remote.echoSpin = value;
         } else if (name == "ECHO_LOOP") {
             state.echoLoop = value;
         } else {
@@ -269,12 +262,12 @@ bool CommandParser::parsePanelCommand(const String &command) {
         for (float &value : values) {
             char *end;
             value = strtof(cursor, &end);
-            if (cursor == end || !isfinite(value)) { performance_.cancelSettingsTransaction(); return false; }
+            if (cursor == end || !isfinite(value)) return false;
             cursor = end;
         }
         while (*cursor == ' ') ++cursor;
         SoundPatch patch;
-        if (*cursor || !decodeSoundPatch(values, patch)) { performance_.cancelSettingsTransaction(); return false; }
+        if (*cursor || !decodeSoundPatch(values, patch)) return false;
         return performance_.importPatch(pad, patch);
     }
     if (command.startsWith("POT ")) {
@@ -376,7 +369,7 @@ bool CommandParser::parsePanelCommand(const String &command) {
                        profileText, &button, valueText, &variant, &latch, &extra) != 5 ||
                 latch > 1) return false;
             PanelSound sound;
-            return parsePanelSoundName(valueText, sound) &&
+            return PerformanceController::parseSound(valueText, sound) &&
                 performance_.configureButtonSound(profile, button, sound,
                                                    variant, latch != 0);
         }
@@ -560,15 +553,4 @@ bool CommandParser::parseButtonActionName(const char *text,
         }
     }
     return false;
-}
-
-bool CommandParser::parsePanelSoundName(const char *text, PanelSound &sound) {
-    if (strcmp(text, "CLASSIC") == 0) sound = PanelSound::Classic;
-    else if (strcmp(text, "TWO_TONE") == 0) sound = PanelSound::TwoTone;
-    else if (strcmp(text, "LICKSHOT") == 0) sound = PanelSound::Lickshot;
-    else if (strcmp(text, "PING") == 0) sound = PanelSound::Ping;
-    else if (strcmp(text, "GUNSHOT") == 0) sound = PanelSound::Gunshot;
-    else if (strcmp(text, "TEST_TONE") == 0) sound = PanelSound::TestTone;
-    else return false;
-    return true;
 }

@@ -3,6 +3,7 @@ import math
 import os
 import tempfile
 import tkinter as tk
+from collections.abc import Callable
 from pathlib import Path
 from tkinter import ttk
 
@@ -268,6 +269,17 @@ def panel_settings_signature(settings: dict | None) -> object:
         return None
     value = json.loads(json.dumps(settings))
     value.pop("revision", None)
+    # The restore sends SOUND only for PLAY SOUND buttons and ZONES only for
+    # zone pots; ignore the leftovers so the comparison can ever match.
+    profiles = value.get("profiles")
+    for profile in profiles.values() if isinstance(profiles, dict) else ():
+        for button in profile.get("buttons", []) if isinstance(profile, dict) else ():
+            if isinstance(button, dict) and button.get("action") != "PLAY SOUND":
+                for key in ("sound", "variant", "latch"):
+                    button.pop(key, None)
+        for pot in profile.get("pots", []) if isinstance(profile, dict) else ():
+            if isinstance(pot, dict) and pot.get("mode") != "ZONES":
+                pot.pop("zones", None)
 
     def normalized(item):
         if isinstance(item, float):
@@ -373,6 +385,10 @@ class DialControl(ttk.Frame):
         position = max(0.0, min(1.0, position + delta))
         self.set_value(self.spec.from_normalized(position), notify=True, final=final)
 
+    @property
+    def dragging(self) -> bool:
+        return self._drag_y is not None
+
     def finish_drag(self) -> None:
         if self._drag_y is None:
             return
@@ -382,7 +398,6 @@ class DialControl(ttk.Frame):
     def set_active(self, active: bool) -> None:
         self._active = active
         self.canvas.configure(cursor="sb_v_double_arrow" if active else "arrow", takefocus=active)
-        self.label_state = "normal" if active else "disabled"
         self._draw()
 
     def _draw(self) -> None:
@@ -594,8 +609,7 @@ class PhysicalDubSirenApp(DubSirenApp):
         self.parameter_values["HPF_HZ"] = 60.0
         self.parameter_values["LPF_HZ"] = 7000.0
         self.panel_state = json.loads(json.dumps(DEFAULT_PANEL_STATE))
-        self._last_menu_revision = 0
-        self._panel_status_seen = False
+        self._key_releases: dict[int, Callable[[], None]] = {}
         self._input_sources: dict[str, set[str]] = {}
         self._encoder_sources: set[str] = set()
         self._saved_config_applied = False
@@ -834,20 +848,35 @@ class PhysicalDubSirenApp(DubSirenApp):
 
     def _bind_keyboard(self) -> None:
         for pad, key in enumerate(("1", "2", "3", "4"), start=1):
+            source = f"key-{key}"
             self.root.bind_all(
                 f"<KeyPress-{key}>",
-                lambda _event, number=pad, source=key: self._pad_down(number, f"key-{source}"),
-                add="+",
-            )
-            self.root.bind_all(
-                f"<KeyRelease-{key}>",
-                lambda _event, number=pad, source=key: self._pad_up(number, f"key-{source}"),
+                lambda event, number=pad, source=source: self._key_press(
+                    event, lambda: self._pad_down(number, source),
+                    lambda: self._pad_up(number, source)),
                 add="+",
             )
         self.root.bind_all("<KeyPress-bracketleft>", lambda _event: self._encoder_rotate(-1), add="+")
         self.root.bind_all("<KeyPress-bracketright>", lambda _event: self._encoder_rotate(1), add="+")
-        self.root.bind_all("<KeyPress-e>", lambda _event: self._encoder_down("key-e"), add="+")
-        self.root.bind_all("<KeyRelease-e>", lambda _event: self._encoder_up("key-e"), add="+")
+        self.root.bind_all(
+            "<KeyPress-e>",
+            lambda event: self._key_press(
+                event, lambda: self._encoder_down("key-e"),
+                lambda: self._encoder_up("key-e")),
+            add="+",
+        )
+        # Shift/Caps Lock change the release keysym ("1" -> "exclam"), not the
+        # physical keycode: match releases on the keycode seen at press time.
+        self.root.bind_all("<KeyRelease>", self._key_release, add="+")
+
+    def _key_press(self, event, press: Callable[[], None], release: Callable[[], None]) -> None:
+        self._key_releases[event.keycode] = release
+        press()
+
+    def _key_release(self, event) -> None:
+        release = self._key_releases.pop(event.keycode, None)
+        if release is not None:
+            release()
 
     def _focus_out(self, _event=None) -> None:
         self.root.after_idle(self._release_if_unfocused)
@@ -985,13 +1014,6 @@ class PhysicalDubSirenApp(DubSirenApp):
         if display.get("mode") == "HOME" and self.overlay_token is not None:
             self.display.render_overlay(*self._active_overlay)
 
-    def _send_parameter(
-        self,
-        name: str,
-        value: float,
-    ) -> None:
-        self._send(f"SET {name} {value:.6g}")
-
     def _synchronize_controls(self) -> None:
         selected = self._selected_output()
         self._send(f"SET OUTPUT {selected}")
@@ -1044,19 +1066,20 @@ class PhysicalDubSirenApp(DubSirenApp):
                 and len(panel["pads"]) == 4
             ):
                 old_display = self.panel_state.get("display", {})
-                menu_revision = int(panel.get("menuRevision", 0))
-                self._panel_status_seen = True
-                self._last_menu_revision = menu_revision
                 self.panel_state = panel
                 display = panel.get("display", {})
                 old_depth = self.parameter_values["LFO_DEPTH_OCT"]
+                # A STATUS racing a MASTER drag must not replace the value to send.
+                master_dial = self.dials.get("MASTER")
+                master_editing = ("MASTER" in self.pending_sends
+                                  or getattr(master_dial, "dragging", False))
                 for key, parameter in (
                     ("tuneHz", "TUNE_HZ"), ("rateHz", "LFO_RATE_HZ"),
                     ("depth", "LFO_DEPTH_OCT"), ("echoLevel", "ECHO_LEVEL"),
                     ("delayMs", "DELAY_MS"), ("feedback", "FEEDBACK"),
                     ("master", "MASTER"),
                 ):
-                    if key in display:
+                    if key in display and not (parameter == "MASTER" and master_editing):
                         self.parameter_values[parameter] = float(display[key])
                 for key, title in (("pitch", "PITCH"), ("rate", "RATE")):
                     if (display.get("mode") == "HOME"
@@ -1078,8 +1101,8 @@ class PhysicalDubSirenApp(DubSirenApp):
                         )
                 if "echoLoop" in display:
                     self.echo_loop_var.set(bool(display["echoLoop"]))
-                if "MASTER" in self.dials and hasattr(self.dials["MASTER"], "set_value"):
-                    self.dials["MASTER"].set_value(self.parameter_values["MASTER"])
+                if hasattr(master_dial, "set_value") and not master_editing:
+                    master_dial.set_value(self.parameter_values["MASTER"])
                 self._update_pad_labels()
                 if old_display.get("mode") != display.get("mode"):
                     if self.overlay_token is not None:
@@ -1114,13 +1137,13 @@ class PhysicalDubSirenApp(DubSirenApp):
                         except (OSError, PanelConfigError) as exc:
                             self._panel_io_error = f"panel.json save failed: {exc}"
                             self.connection_var.set(self._panel_io_error)
-                if panel.get("persistenceStatus"):
-                    self.connection_var.set(str(panel["persistenceStatus"]))
         super()._handle_status(status)
         if isinstance(status, dict) and isinstance(status.get("panel"), dict):
-            persistence_status = status["panel"].get("persistenceStatus")
-            if persistence_status:
-                self.connection_var.set(str(persistence_status))
+            panel = status["panel"]
+            # NVS errors clear on the next good save; device errors are sticky.
+            device_error = panel.get("persistenceStatus") or panel.get("deviceStatus")
+            if device_error:
+                self.connection_var.set(str(device_error))
         if self._panel_config_error and self._connected_virtual:
             self.connection_var.set(self._panel_config_error)
         elif self._panel_io_error and self._connected_virtual:
@@ -1144,7 +1167,6 @@ class PhysicalDubSirenApp(DubSirenApp):
         self._last_saved_settings_revision = None
         self._panel_io_error = None
         self._load_saved_panel_config()
-        self._panel_status_seen = False
         super().connect()
         self._refresh_display()
 

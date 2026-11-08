@@ -1,4 +1,5 @@
 """Exercise real Tk widgets; no audio device or ESP board is required."""
+import json
 import queue
 import gc
 import tempfile
@@ -7,9 +8,11 @@ import time
 import tkinter as tk
 import unittest
 from pathlib import Path
+from types import SimpleNamespace
 from unittest.mock import patch
 
-from physical_ui import PhysicalDubSirenApp
+import physical_ui
+from physical_ui import PhysicalDubSirenApp, load_panel_config, save_panel_config
 
 
 class SlowTransport:
@@ -151,6 +154,45 @@ class TkRuntimeTests(unittest.TestCase):
         samples = array.array("h", self.app.audio_queue.get_nowait())
         self.assertTrue(any(samples))
         self.app._send("TRIGGER 0")
+        self.app.disconnect()
+
+    def test_shift_and_caps_lock_releases_with_real_tk(self):
+        self.app = PhysicalDubSirenApp(self.root)
+        sent = []
+        self.app.transport = SimpleNamespace(connected=True, send=sent.append,
+                                             disconnect=lambda: None)
+        self.app._send = sent.append
+        self.root.focus_force()
+        self.root.update()
+        # Shift turns the release keysym of "1" into "exclam"; Caps Lock "e" into "E".
+        for press, release, expected in (
+            (("1", 49), ("exclam", 49), ["PAD 1 1", "PAD 1 0"]),
+            (("e", 69), ("E", 69), ["ENCODER_SWITCH 1", "ENCODER_SWITCH 0"]),
+        ):
+            sent.clear()
+            self.root.event_generate("<KeyPress>", keysym=press[0], keycode=press[1], when="now")
+            self.root.event_generate("<KeyRelease>", keysym=release[0], keycode=release[1], when="now")
+            self.root.update()
+            self.assertEqual(sent, expected)
+
+    def test_virtual_restore_reenables_autosave(self):
+        self.app = PhysicalDubSirenApp(self.root)
+        self.app.connect()
+        self.pump_until(lambda: self.app.protocol_ok, timeout=300)
+        settings = json.loads(json.dumps(self.app.panel_state["settings"]))
+        # The two audit cases: a non-PLAY SOUND button with a leftover sound
+        # and a CONTINUOUS pot with non-default zones.
+        settings["profiles"]["EXTENDED"]["buttons"][2].update(action="HOLD", sound="PING")
+        classic_pot = settings["profiles"]["CLASSIC"]["pots"][0]
+        classic_pot.update(mode="CONTINUOUS", zones=[0.1, 0.4, 0.9])
+        save_panel_config(physical_ui.panel_config_path(), settings)
+        self.app.disconnect()
+        self.app.connect()
+        self.pump_until(lambda: self.app.protocol_ok, timeout=300)
+        self.pump_until(lambda: not self.app._virtual_restore_pending)
+        self.app._send("PANEL BEHAVIOR JUMP")
+        self.pump_until(
+            lambda: load_panel_config(physical_ui.panel_config_path())["potBehavior"] == "JUMP")
         self.app.disconnect()
 
     def test_pot_keyboard_and_focus_scroll_at_150_percent(self):

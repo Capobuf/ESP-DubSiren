@@ -3,6 +3,8 @@
 #include <Arduino.h>
 #include <math.h>
 
+#include "DspUtils.h"
+
 class OnePoleLowPass {
 public:
     OnePoleLowPass() : state_(0.0f), cutoffHz_(-1.0f), coefficient_(1.0f) {}
@@ -17,15 +19,13 @@ public:
             return;
         }
         cutoffHz_ = clamped;
-        coefficient_ = 1.0f - expf(-TWO_PI * cutoffHz_ / sampleRate);
+        coefficient_ = 1.0f - expf(-kTwoPi * cutoffHz_ / sampleRate);
     }
 
     float process(float input) {
         state_ += coefficient_ * (input - state_);
         return state_;
     }
-
-    void reset() { state_ = 0.0f; }
 
 private:
     float state_;
@@ -45,11 +45,6 @@ public:
         previousInput_ = input;
         previousOutput_ = output;
         return output;
-    }
-
-    void reset() {
-        previousInput_ = 0.0f;
-        previousOutput_ = 0.0f;
     }
 
 private:

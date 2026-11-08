@@ -21,6 +21,16 @@ In KiCad hanno offset 0, rotazione 0 e scala 1, salvo dove indicato.
 | `CK_PTS636SM43SMTR_simplified.step` | SW5, SW6 | **Creato** da [CK-PTS636.pdf](../../docs/CK-PTS636.pdf), p.2 | Corpo 6,0×3,5×3,3, attuatore 3,0×1,5 fino a 4,3, terminali larghi 1,0 con ingombro totale 8,7. Spessore dei terminali (0,3) approssimato |
 | `Bel_0ZCG0110CF2B_envelope.step` | F1 | **Creato**: corpo massimo 4,73×3,41×1,30 | Solo inviluppo |
 | `MPS_MPM3612GLQ-33_envelope.step` | U2 | **Creato**: LGA 3×3×2 mm (datasheet p.1) | Solo inviluppo |
+| `Same_Sky_SAK-023_on_PEC11R.step` | SW7 (manopola) | Same Sky, [`Same_Sky_SAK-023.step`](https://www.sameskydevices.com/product/resource/3dmodel/sak-023) (STEP AP214, CAD Model Terms Same Sky) | Piatto D allineato a quello dell'albero (lato −X). Fondo del foro (9,2 mm sopra il fondo del nucleo) sulla punta dell'albero, z=26,6 |
+| `Davies_1100_envelope_on_PTV111-3.step` | RV1–RV6 (manopole) | **Creato** da [Davies-Catalog-Instrument-Knobs.pdf](../sources/Davies-Catalog-Instrument-Knobs.pdf) | Davies fornisce il disegno solo su richiesta. Gonna Ø25/32", corpo Ø21/32", altezza 15/32", foro Ø1/4" profondo 13/32" sulla punta dell'albero (z=27,4). L'altezza della gonna (2,1 mm) non è quotata ed è letta dalle proporzioni del disegno. Scanalature, disco e grano omessi |
+| `Cliff_K85M_CL170805B_envelope_on_PTV111-1.step` | RV7 (manopola) | **Creato** da [Cliff-K85M.pdf](../sources/Cliff-K85M.pdf) | Cliff fornisce lo STEP solo su richiesta. Gonna Ø14×3,5 con incavo Ø12×2,5, corpo conico 11,2→10 (le misure A/F sono usate come diametri) fino a 17,0, foro D Ø6 / 5 A/F profondo 12,5 sulla punta dell'albero (y=−27,5). Linea di riferimento (fino a 17,8) omessa |
+
+Le manopole sono un secondo modello negli stessi footprint, spinte fino in fondo
+(nessun pannello modellato). Rispetto al modello dell'albero resta una
+sovrapposizione di circa 9 mm³ per SAK-023 e K85M: il foro a D delle manopole
+copre anche il tratto tondo dell'albero sotto il piatto e, per il SAK-023, le
+alette di serraggio del nucleo. Il Davies 1100 ha un foro da 1/4" (6,35 mm) sugli
+alberi da 6 mm dei PTV111, fissato col grano. I keycap di SW1–SW4 non hanno MPN e non sono modellati.
 
 `vendor/` contiene i file originali scaricati, necessari per rigenerare i modelli.
 Ancora senza modello: **U5** (Adafruit 5393), perché Adafruit non pubblica uno STEP

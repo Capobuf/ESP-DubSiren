@@ -71,6 +71,14 @@ class TransportTests(unittest.TestCase):
         self.assertFalse(transport.connected)
         self.assertIn("unplugged", str(transport.error))
 
+    def test_idle_reader_sends_empty_keepalive_line(self):
+        transport = SerialTransport(queue.Queue())
+        port = Mock(is_open=True)
+        port.read.side_effect = [b"", serial.SerialException("done")]
+        transport._serial = port
+        transport._reader()
+        port.write.assert_called_once_with(b"\n")
+
     def test_failed_connect_closes_open_port(self):
         transport = SerialTransport(queue.Queue())
         port = Mock(is_open=True)

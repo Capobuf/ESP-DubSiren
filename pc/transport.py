@@ -1,10 +1,17 @@
 import queue
 import threading
+import time
 from collections.abc import Callable
 
 import serial
 
-from protocol import PacketParser, TYPE_AUDIO, TYPE_COMMAND_RESULT, decode_status
+from protocol import (
+    PacketParser, TYPE_AUDIO, TYPE_COMMAND_RESULT, decode_status, put_latest,
+)
+
+# The firmware releases remote pads after 3 s without host bytes; an empty
+# line keeps a live app linked without producing a command result.
+KEEPALIVE_SECONDS = 1.0
 
 
 class SerialTransport:
@@ -21,6 +28,7 @@ class SerialTransport:
         self._stop = threading.Event()
         self._thread: threading.Thread | None = None
         self._write_lock = threading.Lock()
+        self._last_write = 0.0
         self.error: Exception | None = None
 
     @property
@@ -57,16 +65,21 @@ class SerialTransport:
     def send(self, command: str) -> None:
         if not self.connected:
             raise RuntimeError("not connected")
-        data = (command + "\n").encode("ascii")
+        self._write((command + "\n").encode("ascii"))
+
+    def _write(self, data: bytes) -> None:
         with self._write_lock:
             assert self._serial is not None
             self._serial.write(data)
+            self._last_write = time.monotonic()
 
     def _reader(self) -> None:
         parser = PacketParser()
         assert self._serial is not None
         while not self._stop.is_set():
             try:
+                if time.monotonic() - self._last_write >= KEEPALIVE_SECONDS:
+                    self._write(b"\n")
                 data = self._serial.read(4096)
             except (serial.SerialException, OSError) as exc:
                 self.error = exc
@@ -74,7 +87,7 @@ class SerialTransport:
                 break
             for packet in parser.feed(data):
                 if packet.packet_type == TYPE_AUDIO:
-                    self._put_latest(packet.payload)
+                    put_latest(self._audio_queue, packet.payload)
                 else:
                     try:
                         status = decode_status(packet)
@@ -85,16 +98,3 @@ class SerialTransport:
                             self._command_callback(status["commandResult"])
                     elif self._status_callback is not None:
                         self._status_callback(status)
-
-    def _put_latest(self, pcm: bytes) -> None:
-        try:
-            self._audio_queue.put_nowait(pcm)
-        except queue.Full:
-            try:
-                self._audio_queue.get_nowait()
-            except queue.Empty:
-                pass
-            try:
-                self._audio_queue.put_nowait(pcm)
-            except queue.Full:
-                pass

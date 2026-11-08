@@ -12,7 +12,6 @@ public:
 
     bool begin();
     void update(bool linked);
-    bool ready() const { return ready_; }
     uint32_t lastRenderUs() const { return lastRenderUs_; }
     uint32_t maximumRenderUs() const { return maximumRenderUs_; }
 

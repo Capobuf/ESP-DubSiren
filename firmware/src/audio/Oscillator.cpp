@@ -49,7 +49,7 @@ float Oscillator::nextSyndrum(SyndrumWave wave, float frequencyHz,
     const float increment = frequencyHz / sampleRate;
     float output = 0.0f;
     if (wave == SyndrumWave::Sine) {
-        output = sinf(phase_ * TWO_PI);
+        output = sinf(phase_ * kTwoPi);
     } else if (wave == SyndrumWave::Square) {
         output = bandLimitedPulse(phase_, increment, 0.5f) * 0.72f;
     } else {
@@ -108,7 +108,7 @@ void Oscillator::advance(float increment) {
 }
 
 float Oscillator::nextLegacy(SirenMode mode, float phaseIncrement) const {
-    const float fundamental = sinf(phase_ * TWO_PI);
+    const float fundamental = sinf(phase_ * kTwoPi);
     switch (mode) {
         case SirenMode::TestTone:
             return fundamental;
@@ -183,7 +183,7 @@ float Oscillator::nextSine2(float frequencyHz, float modulation,
 }
 
 float Oscillator::nextTestTone(float, float, bool lfoGate, float, float sampleRate) {
-    return sinf(phase_ * TWO_PI) * PerformanceConfig::kTestGain *
+    return sinf(phase_ * kTwoPi) * PerformanceConfig::kTestGain *
            testGate_.nextGate(lfoGate, sampleRate);
 }
 
@@ -265,6 +265,6 @@ float Oscillator::nextSonar(bool lfoGate, float sampleRate) {
     // A decaying ping on each rising LFO gate, with a finite gate for silent
     // gaps even at high rates and anti-click ramps at both edges.
     const float ping = sonarPing_.next(kSonarPulseDecayMs, sampleRate);
-    return sinf(phase_ * TWO_PI) * kSonarOutputGain * ping *
+    return sinf(phase_ * kTwoPi) * kSonarOutputGain * ping *
            sonarGate_.nextGate(lfoGate, sampleRate);
 }

@@ -467,6 +467,17 @@
 				(xyz 0 0 0)
 			)
 		)
+		(model "${KIPRJMOD}/../cad/3dmodels/Davies_1100_envelope_on_PTV111-3.step"
+			(offset
+				(xyz 0 0 0)
+			)
+			(scale
+				(xyz 1 1 1)
+			)
+			(rotate
+				(xyz 0 0 0)
+			)
+		)
 	)
 	(footprint "ESP-DubSiren-V2-Mechanical:Bourns_PTV111-3"
 		(layer "F.Cu")
@@ -801,6 +812,17 @@
 		)
 		(embedded_fonts no)
 		(model "${KIPRJMOD}/../cad/3dmodels/Bourns_PTV111-3420A.step"
+			(offset
+				(xyz 0 0 0)
+			)
+			(scale
+				(xyz 1 1 1)
+			)
+			(rotate
+				(xyz 0 0 0)
+			)
+		)
+		(model "${KIPRJMOD}/../cad/3dmodels/Davies_1100_envelope_on_PTV111-3.step"
 			(offset
 				(xyz 0 0 0)
 			)
@@ -1252,6 +1274,17 @@
 				(xyz 0 0 0)
 			)
 		)
+		(model "${KIPRJMOD}/../cad/3dmodels/Davies_1100_envelope_on_PTV111-3.step"
+			(offset
+				(xyz 0 0 0)
+			)
+			(scale
+				(xyz 1 1 1)
+			)
+			(rotate
+				(xyz 0 0 0)
+			)
+		)
 	)
 	(footprint "ESP-DubSiren-V2-Mechanical:Bourns_PTV111-3"
 		(layer "F.Cu")
@@ -1586,6 +1619,17 @@
 		)
 		(embedded_fonts no)
 		(model "${KIPRJMOD}/../cad/3dmodels/Bourns_PTV111-3420A.step"
+			(offset
+				(xyz 0 0 0)
+			)
+			(scale
+				(xyz 1 1 1)
+			)
+			(rotate
+				(xyz 0 0 0)
+			)
+		)
+		(model "${KIPRJMOD}/../cad/3dmodels/Davies_1100_envelope_on_PTV111-3.step"
 			(offset
 				(xyz 0 0 0)
 			)
@@ -1976,6 +2020,17 @@
 				(xyz 0 0 0)
 			)
 		)
+		(model "${KIPRJMOD}/../cad/3dmodels/Same_Sky_SAK-023_on_PEC11R.step"
+			(offset
+				(xyz 0 0 0)
+			)
+			(scale
+				(xyz 1 1 1)
+			)
+			(rotate
+				(xyz 0 0 0)
+			)
+		)
 	)
 	(footprint "ESP-DubSiren-V2-Mechanical:Bourns_PTV111-3"
 		(layer "F.Cu")
@@ -2310,6 +2365,17 @@
 		)
 		(embedded_fonts no)
 		(model "${KIPRJMOD}/../cad/3dmodels/Bourns_PTV111-3420A.step"
+			(offset
+				(xyz 0 0 0)
+			)
+			(scale
+				(xyz 1 1 1)
+			)
+			(rotate
+				(xyz 0 0 0)
+			)
+		)
+		(model "${KIPRJMOD}/../cad/3dmodels/Davies_1100_envelope_on_PTV111-3.step"
 			(offset
 				(xyz 0 0 0)
 			)
@@ -3383,6 +3449,17 @@
 		)
 		(embedded_fonts no)
 		(model "${KIPRJMOD}/../cad/3dmodels/Bourns_PTV111-3420A.step"
+			(offset
+				(xyz 0 0 0)
+			)
+			(scale
+				(xyz 1 1 1)
+			)
+			(rotate
+				(xyz 0 0 0)
+			)
+		)
+		(model "${KIPRJMOD}/../cad/3dmodels/Davies_1100_envelope_on_PTV111-3.step"
 			(offset
 				(xyz 0 0 0)
 			)
@@ -5837,7 +5914,7 @@
 				(justify mirror)
 			)
 		)
-		(property "MPN" "CL21A226MPCLRNC"
+		(property "MPN" "LMK212BJ226MG-T"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "B.Fab")
@@ -5851,7 +5928,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Manufacturer" "Samsung"
+		(property "Manufacturer" "Taiyo Yuden"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "B.Fab")
@@ -10129,7 +10206,7 @@
 				(justify mirror)
 			)
 		)
-		(property "MPN" "CL21A226MPCLRNC"
+		(property "MPN" "LMK212BJ226MG-T"
 			(at 0 0 90)
 			(unlocked yes)
 			(layer "B.Fab")
@@ -10143,7 +10220,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Manufacturer" "Samsung"
+		(property "Manufacturer" "Taiyo Yuden"
 			(at 0 0 90)
 			(unlocked yes)
 			(layer "B.Fab")
@@ -12033,6 +12110,17 @@
 				(xyz 0 0 0)
 			)
 		)
+		(model "${KIPRJMOD}/../cad/3dmodels/Cliff_K85M_CL170805B_envelope_on_PTV111-1.step"
+			(offset
+				(xyz 0 0 0)
+			)
+			(scale
+				(xyz 1 1 1)
+			)
+			(rotate
+				(xyz 0 0 0)
+			)
+		)
 	)
 	(footprint "Resistor_SMD:R_0603_1608Metric"
 		(layer "B.Cu")
@@ -12479,7 +12567,7 @@
 				(justify mirror)
 			)
 		)
-		(property "MPN" "CL10B104KO8NNNC"
+		(property "MPN" "C0603C104K4RACTU"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "B.Fab")
@@ -12493,7 +12581,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Manufacturer" "Samsung"
+		(property "Manufacturer" "KEMET"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "B.Fab")
@@ -13511,7 +13599,7 @@
 				(justify mirror)
 			)
 		)
-		(property "MPN" "CL10B104KO8NNNC"
+		(property "MPN" "C0603C104K4RACTU"
 			(at 0 0 90)
 			(unlocked yes)
 			(layer "B.Fab")
@@ -13525,7 +13613,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Manufacturer" "Samsung"
+		(property "Manufacturer" "KEMET"
 			(at 0 0 90)
 			(unlocked yes)
 			(layer "B.Fab")
@@ -15015,7 +15103,7 @@
 				(justify mirror)
 			)
 		)
-		(property "MPN" "CL10B104KO8NNNC"
+		(property "MPN" "C0603C104K4RACTU"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "B.Fab")
@@ -15029,7 +15117,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Manufacturer" "Samsung"
+		(property "Manufacturer" "KEMET"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "B.Fab")
@@ -15600,7 +15688,7 @@
 				(justify mirror)
 			)
 		)
-		(property "MPN" "CL21A226MPCLRNC"
+		(property "MPN" "LMK212BJ226MG-T"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "B.Fab")
@@ -15614,7 +15702,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Manufacturer" "Samsung"
+		(property "Manufacturer" "Taiyo Yuden"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "B.Fab")
@@ -15990,7 +16078,7 @@
 				(justify mirror)
 			)
 		)
-		(property "MPN" "CL10B104KO8NNNC"
+		(property "MPN" "C0603C104K4RACTU"
 			(at 0 0 90)
 			(unlocked yes)
 			(layer "B.Fab")
@@ -16004,7 +16092,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Manufacturer" "Samsung"
+		(property "Manufacturer" "KEMET"
 			(at 0 0 90)
 			(unlocked yes)
 			(layer "B.Fab")
@@ -16562,7 +16650,7 @@
 				(justify mirror)
 			)
 		)
-		(property "MPN" "CL10B104KO8NNNC"
+		(property "MPN" "C0603C104K4RACTU"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "B.Fab")
@@ -16576,7 +16664,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Manufacturer" "Samsung"
+		(property "Manufacturer" "KEMET"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "B.Fab")

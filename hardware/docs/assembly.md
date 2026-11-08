@@ -34,8 +34,8 @@ realizzati nel rame. I quattro fori H1–H4 non sono componenti elettronici.
 
 | Riferimenti | Qtà | Valore / MPN |
 |---|---:|---|
-| C1, C3, C5 | 3 | 22 µF 0805 — Samsung CL21A226MPCLRNC |
-| C2, C4, C6, C8, C9 | 5 | 100 nF 0603 — Samsung CL10B104KO8NNNC |
+| C1, C3, C5 | 3 | 22 µF 10 V X5R 0805 — Taiyo Yuden LMK212BJ226MG-T |
+| C2, C4, C6, C8, C9 | 5 | 100 nF 16 V X7R 0603 — KEMET C0603C104K4RACTU |
 | C7, C10 | 2 | 1 µF 0603 — Samsung CL10B105MO8NNWC |
 | C11 | 1 | 10 nF C0G 50 V 0603 — Murata GRM1885C1H103JA01D |
 | R1 | 1 | 10 Ω — NIC NRC06J100TRF |
@@ -61,8 +61,8 @@ realizzati nel rame. I quattro fori H1–H4 non sono componenti elettronici.
 | SW7 | 1 | Bourns PEC11R-4120F-S0018 |
 | TP1–7 | 7 | Pad di prova: nessun pezzo da acquistare |
 
-C11, U7 e J2 non compaiono nel registro acquisti conservato: controllare le
-scorte, senza dedurne che non siano stati acquistati altrove. Le resistenze
+Il [registro acquisti](acquisti.csv) è l'ordine DigiKey dell'8/11/2026 e copre
+tutti i riferimenti sopra; l'ordine precedente resta nello storico Git. Le resistenze
 sono 0603. I condensatori della BOM sono ceramici non polarizzati; F1, resistenze
 e interruttori non hanno polarità elettrica, ma devono rispettare il footprint.
 
@@ -77,8 +77,9 @@ toccarlo; le due configurazioni seguenti sono alternative, non parti elettriche.
 | Appoggio piano | 4× [Harwin R30-1612000](https://www.harwin.com/products/R30-1612000), nylon, M3 femmina/femmina, L20 mm, esagono AF5,5 | Compatibile nominalmente con fori e riserve; altezza assieme da misurare |
 | Appoggio inclinato | Dietro H1/H2: 2× [Harwin R30-1612500](https://www.harwin.com/products/R30-1612500), L25; davanti H3/H4: 2× R30-1612000 L20 | Stessa sezione M3/AF5,5; inclinazione nominale 2,47°, stabilità da provare |
 | Fissaggio appoggi | 4 viti M3 superiori; 4 piedini antiscivolo compatibili con le colonne; eventuali viti inferiori se richieste dai piedini | Lunghezze, piedini e MPN da scegliere dopo misura; testa/rondella Ø≤7 mm |
+| Distanziali ordinati | Würth 2× 970180354 (L18, ottone, M3 femmina/femmina, esagono 5 mm), 2× 970100354 (L10), 2× 970080354 (L8); 6 viti 97790503111 | Diversi dagli appoggi sopra. Le L10 e L8 da sole sono più corte dei 12,7 mm di J2 sotto B.Cu; 4 colonne femmina/femmina richiedono 8 viti. Configurazione e lunghezza viti da decidere alla prova |
 | Display U5 | Fissaggi isolanti compatibili con fori Ø2,5, oppure adesivo idoneo su superfici libere | Nessun kit M2 generico approvato: vedi sotto |
-| Collegamento breakout | U5: fila 11 pin; U6: file 8 e 6 pin, passo 2,54 mm | Header/socket, lunghezza pin e altezza non ancora selezionati |
+| Collegamento breakout | U5: fila 11 pin; U6: file 8 e 6 pin, passo 2,54 mm | Ordinati: strip maschio Sullins PRPC040SAAN-RC (40 pin, isolante 2,50 mm) e presa femmina Sullins PPTC111LFBN-RC (11 poli). La presa alza U5 oltre i 2,50 mm: usarla solo se la prova a secco lo richiede |
 | Comandi | 6 Davies 1100; 1 Same Sky SAK-023 per encoder; 1 Cliff CL170805B per MASTER; 4 keycap CHERRY compatibili | Manopole presenti nel registro; accoppiamenti da provare. Keycap senza MPN, riserva 20×20 mm |
 | Jack J2 | Neutrik NRJ-NUT-B | Facoltativo solo per un eventuale pannello futuro |
 
