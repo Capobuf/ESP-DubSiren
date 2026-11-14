@@ -39,7 +39,6 @@ enum class LfoShape {
     Manual,
 };
 
-enum class PerformanceProfile { Classic, Extended };
 enum class ClassicPitch { Low, Mid, High };
 enum class ClassicModulation { Slow, Medium, Fast, Manual };
 
@@ -47,13 +46,14 @@ struct SoundState {
     SirenMode mode = SirenMode::Sine1;
     float tuneHz = PerformanceConfig::kClassicPitchHz[1];
     LfoShape lfoShape = LfoShape::Classic;
-    float lfoRateHz = 0.70f;
+    float lfoRateHz = PerformanceConfig::kClassicRateHz[1];
     float lfoDepthOctaves = 1.0f;
     LickshotArticulation lickshotArticulation = LickshotArticulation::Legacy;
     float lickshotLengthMs = 150.0f;
     float lickshotPunchOctaves = 2.0f;
     float lickshotPitchMs = 70.0f;
-    float decayMs = PerformanceConfig::kExtendedDecayMs;
+    // Zero selects the short anti-click gate instead of an exponential tail.
+    float decayMs = 0.0f;
     float dryToneHz = 19000.0f;
     float filterContourOctaves = 0.0f;
     float filterContourMs = 150.0f;
@@ -74,13 +74,10 @@ constexpr unsigned kActivationEventCapacity = 8;
 
 struct ControlState : SoundState {
     TempoState tempo;
-    PerformanceProfile profile = PerformanceProfile::Classic;
     ClassicPitch classicPitch = ClassicPitch::Mid;
     ClassicModulation classicModulation = ClassicModulation::Medium;
     float pitchPosition = 0.5f;
     float ratePosition = 0.375f;
-    bool classicPitchUsesTune = false;
-    bool classicRateUsesRate = false;
     bool pitchZonesActive = true;
     bool rateZonesActive = true;
     bool trigger = false;
@@ -104,8 +101,19 @@ struct ControlState : SoundState {
     float masterVolume = 0.50f;
 };
 
+// The MANUAL position of a zoned Rate control overrides the stored shape.
+inline LfoShape effectiveLfoShape(const ControlState &state) {
+    return state.rateZonesActive && !state.tempo.lfoSync &&
+           state.classicModulation == ClassicModulation::Manual
+        ? LfoShape::Manual : state.lfoShape;
+}
+
+// SIREN and MANUAL share the capacitor-like pitch model instead of Depth.
+inline bool sirenShape(LfoShape shape) {
+    return shape == LfoShape::Classic || shape == LfoShape::Manual;
+}
+
 inline bool tempoLfoActive(const ControlState &state) {
-    if (state.profile == PerformanceProfile::Classic) return true;
     if (state.mode == SirenMode::Gunshot || state.mode == SirenMode::Syndrum) return false;
     if (state.mode == SirenMode::Lickshot && state.lickshotArticulation != LickshotArticulation::Legacy)
         return state.lickshotArticulation == LickshotArticulation::Roll;

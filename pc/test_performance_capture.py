@@ -36,7 +36,7 @@ class PerformanceCaptureTests(unittest.TestCase):
         self.assertIn("dynamic_sweep_sine1", TRANSIENT_CAPTURE_NAMES)
         self.assertIn("gunshot_echo", TRANSIENT_CAPTURE_NAMES)
         names = {name for name, _commands in SCENARIOS}
-        self.assertTrue({"extended_saw", "extended_triangle",
+        self.assertTrue({"steady_saw", "steady_triangle",
                          "lickshot_saw_down", "lickshot_triangle",
                          "lickshot_airhorn", "sonar"} <= names)
         capture = FakeCapture()

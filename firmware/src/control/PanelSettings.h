@@ -69,11 +69,6 @@ struct ButtonConfig {
     uint8_t latch = 0;
 };
 
-struct ProfilePanelSettings {
-    PotConfig pots[6];
-    ButtonConfig buttons[4];
-};
-
 struct SoundPatch {
     uint8_t valid = 0;
     PanelSound sound = PanelSound::Classic;
@@ -81,25 +76,18 @@ struct SoundPatch {
     SoundState state;
 };
 
-struct PanelSettingsV1 {
-    static constexpr uint16_t kSchemaVersion = 1;
+// One panel layout: older stored schemas are discarded, not migrated.
+struct PanelSettings {
+    static constexpr uint16_t kSchemaVersion = 3;
     uint16_t schemaVersion = kSchemaVersion;
     PotBehavior potBehavior = PotBehavior::Pickup;
     EncoderHoldAction encoderHoldAction = EncoderHoldAction::LivePitch;
     uint8_t encoderStepSemitones = 1;
     uint8_t encoderRangeSemitones = 12;
-    ProfilePanelSettings profiles[2];
-};
-
-struct PanelSettings : PanelSettingsV1 {
-    static constexpr uint16_t kSchemaVersion = 2;
+    PotConfig pots[6];
+    ButtonConfig buttons[4];
     SoundPatch patches[4];
-    PanelSettings() { schemaVersion = kSchemaVersion; }
 };
-
-inline unsigned profileIndex(PerformanceProfile profile) {
-    return profile == PerformanceProfile::Classic ? 0u : 1u;
-}
 
 inline const TargetDescriptor *targetDescriptor(PotTarget target) {
     static constexpr TargetDescriptor descriptors[] = {
@@ -131,14 +119,6 @@ inline const TargetDescriptor *targetDescriptor(PotTarget target) {
         ? &descriptors[index] : nullptr;
 }
 
-inline bool targetSupported(PerformanceProfile profile, PotTarget target) {
-    if (target == PotTarget::None) return true;
-    if (profile == PerformanceProfile::Extended) return target < PotTarget::Count;
-    return target == PotTarget::Pitch || target == PotTarget::Rate ||
-        target == PotTarget::EchoLevel || target == PotTarget::EchoTime ||
-        target == PotTarget::EchoFeedback || target == PotTarget::EchoFilter;
-}
-
 inline const char *potTargetName(PotTarget target) {
     const TargetDescriptor *descriptor = targetDescriptor(target);
     return descriptor == nullptr ? "UNKNOWN" : descriptor->name;
@@ -161,7 +141,7 @@ inline const char *buttonActionName(ButtonAction action) {
 }
 
 inline const char *panelSoundName(PanelSound sound) {
-    static const char *names[] = {"CLASSIC", "TWO TONE", "LICKSHOT", "PING", "GUNSHOT", "TEST TONE"};
+    static const char *names[] = {"SIREN", "TWO TONE", "LICKSHOT", "PING", "GUNSHOT", "TEST TONE"};
     const unsigned index = static_cast<unsigned>(sound);
     return index < static_cast<unsigned>(PanelSound::Count) ? names[index]
                                                              : "UNKNOWN";
@@ -186,7 +166,7 @@ inline bool panelSoundSupportsLatch(PanelSound sound) {
 
 inline const char *panelSoundVariantName(PanelSound sound, unsigned variant) {
     static const char *classic[] = {"SINE 1", "SINE 2", "SONAR", "SAW", "TRIANGLE"};
-    static const char *twoTone[] = {"RC", "TRIANGLE", "SQUARE"};
+    static const char *twoTone[] = {"SIREN", "TRIANGLE", "SQUARE"};
     static const char *lickshot[] = {"SAW DOWN", "ASYM DOWN", "SHOT", "ROLL", "HORN"};
     static const char *ping[] = {"SINE", "TRIANGLE", "SQUARE"};
     const unsigned count = panelSoundVariantCount(sound);
@@ -211,21 +191,15 @@ inline bool finiteRange(const PotConfig &config) {
         config.maximum <= descriptor->absoluteMax;
 }
 
-inline bool validatePotConfig(PerformanceProfile profile,
-                              const PotConfig &config) {
-    if (!targetSupported(profile, config.target) || !finiteRange(config) ||
+inline bool validatePotConfig(const PotConfig &config) {
+    if (config.target >= PotTarget::Count || !finiteRange(config) ||
         config.mode > PotMode::Zones) return false;
     for (float zone : config.zones) if (!isfinite(zone)) return false;
     const TargetDescriptor *descriptor = targetDescriptor(config.target);
     if (config.mode == PotMode::Zones) {
-        if (!descriptor->zones ||
-            (profile != PerformanceProfile::Classic) ||
-            (config.target != PotTarget::Pitch && config.target != PotTarget::Rate)) {
-            return false;
-        }
+        if (!descriptor->zones) return false;
         for (unsigned index = 0; index < 3; ++index) {
-            if (!isfinite(config.zones[index]) ||
-                config.zones[index] < descriptor->absoluteMin ||
+            if (config.zones[index] < descriptor->absoluteMin ||
                 config.zones[index] > descriptor->absoluteMax ||
                 (index > 0 && config.zones[index] <= config.zones[index - 1])) {
                 return false;
@@ -235,20 +209,12 @@ inline bool validatePotConfig(PerformanceProfile profile,
     return true;
 }
 
-inline bool validateButtonConfig(PerformanceProfile profile,
-                                 const ButtonConfig &config) {
-    if (config.action >= ButtonAction::Count || config.latch > 1 ||
-        config.sound >= PanelSound::Count ||
-        config.variant >= panelSoundVariantCount(config.sound)) return false;
-    if (profile == PerformanceProfile::Classic &&
-        (config.action == ButtonAction::EchoLoop || config.action == ButtonAction::EchoSpin)) return false;
-    if (config.action != ButtonAction::PlaySound) return true;
-    if (profile == PerformanceProfile::Classic &&
-        !((config.sound == PanelSound::Classic && config.variant < 2) ||
-          ((config.sound == PanelSound::TwoTone || config.sound == PanelSound::TestTone) && config.variant == 0))) return false;
-    return config.sound < PanelSound::Count &&
+inline bool validateButtonConfig(const ButtonConfig &config) {
+    return config.action < ButtonAction::Count && config.latch <= 1 &&
+        config.sound < PanelSound::Count &&
         config.variant < panelSoundVariantCount(config.sound) &&
-        (!config.latch || panelSoundSupportsLatch(config.sound));
+        (config.action != ButtonAction::PlaySound || !config.latch ||
+         panelSoundSupportsLatch(config.sound));
 }
 
 inline bool validateSoundPatch(const SoundPatch &patch) {
@@ -283,14 +249,10 @@ inline bool validatePanelSettings(const PanelSettings &settings) {
         settings.encoderStepSemitones < 1 || settings.encoderStepSemitones > 12 ||
         settings.encoderRangeSemitones < settings.encoderStepSemitones ||
         settings.encoderRangeSemitones > 24) return false;
-    for (unsigned profile = 0; profile < 2; ++profile) {
-        const PerformanceProfile value = profile == 0
-            ? PerformanceProfile::Classic : PerformanceProfile::Extended;
-        for (const PotConfig &pot : settings.profiles[profile].pots)
-            if (!validatePotConfig(value, pot)) return false;
-        for (const ButtonConfig &button : settings.profiles[profile].buttons)
-            if (!validateButtonConfig(value, button)) return false;
-    }
+    for (const PotConfig &pot : settings.pots)
+        if (!validatePotConfig(pot)) return false;
+    for (const ButtonConfig &button : settings.buttons)
+        if (!validateButtonConfig(button)) return false;
     for (const auto &patch : settings.patches) if (!validateSoundPatch(patch)) return false;
     return true;
 }
@@ -307,52 +269,23 @@ inline PotConfig continuousPot(PotTarget target) {
 
 inline PanelSettings factoryPanelSettings() {
     PanelSettings settings;
-    auto &classic = settings.profiles[0];
-    classic.pots[0] = continuousPot(PotTarget::Pitch);
-    classic.pots[0].mode = PotMode::Zones;
-    classic.pots[0].zones[0] = PerformanceConfig::kClassicPitchHz[0];
-    classic.pots[0].zones[1] = PerformanceConfig::kClassicPitchHz[1];
-    classic.pots[0].zones[2] = PerformanceConfig::kClassicPitchHz[2];
-    classic.pots[1] = continuousPot(PotTarget::Rate);
-    classic.pots[1].mode = PotMode::Zones;
-    classic.pots[1].zones[0] = PerformanceConfig::kClassicRateHz[0];
-    classic.pots[1].zones[1] = PerformanceConfig::kClassicRateHz[1];
-    classic.pots[1].zones[2] = PerformanceConfig::kClassicRateHz[2];
-    classic.pots[2] = continuousPot(PotTarget::EchoLevel);
-    classic.pots[3] = continuousPot(PotTarget::EchoTime);
-    classic.pots[4] = continuousPot(PotTarget::EchoFeedback);
-    classic.pots[5] = continuousPot(PotTarget::EchoFilter);
-    classic.buttons[0].action = ButtonAction::Trigger;
-    classic.buttons[1].action = ButtonAction::Hold;
-    classic.buttons[2].action = ButtonAction::ModUp;
-    classic.buttons[3].action = ButtonAction::EchoCut;
-
-    auto &extended = settings.profiles[1];
-    extended.pots[0] = continuousPot(PotTarget::Pitch);
-    extended.pots[1] = continuousPot(PotTarget::Rate);
-    extended.pots[2] = continuousPot(PotTarget::EchoLevel);
-    extended.pots[3] = continuousPot(PotTarget::EchoTime);
-    extended.pots[4] = continuousPot(PotTarget::EchoFeedback);
-    extended.pots[5] = continuousPot(PotTarget::EchoFilter);
-    const PanelSound sounds[] = {PanelSound::Classic, PanelSound::TwoTone,
-        PanelSound::Lickshot, PanelSound::Ping};
-    for (unsigned index = 0; index < 4; ++index) {
-        extended.buttons[index].action = ButtonAction::PlaySound;
-        extended.buttons[index].sound = sounds[index];
+    settings.pots[0] = continuousPot(PotTarget::Pitch);
+    settings.pots[0].mode = PotMode::Zones;
+    settings.pots[1] = continuousPot(PotTarget::Rate);
+    settings.pots[1].mode = PotMode::Zones;
+    for (unsigned index = 0; index < 3; ++index) {
+        settings.pots[0].zones[index] = PerformanceConfig::kClassicPitchHz[index];
+        settings.pots[1].zones[index] = PerformanceConfig::kClassicRateHz[index];
     }
+    settings.pots[2] = continuousPot(PotTarget::EchoLevel);
+    settings.pots[3] = continuousPot(PotTarget::EchoTime);
+    settings.pots[4] = continuousPot(PotTarget::EchoFeedback);
+    settings.pots[5] = continuousPot(PotTarget::EchoFilter);
+    settings.buttons[0].action = ButtonAction::Trigger;
+    settings.buttons[1].action = ButtonAction::Hold;
+    settings.buttons[2].action = ButtonAction::ModUp;
+    settings.buttons[3].action = ButtonAction::EchoCut;
     return settings;
-}
-
-inline bool migratePanelSettings(const PanelSettingsV1 &legacy, PanelSettings &result) {
-    if (legacy.schemaVersion != 1) return false;
-    static_cast<PanelSettingsV1 &>(result) = legacy;
-    result.schemaVersion = PanelSettings::kSchemaVersion;
-    for (auto &patch : result.patches) patch = SoundPatch{};
-    // These legacy Classic actions never affected audio; migration makes that explicit.
-    for (auto &button : result.profiles[0].buttons)
-        if (button.action == ButtonAction::EchoLoop || button.action == ButtonAction::EchoSpin)
-            button.action = ButtonAction::None;
-    return validatePanelSettings(result);
 }
 
 constexpr unsigned kSoundPatchValueCount = 23;

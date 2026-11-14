@@ -72,6 +72,11 @@ class VirtualTransportTests(unittest.TestCase):
                 return
         self.fail("Virtual ESP did not produce non-silent PCM")
 
+    def _sound_pads(self):
+        for pad, sound in enumerate(("SIREN", "TWO_TONE", "LICKSHOT", "PING"), start=1):
+            self.transport.send(f"PANEL BUTTON {pad} ACTION PLAY_SOUND")
+            self.transport.send(f"PANEL BUTTON {pad} SOUND {sound} 0 0")
+
     def _trigger_voice(self, voice):
         self.transport.send("TRIGGER 0")
         time.sleep(0.03)
@@ -85,7 +90,7 @@ class VirtualTransportTests(unittest.TestCase):
         import tempfile
         from pathlib import Path
         from physical_ui import save_panel_config, load_panel_config, panel_settings_commands
-        self.transport.send("SET PROFILE EXTENDED")
+        self._sound_pads()
         for pad in range(1, 5):
             for command in (f"PAD {pad} 1", f"PAD {pad} 0", f"SET TUNE_HZ {220 * pad}",
                             f"SET DECAY_MS {150 * pad}", f"PANEL SAVE {pad}"):
@@ -99,7 +104,6 @@ class VirtualTransportTests(unittest.TestCase):
         for command in panel_settings_commands(settings):
             self.transport.send(command)
         self.assertFalse(self.statuses[-1]["panel"]["display"]["hold"])
-        self.transport.send("SET PROFILE EXTENDED")
         for pad in range(1, 5):
             self.transport.send(f"PANEL RECALL {pad}")
             self.assertAlmostEqual(self.statuses[-1]["panel"]["display"]["tuneHz"], 220 * pad)
@@ -126,7 +130,7 @@ class VirtualTransportTests(unittest.TestCase):
 
         for command in ("TEMPO BPM 120", "TEMPO ECHO SYNC", "TEMPO LFO SYNC",
                         "TEMPO ECHO_DIV 1/8D", "TEMPO LFO_DIV 1/8T",
-                        "PANEL BUTTON CLASSIC 4 ACTION TAP_TEMPO"):
+                        "PANEL BUTTON 4 ACTION TAP_TEMPO"):
             self.transport.send(command)
         tempo = display()["tempo"]
         self.assertEqual(tempo["echoMs"], 375)
@@ -205,12 +209,14 @@ class VirtualTransportTests(unittest.TestCase):
                  ["SETUP", "ENCODER"], ["SETUP", "RESET_DEFAULTS"]]
         paths += [["SETUP", "POTS", f"POT_{i}"] for i in range(1, 7)]
         paths += [["SETUP", "BUTTONS", f"BTN_{i}"] for i in range(1, 5)]
-        for profile in ("CLASSIC", "EXTENDED"):
-            self.transport.send(f"SET PROFILE {profile}")
-            for command in ("TEMPO BPM 30", "TEMPO ECHO SYNC", "TEMPO LFO SYNC"):
-                self.transport.send(command)
+        for command in ("TEMPO BPM 30", "TEMPO ECHO SYNC", "TEMPO LFO SYNC"):
+            self.transport.send(command)
+        # The factory layout first, then four sound pads with their own menu rows.
+        for sound_pads in (False, True):
+            if sound_pads:
+                self._sound_pads()
             for path in paths:
-                with self.subTest(profile=profile, path=path):
+                with self.subTest(sound_pads=sound_pads, path=path):
                     while display()["mode"] == "MENU":
                         select("BACK")
                     click()
@@ -224,11 +230,10 @@ class VirtualTransportTests(unittest.TestCase):
         renderer.canvas.delete("all")
         renderer.render_overlay("PITCH", "DOWN PICKUP - HIGH - 9000 Hz")
         assert_bounds()
-        for profile in ("CLASSIC", "EXTENDED"):
-            self.transport.send(f"SET PROFILE {profile}")
-            tempo = display()["tempo"]
-            renderer.render_home(1, 1, "SINE 1", "SINE 1", "1 oct", False,
-                                 False, True, {"PROFILE": profile, "TEMPO": tempo})
+        tempo = display()["tempo"]
+        for pad_selected, sound in ((False, "TWO TONE TRIANGLE"), (True, "TWO TONE")):
+            renderer.render_home(1, 1, sound, "TRIANGLE", "1 oct", False, False, True,
+                                 {"PAD_SELECTED": pad_selected, "TEMPO": tempo})
             assert_bounds()
 
     def test_shared_dsp_controls_audio_transients_and_reconnect(self):
@@ -237,11 +242,10 @@ class VirtualTransportTests(unittest.TestCase):
         self.assertEqual(self.statuses[0]["protocol"], PROTOCOL_VERSION)
         self.assertEqual(
             [pad["sound"] for pad in self.statuses[0]["panel"]["pads"]],
-            ["CLASSIC", "TWO TONE", "LICKSHOT", "PING"],
+            ["TRIGGER", "HOLD", "MOD UP", "ECHO CUT"],
         )
 
         commands = (
-            "SET PROFILE EXTENDED",
             "SET TUNE_HZ 330",
             "SET LFO_RATE_HZ 2.5",
             "SET ECHO_LEVEL 0.7",
@@ -292,7 +296,12 @@ class VirtualTransportTests(unittest.TestCase):
         self.assertEqual(len(self.statuses), count + 1)
 
     def test_shared_panel_priority_combinations_and_one_shot(self):
-        self.transport.send("SET PROFILE EXTENDED")
+        self._sound_pads()
+        self.assertEqual(
+            [pad["sound"] for pad in self.statuses[-1]["panel"]["pads"]],
+            ["SIREN", "TWO TONE", "LICKSHOT", "PING"],
+        )
+        self.assertEqual(self.statuses[-1]["panel"]["pads"][1]["variant"], "SIREN")
         self.transport.send("STREAM 1")
         self.transport.send("PAD 1 1")
         self.assertEqual(self.statuses[-1]["panel"]["activePad"], 1)
@@ -319,14 +328,15 @@ class VirtualTransportTests(unittest.TestCase):
         self._assert_non_silent_audio()
 
     def test_display_state_and_shared_encoder_menu(self):
-        self.transport.send("SET PROFILE EXTENDED")
         display = self.statuses[-1]["panel"]["display"]
         self.assertEqual((display["width"], display["height"]), (320, 172))
         self.assertEqual(display["mode"], "HOME")
+        self.assertNotIn("profile", display)
+        self.assertFalse(display["padSelected"])
 
         self.transport.send("ENCODER_ROTATE NEXT")
         display = self.statuses[-1]["panel"]["display"]
-        self.assertEqual(self.statuses[-1]["panel"]["pads"][0]["variant"], "SINE 2")
+        self.assertEqual(display["voice"], "SINE 2")
         self.assertAlmostEqual(display["depth"], 1.0, places=4)
         self.assertEqual(display["liveTranspose"], 0)
 
@@ -341,8 +351,10 @@ class VirtualTransportTests(unittest.TestCase):
             self.transport.send("ENCODER_ROTATE NEXT")
         self.transport.send("ENCODER_SWITCH 1")
         self.transport.send("ENCODER_SWITCH 0")
-        self.transport.send("ENCODER_ROTATE NEXT")
-        self.assertEqual(self.statuses[-1]["panel"]["display"]["menuIndex"], 1)
+        display = self.statuses[-1]["panel"]["display"]
+        self.assertEqual(display["title"], "SETUP")
+        self.assertEqual([row["key"] for row in display["rows"]],
+                         ["POTS", "BUTTONS", "ENCODER", "RESET_DEFAULTS", "BACK"])
         self.transport.send("ENCODER_SWITCH 1")
         self.transport.send("ENCODER_SWITCH 0")
         display = self.statuses[-1]["panel"]["display"]
@@ -361,51 +373,99 @@ class VirtualTransportTests(unittest.TestCase):
         self.assertTrue(self.statuses[-1]["panel"]["display"]["editing"])
         self.transport.send("ENCODER_ROTATE NEXT")
         self.assertEqual(
-            self.statuses[-1]["panel"]["settings"]["profiles"]["EXTENDED"]["pots"][0]["target"],
+            self.statuses[-1]["panel"]["settings"]["pots"][0]["target"],
             "RATE",
         )
         self.transport.send("ENCODER_SWITCH 1")
         self.transport.send("ENCODER_SWITCH 0")
         self.assertFalse(self.statuses[-1]["panel"]["display"]["editing"])
 
-    def test_extended_btn1_turn_changes_depth_and_release_restores_waveform_selection(self):
-        self.transport.send("SET PROFILE EXTENDED")
+    def test_profile_commands_are_gone_and_any_button_can_be_a_sound_pad(self):
+        def panel():
+            return self.statuses[-1]["panel"]
+
+        self.assertEqual(panel()["settings"]["schema"], 3)
+        self.assertNotIn("profiles", panel()["settings"])
+        self.assertEqual([pot["target"] for pot in panel()["settings"]["pots"]],
+                         ["PITCH", "RATE", "ECHO LEVEL", "ECHO TIME",
+                          "ECHO FEEDBACK", "ECHO FILTER"])
+        self.assertEqual([pot["mode"] for pot in panel()["settings"]["pots"][:2]],
+                         ["ZONES", "ZONES"])
+        self.assertEqual(panel()["settings"]["pots"][0]["zones"], [330.0, 680.0, 1000.0])
+        self.assertEqual(panel()["display"]["buttons"],
+                         ["TRIGGER", "HOLD", "MOD UP", "ECHO CUT"])
+        for command in ("SET PROFILE CLASSIC", "SET PROFILE EXTENDED",
+                        "PANEL POT CLASSIC 1 TARGET PITCH",
+                        "PANEL BUTTON EXTENDED 1 ACTION PLAY_SOUND",
+                        # BTN3 is MOD UP: only a PLAY_SOUND button takes a pad sound.
+                        "PAD_CONFIG 3 PING 1 0"):
+            with self.subTest(command=command), self.assertRaisesRegex(RuntimeError, "rejected"):
+                self.transport.send(command)
+        # Formerly profile-bound commands, targets and actions are always accepted.
+        for command in ("SET MODE SAW", "SET MODE GUNSHOT", "SET LICKSHOT_MODE HORN",
+                        "SET LICKSHOT_LENGTH_MS 200", "SET DRY_TONE_HZ 1200",
+                        "SET FILTER_CONTOUR_OCT 2", "SET FILTER_CONTOUR_MS 300",
+                        "SET ECHO_COLOR 0.5", "SET LFO_SHAPE CLASSIC", "SET LFO_SHAPE SIREN",
+                        "ECHO_LOOP 1", "ECHO_LOOP 0", "ECHO_SPIN 1", "ECHO_SPIN 0",
+                        "PANEL POT 3 TARGET LFO_DEPTH", "PANEL POT 4 TARGET SWEEP_TIME",
+                        "PANEL BUTTON 4 ACTION ECHO_SPIN",
+                        "PANEL BUTTON 3 ACTION PLAY_SOUND", "PAD_CONFIG 3 PING 1 0",
+                        "PANEL BUTTON 2 ACTION PLAY_SOUND",
+                        "PANEL BUTTON 2 SOUND CLASSIC 3 1"):
+            self.transport.send(command)
+        self.assertEqual(panel()["display"]["buttons"],
+                         ["TRIGGER", "PLAY SOUND", "PLAY SOUND", "ECHO SPIN"])
+        self.assertEqual(panel()["settings"]["buttons"][1],
+                         {"action": "PLAY SOUND", "sound": "SIREN", "variant": 3, "latch": True})
+        self.assertEqual(
+            [(pad["sound"], pad["variant"]) for pad in panel()["pads"]],
+            [("TRIGGER", "N/A"), ("SIREN", "SAW"), ("PING", "TRIANGLE"), ("ECHO SPIN", "N/A")],
+        )
+
+    def test_held_sound_button_turn_is_live_pitch_and_release_restores_variant_selection(self):
+        self._sound_pads()
         self.transport.send("PAD 1 1")
         self.transport.send("ENCODER_ROTATE NEXT")
         panel = self.statuses[-1]["panel"]
-        self.assertAlmostEqual(panel["display"]["depth"], 1.05, places=4)
-        self.assertEqual(panel["display"]["liveTranspose"], 0)
+        self.assertTrue(panel["display"]["padSelected"])
+        self.assertEqual(panel["display"]["overlay"]["title"], "LIVE PITCH")
+        self.assertEqual(panel["display"]["liveTranspose"], 1)
+        self.assertAlmostEqual(panel["display"]["depth"], 1.0, places=4)
         self.assertEqual(panel["pads"][0]["variant"], "SINE 1")
-        self.assertEqual(panel["display"]["overlay"]["title"], "DEPTH")
         self.transport.send("PAD 1 0")
         self.transport.send("ENCODER_ROTATE NEXT")
         panel = self.statuses[-1]["panel"]
         self.assertEqual(panel["pads"][0]["variant"], "SINE 2")
-        self.assertAlmostEqual(panel["display"]["depth"], 1.05, places=4)
+        self.assertEqual(panel["display"]["liveTranspose"], 0)
         self.assertFalse(panel["display"]["hold"])
 
-    def test_extended_waveform_encoder_cycle_audio_and_classic_boundary(self):
-        for command in ("SET PROFILE EXTENDED", "SET ECHO_LEVEL 0",
-                        "SET LFO_DEPTH_OCT 0", "SET DECAY_MS 0", "STREAM 1"):
+    def test_trigger_voice_encoder_cycle_and_audio(self):
+        def display():
+            return self.statuses[-1]["panel"]["display"]
+        for command in ("SET ECHO_LEVEL 0", "STREAM 1"):
             self.transport.send(command)
-        for voice in ("SINE 2", "SONAR", "SAW", "TRIANGLE", "SINE 1"):
+        self.assertEqual(display()["voice"], "SINE 1")
+        for voice in ("SINE 2", "TEST TONE", "SQUARE", "SONAR", "SAW", "TRIANGLE",
+                      "TWO TONE TRIANGLE", "TWO TONE SQUARE", "LICKSHOT SAW DOWN",
+                      "LICKSHOT ASYM DOWN", "LICKSHOT SHOT", "LICKSHOT ROLL",
+                      "LICKSHOT HORN", "PING SINE", "PING TRIANGLE", "PING SQUARE",
+                      "GUNSHOT", "SINE 1"):
             self.transport.send("ENCODER_ROTATE NEXT")
-            self.assertEqual(self.statuses[-1]["panel"]["pads"][0]["variant"], voice)
-            if voice in ("SAW", "TRIANGLE"):
+            self.assertEqual(display()["voice"], voice)
+            self.assertFalse(display()["padSelected"])
+            if voice in ("SAW", "TRIANGLE", "LICKSHOT HORN", "PING SINE"):
                 self._drain()
                 self.transport.send("PAD 1 1")
-                self.assertEqual(self.statuses[-1]["panel"]["display"]["voice"], voice)
                 self._assert_non_silent_audio()
                 self.transport.send("PAD 1 0")
+            if voice in ("SAW", "TRIANGLE"):
+                # Sustained voices use the short gate: silent right after release.
                 time.sleep(0.04)
                 self._drain()
                 for _ in range(4):
                     self.assertFalse(any(array.array("h", self.audio_queue.get(timeout=0.2))))
-        self.transport.send("SET PROFILE CLASSIC")
-        for voice in ("SAW", "TRIANGLE"):
-            with self.assertRaisesRegex(RuntimeError, "rejected command"):
-                self.transport.send(f"SET MODE {voice}")
-        self.assertEqual(self.statuses[-1]["panel"]["display"]["voice"], "SINE 1")
+        self.transport.send("ENCODER_ROTATE PREV")
+        self.assertEqual(display()["voice"], "GUNSHOT")
 
     def test_pickup_live_pitch_and_menu_footer_share_controller_state(self):
         self.transport.send("POT 1 0")
@@ -429,19 +489,29 @@ class VirtualTransportTests(unittest.TestCase):
         self.assertEqual(display["title"], "PERFORMANCE")
         self.assertIn("ECHO LEVEL", display["footer"])
 
-    def test_classic_default_selectors_buttons_and_audio_release(self):
+    def test_default_selectors_buttons_and_audio_release(self):
         def display():
             return self.statuses[-1]["panel"]["display"]
-        self.assertEqual(display()["profile"], "CLASSIC")
         self.assertEqual(display()["voice"], "SINE 1")
+        self.assertEqual((display()["pitchMode"], display()["rateMode"]), ("ZONES", "ZONES"))
         self.transport.send("SET PITCH_POSITION 0.9")
         self.transport.send("SET RATE_POSITION 1")
         self.assertEqual(display()["pitch"], "HIGH")
+        self.assertEqual(display()["tuneHz"], 1000)
         self.assertEqual(display()["rate"], "MANUAL")
-        for voice in ("SINE 2", "TEST TONE", "SQUARE", "SINE 1"):
+        for voice in ("SINE 2", "TEST TONE", "SQUARE"):
             self.transport.send("ENCODER_ROTATE NEXT")
             self.assertEqual(display()["voice"], voice)
             self.assertEqual(display()["depth"], 1.0)
+        for _ in range(3):
+            self.transport.send("ENCODER_ROTATE PREV")
+        self.assertEqual(display()["voice"], "SINE 1")
+        # A position follows the control's stored mode: continuous once the pot is.
+        self.transport.send("PANEL POT 1 MODE CONTINUOUS")
+        self.transport.send("SET PITCH_POSITION 1")
+        self.assertEqual(display()["pitchMode"], "CONTINUOUS")
+        self.assertAlmostEqual(display()["tuneHz"], 1600, places=2)
+        self.transport.send("PANEL POT 1 MODE ZONES")
         self.transport.send("SET ECHO_LEVEL 0")
         self.transport.send("SET FEEDBACK 0")
         self.transport.send("STREAM 1")

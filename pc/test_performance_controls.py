@@ -1,6 +1,6 @@
 import unittest
 
-from app import CLASSIC_MODES, EXTENDED_MODES, DubSirenApp
+from app import MODES, DubSirenApp
 
 
 class FakeVariable:
@@ -55,7 +55,6 @@ class FakeRoot:
 
 def make_app():
     app = object.__new__(DubSirenApp)
-    app.profile_var = FakeVariable("EXTENDED")
     app.mode_var = FakeVariable("LICKSHOT")
     app.classic_pitch_var = FakeVariable("MID")
     app.classic_mod_var = FakeVariable("MEDIUM")
@@ -67,8 +66,7 @@ def make_app():
     app.hold_var = FakeVariable(False)
     app.output_var = FakeVariable("PC")
     app.mode_combo = FakeWidget()
-    app.extended_controls = FakeWidget()
-    app.classic_controls = FakeWidget()
+    app.sound_controls = FakeWidget()
     app.mod_down_button = FakeWidget()
     app.mod_up_button = FakeWidget()
     app.hold_check = FakeWidget()
@@ -88,23 +86,13 @@ def make_app():
 
 
 class PerformanceControlTests(unittest.TestCase):
-    def test_extended_and_classic_mode_lists(self):
+    def test_every_mode_is_selectable(self):
         self.assertEqual(
-            EXTENDED_MODES,
+            MODES,
             ("SINE1", "SINE2", "TEST_TONE", "SQUARE", "SAW", "TRIANGLE",
              "LICKSHOT", "SONAR", "SYNDRUM", "GUNSHOT"),
         )
         app = make_app()
-        app._update_profile_ui()
-        self.assertEqual(app.mode_combo.config["values"], EXTENDED_MODES)
-
-        app.profile_var.set("CLASSIC")
-        app._update_profile_ui()
-        self.assertEqual(app.mode_combo.config["values"], CLASSIC_MODES)
-        self.assertEqual(app.mode_var.get(), "SINE1")
-        self.assertIn("SET MODE SINE1", app.commands)
-
-        app.commands.clear()
         for mode in ("SAW", "TRIANGLE", "LICKSHOT", "SONAR", "SYNDRUM", "GUNSHOT"):
             app.mode_var.set(mode)
             app._mode_changed()
@@ -147,9 +135,18 @@ class PerformanceControlTests(unittest.TestCase):
         self.assertEqual(app.mod_down_button.config["text"], "MOD DOWN")
         self.assertEqual(app.mod_up_button.config["text"], "MOD UP")
 
+        # The MANUAL rate zone forces the MANUAL shape whatever shape is stored.
+        app.lfo_shape_var.set("TRIANGLE")
+        app.classic_mod_var.set("MANUAL")
+        app._classic_mod_changed()
+        self.assertEqual(app.mod_up_button.config["text"], "MOD UP")
+        self.assertEqual(app.commands[-1], "SET CLASSIC_MOD MANUAL")
+
     def test_synchronization_and_echo_spin_release(self):
         app = make_app()
         app._synchronize_controls()
+        self.assertFalse(any("PROFILE" in command for command in app.commands))
+        self.assertIn("SET CLASSIC_MOD MEDIUM", app.commands)
         self.assertIn("MODULATION 1", app.commands)
         self.assertIn("RETRIGGER 0", app.commands)
         self.assertIn("ECHO_LOOP 0", app.commands)

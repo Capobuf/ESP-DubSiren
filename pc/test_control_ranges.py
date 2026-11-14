@@ -43,7 +43,7 @@ class ControlRangeTests(unittest.TestCase):
         values = {
             "TUNE_HZ": 220.0,
             "LFO_RATE_HZ": 0.70,
-            "DECAY_MS": 120.0,
+            "DECAY_MS": 0.0,
             "SWEEP": 0.65,
             "SWEEP_MS": 650.0,
             "SYNDRUM_SWEEP": -2.0,
@@ -64,7 +64,7 @@ class ControlRangeTests(unittest.TestCase):
             "TUNE_HZ": (220.0, "220 Hz"),
             "LFO_RATE_HZ": (0.70, "0.70 Hz"),
             "LFO_DEPTH_OCT": (1.0, "1.00 oct"),
-            "DECAY_MS": (120.0, "120 ms"),
+            "DECAY_MS": (0.0, "0 ms"),
             "SWEEP": (0.0, "0 %"),
             "SWEEP_MS": (650.0, "650 ms"),
             "SYNDRUM_SWEEP": (2.0, "+2.00 oct"),

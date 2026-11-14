@@ -88,34 +88,36 @@ master, DIVE/RISE bend, delay and filter cutoff changes. The LFO retains phase
 across shape
 changes and fades the modulation offset over 10 ms. Mode changes render both
 voicings at the same oscillator phase for a 6 ms crossfade. Neither transition
-resets the delay or its feedback state. CLASSIC preset selection happens inside
-the firmware; EXTENDED retains the full control state for switching back.
-With RETRIGGER enabled, rising edges of TRIGGER and HOLD reset only the LFO to
+resets the delay or its feedback state. Voice selection happens inside the
+shared controller. The SIREN shape restarts its sweep level on every rising
+edge of TRIGGER and HOLD and MANUAL raises it; for the other shapes, with
+RETRIGGER enabled, those edges reset only the LFO to
 a shape-aware deterministic state; oscillator phase, filters and delay tails
 continue uninterrupted. Disabling modulation zeros the LFO pitch contribution
-without stopping its internal phase. CLASSIC always keeps its modulation active.
+without stopping its internal phase.
 
-In Extended, the same activation-event detection starts a cached-coefficient `OneShotEnvelope`
+The same activation-event detection starts a cached-coefficient `OneShotEnvelope`
 for Dynamic Sweep. Its decaying value offsets tonal pitch by as much as -2
 octaves and slows LFO rate by as much as 3 octaves, then converges continuously
 to the selected Tune and Rate. `SWEEP=0` bypasses both offsets. Triggering may
 therefore restart sweep and, when RETRIGGER is enabled, reset the LFO in the
 same block without resetting oscillator phase or delay.
 
-SINE1 and SINE2 in both profiles use the existing Classic PolyBLEP pulse
+SINE1 and SINE2 use PolyBLEP pulse
 carriers with distinct duty ranges,
 one tracking low-pass filter, asymmetric saturation and DC blocking. Their
 duty responds to modulation, so harmonic balance changes during the sweep.
-Each sine voice has one implementation and shared filter state; oscillator
-dispatch no longer takes a profile flag. Legacy voicing selection does not
-select a separate sine implementation. Profile-specific controls and outer
+Each sine voice has one implementation and shared filter state. Legacy
+voicing selection does not select a separate sine implementation. The outer
 envelopes remain in AudioEngine.
 TEST_TONE gates a fixed-pitch sine with the LFO; SQUARE retains PolyBLEP and
-one tracking low-pass, selecting high/low pitch with a 2.5 ms slew. Their
-manual gates come from the button rather than frozen automatic phase.
-Classic amplitude uses a finite linear 2 ms attack / 3 ms release; its gate
-is applied after oscillator filtering so no dry filter tail escapes.
-Extended retains exponential release and one-shot envelopes. LICKSHOT keeps
+one tracking low-pass, selecting high/low pitch with a 2.5 ms slew when the
+shape is SIREN or MANUAL and following the LFO value and Depth otherwise. Their
+manual gates come from MOD UP rather than frozen automatic phase.
+With DECAY 0 the tonal amplitude uses a finite linear 2 ms attack / 3 ms
+release; its gate is applied after oscillator filtering so no dry filter tail
+escapes. Any other DECAY selects the exponential release; the one-shot voices
+have their own envelopes. LICKSHOT keeps
 its pulse/filter/saturation voice. SONAR applies an 80 ms exponential ping
 envelope to its sine carrier at each rising LFO gate, plus a finite 2/3 ms
 gate to leave exact silent gaps during the inactive half-cycle. Pulse cadence
@@ -124,7 +126,7 @@ active with pitch modulation disabled. Entry into Sonar or a trigger/hold
 activation resets its ping envelope and the LFO even with RETRIGGER off, while
 oscillator phase and delay contents continue. Manual uses the MOD UP gate.
 SAW uses a PolyBLEP ramp and TRIANGLE uses a direct continuous triangle;
-both are Extended-only continuous carriers with DC blocking. Calibration is
+both are continuous carriers with DC blocking. Calibration is
 centralized in PerformanceConfig.h and does not claim measured hardware fidelity.
 
 SYNDRUM and GUNSHOT are transient modes. A trigger activation event starts their
@@ -139,37 +141,40 @@ an abrupt boundary.
 ## Performance controller
 
 `PerformanceController` is compiled into both firmware and VirtualESP.
-Classic is the default. `PanelSettings` owns the versioned per-profile POT and
-BTN mapping, Pickup/Jump behavior, zones/ranges and the live-pitch encoder
-gesture. Raw numbered POT inputs, target curves, hysteresis and the filter
-macro are interpreted only in shared C++. Extended retains pad priority,
-combinations and its established encoder+button shortcuts.
+`PanelSettings` (schema 3) owns the single versioned POT and BTN mapping,
+Pickup/Jump behavior, zones/ranges, the live-pitch encoder gesture and the
+four sound patches. Raw numbered POT inputs, target curves, hysteresis and the
+filter macro are interpreted only in shared C++. The controller also owns the
+Trigger voice list stepped by the encoder; Play Sound pads keep last-pressed
+priority, combinations and their encoder+button shortcuts.
 
 VirtualESP exports the same compact logical display state through its C ABI:
 320x172 dimensions, Home/Menu mode, controller-formatted title, ordered rows,
 values, footer and temporary overlay, plus the full versioned panel settings.
 `VirtualTransport` adds these values to `panel.display`. Both the desktop text
-widget and the Adafruit renderer therefore show the same Classic and Extended
+widget and the Adafruit renderer therefore show the same
 state, parameter values and encoder menus without rebuilding UI semantics in
 Python. The desktop widget uses Tk text directly and requires no external
 resources.
 
-An Extended pad activation updates the mode-specific configuration and an eight-entry
+A Trigger or pad activation updates the mode-specific configuration and an eight-entry
 activation ring in one `ControlStore` write. The audio engine transfers unseen
 events into the current block, preserving relative microsecond press intervals.
 There is no multi-block backlog: the ring retains the newest eight events;
 overwritten, stale (outside the newest block-sized timestamp window), or
 simultaneous/superseded events increment `droppedActivations`.
-The first captured event starts at the block boundary. A zero-duration Classic
-tap receives a 2 ms minimum gate and the usual 3 ms release; Extended keeps
-its 10 ms minimum gate and exponential/one-shot tails. Hardware input latency,
+The first captured event starts at the block boundary. With DECAY 0 a
+zero-duration tap receives a 2 ms minimum gate and the usual 3 ms release;
+with any other DECAY it keeps a 10 ms minimum gate and the exponential/one-shot
+tails. Hardware input latency,
 block wait, I2S buffering and PC buffering must be measured separately. The sequence is
 independent of the gate, so pressing another pad while one remains held still
 retriggers the appropriate envelope, and rapid press/release pairs survive a
 block snapshot. The active gate uses independent pad states and returns to the
 most recently pressed remaining pad without generating a second event.
 
-The controller changes only voice behavior fields. Tune, Rate, Depth, the four
+Choosing a voice or playing a pad without a saved patch changes only voice
+behavior fields; a saved patch also restores Tune, Rate and Depth. The four
 echo controls, Master, and the delay/filter state are outside pad recall. The
 audio engine remains monophonic and no additional engine or delay buffer is
 created.

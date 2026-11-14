@@ -4,7 +4,7 @@ Il controller C++ condiviso da ESP e VirtualESP gestisce la issue #13.
 Nel menu PERFORMANCE, **TAP TEMPO** acquisisce un tap a ogni click completo.
 La stessa azione si può assegnare a qualsiasi pulsante in SETUP → BUTTONS:
 acquisisce solo la pressione, non il rilascio né la ripetizione di uno stato
-già premuto. Le scorciatoie Extended con encoder premuto mantengono precedenza.
+già premuto.
 
 Due tap validi definiscono il tempo; i successivi usano la media degli ultimi
 quattro intervalli. Sono ammessi intervalli da 200 a 2000 ms (300–30 BPM).
@@ -41,21 +41,22 @@ La selezione diventa disponibile automaticamente quando il BPM lo consente.
 
 Il ritorno FREE conserva il valore temporale corrente e riattiva Pickup
 anche se il comportamento generale è Jump. Dopo l'aggancio torna la mappatura
-configurata del pot: continua, oppure le zone Classic già configurate.
-Le selezioni Manual di Classic tornano operative in Free.
+configurata del pot: continua, oppure le zone già configurate.
+La zona MANUAL di un Rate a zone torna operativa in Free.
 Echo Free conserva il pitch bend manuale del delay.
 
 ## Fase e voci
 
 Il LFO ha fase libera: tap, cambio BPM e cambio divisione non lo riallineano,
-non riavviano il carrier e non cancellano l'echo. In SYNC il retrigger LFO al
-trigger è sospeso; il Dynamic Sweep continua a cambiare pitch ma non altera
+non riavviano il carrier e non cancellano l'echo. In SYNC il Retrigger delle
+forme diverse da SIREN e MANUAL è sospeso; la forma SIREN riparte comunque dal
+basso a ogni Trigger o Hold e il clock ne fissa solo la velocità. Il Dynamic Sweep continua a cambiare pitch ma non altera
 la velocità LFO sincronizzata. Gli smoothing di frequenza/delay esistenti
 restano attivi: ms/Hz mostrati sono i valori obiettivo, non una misura istantanea.
 
-Classic SYNC usa la modulazione periodica anche se la selezione Free è Manual.
-In Extended SYNC non abilita una modulazione spenta e non sostituisce la forma
-Manual: `N/A VOICE` indica che la voce/configurazione non usa quel clock.
+In SYNC la zona MANUAL di un Rate a zone non si applica: il pot sceglie la
+divisione e vale la forma memorizzata. SYNC non abilita una modulazione spenta
+e non sostituisce la forma MANUAL memorizzata: `N/A VOICE` indica che la voce/configurazione non usa quel clock.
 Lo stesso vale per Gunshot, Syndrum, Lickshot Shot/Horn. Lickshot Roll usa
 la divisione per la cadenza dei colpi; il primo colpo conserva la propria
 articolazione al trigger.
@@ -75,7 +76,7 @@ TEMPO ECHO SYNC
 TEMPO LFO FREE
 TEMPO ECHO_DIV 1/8D
 TEMPO LFO_DIV 1/8T
-PANEL BUTTON CLASSIC 4 ACTION TAP_TEMPO
+PANEL BUTTON 4 ACTION TAP_TEMPO
 ```
 
 `TEMPO ECHO|LFO` accetta solo FREE/SYNC. Divisioni ammesse: 1/4, 1/8, 1/8D,
@@ -90,11 +91,11 @@ passare esplicitamente a FREE per modificarli.
 la validità temporale, Active l'uso del clock da parte della voce/configurazione.
 I campi display `delayMs` e `rateHz` riportano gli stessi obiettivi effettivi.
 
-L'assegnazione TAP TEMPO usa Preferences/NVS e panel.json schema 2 esistenti,
-senza cambiare il layout binario. BPM, Sync, divisioni e sequenza dei tap sono
+L'assegnazione TAP TEMPO fa parte di `PanelSettings` e si salva con il resto
+del layout in Preferences/NVS e in panel.json. BPM, Sync, divisioni e sequenza dei tap sono
 stato runtime globale: non vengono scritti a ogni tap né salvati nelle patch.
-Al boot partono FREE con tempo non acquisito. Cambio profilo e richiamo patch
-non cambiano il tempo. RESET DEFAULTS lo azzera insieme alle assegnazioni.
+Al boot partono FREE con tempo non acquisito. Il richiamo di una patch
+non cambia il tempo. RESET DEFAULTS lo azzera insieme alle assegnazioni.
 
 ## Verifiche
 

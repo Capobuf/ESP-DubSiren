@@ -14,25 +14,26 @@ from voicing_test import Capture
 
 
 SCENARIOS = (
-    ("classic_sine1_low_slow", ("SET PROFILE CLASSIC", "SET MODE SINE1",
-                                "SET CLASSIC_PITCH LOW", "SET CLASSIC_MOD SLOW")),
-    ("classic_sine1_mid_medium", ("SET MODE SINE1", "SET CLASSIC_PITCH MID",
-                                     "SET CLASSIC_MOD MEDIUM")),
-    ("classic_sine2_mid_slow", ("SET MODE SINE2", "SET CLASSIC_PITCH MID",
-                                   "SET CLASSIC_MOD SLOW")),
-    ("classic_square_high_fast", ("SET MODE SQUARE", "SET CLASSIC_PITCH HIGH",
-                                      "SET CLASSIC_MOD FAST")),
+    ("siren_sine1_low_slow", ("SET LFO_SHAPE SIREN", "SET MODE SINE1",
+                              "SET CLASSIC_PITCH LOW", "SET CLASSIC_MOD SLOW")),
+    ("siren_sine1_mid_medium", ("SET MODE SINE1", "SET CLASSIC_PITCH MID",
+                                "SET CLASSIC_MOD MEDIUM")),
+    ("siren_sine2_mid_slow", ("SET MODE SINE2", "SET CLASSIC_PITCH MID",
+                              "SET CLASSIC_MOD SLOW")),
+    ("siren_square_high_fast", ("SET MODE SQUARE", "SET CLASSIC_PITCH HIGH",
+                                "SET CLASSIC_MOD FAST")),
     ("test_tone", ("SET MODE TEST_TONE", "SET CLASSIC_PITCH MID",
                    "SET CLASSIC_MOD MEDIUM")),
     ("feedback_060", ("SET MODE SINE1", "SET FEEDBACK 0.6",
                       "SET ECHO_LEVEL 0.45")),
     ("feedback_095", ("SET FEEDBACK 0.95",)),
-    ("extended_saw", ("SET PROFILE EXTENDED", "SET MODE SAW",
-                      "SET TUNE_HZ 220", "SET LFO_DEPTH_OCT 0",
-                      "MODULATION 1")),
-    ("extended_triangle", ("SET MODE TRIANGLE", "SET TUNE_HZ 220",
-                           "SET LFO_DEPTH_OCT 0", "MODULATION 1")),
-    ("lickshot_saw_down", ("SET PROFILE EXTENDED", "SET MODE LICKSHOT",
+    # Depth only applies to the non-siren shapes: the steady clips select one.
+    ("steady_saw", ("SET LFO_SHAPE TRIANGLE", "SET MODE SAW",
+                    "SET TUNE_HZ 220", "SET LFO_DEPTH_OCT 0",
+                    "MODULATION 1")),
+    ("steady_triangle", ("SET MODE TRIANGLE", "SET TUNE_HZ 220",
+                         "SET LFO_DEPTH_OCT 0", "MODULATION 1")),
+    ("lickshot_saw_down", ("SET MODE LICKSHOT",
                            "SET LFO_SHAPE SAW_DOWN", "SET LFO_RATE_HZ 3.5",
                            "SET LFO_DEPTH_OCT 1.5", "MODULATION 1",
                            "RETRIGGER 1")),
@@ -114,8 +115,7 @@ def main() -> None:
             time.sleep(0.20)
             device.drain()
             save_wav(directory / f"{name}.wav", device.grab(100))
-        device.send("SET PROFILE EXTENDED", "SET MODE SINE1",
-                    "SET LFO_SHAPE CLASSIC", "SET LFO_DEPTH_OCT 1")
+        device.send("SET MODE SINE1", "SET LFO_SHAPE SIREN")
         save_wav(directory / "delay_sweep.wav",
                  capture_sequence(device, "DELAY_MS",
                                   ("100", "180", "300", "500", "800",
@@ -134,7 +134,8 @@ def main() -> None:
             device.send(f"SET HPF_HZ {hpf}", f"SET LPF_HZ {lpf}")
             pcm.extend(device.grab(10))
         save_wav(directory / "filter_sweep.wav", bytes(pcm))
-        device.send("SET MODE SONAR", "SET TUNE_HZ 220",
+        # Rise/Dive bend only the non-siren shapes.
+        device.send("SET MODE SONAR", "SET TUNE_HZ 220", "SET LFO_SHAPE TRIANGLE",
                     "SET LFO_DEPTH_OCT 0", "MODULATION 1", "HOLD 1")
         save_wav(directory / "rise_dive.wav", capture_segments(device, (
             (("MOD_UP 0", "MOD_DOWN 0"), 25),
@@ -161,7 +162,7 @@ def main() -> None:
             (("ECHO_LOOP 0",), 25),
         )))
         dynamic_base = (
-            "SET PROFILE EXTENDED", "SET TUNE_HZ 220", "SET DECAY_MS 500",
+            "SET TUNE_HZ 220", "SET DECAY_MS 500",
             "SET LFO_DEPTH_OCT 0", "SET SWEEP 1", "SET SWEEP_MS 650",
             "SET ECHO_LEVEL 0", "MODULATION 0",
         )

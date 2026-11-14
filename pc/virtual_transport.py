@@ -208,17 +208,17 @@ class VirtualTransport:
             function.restype = ctypes.c_uint
         for name in ("pot_target", "pot_mode", "button_action", "button_sound"):
             function = getattr(library, "virtual_esp_" + name)
-            function.argtypes = [ctypes.c_uint, ctypes.c_uint]
+            function.argtypes = [ctypes.c_uint]
             function.restype = ctypes.c_char_p
         for name in ("pot_min", "pot_max"):
             function = getattr(library, "virtual_esp_" + name)
-            function.argtypes = [ctypes.c_uint, ctypes.c_uint]
+            function.argtypes = [ctypes.c_uint]
             function.restype = ctypes.c_float
-        library.virtual_esp_pot_zone.argtypes = [ctypes.c_uint, ctypes.c_uint, ctypes.c_uint]
+        library.virtual_esp_pot_zone.argtypes = [ctypes.c_uint, ctypes.c_uint]
         library.virtual_esp_pot_zone.restype = ctypes.c_float
-        library.virtual_esp_button_variant.argtypes = [ctypes.c_uint, ctypes.c_uint]
+        library.virtual_esp_button_variant.argtypes = [ctypes.c_uint]
         library.virtual_esp_button_variant.restype = ctypes.c_uint
-        library.virtual_esp_button_latch.argtypes = [ctypes.c_uint, ctypes.c_uint]
+        library.virtual_esp_button_latch.argtypes = [ctypes.c_uint]
         library.virtual_esp_button_latch.restype = ctypes.c_int
         library.virtual_esp_depth.argtypes = []
         library.virtual_esp_depth.restype = ctypes.c_float
@@ -240,7 +240,7 @@ class VirtualTransport:
         library.virtual_esp_pad_hold.restype = ctypes.c_int
         library.virtual_esp_pad_hold_supported.argtypes = [ctypes.c_uint]
         library.virtual_esp_pad_hold_supported.restype = ctypes.c_int
-        for name in ("profile", "voice", "pitch", "rate"):
+        for name in ("voice", "pitch", "rate"):
             function = getattr(library, "virtual_esp_" + name)
             function.argtypes = []
             function.restype = ctypes.c_char_p
@@ -251,7 +251,7 @@ class VirtualTransport:
             function = getattr(library, "virtual_esp_" + name)
             function.argtypes = []
             function.restype = ctypes.c_float
-        for name in ("hold", "echo_cut", "echo_spin"):
+        for name in ("hold", "echo_cut", "echo_spin", "pad_selected"):
             function = getattr(library, "virtual_esp_" + name)
             function.argtypes = []
             function.restype = ctypes.c_int
@@ -293,31 +293,23 @@ class VirtualTransport:
                 "label": label.decode("ascii") if label else "BACK",
                 "value": value.decode("ascii") if value else "",
             })
-        profiles = {}
-        for profile_index, profile_name in enumerate(("CLASSIC", "EXTENDED")):
-            pots = []
-            for pot in range(1, 7):
-                target = self._lib.virtual_esp_pot_target(profile_index, pot)
-                pot_mode = self._lib.virtual_esp_pot_mode(profile_index, pot)
-                pots.append({
-                    "target": target.decode("ascii"),
-                    "mode": pot_mode.decode("ascii"),
-                    "min": self._lib.virtual_esp_pot_min(profile_index, pot),
-                    "max": self._lib.virtual_esp_pot_max(profile_index, pot),
-                    "zones": [self._lib.virtual_esp_pot_zone(profile_index, pot, zone)
-                              for zone in range(3)],
-                })
-            buttons = []
-            for button in range(1, 5):
-                action = self._lib.virtual_esp_button_action(profile_index, button)
-                sound = self._lib.virtual_esp_button_sound(profile_index, button)
-                buttons.append({
-                    "action": action.decode("ascii"),
-                    "sound": sound.decode("ascii"),
-                    "variant": self._lib.virtual_esp_button_variant(profile_index, button),
-                    "latch": bool(self._lib.virtual_esp_button_latch(profile_index, button)),
-                })
-            profiles[profile_name] = {"pots": pots, "buttons": buttons}
+        pots = []
+        for pot in range(1, 7):
+            pots.append({
+                "target": self._lib.virtual_esp_pot_target(pot).decode("ascii"),
+                "mode": self._lib.virtual_esp_pot_mode(pot).decode("ascii"),
+                "min": self._lib.virtual_esp_pot_min(pot),
+                "max": self._lib.virtual_esp_pot_max(pot),
+                "zones": [self._lib.virtual_esp_pot_zone(pot, zone) for zone in range(3)],
+            })
+        buttons = []
+        for button in range(1, 5):
+            buttons.append({
+                "action": self._lib.virtual_esp_button_action(button).decode("ascii"),
+                "sound": self._lib.virtual_esp_button_sound(button).decode("ascii"),
+                "variant": self._lib.virtual_esp_button_variant(button),
+                "latch": bool(self._lib.virtual_esp_button_latch(button)),
+            })
         behavior = self._lib.virtual_esp_pot_behavior()
         encoder_action = self._lib.virtual_esp_encoder_action()
         settings = {
@@ -329,7 +321,8 @@ class VirtualTransport:
                 "step": self._lib.virtual_esp_encoder_step(),
                 "range": self._lib.virtual_esp_encoder_range(),
             },
-            "profiles": profiles,
+            "pots": pots,
+            "buttons": buttons,
             "patches": [[self._lib.virtual_esp_patch_value(pad, field)
                          for field in range(self._lib.virtual_esp_patch_value_count())]
                         for pad in range(1, 5)],
@@ -370,13 +363,8 @@ class VirtualTransport:
                         "title": self._lib.virtual_esp_overlay_title().decode("ascii"),
                         "value": self._lib.virtual_esp_overlay_value().decode("ascii"),
                     },
-                    "buttons": [
-                        button["action"]
-                        for button in profiles[
-                            self._lib.virtual_esp_profile().decode("ascii")
-                        ]["buttons"]
-                    ],
-                    "profile": self._lib.virtual_esp_profile().decode("ascii"),
+                    "buttons": [button["action"] for button in buttons],
+                    "padSelected": bool(self._lib.virtual_esp_pad_selected()),
                     "voice": self._lib.virtual_esp_voice().decode("ascii"),
                     "pitch": self._lib.virtual_esp_pitch().decode("ascii"),
                     "rate": self._lib.virtual_esp_rate().decode("ascii"),

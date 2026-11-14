@@ -7,13 +7,13 @@ modifiche:
 | Parte | Sorgente | Su Android |
 |---|---|---|
 | DSP | `firmware/src/audio/*.cpp` | blocchi da 480 campioni mono a 48 kHz, uscita AAudio |
-| Controller, menu, profili, Pickup | `firmware/src/control/*.cpp` | input fisici dal pannello touch |
+| Controller, menu, mappature, Pickup | `firmware/src/control/*.cpp` | input fisici dal pannello touch |
 | Display | `firmware/src/display/PanelDisplay.cpp` | framebuffer 320x172 RGB565 al posto dell'ST7789 |
 
 Nessuna logica della sirena è riscritta in Kotlin. L'app offre solo i gesti
 del pannello fisico: sei pot frontali, quattro tasti momentanei, encoder a
-scatti e push. Tutto il resto (profili, mappature, menu, impostazioni) passa dal
-menu dell'encoder, come sull'hardware. Il Master posteriore non compare: resta
+scatti e push. Tutto il resto (voci, mappature, impostazioni) passa
+dall'encoder e dal suo menu, come sull'hardware. Il Master posteriore non compare: resta
 al massimo e il livello si regola con i tasti volume del dispositivo.
 
 ## Build
@@ -66,7 +66,7 @@ display) mostrano il lato rivolto verso chi guarda.
 | Doppio tocco sul display | scala reale o ingrandito; ingrandito in automatico se il pannello è disegnato sotto 1,2 volte la grandezza reale |
 
 Il multitouch permette le combinazioni dell'hardware: tasto tenuto più
-rotazione dell'encoder (Live Pitch, Depth), push più tasto, più tasti insieme.
+rotazione dell'encoder (Live Pitch), push più tasto, più tasti insieme.
 
 Pot e Master passano dallo stesso percorso di `PanelInputs.cpp`: la posizione
 diventa millivolt interi sui massimi nominali del partitore (2672,1 mV per i pot,
@@ -74,9 +74,11 @@ diventa millivolt interi sui massimi nominali del partitore (2672,1 mV per i pot
 zero e all'avvio viene portato a fine corsa. Le posizioni delle manopole restano salvate, come
 su un pot fisico spento. Le impostazioni del pannello (`PanelSettings`) si
 salvano come blob binario identico a quello in NVS, 2 s dopo l'ultima modifica.
+Un file salvato con un altro schema viene scartato all'avvio: valgono le
+impostazioni di fabbrica.
 
-Le scritte verdi sopra i pot e sui tasti indicano la funzione assegnata nel
-profilo attivo. Servono solo al simulatore: sul pannello fisico non ci sono.
+Le scritte verdi sopra i pot e sui tasti indicano la funzione assegnata
+nell'unico layout del pannello. Servono solo al simulatore: sul pannello fisico non ci sono.
 
 ## Limiti
 

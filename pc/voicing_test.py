@@ -79,7 +79,8 @@ class Capture:
     def configure(self) -> None:
         self.send(
             "SET OUTPUT PC",
-            "SET PROFILE EXTENDED",
+            # A zoned Rate control left on MANUAL would force the MANUAL shape.
+            "SET CLASSIC_MOD MEDIUM",
             "SET TUNE_HZ 220",
             "SET LFO_SHAPE TRIANGLE",
             "SET LFO_RATE_HZ 4",

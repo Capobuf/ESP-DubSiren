@@ -40,7 +40,7 @@ def main():
     scenarios.append(("lickshot-close-hits", ["SET MODE LICKSHOT", "SET LICKSHOT_MODE SHOT"],
                       {1: ["TRIGGER 0"], 8: ["TRIGGER 1"], 9: ["TRIGGER 0"],
                        16: ["TRIGGER 1"], 17: ["TRIGGER 0"]}))
-    for shape in ("CLASSIC", "TRIANGLE", "SQUARE"):
+    for shape in ("SIREN", "TRIANGLE", "SQUARE"):
         scenarios.append((f"two-tone-{shape.lower()}", ["SET MODE SQUARE", f"SET LFO_SHAPE {shape}",
                           "SET LFO_RATE_HZ 2", "MODULATION 1"], {200: ["TRIGGER 0"]}))
     for voice in ("SINE1", "SINE2", "SQUARE", "LICKSHOT"):
@@ -62,7 +62,8 @@ def main():
     for name, settings, events in scenarios:
         if lib.virtual_esp_init() != 1:
             raise RuntimeError("Core initialization failed")
-        for text in ["SET PROFILE EXTENDED", "SET ECHO_LEVEL 0", "SET MASTER 0.5",
+        # SET MODE keeps the stored decay: give every voice the one-shot tail.
+        for text in ["SET DECAY_MS 120", "SET ECHO_LEVEL 0", "SET MASTER 0.5",
                      "SET TUNE_HZ 220", "MODULATION 0", *settings]:
             command(text)
         for _ in range(100):

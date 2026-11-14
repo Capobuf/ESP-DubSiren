@@ -110,7 +110,6 @@ class PanelView(context: Context, private val prefs: SharedPreferences) : View(c
 
     private val potLabels = Array(6) { "" }
     private val keyLabels = Array(4) { "" }
-    private var profile = ""
     private var status = ""
 
     private val display = Bitmap.createBitmap(
@@ -199,7 +198,6 @@ class PanelView(context: Context, private val prefs: SharedPreferences) : View(c
         val lines = labels.split('\n')
         for (i in 0..5) potLabels[i] = lines.getOrElse(i) { "" }.replace('_', ' ')
         for (i in 0..3) keyLabels[i] = lines.getOrElse(6 + i) { "" }.replace('_', ' ')
-        profile = lines.getOrElse(10) { "" }
         invalidate()
     }
 
@@ -294,8 +292,7 @@ class PanelView(context: Context, private val prefs: SharedPreferences) : View(c
         for (i in 0..3) drawKey(canvas, i)
         canvas.restore()
         drawHints(canvas)
-        val line = if (profile.isEmpty()) status else "$profile  $status"
-        canvas.drawText(line, sx(0f), statusTop + mono.textSize, mono)
+        canvas.drawText(status, sx(0f), statusTop + mono.textSize, mono)
     }
 
     private fun drawDisplay(canvas: Canvas) {

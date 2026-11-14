@@ -1,4 +1,4 @@
-"""Render repeatable Classic listening clips through the real Virtual ESP core."""
+"""Render repeatable siren listening clips through the real Virtual ESP core."""
 
 import argparse
 import array

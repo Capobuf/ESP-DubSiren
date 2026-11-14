@@ -95,11 +95,12 @@ void PanelDisplay::renderHome(const ControlState &state, bool linked) {
     controller_.formatTempoStatus(tempoStatus, sizeof(tempoStatus));
     controller_.formatCurrentValue(PotTarget::Rate, rateText, sizeof(rateText));
     controller_.formatCurrentValue(PotTarget::EchoTime, echoText, sizeof(echoText));
-    if (state.profile == PerformanceProfile::Classic) {
+    // The Trigger voice gets the large siren view; a selected sound pad its own.
+    if (!controller_.selectedIsPad()) {
         const bool pitchZones = state.pitchZonesActive;
         const bool rateZones = state.rateZonesActive;
-        drawText(16, 10, "DUB SIREN / CLASSIC", 1, kMuted);
-        drawText(16, 31, modeName(state.mode), 3, kChartreuse);
+        drawText(16, 10, "DUB SIREN", 1, kMuted);
+        drawText(16, 31, controller_.voiceName(), strlen(controller_.voiceName()) > 16 ? 2 : 3, kChartreuse);
         drawText(16, 73, String("PITCH  ") +
                  (pitchZones ? String(pitchName(state.classicPitch)) + " - " : "") +
                  decimal(state.tuneHz, 0) + " Hz", 2, kOffWhite);
@@ -195,10 +196,10 @@ bool PanelDisplay::captureOverlay(const ControlState &before,
     if (firstRender_) return true;
     Focus focus = Focus::None;
     String value;
-    if ((before.classicPitch != after.classicPitch || changed(before.pitchPosition, after.pitchPosition)) && after.profile == PerformanceProfile::Classic) {
+    if ((before.classicPitch != after.classicPitch || changed(before.pitchPosition, after.pitchPosition)) && after.pitchZonesActive) {
         focus = Focus::Tune;
         value = pitchName(after.classicPitch);
-    } else if ((before.classicModulation != after.classicModulation || changed(before.ratePosition, after.ratePosition)) && after.profile == PerformanceProfile::Classic) {
+    } else if ((before.classicModulation != after.classicModulation || changed(before.ratePosition, after.ratePosition)) && after.rateZonesActive) {
         focus = Focus::Rate;
         value = rateName(after.classicModulation);
     } else if (changed(before.echoFilterPosition, after.echoFilterPosition)) {
@@ -232,7 +233,7 @@ bool PanelDisplay::captureOverlay(const ControlState &before,
         value = decimal(after.masterVolume * 100.0f, 0) + "%";
     }
     const bool flagChanged = before.echoLoop != after.echoLoop ||
-        before.profile != after.profile || before.mode != after.mode ||
+        before.mode != after.mode ||
         before.hold != after.hold || before.echoCut != after.echoCut || before.echoSpin != after.echoSpin;
     if (focus != Focus::None && controller_.displayMode() ==
                                   PerformanceController::DisplayMode::Home) {

@@ -3,74 +3,64 @@
 #include <math.h>
 #include "PerformanceConfig.h"
 
-namespace {
-
-
-float rcCoefficient(float tauSeconds, float sampleRate) {
-    const float safeTau = tauSeconds < 0.001f ? 0.001f : tauSeconds;
-    return 1.0f - expf(-1.0f / (safeTau * sampleRate));
-}
-
-}  // namespace
-
 Lfo::Lfo()
-    : phase_(0.0f), manualValue_(0.0f), classicValue_(-1.0f),
-      lastRateHz_(-1.0f), lastSampleRate_(-1.0f), chargeCoefficient_(0.0f),
-      fallCoefficient_(0.0f), manualChargeCoefficient_(0.0f),
-      manualFallCoefficient_(0.0f), currentShape_(LfoShape::Classic),
-      lastOutput_(-1.0f), shapeOffset_(0.0f), shapeTransitionRemaining_(0),
-      coefficientCountdown_(0) {}
+    : phase_(0.0f), sirenLevel_(PerformanceConfig::kSirenRestartLevel),
+      currentShape_(LfoShape::Classic), lastOutput_(-1.0f), shapeOffset_(0.0f),
+      shapeTransitionRemaining_(0) {}
 
 void Lfo::reset(LfoShape shape) {
     phase_ = 0.0f;
     manualGate_ = false;
-    manualValue_ = 0.0f;
-    classicValue_ = -1.0f;
+    sirenLevel_ = shape == LfoShape::Manual ? PerformanceConfig::kSirenManualTriggerLevel
+                                            : PerformanceConfig::kSirenRestartLevel;
     currentShape_ = shape;
-    lastOutput_ = shape == LfoShape::Classic
-                      ? classicValue_
-                      : (shape == LfoShape::Manual
-                             ? manualValue_
-                             : automaticValue(shape, phase_));
+    lastOutput_ = sirenShape(shape) ? sirenLevel_ * 2.0f - 1.0f
+                                    : automaticValue(shape, phase_);
     shapeOffset_ = 0.0f;
     shapeTransitionRemaining_ = 0;
-    coefficientCountdown_ = 0;
+}
+
+void Lfo::kickManual() {
+    if (sirenLevel_ < PerformanceConfig::kSirenManualTriggerLevel)
+        sirenLevel_ = PerformanceConfig::kSirenManualTriggerLevel;
 }
 
 float Lfo::next(LfoShape shape, float rateHz, bool modUp, bool modDown,
                 float sampleRate) {
-    if (coefficientCountdown_ == 0) {
-        updateCoefficients(rateHz, sampleRate);
-        coefficientCountdown_ = PerformanceConfig::kLfoCoefficientUpdateSamples - 1;
-    } else {
-        --coefficientCountdown_;
-    }
-
-    if (shape == LfoShape::Manual) {
-        manualGate_ = modUp && !modDown;
-        const float target = modUp == modDown ? 0.0f : (modUp ? 1.0f : -1.0f);
-        const float coefficient = target > manualValue_
-                                      ? manualChargeCoefficient_
-                                      : manualFallCoefficient_;
-        manualValue_ += (target - manualValue_) * coefficient;
-        return transition(shape, manualValue_, sampleRate);
-    }
-
-    float value;
-    if (shape == LfoShape::Classic) {
-        const float target = phase_ < 0.5f ? 1.0f : -1.0f;
-        const float coefficient = target > classicValue_ ? chargeCoefficient_
-                                                          : fallCoefficient_;
-        classicValue_ += (target - classicValue_) * coefficient;
-        value = classicValue_;
-    } else {
-        value = automaticValue(shape, phase_);
-    }
+    if (sirenShape(shape))
+        return transition(shape, nextSiren(shape == LfoShape::Manual, rateHz, modUp,
+                                           modDown, sampleRate), sampleRate);
+    const float value = automaticValue(shape, phase_);
     phase_ += rateHz / sampleRate;
     if (phase_ >= 1.0f) {
         phase_ -= floorf(phase_);
     }
     return transition(shape, value, sampleRate);
+}
+
+float Lfo::nextSiren(bool manual, float rateHz, bool modUp, bool modDown,
+                     float sampleRate) {
+    using namespace PerformanceConfig;
+    float target, tauSeconds;
+    if (manual) {
+        // Up pulls the pitch to the top, Down pushes it to the floor; with
+        // neither held it sinks slowly.
+        manualGate_ = modUp && !modDown;
+        target = manualGate_ ? 1.0f : 0.0f;
+        tauSeconds = (modUp != modDown ? kSirenManualAttackMs : kSirenManualDecayMs) * 0.001f;
+    } else {
+        const float rate = rateHz < 0.01f ? 0.01f : rateHz;
+        const bool charging = phase_ < kSirenChargePhase;
+        target = charging ? 1.0f : 0.0f;
+        tauSeconds = (charging ? kSirenChargeTauCycles : kSirenDischargeTauCycles) / rate;
+        phase_ += rate / sampleRate;
+        if (phase_ >= 1.0f) phase_ -= floorf(phase_);
+    }
+    // 1 - exp(-x) ~= x: every time constant here spans thousands of samples.
+    float coefficient = 1.0f / (tauSeconds * sampleRate);
+    if (coefficient > 1.0f) coefficient = 1.0f;
+    sirenLevel_ += (target - sirenLevel_) * coefficient;
+    return sirenLevel_ * 2.0f - 1.0f;
 }
 
 float Lfo::transition(LfoShape shape, float value, float sampleRate) {
@@ -90,26 +80,10 @@ float Lfo::transition(LfoShape shape, float value, float sampleRate) {
     return value;
 }
 
-void Lfo::updateCoefficients(float rateHz, float sampleRate) {
-    if (rateHz == lastRateHz_ && sampleRate == lastSampleRate_) return;
-    lastRateHz_ = rateHz;
-    lastSampleRate_ = sampleRate;
-
-    const float halfCycleSeconds = 0.5f / rateHz;
-    chargeCoefficient_ =
-        rcCoefficient(halfCycleSeconds * PerformanceConfig::kLfoChargeRatio, sampleRate);
-    fallCoefficient_ =
-        rcCoefficient(halfCycleSeconds * PerformanceConfig::kLfoFallRatio, sampleRate);
-    manualChargeCoefficient_ = rcCoefficient(
-        PerformanceConfig::kManualAttackMs * 0.001f, sampleRate);
-    manualFallCoefficient_ =
-        rcCoefficient(PerformanceConfig::kManualReleaseMs * 0.001f, sampleRate);
-}
-
 float Lfo::automaticValue(LfoShape shape, float phase) {
     switch (shape) {
         case LfoShape::Classic:
-            return 0.0f;
+            return 0.0f;  // Rendered by nextSiren.
         case LfoShape::Triangle:
             return 1.0f - 4.0f * fabsf(phase - 0.5f);
         case LfoShape::Square:

@@ -69,7 +69,7 @@ riavvio dopo la diagnosi.
 ## Verifica ancora necessaria sulla scheda
 
 1. Avvio con sola alimentazione: nessun transitorio, Master a zero e poi corsa
-   completa, sei pot, quattro pulsanti, encoder/menu e cambio profilo.
+   completa, sei pot, quattro pulsanti, encoder/menu e cambio voce.
 2. Misurare offset ADC, estremi e diafonia del mux. Verificare conteggio/senso
    encoder e rimbalzo pulsanti; osservare maxInputPollGapUs con display attivo.
 3. Trigger/Hold/echo durante collegamento, scollegamento e backpressure USB.
