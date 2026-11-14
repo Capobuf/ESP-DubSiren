@@ -1,6 +1,6 @@
 # Tap tempo e sincronizzazione
 
-Il controller C++ condiviso da ESP e VirtualESP gestisce la issue #13.
+Il controller C++ condiviso da ESP e app Android gestisce la issue #13.
 Nel menu PERFORMANCE, **TAP TEMPO** acquisisce un tap a ogni click completo.
 La stessa azione si può assegnare a qualsiasi pulsante in SETUP → BUTTONS:
 acquisisce solo la pressione, non il rilascio né la ripetizione di uno stato
@@ -92,7 +92,7 @@ la validità temporale, Active l'uso del clock da parte della voce/configurazion
 I campi display `delayMs` e `rateHz` riportano gli stessi obiettivi effettivi.
 
 L'assegnazione TAP TEMPO fa parte di `PanelSettings` e si salva con il resto
-del layout in Preferences/NVS e in panel.json. BPM, Sync, divisioni e sequenza dei tap sono
+del layout in Preferences/NVS. BPM, Sync, divisioni e sequenza dei tap sono
 stato runtime globale: non vengono scritti a ogni tap né salvati nelle patch.
 Al boot partono FREE con tempo non acquisito. Il richiamo di una patch
 non cambia il tempo. RESET DEFAULTS lo azzera insieme alle assegnazioni.
@@ -102,8 +102,7 @@ non cambia il tempo. RESET DEFAULTS lo azzera insieme alle assegnazioni.
 I test nativi coprono intervalli deterministici, media, timeout, tap ignorati,
 rollover del timer, limiti BPM, conversioni, N/A, isteresi, Pickup e PCM
 confrontato con un riferimento Free equivalente durante cambi tempo/divisione
-e coda echo. VirtualESP copre STATUS, menu, round-trip dell'assegnazione TAP e
-reset al riavvio; il canvas Tk verifica gli ingombri del testo.
+e coda echo.
 
 La prova musicale resta da eseguire: tap irregolari sul riddim, cambi rapidi
 di tempo, ascolto del delay durante i cambi, leggibilità sul TFT e risposta dei

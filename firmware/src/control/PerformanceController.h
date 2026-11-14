@@ -9,6 +9,8 @@ class PerformanceController {
 public:
     static constexpr unsigned kDisplayWidth = 320;
     static constexpr unsigned kDisplayHeight = 172;
+    // Key under the encoder: BACK while the menu is open.
+    static constexpr unsigned kMenuBackButton = 4;
 
     enum class DisplayMode : uint8_t { Home, Menu };
     enum class MenuPage : uint8_t { Root, Setup, Sound, Mod, Echo, Pots, Pot, Buttons, Button, Encoder, Reset };
@@ -104,6 +106,13 @@ public:
     const char *menuItemValue(unsigned index) const;
     const char *overlayTitle() const { return overlayTitle_; }
     const char *overlayValue() const { return overlayValue_; }
+    // Pot (1..6) that produced the current overlay, 0 for any other source.
+    unsigned overlayPot() const { return overlayTitle_[0] ? overlayPot_ : 0; }
+    // Display helpers: physical input state and a pot's target position 0..1.
+    bool buttonDown(unsigned buttonNumber) const;
+    bool encoderPressed() const { return encoderPressed_; }
+    bool livePitchArmed() const;
+    float potValueNormalized(unsigned potNumber) const;
     bool pickupWaiting(unsigned potNumber) const;
     int pickupDirection(unsigned potNumber) const;
     float classicPitchHz(unsigned index) const;
@@ -152,6 +161,8 @@ private:
     bool pitchAvailable(const ControlState &state) const;
     void openMenu();
     void pressMenuItem();
+    void leaveMenuPage();
+    void menuBack();
     void editMenuItem(Row item, int direction);
     static float *soundValue(ControlState &state, Row row, float &minimum, float &maximum, float &step);
     void addSoundValue(const ControlState &state, Row row, const char *key, const char *label, const char *unit) const;
@@ -215,6 +226,7 @@ private:
     mutable char menuFooterBuffer_[48] = "TURN SELECT / PUSH OPEN";
     char overlayTitle_[24] = "";
     char overlayValue_[40] = "";
+    unsigned overlayPot_ = 0;
     char persistenceStatus_[40] = "";
     unsigned revision_ = 1;
     unsigned menuRevision_ = 0;

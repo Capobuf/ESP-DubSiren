@@ -1,10 +1,7 @@
 import json
 import math
-import os
-import tempfile
 import tkinter as tk
 from collections.abc import Callable
-from pathlib import Path
 from tkinter import ttk
 
 from app import DubSirenApp, OUTPUT_VALUES
@@ -14,11 +11,6 @@ from protocol import PROTOCOL_VERSION
 
 PANEL_KNOBS = tuple((f"POT {number}", f"POT_{number}") for number in range(1, 7))
 FRONT_POT_SPEC = ControlSpec(0.0, 1.0, 0.5, lambda value: f"{value:.0%}")
-PANEL_SCHEMA_VERSION = 3
-
-
-class PanelConfigError(ValueError):
-    pass
 
 DEFAULT_PANEL_STATE = {
     "revision": 0,
@@ -53,169 +45,6 @@ DEFAULT_PANEL_STATE = {
         for number in range(1, 5)
     ],
 }
-
-
-def panel_config_path() -> Path:
-    base = Path(os.environ.get("APPDATA", Path.home())) / "ESP-DubSiren"
-    return base / "panel.json"
-
-
-def _validated_panel_config(data: object) -> dict:
-    if (not isinstance(data, dict) or type(data.get("schema")) is not int
-            or data["schema"] != PANEL_SCHEMA_VERSION):
-        schema = data.get("schema") if isinstance(data, dict) else None
-        raise PanelConfigError(
-            f"panel.json has an unsupported or missing schema "
-            f"(expected {PANEL_SCHEMA_VERSION}, found {schema!r})"
-        )
-    if data.get("potBehavior") not in ("PICKUP", "JUMP"):
-        raise PanelConfigError("panel.json has an invalid potBehavior")
-    encoder = data.get("encoder")
-    if (
-        not isinstance(encoder, dict)
-        or encoder.get("holdTurn") not in ("OFF", "LIVE_PITCH")
-        or type(encoder.get("step")) is not int
-        or type(encoder.get("range")) is not int
-        or not 1 <= encoder["step"] <= 12
-        or not 1 <= encoder["step"] <= encoder["range"] <= 24
-    ):
-        raise PanelConfigError("panel.json has invalid encoder settings")
-    allowed_targets = {"NONE", "PITCH", "RATE", "LFO DEPTH", "ECHO LEVEL",
-                       "ECHO TIME", "ECHO FEEDBACK", "ECHO FILTER", "DECAY",
-                       "SWEEP AMOUNT", "SWEEP TIME"}
-    allowed_actions = {"NONE", "TRIGGER", "PLAY SOUND", "HOLD", "MOD UP",
-                       "MOD DOWN", "ECHO CUT", "ECHO LOOP", "ECHO SPIN", "TAP TEMPO"}
-    allowed_sounds = {"SIREN", "TWO TONE", "LICKSHOT", "PING", "GUNSHOT", "TEST TONE"}
-    pots = data.get("pots")
-    buttons = data.get("buttons")
-    if not isinstance(pots, list) or len(pots) != 6:
-        raise PanelConfigError("panel.json must contain six pots")
-    if not isinstance(buttons, list) or len(buttons) != 4:
-        raise PanelConfigError("panel.json must contain four buttons")
-    for pot in pots:
-        if (not isinstance(pot, dict) or not isinstance(pot.get("target"), str)
-                or pot["target"] not in allowed_targets):
-            raise PanelConfigError("panel.json has an invalid pot target")
-        if pot.get("mode") not in ("CONTINUOUS", "ZONES"):
-            raise PanelConfigError("panel.json has an invalid pot mode")
-        values = (pot.get("min"), pot.get("max"))
-        zones = pot.get("zones")
-        if (not all(type(value) in (int, float) and math.isfinite(value) for value in values)
-                or values[0] >= values[1]
-                or not isinstance(zones, list) or len(zones) != 3
-                or not all(type(value) in (int, float) and math.isfinite(value) for value in zones)):
-            raise PanelConfigError("panel.json has invalid pot ranges")
-        if pot["mode"] == "ZONES" and (pot["target"] not in ("PITCH", "RATE")
-                                       or not zones[0] < zones[1] < zones[2]):
-            raise PanelConfigError("panel.json has invalid zone values")
-    for button in buttons:
-        if (not isinstance(button, dict) or not isinstance(button.get("action"), str)
-                or button["action"] not in allowed_actions):
-            raise PanelConfigError("panel.json has an invalid button action")
-        if (not isinstance(button.get("sound"), str) or button["sound"] not in allowed_sounds
-                or type(button.get("variant")) is not int or button["variant"] < 0
-                or not isinstance(button.get("latch"), bool)):
-            raise PanelConfigError("panel.json has invalid Play Sound data")
-    patches = data.get("patches")
-    if (not isinstance(patches, list) or len(patches) != 4 or
-            any(not isinstance(patch, list) or len(patch) != 23 or
-                any(type(value) not in (int, float) or not math.isfinite(value) for value in patch)
-                for patch in patches)):
-        raise PanelConfigError("panel.json has invalid sound patches")
-    return data
-
-
-def load_panel_config(path: Path) -> dict | None:
-    if not path.exists():
-        return None
-    try:
-        data = json.loads(path.read_text(encoding="utf-8"))
-    except OSError as exc:
-        raise PanelConfigError(f"cannot read panel.json: {exc}") from exc
-    except (ValueError, TypeError) as exc:
-        raise PanelConfigError(f"panel.json is not valid JSON: {exc}") from exc
-    # Like the firmware, discard settings from an older schema instead of migrating.
-    if isinstance(data, dict):
-        schema = data.get("schema", 0)
-        if type(schema) is int and schema < PANEL_SCHEMA_VERSION:
-            return None
-    try:
-        return _validated_panel_config(data)
-    except PanelConfigError as exc:
-        raise PanelConfigError(f"{exc}: {path}") from exc
-
-
-def save_panel_config(path: Path, settings: dict) -> None:
-    payload = json.loads(json.dumps(_validated_panel_config(settings)))
-    payload.pop("revision", None)
-    path.parent.mkdir(parents=True, exist_ok=True)
-    temporary = None
-    try:
-        with tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", dir=path.parent,
-                                         prefix=path.name + ".", suffix=".tmp", delete=False) as stream:
-            temporary = Path(stream.name)
-            stream.write(json.dumps(payload, indent=2) + "\n")
-        os.replace(temporary, path)
-    finally:
-        if temporary is not None:
-            temporary.unlink(missing_ok=True)
-
-
-def panel_settings_commands(settings: dict) -> list[str]:
-    settings = _validated_panel_config(settings)
-    commands = ["PANEL BEGIN", f"PANEL BEHAVIOR {settings['potBehavior']}"]
-    encoder = settings["encoder"]
-    commands.append(
-        f"PANEL ENCODER {encoder['holdTurn']} {encoder['step']} {encoder['range']}"
-    )
-    for number, pot in enumerate(settings["pots"], start=1):
-        target = pot["target"].replace(" ", "_")
-        commands.append(f"PANEL POT {number} TARGET {target}")
-        commands.append(f"PANEL POT {number} RANGE {pot['min']:.9g} {pot['max']:.9g}")
-        if pot["mode"] == "ZONES":
-            zones = " ".join(f"{value:.9g}" for value in pot["zones"])
-            commands.append(f"PANEL POT {number} MODE ZONES")
-            commands.append(f"PANEL POT {number} ZONES {zones}")
-    for number, button in enumerate(settings["buttons"], start=1):
-        action = button["action"].replace(" ", "_")
-        commands.append(f"PANEL BUTTON {number} ACTION {action}")
-        if button["action"] == "PLAY SOUND":
-            sound = button["sound"].replace(" ", "_")
-            commands.append(
-                f"PANEL BUTTON {number} SOUND {sound} "
-                f"{button['variant']} {int(button['latch'])}"
-            )
-    for number, patch in enumerate(settings["patches"], start=1):
-        commands.append(f"PANEL PATCH {number} " + " ".join(f"{value:.9g}" for value in patch))
-    commands.append("PANEL COMMIT")
-    return commands
-
-
-def panel_settings_signature(settings: dict | None) -> object:
-    if settings is None:
-        return None
-    value = json.loads(json.dumps(settings))
-    value.pop("revision", None)
-    # The restore sends SOUND only for PLAY SOUND buttons and ZONES only for
-    # zone pots; ignore the leftovers so the comparison can ever match.
-    for button in value.get("buttons", []):
-        if isinstance(button, dict) and button.get("action") != "PLAY SOUND":
-            for key in ("sound", "variant", "latch"):
-                button.pop(key, None)
-    for pot in value.get("pots", []):
-        if isinstance(pot, dict) and pot.get("mode") != "ZONES":
-            pot.pop("zones", None)
-
-    def normalized(item):
-        if isinstance(item, float):
-            return round(item, 5)
-        if isinstance(item, list):
-            return [normalized(child) for child in item]
-        if isinstance(item, dict):
-            return {key: normalized(child) for key, child in item.items()}
-        return item
-
-    return normalized(value)
 
 
 class DialControl(ttk.Frame):
@@ -537,14 +366,6 @@ class PhysicalDubSirenApp(DubSirenApp):
         self._key_releases: dict[int, Callable[[], None]] = {}
         self._input_sources: dict[str, set[str]] = {}
         self._encoder_sources: set[str] = set()
-        self._saved_config_applied = False
-        self._virtual_restore_pending = False
-        self._connected_virtual = False
-        self._last_saved_settings_revision: int | None = None
-        self._panel_config_path = panel_config_path()
-        self._panel_config_error: str | None = None
-        self._panel_io_error: str | None = None
-        self._load_saved_panel_config()
         self.overlay_token: str | None = None
         self.dials: dict[str, DialControl] = {}
         super().__init__(root)
@@ -939,23 +760,6 @@ class PhysicalDubSirenApp(DubSirenApp):
         self._send(f"SET OUTPUT {selected}")
         self.active_output = selected
         self._send("PANEL_RESET")
-        if self._connected_virtual and not self._saved_config_applied:
-            self._saved_config_applied = True
-            if self._saved_panel_config is not None:
-                self._virtual_restore_pending = True
-                try:
-                    for command in panel_settings_commands(self._saved_panel_config):
-                        self.transport.send(command)
-                except Exception as exc:
-                    try:
-                        self.transport.send("PANEL CANCEL")
-                    except Exception:
-                        pass
-                    self._virtual_restore_pending = False
-                    self._panel_io_error = f"panel.json apply failed: {exc}"
-                    self.connection_var.set(self._panel_io_error)
-            elif self._panel_config_error:
-                self.connection_var.set(self._panel_config_error)
         self._refresh_display()
 
     def _handle_status(self, status: object) -> None:
@@ -964,7 +768,6 @@ class PhysicalDubSirenApp(DubSirenApp):
             super()._handle_status(status)
             return
         if isinstance(status, dict):
-            self._connected_virtual = status.get("virtual") is True
             panel = status.get("panel")
             if (
                 isinstance(panel, dict)
@@ -1022,27 +825,6 @@ class PhysicalDubSirenApp(DubSirenApp):
                     and overlay != old_display.get("overlay", {})
                 ):
                     self._show_overlay(str(overlay["title"]), str(overlay.get("value", "")))
-
-                settings = panel.get("settings")
-                if self._connected_virtual and isinstance(settings, dict):
-                    settings_revision = int(settings.get("revision", 0))
-                    comparable = panel_settings_signature(settings)
-                    saved = panel_settings_signature(self._saved_panel_config)
-                    if self._virtual_restore_pending:
-                        if saved == comparable:
-                            self._virtual_restore_pending = False
-                            self._last_saved_settings_revision = settings_revision
-                    elif self._last_saved_settings_revision is None:
-                        self._last_saved_settings_revision = settings_revision
-                    elif settings_revision != self._last_saved_settings_revision:
-                        self._last_saved_settings_revision = settings_revision
-                        try:
-                            save_panel_config(self._panel_config_path, settings)
-                            self._saved_panel_config = comparable
-                            self._panel_config_error = self._panel_io_error = None
-                        except (OSError, PanelConfigError) as exc:
-                            self._panel_io_error = f"panel.json save failed: {exc}"
-                            self.connection_var.set(self._panel_io_error)
         super()._handle_status(status)
         if isinstance(status, dict) and isinstance(status.get("panel"), dict):
             panel = status["panel"]
@@ -1050,29 +832,9 @@ class PhysicalDubSirenApp(DubSirenApp):
             device_error = panel.get("persistenceStatus") or panel.get("deviceStatus")
             if device_error:
                 self.connection_var.set(str(device_error))
-        if self._panel_config_error and self._connected_virtual:
-            self.connection_var.set(self._panel_config_error)
-        elif self._panel_io_error and self._connected_virtual:
-            self.connection_var.set(self._panel_io_error)
         self._refresh_display()
 
-    def _load_saved_panel_config(self) -> None:
-        self._panel_config_error = None
-        try:
-            self._saved_panel_config = load_panel_config(self._panel_config_path)
-        except PanelConfigError as exc:
-            self._saved_panel_config = None
-            self._panel_config_error = str(exc)
-
     def connect(self) -> None:
-        if self._connecting or self.transport.connected:
-            return
-        self._saved_config_applied = False
-        self._virtual_restore_pending = False
-        self._connected_virtual = False
-        self._last_saved_settings_revision = None
-        self._panel_io_error = None
-        self._load_saved_panel_config()
         super().connect()
         self._refresh_display()
 

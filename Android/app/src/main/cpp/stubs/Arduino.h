@@ -29,6 +29,10 @@ inline uint32_t millis() {
 inline void delay(uint32_t) {}
 
 constexpr float TWO_PI = 6.2831853071795864769f;
+inline double radians(double degrees) { return degrees * 0.017453292519943295; }
+
+// Declared only: Adafruit GFX names it in signatures the firmware never calls.
+class __FlashStringHelper;
 
 constexpr uint8_t LOW = 0;
 constexpr uint8_t HIGH = 1;

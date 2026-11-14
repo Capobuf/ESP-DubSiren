@@ -13,7 +13,6 @@ import android.graphics.RadialGradient
 import android.graphics.RectF
 import android.graphics.Shader
 import android.graphics.SweepGradient
-import android.graphics.Typeface
 import android.os.SystemClock
 import android.view.HapticFeedbackConstants
 import android.view.MotionEvent
@@ -108,10 +107,6 @@ class PanelView(context: Context, private val prefs: SharedPreferences) : View(c
     private var zoomDisplay = false
     private var lastDisplayTap = 0L
 
-    private val potLabels = Array(6) { "" }
-    private val keyLabels = Array(4) { "" }
-    private var status = ""
-
     private val display = Bitmap.createBitmap(
         NativeSiren.nativeDisplayWidth(), NativeSiren.nativeDisplayHeight(), Bitmap.Config.ARGB_8888)
     private var background: Bitmap? = null
@@ -119,19 +114,9 @@ class PanelView(context: Context, private val prefs: SharedPreferences) : View(c
     private var scale = 1f
     private var originX = 0f
     private var originY = 0f
-    private var statusTop = 0f
 
     private val fill = Paint(Paint.ANTI_ALIAS_FLAG)
     private val stroke = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.STROKE }
-    private val hint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        textAlign = Paint.Align.CENTER
-        typeface = Typeface.create("sans-serif-condensed", Typeface.BOLD)
-        color = Color.rgb(0xB4, 0xE0, 0x3C)
-    }
-    private val mono = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        typeface = Typeface.MONOSPACE
-        color = Color.rgb(0x70, 0x76, 0x7A)
-    }
     private val pixelPaint = Paint().apply { isFilterBitmap = false }
     private val rect = RectF()
     private val path = Path()
@@ -194,34 +179,15 @@ class PanelView(context: Context, private val prefs: SharedPreferences) : View(c
         invalidate()
     }
 
-    fun setLabels(labels: String) {
-        val lines = labels.split('\n')
-        for (i in 0..5) potLabels[i] = lines.getOrElse(i) { "" }.replace('_', ' ')
-        for (i in 0..3) keyLabels[i] = lines.getOrElse(6 + i) { "" }.replace('_', ' ')
-        invalidate()
-    }
-
-    fun setStatus(value: String) {
-        if (value != status) {
-            status = value
-            invalidate()
-        }
-    }
-
     // ---- Layout ------------------------------------------------------------
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         if (w == 0 || h == 0) return
-        val density = resources.displayMetrics.density
-        val statusHeight = 16f * density
         val modelW = BOARD_W + 8f
         val modelH = BOARD_BOTTOM - BOARD_TOP + 10f
-        scale = min(w / modelW, (h - statusHeight) / modelH)
+        scale = min(w / modelW, h / modelH)
         originX = (w - BOARD_W * scale) / 2f
-        val used = modelH * scale + statusHeight
-        originY = (h - used) / 2f + (-BOARD_TOP + 4f) * scale
-        statusTop = originY + (BOARD_BOTTOM + 5f) * scale
-        mono.textSize = 9f * resources.displayMetrics.scaledDensity
+        originY = (h - modelH * scale) / 2f + (-BOARD_TOP + 4f) * scale
         // Real-size display unless the panel is drawn smaller than ~1.2x life size.
         val pixelsPerRealMm = resources.displayMetrics.xdpi / 25.4f
         zoomDisplay = if (zoomSetting == ZOOM_UNSET) scale / pixelsPerRealMm < 1.2f else zoomSetting == 1
@@ -291,8 +257,6 @@ class PanelView(context: Context, private val prefs: SharedPreferences) : View(c
         drawEncoder(canvas)
         for (i in 0..3) drawKey(canvas, i)
         canvas.restore()
-        drawHints(canvas)
-        canvas.drawText(status, sx(0f), statusTop + mono.textSize, mono)
     }
 
     private fun drawDisplay(canvas: Canvas) {
@@ -456,22 +420,6 @@ class PanelView(context: Context, private val prefs: SharedPreferences) : View(c
             stroke.strokeWidth = 0.3f
             canvas.drawRoundRect(rect, 1.8f, 1.8f, stroke)
         }
-    }
-
-    private fun drawHints(canvas: Canvas) {
-        // Simulator aid (not on the hardware): current function of each control.
-        hint.textSize = 2.0f * scale
-        hint.setShadowLayer(0.4f * scale, 0f, 0.15f * scale, Color.BLACK)
-        for (i in 0..5) {
-            canvas.drawText(potLabels[i], sx(POT_X[i]), sy(POT_Y[i] - POT_SKIRT_R - 1.4f), hint)
-        }
-        for (i in 0..3) {
-            val pressed = keyPointers[i] > 0
-            val lift = (KEY_HEIGHT - if (pressed) KEY_TRAVEL else 0f) * LIFT_PER_MM
-            hint.textSize = 1.9f * scale
-            canvas.drawText(keyLabels[i], sx(KEY_X[i]), sy(KEY_Y - 0.4f - lift), hint)
-        }
-        hint.clearShadowLayer()
     }
 
     // ---- Touch -------------------------------------------------------------

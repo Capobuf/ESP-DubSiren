@@ -74,14 +74,17 @@ riavvio dopo la diagnosi.
    encoder e rimbalzo pulsanti; osservare maxInputPollGapUs con display attivo.
 3. Trigger/Hold/echo durante collegamento, scollegamento e backpressure USB.
 4. Misurare acquisizione -> audio, render/cycle/I2S/display: percentili e massimo.
-   Non chiudere #12 in base alla sola compilazione o al VirtualESP.
+   Non chiudere #12 in base alla sola compilazione o all'app Android.
 
 ## Confronti offline
 
-`pc\.venv\Scripts\python.exe pc\offline_capture.py` genera 37 WAV e metriche
-in una directory temporanea: SHOT tap/hold/retrigger, ROLL lento/veloce, HORN,
-Two Tone, Tone su quattro voci e tre registri, Contour ed Echo Color/Cut.
-Usare `--output-dir artifacts/offline-issues-5-12` per conservarli nel progetto.
+Lo script `pc\offline_capture.py` è stato rimosso insieme al Virtual ESP su
+cui si basava; la descrizione resta come registro delle metriche salvate in
+`artifacts/offline-issues-5-12/metrics.json`.
+
+Lo script generava 37 WAV e metriche in una directory temporanea: SHOT
+tap/hold/retrigger, ROLL lento/veloce, HORN, Two Tone, Tone su quattro voci e
+tre registri, Contour ed Echo Color/Cut.
 I file sono normalizzati allo stesso RMS dei campioni attivi (sopra l'1% del
 picco originale), senza clipping. Le metriche originali restano nel JSON.
 Questo prepara il confronto d'ascolto, non sostituisce il giudizio sul riddim.

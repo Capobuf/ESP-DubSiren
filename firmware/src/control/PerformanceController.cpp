@@ -61,6 +61,7 @@ void PerformanceController::changed() { ++revision_; }
 
 bool PerformanceController::tapTempo(uint32_t nowUs) {
     snprintf(overlayTitle_, sizeof(overlayTitle_), "TAP TEMPO");
+    overlayPot_ = 0;
     const uint32_t interval = nowUs - lastTapUs_;
     if (!tapStarted_ || interval > 2000000u) {
         tapStarted_ = true;
@@ -100,6 +101,7 @@ bool PerformanceController::setTempoBpm(float bpm) {
     controls_.set(state);
     tapStarted_ = false;
     snprintf(overlayTitle_, sizeof(overlayTitle_), "TEMPO");
+    overlayPot_ = 0;
     snprintf(overlayValue_, sizeof(overlayValue_), "%.1f BPM", bpm);
     changed();
     return true;
@@ -401,6 +403,21 @@ bool PerformanceController::anyRelevantButtonDown() const {
     return false;
 }
 
+bool PerformanceController::buttonDown(unsigned buttonNumber) const {
+    return buttonNumber >= 1 && buttonNumber <= 4 && padDown_[buttonNumber - 1];
+}
+
+bool PerformanceController::livePitchArmed() const {
+    return settings_.encoderHoldAction == EncoderHoldAction::LivePitch &&
+           anyRelevantButtonDown();
+}
+
+float PerformanceController::potValueNormalized(unsigned potNumber) const {
+    if (potNumber < 1 || potNumber > 6) return 0.0f;
+    return clampFloat(currentTargetNormalized(settings_.pots[potNumber - 1],
+                                              controls_.snapshot()), 0.0f, 1.0f);
+}
+
 bool PerformanceController::pitchAvailable(const ControlState &state) const {
     return state.mode != SirenMode::Gunshot;
 }
@@ -467,9 +484,16 @@ bool PerformanceController::setPad(unsigned padNumber, bool pressed) {
         overlayValue_[0] = '\0';
     }
 
+    // With the menu open, the key under the encoder steps back one level
+    // instead of doing its own action.
+    if (pressed && displayMode_ == DisplayMode::Menu && !encoderPressed_ &&
+        padNumber == kMenuBackButton) {
+        consumed_[index] = true;
+        menuBack();
+        state = controls_.snapshot();
     // On a sound pad the encoder+button shortcuts take precedence over playing
     // it and suppress the release-click menu gesture.
-    if (pressed && encoderPressed_ && button.action == ButtonAction::PlaySound) {
+    } else if (pressed && encoderPressed_ && button.action == ButtonAction::PlaySound) {
         consumed_[index] = true;
         modifierUsed_ = true;
         if (index == 0) toggleSelectedHold();
@@ -663,6 +687,7 @@ bool PerformanceController::setPot(unsigned potNumber, float position) {
         if (apply) pickup.latched = true;
     }
     snprintf(overlayTitle_, sizeof(overlayTitle_), "%s", potTargetName(config.target));
+    overlayPot_ = potNumber;
     if (apply) {
         applyPotValue(state, config, position);
         formatTargetValue(config.target, state, overlayValue_, sizeof(overlayValue_));
@@ -717,6 +742,7 @@ void PerformanceController::rotateEncoder(int direction) {
             settings_.encoderHoldAction == EncoderHoldAction::LivePitch) {
             modifierUsed_ = true;
             snprintf(overlayTitle_, sizeof(overlayTitle_), "LIVE PITCH");
+            overlayPot_ = 0;
             if (!pitchAvailable(state)) {
                 snprintf(overlayValue_, sizeof(overlayValue_), "N/A");
             } else {
@@ -1407,17 +1433,38 @@ void PerformanceController::pressMenuItem() {
         resetConfirmed_ = false;
         setMenuPage(MenuPage::Reset);
     } else if (row == Row::Back) {
-        if (menuPage_ == MenuPage::Root) {
-            displayMode_ = DisplayMode::Home;
-            changed();
-        } else if (menuPage_ == MenuPage::Pot) setMenuPage(MenuPage::Pots);
-        else if (menuPage_ == MenuPage::Button) setMenuPage(MenuPage::Buttons);
-        else if (menuPage_ == MenuPage::Pots || menuPage_ == MenuPage::Buttons || menuPage_ == MenuPage::Encoder || menuPage_ == MenuPage::Reset) setMenuPage(MenuPage::Setup);
-        else setMenuPage(MenuPage::Root);
+        leaveMenuPage();
     } else {
         menuEditing_ = true;
         changed();
     }
+}
+
+void PerformanceController::leaveMenuPage() {
+    if (menuPage_ == MenuPage::Root) {
+        displayMode_ = DisplayMode::Home;
+        changed();
+    } else if (menuPage_ == MenuPage::Pot) setMenuPage(MenuPage::Pots);
+    else if (menuPage_ == MenuPage::Button) setMenuPage(MenuPage::Buttons);
+    else if (menuPage_ == MenuPage::Pots || menuPage_ == MenuPage::Buttons || menuPage_ == MenuPage::Encoder || menuPage_ == MenuPage::Reset) setMenuPage(MenuPage::Setup);
+    else setMenuPage(MenuPage::Root);
+}
+
+void PerformanceController::menuBack() {
+    normalizeMenuIndex();
+    rebuildMenuView();
+    if (!menuEditing_) {
+        leaveMenuPage();
+        return;
+    }
+    // Ends editing like the push (DONE), but never confirms a Reset.
+    if (menuRowCount_ > 0 && menuRows_[menuIndex_].row == Row::Confirm) {
+        menuEditing_ = false;
+        resetConfirmed_ = false;
+        changed();
+        return;
+    }
+    pressMenuItem();
 }
 
 void PerformanceController::editMenuItem(Row row, int direction) {

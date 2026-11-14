@@ -109,9 +109,9 @@ resets that pot to the target's continuous default range. `PANEL BUTTON ...
 SOUND`, `PAD_CONFIG`, `PANEL SAVE` and `PANEL RECALL` are rejected unless the
 button's action is PLAY_SOUND. Existing semantic `SET` commands remain
 available for development and cause matching Pickup latches to re-arm.
-VirtualESP wraps a restored `panel.json` in `PANEL BEGIN` / `PANEL COMMIT` and
-sends `PANEL CANCEL` on any rejected field, so a damaged file cannot partially
-replace the running configuration.
+`PANEL BEGIN` stages the following configuration commands; `PANEL COMMIT`
+validates and applies them together and `PANEL CANCEL` discards them, so a
+rejected field cannot partially replace the running configuration.
 
 The encoder menu opens on release of an unconsumed click.
 While a physical Trigger or Play Sound button is held, Home rotation applies
@@ -233,9 +233,6 @@ before consuming the next command. Disconnect clears that pending reply.
 Audio rendering continues independently. Rejection also requests a fresh STATUS;
 periodic STATUS retries cover a full USB buffer.
 
-Virtual ESP delivers the same `{command, accepted}` result to an optional
-command callback, separate from its STATUS callback. Its synchronous API still
-raises on rejection for scripts and transactional configuration restoration.
 Older firmware without results leaves GUI requests explicitly unconfirmed;
 the GUI does not infer acceptance from a successful serial write. Existing
 clients can ignore packet type `0x03`; protocol version and PCM framing stay 1.

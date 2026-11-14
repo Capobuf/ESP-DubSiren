@@ -17,7 +17,7 @@ Dynamic Sweep, forme LFO aggiuntive, Tone/Contour ed Echo Color/Loop/Spin sono
 opzioni dello stesso layout, raggiungibili dal menu; Sonar emette ping
 pulsanti con cadenza regolata da Rate.
 Il DSP/control C++ è condiviso da firmware
-e Virtual ESP. Tarature, fonti e limiti sono in [controls](docs/controls.md);
+e [app Android](Android/README.md). Tarature, fonti e limiti sono in [controls](docs/controls.md);
 le verifiche della revisione sono in [baseline validation](docs/baseline-validation.md).
 
 ## Requisiti Windows
@@ -41,8 +41,7 @@ Aprire un prompt nella cartella `pc` ed eseguire una volta:
 setup.bat
 ```
 
-Lo script crea `.venv`, aggiorna pip e installa `pyserial`, `sounddevice`
-e il compilatore host `ziglang` per Virtual ESP.
+Lo script crea `.venv`, aggiorna pip e installa `pyserial` e `sounddevice`.
 
 ## Build e upload firmware
 
@@ -85,10 +84,9 @@ Dalla cartella `pc`:
 run.bat
 ```
 
-La GUI funziona sia con l'ESP32-S3 reale sia senza hardware tramite **Virtual ESP**.
-Il Virtual ESP compila e usa direttamente gli stessi sorgenti C++ DSP/control
-del firmware; la libreria host viene ricompilata automaticamente quando quei
-sorgenti cambiano.
+La GUI controlla l'ESP32-S3 reale via USB seriale. Per provare la sirena senza
+hardware si usa l'[app Android](Android/README.md), che compila gli stessi
+sorgenti C++ del firmware.
 
 La superficie predefinita presenta PITCH, RATE, ECHO LEVEL, ECHO TIME,
 ECHO FEEDBACK ed ECHO FILTER; BTN1 TRIGGER, BTN2 HOLD, BTN3 MOD UP e
@@ -100,22 +98,11 @@ un suono proprio: quando è selezionato, la rotazione libera cambia la variante
 del pad. Con un pulsante Trigger o Play Sound
 fisicamente premuto, l'encoder applica un transpose live temporaneo; Depth si
 regola dal menu MOD o da un pot. Il Master resta separato e non assegnabile sul
-retro. La Home 320x172 mostra insieme etichette e valori fisici, con overlay
-temporanei dei pot.
-Il prodotto finale userà un display piccolo, principalmente testuale, per
-stato, parametri, menu e impostazioni; la Home mostra solo testo e
-il driver ST7789 usa la configurazione del 5393, ancora da verificare su hardware.
+retro. Il PCB non ha serigrafia: la Home 320x172 è una mappa del pannello, con
+ogni pot, l'encoder e i tasti nella loro posizione, la funzione assegnata, il
+valore e lo stato (Pickup, Hold, pad selezionato). Il driver ST7789 usa la
+configurazione del 5393, ancora da verificare su hardware.
 Dettagli: [pannello UI](docs/panel-ui.md).
-
-Per lavorare senza hardware:
-
-1. scegliere **Virtual ESP** nel selettore Device;
-2. premere **Connect**;
-3. premere **Start Audio**;
-4. usare normalmente tutti i controlli della sirena.
-
-In modalità Virtual ESP l'uscita è sempre **PC**. La catena fisica
-I2S -> PCM5102A -> uscita analogica non è emulata.
 
 Con l'hardware reale:
 
@@ -156,7 +143,7 @@ uno smoke test I2S/DAC.
 
 ## Test
 
-La [CI](.github/workflows/ci.yml) esegue i test Python/Virtual ESP e DSP nativi
+La [CI](.github/workflows/ci.yml) esegue i test Python della GUI e DSP nativi
 su Windows e compila entrambi i firmware su Ubuntu. I binari e i file ELF
 sono pubblicati come artefatti del run, separati per ambiente. Non viene
 eseguito alcun upload su scheda. Le versioni firmware sono fissate in
@@ -164,21 +151,22 @@ eseguito alcun upload su scheda. Le versioni firmware sono fissate in
 
 ```powershell
 pc\.venv\Scripts\python.exe -m unittest discover -s pc -p "test_*.py" -f
+pc\.venv\Scripts\python.exe -m pip install -r tests\native\requirements.txt
 pc\.venv\Scripts\python.exe tests\native\run.py
 pc\.venv\Scripts\python.exe -m platformio run -d firmware -e esp32-s3-devkitc-1-n16r8 -e panel-prototype
 ```
 
-Il test nativo usa Zig C++ (`pip install ziglang`) oppure il compilatore indicato
+Il test nativo usa Zig C++ (`tests/native/requirements.txt`) oppure il compilatore indicato
 da `CXX`; esegue parser e DSP senza scheda. Con hardware collegato, leggere
 `renderUs`, `maxRenderUs`, `cycleUs` e `maxCycleUs` da STATUS durante gli scenari
 di sweep e verificare che restino sotto 10.000 µs per blocco.
 `displayRenderUs` e `maxDisplayRenderUs` misurano separatamente il ridisegno
-del testo ST7789 e devono restare sotto il budget display di 100.000 µs.
+del display ST7789 e devono restare sotto il budget display di 100.000 µs.
 
 ## App Android
 
-[Android](Android/README.md) contiene un simulatore della sirena in un'unica
-APK. Compila con l'NDK gli stessi sorgenti `firmware/src` audio, control e
+[Android](Android/README.md) è il simulatore della sirena e dell'ESP32, in
+un'unica APK. Compila con l'NDK gli stessi sorgenti `firmware/src` audio, control e
 display, e riproduce il pannello fisico con le misure del PCB.
 
 ## Hardware

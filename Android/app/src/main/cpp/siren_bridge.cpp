@@ -337,27 +337,6 @@ JNIEXPORT jint JNICALL JNI_FN(nativeDisplayHeight)(JNIEnv *, jobject) {
     return PerformanceController::kDisplayHeight;
 }
 
-JNIEXPORT jint JNICALL JNI_FN(nativePanelRevision)(JNIEnv *, jobject) {
-    return siren ? static_cast<jint>(siren->parser.panelRevision()) : 0;
-}
-
-// Current assignment of POT1..6 and BTN1..4, one per line.
-// Simulator aid only: the physical panel has no such labels.
-JNIEXPORT jstring JNICALL JNI_FN(nativeControlLabels)(JNIEnv *env, jobject) {
-    if (!siren) return env->NewStringUTF("");
-    const PanelSettings &settings = siren->parser.panelSettings();
-    std::string text;
-    for (unsigned pot = 0; pot < 6; ++pot) {
-        text += potTargetName(settings.pots[pot].target);
-        text += '\n';
-    }
-    for (unsigned button = 1; button <= 4; ++button) {
-        text += siren->parser.buttonActionNameFor(button);
-        text += '\n';
-    }
-    return env->NewStringUTF(text.c_str());
-}
-
 JNIEXPORT jstring JNICALL JNI_FN(nativeAudioStatus)(JNIEnv *env, jobject) {
     char text[160];
     int32_t xruns = 0;

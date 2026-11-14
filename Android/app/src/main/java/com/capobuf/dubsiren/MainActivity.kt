@@ -5,6 +5,7 @@ import android.media.AudioManager
 import android.os.Build
 import android.os.Bundle
 import android.os.SystemClock
+import android.util.Log
 import android.view.Choreographer
 import android.view.View
 import android.view.WindowInsets
@@ -16,7 +17,6 @@ class MainActivity : Activity(), Choreographer.FrameCallback {
     private lateinit var panel: PanelView
     private lateinit var pixels: IntArray
     private var frame = Int.MIN_VALUE
-    private var labelsRevision = Int.MIN_VALUE
     private var lastStatusMs = 0L
     private var running = false
 
@@ -63,15 +63,11 @@ class MainActivity : Activity(), Choreographer.FrameCallback {
             frame = next
             panel.updateDisplay(pixels)
         }
-        val revision = NativeSiren.nativePanelRevision()
-        if (revision != labelsRevision) {
-            labelsRevision = revision
-            panel.setLabels(NativeSiren.nativeControlLabels())
-        }
+        // Audio diagnostics go to logcat only: the panel shows no app text.
         val now = SystemClock.uptimeMillis()
-        if (now - lastStatusMs >= 500) {
+        if (now - lastStatusMs >= 5000) {
             lastStatusMs = now
-            panel.setStatus(NativeSiren.nativeAudioStatus())
+            Log.i("DubSiren", NativeSiren.nativeAudioStatus())
         }
         Choreographer.getInstance().postFrameCallback(this)
     }

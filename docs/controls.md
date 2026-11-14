@@ -1,6 +1,6 @@
 # Controls
 
-The firmware, Virtual ESP and the Android app share one panel layout with
+The firmware and the Android app share one panel layout with
 options. The factory layout plays four basic voices (SINE 1, SINE 2, TEST TONE,
 SQUARE) with zoned Pitch and Rate; every other voice, pot target, button action
 and sound option is reached from the encoder and its menu.
@@ -63,7 +63,7 @@ Musical calibration, voice defaults and DSP safety constants live in
 | BTN1 | momentary TRIGGER |
 | BTN2 | HOLD toggle on press; release and keyboard repeat do not toggle |
 | BTN3 | momentary MOD UP: with MANUAL, pitch up while held and slow fall after release; no effect with the automatic SIREN shape; +1 octave bend with the other shapes |
-| BTN4 | momentary ECHO CUT |
+| BTN4 | momentary ECHO CUT; BACK while the menu is open |
 | Encoder | previous/next Trigger voice, one step per detent, wraps |
 | Encoder push | MENU |
 | Rear MASTER | final output gain |

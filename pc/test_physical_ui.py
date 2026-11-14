@@ -1,9 +1,7 @@
 import json
-import tempfile
 import unittest
 from types import SimpleNamespace
 from unittest.mock import patch
-from pathlib import Path
 
 from control_ranges import CONTROL_SPECS
 from physical_ui import (
@@ -12,12 +10,7 @@ from physical_ui import (
     DISPLAY_WIDTH,
     PANEL_KNOBS,
     PanelDisplay,
-    PanelConfigError,
     PhysicalDubSirenApp,
-    load_panel_config,
-    panel_settings_commands,
-    panel_settings_signature,
-    save_panel_config,
 )
 
 
@@ -152,16 +145,9 @@ def make_app() -> PhysicalDubSirenApp:
     app._refresh_display = lambda: None
     app._input_sources = {}
     app._encoder_sources = set()
-    app._saved_config_applied = True
-    app._connected_virtual = False
-    app._saved_panel_config = None
-    app._panel_config_error = None
-    app._panel_io_error = None
     app.connection_var = FakeVariable("")
     app.command_var = FakeVariable("")
     app.confirmed_var = FakeVariable("")
-    app._virtual_restore_pending = False
-    app._last_saved_settings_revision = None
     return app
 
 
@@ -363,19 +349,6 @@ class PhysicalUiTests(unittest.TestCase):
         self.assertIn(("DEPTH", "1.50 oct"), overlays)
         self.assertEqual(app.parameter_values["LFO_DEPTH_OCT"], 1.5)
 
-    def test_restore_signature_ignores_fields_the_restore_does_not_send(self):
-        saved = sample_settings()
-        restored = json.loads(json.dumps(saved))
-        saved["buttons"][3].update(action="PLAY SOUND", sound="TWO TONE")
-        restored = json.loads(json.dumps(saved))
-        # BTN2 is HOLD: its leftover sound is not restored.
-        restored["buttons"][1]["sound"] = "PING"
-        # POT3 is CONTINUOUS: its zones are reset by TARGET.
-        restored["pots"][2]["zones"] = [0.1, 0.4, 0.9]
-        self.assertEqual(panel_settings_signature(saved), panel_settings_signature(restored))
-        restored["buttons"][3]["sound"] = "PING"
-        self.assertNotEqual(panel_settings_signature(saved), panel_settings_signature(restored))
-
     def test_status_during_master_drag_keeps_the_value_to_send(self):
         for pending, dragging in ((True, False), (False, True)):
             app = make_app()
@@ -475,143 +448,6 @@ class PhysicalUiTests(unittest.TestCase):
         self.assertFalse(any(command.startswith("SET ") and "OUTPUT" not in command
                              for command in app.commands))
         self.assertIn("PANEL_RESET", app.commands)
-
-    def test_virtual_sync_applies_only_validated_panel_settings(self):
-        app = make_app()
-        app._connected_virtual = True
-        app._saved_config_applied = False
-        app._saved_panel_config = sample_settings()
-        app._saved_panel_config["buttons"][3].update(action="PLAY SOUND", sound="PING")
-        app.transport.send = app.commands.append
-
-        app._synchronize_controls()
-
-        self.assertTrue(app._virtual_restore_pending)
-        self.assertIn("PANEL BEHAVIOR PICKUP", app.commands)
-        self.assertIn("PANEL POT 1 TARGET PITCH", app.commands)
-        self.assertIn("PANEL POT 1 ZONES 330 680 1000", app.commands)
-        self.assertIn("PANEL BUTTON 2 ACTION HOLD", app.commands)
-        self.assertIn("PANEL BUTTON 4 SOUND PING 0 0", app.commands)
-        self.assertEqual(app.commands[-1], "PANEL COMMIT")
-
-    def test_panel_configuration_round_trip(self):
-        settings = sample_settings()
-        settings["buttons"][1].update(action="PLAY SOUND", sound="TWO TONE", variant=2)
-        settings["buttons"][2].update(action="PLAY SOUND", sound="SIREN", latch=True)
-        with tempfile.TemporaryDirectory() as directory:
-            path = Path(directory) / "panel.json"
-            save_panel_config(path, settings)
-            loaded = load_panel_config(path)
-        self.assertEqual(loaded["schema"], 3)
-        self.assertEqual(loaded["buttons"][1]["variant"], 2)
-        commands = panel_settings_commands(loaded)
-        self.assertIn("PANEL POT 1 TARGET PITCH", commands)
-        self.assertIn("PANEL BUTTON 2 SOUND TWO_TONE 2 0", commands)
-        self.assertIn("PANEL BUTTON 3 SOUND SIREN 0 1", commands)
-        self.assertFalse(any(command.startswith("PANEL BUTTON 1 SOUND") for command in commands))
-
-    def test_invalid_panel_configuration_is_surfaced(self):
-        with tempfile.TemporaryDirectory() as directory:
-            path = Path(directory) / "panel.json"
-            path.write_text('{"schema": 99}', encoding="utf-8")
-            with self.assertRaises(PanelConfigError):
-                load_panel_config(path)
-
-    def test_older_schema_files_are_ignored_like_the_firmware_does(self):
-        legacy_pads = {"pads": [{"sound": "PING", "variantIndex": 1}] * 4}
-        profiles = {"potBehavior": "PICKUP", "profiles": {"CLASSIC": {}, "EXTENDED": {}}}
-        with tempfile.TemporaryDirectory() as directory:
-            path = Path(directory) / "panel.json"
-            for payload in (legacy_pads, {"schema": 1, **profiles}, {"schema": 2, **profiles}):
-                with self.subTest(payload=payload):
-                    original = json.dumps(payload).encode("utf-8")
-                    path.write_bytes(original)
-                    self.assertIsNone(load_panel_config(path))
-                    self.assertEqual(path.read_bytes(), original)
-                    self.assertEqual(list(path.parent.iterdir()), [path])
-
-    def test_unknown_schemas_remain_errors(self):
-        invalid = [{"schema": 99, "pads": []}, {"schema": True}, {"schema": "3"},
-                   {"schema": 3}, []]
-        with tempfile.TemporaryDirectory() as directory:
-            path = Path(directory) / "panel.json"
-            for payload in invalid:
-                with self.subTest(payload=payload):
-                    path.write_text(json.dumps(payload), encoding="utf-8")
-                    with self.assertRaises(PanelConfigError) as error:
-                        load_panel_config(path)
-                    self.assertIn(str(path), str(error.exception))
-
-    def test_rejected_restore_cancels_the_transaction_and_keeps_retry_data(self):
-        app = make_app()
-        app._connected_virtual = True
-        app._saved_config_applied = False
-        app._saved_panel_config = saved = sample_settings()
-
-        def send(command):
-            app.commands.append(command)
-            if command.startswith("PANEL BUTTON"):
-                raise RuntimeError("rejected")
-
-        app.transport.send = send
-        app._synchronize_controls()
-        self.assertIs(app._saved_panel_config, saved)
-        self.assertFalse(app._virtual_restore_pending)
-        self.assertEqual(app.commands[-1], "PANEL CANCEL")
-        self.assertIn("apply failed", app._panel_io_error)
-
-    def test_panel_configuration_save_failure_is_surfaced(self):
-        with tempfile.TemporaryDirectory() as directory:
-            with self.assertRaises(OSError):
-                save_panel_config(Path(directory), sample_settings())
-
-    def test_failed_replace_preserves_previous_configuration(self):
-        with tempfile.TemporaryDirectory() as directory:
-            path = Path(directory) / "panel.json"
-            save_panel_config(path, sample_settings())
-            before = path.read_bytes()
-            changed = sample_settings()
-            changed["potBehavior"] = "JUMP"
-            with patch("physical_ui.os.replace", side_effect=OSError("disk failure")):
-                with self.assertRaisesRegex(OSError, "disk failure"):
-                    save_panel_config(path, changed)
-            self.assertEqual(path.read_bytes(), before)
-            self.assertEqual(list(path.parent.glob("*.tmp")), [])
-
-    def test_malformed_nested_configuration_reports_error(self):
-        invalid = []
-        for key, value in (("pots", {}), ("buttons", [{}] * 3), ("patches", [[0] * 22] * 4),
-                           ("encoder", {"holdTurn": "LIVE_PITCH", "step": True, "range": 12})):
-            settings = sample_settings()
-            settings[key] = value
-            invalid.append(settings)
-        settings = sample_settings()
-        settings["pots"][0]["target"] = []
-        invalid.append(settings)
-        settings = sample_settings()
-        settings["pots"][2]["mode"] = "ZONES"  # Only Pitch and Rate have zones.
-        invalid.append(settings)
-        settings = sample_settings()
-        settings["buttons"][0]["sound"] = "CLASSIC"  # Stored names are the displayed ones.
-        invalid.append(settings)
-        with tempfile.TemporaryDirectory() as directory:
-            path = Path(directory) / "panel.json"
-            for data in invalid:
-                path.write_text(json.dumps(data), encoding="utf-8")
-                with self.subTest(data=data), self.assertRaises(PanelConfigError):
-                    load_panel_config(path)
-
-    def test_reload_ignores_older_file_and_clears_old_errors(self):
-        app = make_app()
-        app._saved_panel_config = sample_settings()
-        app._panel_config_error = "old error"
-        legacy = {"pads": [{"sound": "PING", "variantIndex": 1}] * 4}
-        with tempfile.TemporaryDirectory() as directory:
-            app._panel_config_path = Path(directory) / "panel.json"
-            app._panel_config_path.write_text(json.dumps(legacy), encoding="utf-8")
-            app._load_saved_panel_config()
-        self.assertIsNone(app._saved_panel_config)
-        self.assertIsNone(app._panel_config_error)
 
 
 if __name__ == "__main__":

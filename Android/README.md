@@ -8,7 +8,7 @@ modifiche:
 |---|---|---|
 | DSP | `firmware/src/audio/*.cpp` | blocchi da 480 campioni mono a 48 kHz, uscita AAudio |
 | Controller, menu, mappature, Pickup | `firmware/src/control/*.cpp` | input fisici dal pannello touch |
-| Display | `firmware/src/display/PanelDisplay.cpp` | framebuffer 320x172 RGB565 al posto dell'ST7789 |
+| Display | `firmware/src/display/PanelDisplay.cpp` e Adafruit GFX 1.12.6 | framebuffer 320x172 RGB565 al posto dell'ST7789 |
 
 Nessuna logica della sirena è riscritta in Kotlin. L'app offre solo i gesti
 del pannello fisico: sei pot frontali, quattro tasti momentanei, encoder a
@@ -77,8 +77,13 @@ salvano come blob binario identico a quello in NVS, 2 s dopo l'ultima modifica.
 Un file salvato con un altro schema viene scartato all'avvio: valgono le
 impostazioni di fabbrica.
 
-Le scritte verdi sopra i pot e sui tasti indicano la funzione assegnata
-nell'unico layout del pannello. Servono solo al simulatore: sul pannello fisico non ci sono.
+L'app non aggiunge scritte: come sul pannello fisico, che non ha serigrafia,
+la funzione di ogni comando si legge sul display.
+
+La libreria Adafruit GFX è la stessa versione fissata in
+`firmware/platformio.ini`: CMake la scarica (URL e SHA256 in
+`app/src/main/cpp/CMakeLists.txt`) e lo stub `Adafruit_ST7789` scrive solo i
+pixel nel framebuffer. Font, primitive e canvas sono quelli della libreria.
 
 ## Limiti
 
@@ -87,8 +92,8 @@ nell'unico layout del pannello. Servono solo al simulatore: sul pannello fisico 
 - Verso dell'encoder: orario = NEXT. Sull'hardware resta da verificare
   (`docs/standalone.md`).
 - La latenza dipende dal telefono. AAudio parte in low latency con due burst di
-  buffer e aggiunge un burst a ogni underrun. La riga di stato in basso mostra
-  sample rate, buffer, xrun e tempo di render del blocco. Se il dispositivo non
+  buffer e aggiunge un burst a ogni underrun. Ogni 5 s il logcat (tag
+  `DubSiren`) riporta sample rate, buffer, xrun e tempo di render del blocco. Se il dispositivo non
   apre lo stream a 48 kHz, compare `(!48k)`: il DSP resta a 48 kHz e
   l'intonazione cambierebbe.
 - Diametro della manopola SAK-023, colore del PCB del modulo display, altezze

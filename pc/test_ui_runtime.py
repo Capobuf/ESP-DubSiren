@@ -1,18 +1,14 @@
 """Exercise real Tk widgets; no audio device or ESP board is required."""
-import json
 import queue
 import gc
-import tempfile
 import threading
 import time
 import tkinter as tk
 import unittest
-from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
 
-import physical_ui
-from physical_ui import PhysicalDubSirenApp, load_panel_config, save_panel_config
+from physical_ui import PhysicalDubSirenApp
 
 
 class SlowTransport:
@@ -35,7 +31,7 @@ class SlowTransport:
         if self.failure:
             raise self.failure
         self.connected = True
-        self._status_callback({"protocol": 1, "virtual": True, "firmware": "test"})
+        self._status_callback({"protocol": 1, "i2sReady": True, "firmware": "test"})
 
     def send(self, command):
         if self._command_callback:
@@ -52,10 +48,9 @@ class TkRuntimeTests(unittest.TestCase):
             self.root = tk.Tk()
         except tk.TclError as exc:
             self.skipTest(f"Tk display unavailable: {exc}")
-        self.temporary = tempfile.TemporaryDirectory()
-        self.config = patch("physical_ui.panel_config_path", return_value=Path(self.temporary.name) / "panel.json")
-        self.config.start()
         self.errors = patch("app.messagebox.showerror").start()
+        # No board is attached: list one serial port so connect() has a device.
+        patch("app.list_ports.comports", return_value=[SimpleNamespace(device="COM_TEST")]).start()
         self.addCleanup(patch.stopall)
         self.app = None
         self.closed = False
@@ -67,8 +62,6 @@ class TkRuntimeTests(unittest.TestCase):
             self.app.close()
         elif self.root.winfo_exists():
             self.root.destroy()
-        self.config.stop()
-        self.temporary.cleanup()
         self.app = None
         self.root = None
         # Collect destroyed Tcl interpreters on their owner thread before a
@@ -85,7 +78,7 @@ class TkRuntimeTests(unittest.TestCase):
     def test_slow_connect_keeps_tk_alive_and_delivers_handshake(self):
         self.app = PhysicalDubSirenApp(self.root)
         transport = SlowTransport(queue.Queue(), None)
-        with patch("app.VirtualTransport", side_effect=transport.factory):
+        with patch("app.SerialTransport", side_effect=transport.factory):
             self.app.connect()
             self.app.connect()  # Duplicate input must not start another worker.
         tick = []
@@ -101,23 +94,23 @@ class TkRuntimeTests(unittest.TestCase):
     def test_failed_connect_can_be_retried(self):
         self.app = PhysicalDubSirenApp(self.root)
         failed = SlowTransport(queue.Queue(), None)
-        failed.failure = RuntimeError("compiler unavailable")
+        failed.failure = RuntimeError("port unavailable")
         failed.release.set()
-        with patch("app.VirtualTransport", side_effect=failed.factory):
+        with patch("app.SerialTransport", side_effect=failed.factory):
             self.app.connect()
         self.pump_until(lambda: not self.app._connecting)
-        self.assertIn("compiler unavailable", self.app.connection_var.get())
+        self.assertIn("port unavailable", self.app.connection_var.get())
         self.assertTrue(self.app.connect_button.instate(["!disabled"]))
         successful = SlowTransport(queue.Queue(), None)
         successful.release.set()
-        with patch("app.VirtualTransport", side_effect=successful.factory):
+        with patch("app.SerialTransport", side_effect=successful.factory):
             self.app.connect()
         self.pump_until(lambda: self.app.protocol_ok)
 
-    def test_close_during_build_cleans_up_late_connection(self):
+    def test_close_during_connect_cleans_up_late_connection(self):
         self.app = PhysicalDubSirenApp(self.root)
         transport = SlowTransport(queue.Queue(), None)
-        with patch("app.VirtualTransport", side_effect=transport.factory):
+        with patch("app.SerialTransport", side_effect=transport.factory):
             self.app.connect()
         self.app.close()
         self.closed = True
@@ -127,34 +120,6 @@ class TkRuntimeTests(unittest.TestCase):
 
     def test_pot_keyboard_and_focus_scroll_at_125_percent(self):
         self.check_layout_and_keys(1.25)
-
-    def test_virtual_feedback_and_pcm_with_real_tk(self):
-        import array
-        self.app = PhysicalDubSirenApp(self.root)
-        self.app.connect()
-        # CI compiles the shared core from scratch before the first connection.
-        self.pump_until(lambda: self.app.protocol_ok, timeout=300)
-        for command in ("TEMPO BPM 120", "TEMPO LFO SYNC", "TEMPO ECHO SYNC"):
-            self.app._send(command)
-        self.root.update()
-        self.app._send("SET LFO_RATE_HZ 2")
-        self.pump_until(lambda: self.app.command_var.get().startswith("Rejected:"))
-        confirmed = self.app.confirmed_var.get()
-        self.app.transport.send("HELLO")
-        self.root.update()
-        self.assertTrue(self.app.command_var.get().startswith("Rejected:"))
-        self.assertEqual(self.app.confirmed_var.get(), confirmed)
-        self.app._send("TEMPO ECHO FREE")
-        self.app._send("SET DELAY_MS 400")
-        self.pump_until(lambda: "Delay 400ms" in self.app.confirmed_var.get())
-        self.assertIn("Accepted: SET DELAY_MS 400", self.app.command_var.get())
-        self.app._send("TRIGGER 1")
-        self.app._send("STREAM 1")
-        self.pump_until(lambda: not self.app.audio_queue.empty())
-        samples = array.array("h", self.app.audio_queue.get_nowait())
-        self.assertTrue(any(samples))
-        self.app._send("TRIGGER 0")
-        self.app.disconnect()
 
     def test_shift_and_caps_lock_releases_with_real_tk(self):
         self.app = PhysicalDubSirenApp(self.root)
@@ -174,25 +139,6 @@ class TkRuntimeTests(unittest.TestCase):
             self.root.event_generate("<KeyRelease>", keysym=release[0], keycode=release[1], when="now")
             self.root.update()
             self.assertEqual(sent, expected)
-
-    def test_virtual_restore_reenables_autosave(self):
-        self.app = PhysicalDubSirenApp(self.root)
-        self.app.connect()
-        self.pump_until(lambda: self.app.protocol_ok, timeout=300)
-        settings = json.loads(json.dumps(self.app.panel_state["settings"]))
-        # The two audit cases: a non-PLAY SOUND button with a leftover sound
-        # and a CONTINUOUS pot with non-default zones.
-        settings["buttons"][2].update(action="HOLD", sound="PING")
-        settings["pots"][0].update(mode="CONTINUOUS", zones=[0.1, 0.4, 0.9])
-        save_panel_config(physical_ui.panel_config_path(), settings)
-        self.app.disconnect()
-        self.app.connect()
-        self.pump_until(lambda: self.app.protocol_ok, timeout=300)
-        self.pump_until(lambda: not self.app._virtual_restore_pending)
-        self.app._send("PANEL BEHAVIOR JUMP")
-        self.pump_until(
-            lambda: load_panel_config(physical_ui.panel_config_path())["potBehavior"] == "JUMP")
-        self.app.disconnect()
 
     def test_pot_keyboard_and_focus_scroll_at_150_percent(self):
         self.check_layout_and_keys(1.5)

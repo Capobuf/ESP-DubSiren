@@ -401,6 +401,29 @@ void testPanelDisplayState() {
     assert(parser.parse("ENCODER_SWITCH 1"));
     assert(parser.parse("ENCODER_SWITCH 0"));
     assert(!parser.menuEditing());
+
+    // BTN4 is BACK in the menu: it ends editing, then climbs page by page to
+    // Home, never playing or doing its own action.
+    auto back = [&]() {
+        assert(parser.setPhysicalPad(PerformanceController::kMenuBackButton, true));
+        const ControlState held = store.snapshot();
+        assert(!held.trigger && !held.echoCut && !held.hold);
+        assert(parser.setPhysicalPad(PerformanceController::kMenuBackButton, false));
+    };
+    assert(parser.parse("ENCODER_SWITCH 1"));
+    assert(parser.parse("ENCODER_SWITCH 0"));
+    assert(parser.menuEditing());
+    back();
+    assert(!parser.menuEditing());
+    assert(parser.panelSettings().pots[0].target == PotTarget::Rate);
+    back();
+    assert(strcmp(parser.menuTitle(), "POT CONTROLS") == 0);
+    back();
+    assert(strcmp(parser.menuTitle(), "SETUP") == 0);
+    back();
+    assert(strcmp(parser.menuTitle(), "PERFORMANCE") == 0);
+    back();
+    assert(strcmp(parser.displayModeName(), "HOME") == 0);
 }
 
 void testExtendedEncoderGestures() {

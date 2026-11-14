@@ -10,7 +10,6 @@ from control_ranges import CONTROL_SPECS, ControlSpec
 from protocol import PROTOCOL_VERSION
 from scrollable import ScrollablePanel
 from transport import SerialTransport
-from virtual_transport import VIRTUAL_DEVICE, VirtualTransport
 
 OUTPUT_VALUES = {
     "PC": "PC",
@@ -456,11 +455,10 @@ class DubSirenApp:
                 self.command_var.set(f"Accepted: {command} · confirmed values below")
 
     def refresh_ports(self) -> None:
-        ports = [VIRTUAL_DEVICE]
-        ports.extend(port.device for port in list_ports.comports())
+        ports = [port.device for port in list_ports.comports()]
         self.port_combo["values"] = ports
         if self.port_var.get() not in ports:
-            self.port_var.set(VIRTUAL_DEVICE)
+            self.port_var.set(ports[0] if ports else "")
 
     def toggle_connection(self) -> None:
         if self.transport.connected:
@@ -477,25 +475,20 @@ class DubSirenApp:
             return
 
         events = self.ui_events
-        factory = VirtualTransport if port == VIRTUAL_DEVICE else SerialTransport
-        transport = factory(
+        transport = SerialTransport(
             self.audio_queue,
             lambda status: events.put(("transport_status", (transport, status))),
             lambda result: events.put(("command_result", (transport, result))),
         )
         self.transport = transport
-        if port == VIRTUAL_DEVICE:
-            self.output_var.set("PC")
-            self.output_combo.configure(state="disabled")
-        else:
-            self.output_combo.configure(state="readonly")
+        self.output_combo.configure(state="readonly")
 
         self.protocol_ok = False
         self._has_synchronized = False
         self._connecting = True
         self._connection_status = None
         self._connect_cancel = threading.Event()
-        self.connection_var.set("Building / opening Virtual ESP…" if port == VIRTUAL_DEVICE else "Opening device…")
+        self.connection_var.set("Opening device…")
         self.connect_button.configure(text="Connecting…", state="disabled")
         self.port_combo.configure(state="disabled")
         cancelled = self._connect_cancel
@@ -668,12 +661,8 @@ class DubSirenApp:
             if isinstance(value, (int, float)):
                 values.append(f"{label} {value:.3g}{unit}")
         self.confirmed_var.set("Confirmed: " + (" · ".join(values) or "not reported by firmware"))
-        is_virtual = status.get("virtual") is True
         self.i2s_ready = status.get("i2sReady") is True
-        if is_virtual:
-            self.output_var.set("PC")
-            self.output_combo.configure(state="disabled")
-        elif self._uses_i2s(self._selected_output()) and not self.i2s_ready:
+        if self._uses_i2s(self._selected_output()) and not self.i2s_ready:
             self.output_var.set("PC")
             messagebox.showerror(
                 "PCM5102A output",
@@ -681,14 +670,7 @@ class DubSirenApp:
                 "Output was set to PC.",
             )
 
-        if is_virtual:
-            self.connection_var.set(
-                f"Connected · Virtual ESP · firmware {status.get('firmware', '?')}"
-            )
-        else:
-            self.connection_var.set(
-                f"Connected · firmware {status.get('firmware', '?')}"
-            )
+        self.connection_var.set(f"Connected · firmware {status.get('firmware', '?')}")
         self.audio_button.configure(state="normal")
         if not self._has_synchronized:
             self._has_synchronized = True

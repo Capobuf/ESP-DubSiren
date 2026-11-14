@@ -23,7 +23,5 @@ object NativeSiren {
     external fun nativeTick(pixels: IntArray, since: Int): Int
     external fun nativeDisplayWidth(): Int
     external fun nativeDisplayHeight(): Int
-    external fun nativePanelRevision(): Int
-    external fun nativeControlLabels(): String
     external fun nativeAudioStatus(): String
 }

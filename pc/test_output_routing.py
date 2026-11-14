@@ -156,7 +156,6 @@ class OutputRoutingTests(unittest.TestCase):
         app._synchronize_controls = lambda: synchronizations.append(True)
         status = {
             "protocol": 1,
-            "virtual": True,
             "i2sReady": False,
             "firmware": "0.7.0",
         }

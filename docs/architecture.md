@@ -45,14 +45,15 @@ for the default 256-byte ring to drain. The sink reserves space for a complete
 packet and issues one non-blocking write; a short write reports failure.
 
 `PanelDisplay` is outside `audioTask`. The main loop reads controller and
-`ControlStore` state and renders text for Home or Menu directly through
-Adafruit GFX/ST7789. It redraws on state changes or parameter-overlay expiry,
-at most once every 100 ms. No display buffer is allocated. STATUS exposes
+`ControlStore` state and renders Home or Menu with Adafruit GFX into a
+320x172 `GFXcanvas16` (110 kB of heap), then sends the frame to the ST7789 in
+one transfer; without the buffer it draws on the panel directly. It redraws on
+state changes or parameter-overlay expiry, at most once every 100 ms. STATUS exposes
 `displayRenderUs` and `maxDisplayRenderUs` separately from audio timing.
 The audio task contains no SPI or display calls.
 
-The intended product display is a small, primarily text-based interface for
-status, parameters, menus and settings. ST7789 initialization targets Adafruit
+Home maps the panel controls to their position; see
+[panel UI](panel-ui.md). ST7789 initialization targets Adafruit
 Product 5393 at 320x172 in landscape; physical wiring and mounting remain
 unverified. The existing SPI GPIO assignments are retained.
 
@@ -140,7 +141,7 @@ an abrupt boundary.
 
 ## Performance controller
 
-`PerformanceController` is compiled into both firmware and VirtualESP.
+`PerformanceController` is compiled into both firmware and the Android app.
 `PanelSettings` (schema 3) owns the single versioned POT and BTN mapping,
 Pickup/Jump behavior, zones/ranges, the live-pitch encoder gesture and the
 four sound patches. Raw numbered POT inputs, target curves, hysteresis and the
@@ -148,10 +149,10 @@ filter macro are interpreted only in shared C++. The controller also owns the
 Trigger voice list stepped by the encoder; Play Sound pads keep last-pressed
 priority, combinations and their encoder+button shortcuts.
 
-VirtualESP exports the same compact logical display state through its C ABI:
-320x172 dimensions, Home/Menu mode, controller-formatted title, ordered rows,
-values, footer and temporary overlay, plus the full versioned panel settings.
-`VirtualTransport` adds these values to `panel.display`. Both the desktop text
+The firmware reports the same compact logical display state in STATUS
+`panel.display`: 320x172 dimensions, Home/Menu mode, controller-formatted title,
+ordered rows, values, footer and temporary overlay, plus the full versioned
+panel settings in `panel.settings`. Both the desktop text
 widget and the Adafruit renderer therefore show the same
 state, parameter values and encoder menus without rebuilding UI semantics in
 Python. The desktop widget uses Tk text directly and requires no external

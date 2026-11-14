@@ -68,6 +68,13 @@ public:
     const char *menuFooter() const { return performance_.menuFooter(); }
     const char *overlayTitle() const { return performance_.overlayTitle(); }
     const char *overlayValue() const { return performance_.overlayValue(); }
+    unsigned overlayPot() const { return performance_.overlayPot(); }
+    bool buttonDown(unsigned button) const { return performance_.buttonDown(button); }
+    bool encoderPressed() const { return performance_.encoderPressed(); }
+    bool livePitchArmed() const { return performance_.livePitchArmed(); }
+    float potValueNormalized(unsigned pot) const {
+        return performance_.potValueNormalized(pot);
+    }
     unsigned selectedPad() const { return performance_.selectedPad(); }
     unsigned currentPad() const { return performance_.currentPad(); }
     int activePad() const { return performance_.activePad(); }
