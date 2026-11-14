@@ -22,7 +22,8 @@
   - Elencare i dispositivi con `adb devices -l`.
   - Installare con `adb -s <seriale> install -r "$env:USERPROFILE\.dubsiren-android\app\outputs\apk\release\app-release.apk"`.
   - Avviare con `adb -s <seriale> shell am start -S -n com.capobuf.dubsiren/.MainActivity`.
-  - L'APK è firmata con la chiave debug locale.
+  - L'APK è firmata con la chiave release in `%USERPROFILE%\.dubsiren-signing` (la stessa dei secret GitHub usati dal workflow `Android APK`); senza quel file, con la chiave debug locale. Non stampare né committare chiave e password.
+  - Il workflow `Android APK` pubblica l'APK installabile come GitHub Release a ogni push che tocca app o firmware condiviso e negli avvii manuali, tenendo le ultime due; le pull request compilano soltanto.
 - **Verifica:**
   - Testare sul dispositivo reale indicato dall'utente, non sull'emulatore.
   - Se lo schermo è bloccato, chiedere all'utente di sbloccarlo; non tentare di sbloccarlo.

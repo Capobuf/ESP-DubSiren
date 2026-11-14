@@ -30,7 +30,7 @@ $env:JAVA_HOME = "C:\Program Files\Android\Android Studio\jbr"
 
 Gradle compila fuori dal repository, in `%USERPROFILE%\.dubsiren-android`:
 OneDrive tiene aperti i file durante la sincronizzazione e fa fallire il
-packaging. L'APK è firmata con la chiave debug locale e si installa direttamente:
+packaging. L'APK si installa direttamente:
 
 ```powershell
 adb install -r "$env:USERPROFILE\.dubsiren-android\app\outputs\apk\release\app-release.apk"
@@ -38,6 +38,25 @@ adb install -r "$env:USERPROFILE\.dubsiren-android\app\outputs\apk\release\app-r
 
 Si può anche aprire la cartella `Android` in Android Studio. La build release
 è ottimizzata (`-O2`); conviene usarla anche per provare l'audio.
+
+## Firma e APK pronta
+
+La build release è firmata con la chiave release del progetto se esiste
+`%USERPROFILE%\.dubsiren-signing\signing.properties` (`storeFile`,
+`storePassword`, `keyAlias`, `keyPassword`), altrimenti con la chiave debug
+locale. Chiave e password stanno solo lì e nei secret GitHub
+`ANDROID_KEYSTORE_BASE64` e `ANDROID_KEYSTORE_PASSWORD` (alias `dubsiren`):
+vanno conservate, perché senza la stessa chiave un'APK non può aggiornare
+quella installata. Android rifiuta anche un aggiornamento tra firme diverse:
+passando dalla chiave debug a quella release bisogna disinstallare l'app una
+volta, perdendo impostazioni e posizioni dei pot salvate.
+
+Il workflow [Android APK](../.github/workflows/android.yml) compila l'APK a
+ogni push che tocca `Android/` o i sorgenti firmware condivisi, su qualunque
+branch, e negli avvii manuali (Actions → Android APK → Run workflow) la
+pubblica come GitHub Release `apk-<numero>`, con il file
+`DubSiren-<numero>-<commit>.apk` da scaricare e aprire sul dispositivo. Restano
+solo le due release APK più recenti.
 
 ## Pannello
 
