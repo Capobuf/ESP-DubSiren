@@ -164,55 +164,53 @@ VIRTUAL_ESP_API unsigned virtual_esp_encoder_range() {
     return ready() ? parser->panelSettings().encoderRangeSemitones : 12;
 }
 
-VIRTUAL_ESP_API const char *virtual_esp_pot_target(unsigned profile, unsigned pot) {
-    if (!ready() || profile > 1 || pot < 1 || pot > 6) return "UNKNOWN";
-    return potTargetName(parser->panelSettings().profiles[profile].pots[pot - 1].target);
+VIRTUAL_ESP_API const char *virtual_esp_pot_target(unsigned pot) {
+    if (!ready() || pot < 1 || pot > 6) return "UNKNOWN";
+    return potTargetName(parser->panelSettings().pots[pot - 1].target);
 }
 
-VIRTUAL_ESP_API const char *virtual_esp_pot_mode(unsigned profile, unsigned pot) {
-    if (!ready() || profile > 1 || pot < 1 || pot > 6) return "CONTINUOUS";
-    return potModeName(parser->panelSettings().profiles[profile].pots[pot - 1].mode);
+VIRTUAL_ESP_API const char *virtual_esp_pot_mode(unsigned pot) {
+    if (!ready() || pot < 1 || pot > 6) return "CONTINUOUS";
+    return potModeName(parser->panelSettings().pots[pot - 1].mode);
 }
 
-VIRTUAL_ESP_API float virtual_esp_pot_min(unsigned profile, unsigned pot) {
-    return ready() && profile < 2 && pot >= 1 && pot <= 6
-        ? parser->panelSettings().profiles[profile].pots[pot - 1].minimum : 0.0f;
+VIRTUAL_ESP_API float virtual_esp_pot_min(unsigned pot) {
+    return ready() && pot >= 1 && pot <= 6
+        ? parser->panelSettings().pots[pot - 1].minimum : 0.0f;
 }
 
-VIRTUAL_ESP_API float virtual_esp_pot_max(unsigned profile, unsigned pot) {
-    return ready() && profile < 2 && pot >= 1 && pot <= 6
-        ? parser->panelSettings().profiles[profile].pots[pot - 1].maximum : 1.0f;
+VIRTUAL_ESP_API float virtual_esp_pot_max(unsigned pot) {
+    return ready() && pot >= 1 && pot <= 6
+        ? parser->panelSettings().pots[pot - 1].maximum : 1.0f;
 }
 
-VIRTUAL_ESP_API float virtual_esp_pot_zone(unsigned profile, unsigned pot, unsigned zone) {
-    return ready() && profile < 2 && pot >= 1 && pot <= 6 && zone < 3
-        ? parser->panelSettings().profiles[profile].pots[pot - 1].zones[zone] : 0.0f;
+VIRTUAL_ESP_API float virtual_esp_pot_zone(unsigned pot, unsigned zone) {
+    return ready() && pot >= 1 && pot <= 6 && zone < 3
+        ? parser->panelSettings().pots[pot - 1].zones[zone] : 0.0f;
 }
 
-VIRTUAL_ESP_API const char *virtual_esp_button_action(unsigned profile, unsigned button) {
-    if (!ready() || profile > 1 || button < 1 || button > 4) return "UNKNOWN";
-    return buttonActionName(parser->panelSettings().profiles[profile].buttons[button - 1].action);
+VIRTUAL_ESP_API const char *virtual_esp_button_action(unsigned button) {
+    if (!ready() || button < 1 || button > 4) return "UNKNOWN";
+    return buttonActionName(parser->panelSettings().buttons[button - 1].action);
 }
 
-VIRTUAL_ESP_API const char *virtual_esp_button_sound(unsigned profile, unsigned button) {
-    if (!ready() || profile > 1 || button < 1 || button > 4) return "UNKNOWN";
-    return panelSoundName(parser->panelSettings().profiles[profile].buttons[button - 1].sound);
+VIRTUAL_ESP_API const char *virtual_esp_button_sound(unsigned button) {
+    if (!ready() || button < 1 || button > 4) return "UNKNOWN";
+    return panelSoundName(parser->panelSettings().buttons[button - 1].sound);
 }
 
-VIRTUAL_ESP_API unsigned virtual_esp_button_variant(unsigned profile, unsigned button) {
-    return ready() && profile < 2 && button >= 1 && button <= 4
-        ? parser->panelSettings().profiles[profile].buttons[button - 1].variant : 0;
+VIRTUAL_ESP_API unsigned virtual_esp_button_variant(unsigned button) {
+    return ready() && button >= 1 && button <= 4
+        ? parser->panelSettings().buttons[button - 1].variant : 0;
 }
 
-VIRTUAL_ESP_API int virtual_esp_button_latch(unsigned profile, unsigned button) {
-    return ready() && profile < 2 && button >= 1 && button <= 4 &&
-        parser->panelSettings().profiles[profile].buttons[button - 1].latch;
+VIRTUAL_ESP_API int virtual_esp_button_latch(unsigned button) {
+    return ready() && button >= 1 && button <= 4 &&
+        parser->panelSettings().buttons[button - 1].latch;
 }
 
-VIRTUAL_ESP_API const char *virtual_esp_profile() {
-    return controls->snapshot().profile == PerformanceProfile::Classic ? "CLASSIC" : "EXTENDED";
-}
-VIRTUAL_ESP_API const char *virtual_esp_voice() { return modeName(controls->snapshot().mode); }
+VIRTUAL_ESP_API int virtual_esp_pad_selected() { return ready() && parser->selectedIsPad(); }
+VIRTUAL_ESP_API const char *virtual_esp_voice() { return ready() ? parser->voiceName() : ""; }
 VIRTUAL_ESP_API const char *virtual_esp_pitch() { return pitchName(controls->snapshot().classicPitch); }
 VIRTUAL_ESP_API const char *virtual_esp_rate() { return rateName(controls->snapshot().classicModulation); }
 VIRTUAL_ESP_API int virtual_esp_hold() { return controls->snapshot().hold; }

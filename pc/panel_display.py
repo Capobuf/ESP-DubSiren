@@ -48,20 +48,21 @@ class PanelDisplay(ttk.Frame):
         self.canvas.delete("all")
         params = parameters or {}
         tempo = params.get("TEMPO", {})
-        if params.get("PROFILE") == "CLASSIC":
-            self._text(16, 10, "DUB SIREN / CLASSIC", 11, MUTED)
+        # The Trigger voice gets the large siren view; a selected sound pad its own.
+        if not params.get("PAD_SELECTED"):
+            self._text(16, 10, "DUB SIREN", 11, MUTED)
             self._text(16, 31, sound, 24, ACCENT)
             pitch = str(params.get("PITCH", "MID"))
             pitch = (pitch + " \u00b7 ") if pitch else ""
             self._text(16, 73, "PITCH  " + pitch +
-                       f"{params.get('TUNE_HZ', 392):.0f} Hz", 17)
+                       f"{params.get('TUNE_HZ', 680):.0f} Hz", 17)
             rate = str(params.get("RATE", "MID"))
             if rate == "MANUAL":
                 pass
             elif rate:
-                rate += f" \u00b7 {params.get('LFO_RATE_HZ', .7):.2f} Hz"
+                rate += f" \u00b7 {params.get('LFO_RATE_HZ', 3):.2f} Hz"
             else:
-                rate = f"{params.get('LFO_RATE_HZ', .7):.2f} Hz"
+                rate = f"{params.get('LFO_RATE_HZ', 3):.2f} Hz"
             self._text(16, 99, "RATE   " + (tempo["lfoText"] if tempo.get("lfoSync") else rate), 17)
             if tempo.get("echoSync"):
                 self._text(16, 122, "ECHO " + tempo["echoText"])

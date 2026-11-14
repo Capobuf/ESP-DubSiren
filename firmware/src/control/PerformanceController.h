@@ -26,7 +26,6 @@ public:
     RemoteGates &remoteGates() { return remoteGates_; }
     void clearRemoteGates();
 
-    void setProfile(PerformanceProfile profile);
     void notifyControlsChanged() { changed(); }
     void notifyExternalChange(PotTarget target);
     bool setPad(unsigned padNumber, bool pressed);
@@ -52,17 +51,17 @@ public:
     bool configurePad(unsigned padNumber, const String &sound,
                       unsigned variant, bool hold);
 
-    bool configurePotTarget(PerformanceProfile profile, unsigned potNumber,
+    bool configurePotTarget(unsigned potNumber,
                             PotTarget target);
-    bool configurePotMode(PerformanceProfile profile, unsigned potNumber,
+    bool configurePotMode(unsigned potNumber,
                           PotMode mode);
-    bool configurePotRange(PerformanceProfile profile, unsigned potNumber,
+    bool configurePotRange(unsigned potNumber,
                            float minimum, float maximum);
-    bool configurePotZones(PerformanceProfile profile, unsigned potNumber,
+    bool configurePotZones(unsigned potNumber,
                            float low, float middle, float high);
-    bool configureButtonAction(PerformanceProfile profile, unsigned buttonNumber,
+    bool configureButtonAction(unsigned buttonNumber,
                                ButtonAction action);
-    bool configureButtonSound(PerformanceProfile profile, unsigned buttonNumber,
+    bool configureButtonSound(unsigned buttonNumber,
                               PanelSound sound, unsigned variant, bool latch);
     bool configurePotBehavior(PotBehavior behavior);
     bool configureEncoder(EncoderHoldAction action, unsigned step,
@@ -89,8 +88,10 @@ public:
     unsigned padVariant(unsigned padNumber) const;
     bool padHold(unsigned padNumber) const;
     bool padHoldSupported(unsigned padNumber) const;
-    const char *buttonActionNameFor(PerformanceProfile profile,
-                                    unsigned buttonNumber) const;
+    const char *buttonActionNameFor(unsigned buttonNumber) const;
+    // True when the selected button plays its own sound, not the Trigger voice.
+    bool selectedIsPad() const;
+    const char *voiceName() const;
     DisplayMode displayMode() const { return displayMode_; }
     const char *displayModeName() const;
     const char *menuTitle() const;
@@ -112,7 +113,7 @@ public:
 
 private:
     enum class Row : uint8_t {
-        Profile, Pots, Buttons, Encoder, ResetDefaults, Back, Behavior,
+        Pots, Buttons, Encoder, ResetDefaults, Back, Behavior,
         Pot1, Pot2, Pot3, Pot4, Pot5, Pot6, Function, Mode,
         Low, Middle, High, Minimum, Maximum,
         Button1, Button2, Button3, Button4, Action, Sound, Variant, Latch,
@@ -140,6 +141,9 @@ private:
     };
 
     void applySound(ControlState &state, unsigned buttonIndex, bool activate);
+    void applyVoice(ControlState &state, PanelSound sound, unsigned variant);
+    void stepVoice(ControlState &state, int direction);
+    void syncZoneValues(ControlState &state) const;
     static void captureActivation(ControlState &state);
     void updateGate(ControlState &state);
     int latestPressedSoundButton() const;
@@ -180,6 +184,9 @@ private:
     unsigned pressOrder_[4] = {};
     unsigned nextOrder_ = 1;
     unsigned selectedPad_ = 0;
+    uint8_t voiceIndex_ = 0;
+    bool triggerVoiceApplied_ = true;
+    mutable char voiceName_[24] = "";
     unsigned selectedPot_ = 0;
     unsigned selectedButton_ = 0;
     unsigned currentPad_ = 0;

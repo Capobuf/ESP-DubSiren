@@ -2,12 +2,25 @@
 
 // Shared performance calibration and project tuning points.
 namespace PerformanceConfig {
-// Classic pitch calibration; all tuning points are project values.
-constexpr float kClassicPitchHz[] = {261.63f, 392.00f, 587.33f};
-constexpr float kClassicRateHz[] = {0.35f, 0.70f, 2.80f};
-constexpr float kClassicDepthOctaves = 1.0f;
-constexpr float kLfoChargeRatio = 0.18f;
-constexpr float kLfoFallRatio = 0.24f;
+// Pitch and rate zone calibration; all tuning points are project values.
+// The selected pitch is the top of the sweep, not its centre.
+constexpr float kClassicPitchHz[] = {330.0f, 680.0f, 1000.0f};
+constexpr float kClassicRateHz[] = {0.70f, 3.00f, 6.50f};
+// The SIREN and MANUAL shapes follow one capacitor-like level in 0..1, linear in Hz:
+// frequency = pitch * (floor + (1 - floor) * level).
+constexpr float kSirenFloorRatio = 0.12f;
+// Automatic: charge for most of the cycle, then a short discharge.
+constexpr float kSirenChargePhase = 0.82f;
+constexpr float kSirenChargeTauCycles = 0.40f;
+constexpr float kSirenDischargeTauCycles = 0.257f;
+// A new trigger restarts the sweep from the bottom.
+constexpr float kSirenRestartLevel = 0.15f;
+// Manual: the button pulls the pitch up quickly, release lets it sink slowly.
+constexpr float kSirenManualAttackMs = 120.0f;
+constexpr float kSirenManualDecayMs = 3500.0f;
+constexpr float kSirenManualTriggerLevel = 0.85f;
+// Two-tone with the SIREN shape: the low note as a fraction of the selected pitch.
+constexpr float kClassicSquareLowRatio = 0.62f;
 constexpr float kSelectorHysteresis = 0.015f;
 inline int selectorZone(float position, int current, int zones) {
     while (current < zones - 1 &&
@@ -17,12 +30,10 @@ inline int selectorZone(float position, int current, int zones) {
     return current;
 }
 constexpr float kTestGain = 0.72f;
-// Canonical Extended oscillator levels. Keep the waveform itself neutral;
+// Canonical saw/triangle oscillator levels. Keep the waveform itself neutral;
 // character can be added downstream without baking an arbitrary filter into it.
 constexpr float kSawGain = 0.72f;
 constexpr float kTriangleGain = 0.72f;
-constexpr float kManualAttackMs = 8.0f;
-constexpr float kManualReleaseMs = 12.0f;
 constexpr float kEchoTimeMinMs = 50.0f;
 constexpr float kEchoTimeMaxMs = 1000.0f;
 constexpr float kEchoFilterDeadband = 0.05f;
@@ -61,7 +72,7 @@ constexpr float kSine2MaximumDuty = 0.290f;
 constexpr SirenVoicing kSquareVoicing = {
     7.50f, 0.470f, 0.006f, 1.06f, 0.018f, 0.56f,
 };
-// Extended voicing / envelope defaults.
+// Lickshot and Sonar voicing, one-shot tail default.
 constexpr SirenVoicing kLickshotVoicing = {
     5.00f, 0.495f, 0.004f, 1.12f, 0.020f, 0.62f,
 };
@@ -94,7 +105,6 @@ constexpr float kGunshotMaxDecayMs = 1500.0f;
 constexpr float kGunshotFilterHz = 1800.0f;
 constexpr float kGunshotOutputGain = 0.42f;
 constexpr unsigned kFilterUpdateSamples = 64;
-constexpr unsigned kLfoCoefficientUpdateSamples = 64;
 
 // Non-resonant HP/LP filters avoid adding gain inside the feedback loop.
 constexpr float kEchoFilterQ = 0.70710678f;

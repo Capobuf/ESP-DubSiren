@@ -107,7 +107,7 @@ CONTROL_SPECS = {
         0.0, 2.0, 1.0, lambda value: f"{value:.2f} oct"
     ),
     "DECAY_MS": ControlSpec(
-        0.0, 1500.0, 120.0, lambda value: f"{value:.0f} ms", "power", 2.0
+        0.0, 1500.0, 0.0, lambda value: f"{value:.0f} ms", "power", 2.0
     ),
     "SWEEP": ControlSpec(
         0.0, 1.0, 0.0, lambda value: f"{value * 100:.0f} %"

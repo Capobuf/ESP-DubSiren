@@ -34,15 +34,26 @@ void formatConfiguredValue(PotTarget target, float value,
     else snprintf(buffer, size, descriptor->valueFormat, value * descriptor->displayScale);
 }
 
+// The Trigger voice list: the four original voices first, then every other
+// sound and variant.
+struct Voice { PanelSound sound; uint8_t variant; };
+constexpr Voice kVoices[] = {
+    {PanelSound::Classic, 0}, {PanelSound::Classic, 1}, {PanelSound::TestTone, 0},
+    {PanelSound::TwoTone, 0}, {PanelSound::Classic, 2}, {PanelSound::Classic, 3},
+    {PanelSound::Classic, 4}, {PanelSound::TwoTone, 1}, {PanelSound::TwoTone, 2},
+    {PanelSound::Lickshot, 0}, {PanelSound::Lickshot, 1}, {PanelSound::Lickshot, 2},
+    {PanelSound::Lickshot, 3}, {PanelSound::Lickshot, 4}, {PanelSound::Ping, 0},
+    {PanelSound::Ping, 1}, {PanelSound::Ping, 2}, {PanelSound::Gunshot, 0},
+};
+constexpr int kVoiceCount = sizeof(kVoices) / sizeof(kVoices[0]);
+
 }  // namespace
 
 PerformanceController::PerformanceController(ControlStore &controls)
     : controls_(controls) {
     ControlState state = controls_.snapshot();
-    state.tuneHz = settings_.profiles[0].pots[0].zones[1];
-    state.lfoRateHz = settings_.profiles[0].pots[1].zones[1];
-    state.classicPitchUsesTune = true;
-    state.classicRateUsesRate = true;
+    state.tuneHz = settings_.pots[0].zones[1];
+    state.lfoRateHz = settings_.pots[1].zones[1];
     controls_.set(state);
 }
 
@@ -103,15 +114,12 @@ bool PerformanceController::setTempoSync(bool echo, bool sync) {
         else state.tempo.lfoHz = state.lfoRateHz;
     } else {
         if (echo) state.delayMs = state.tempo.echoMs;
-        else {
-            state.lfoRateHz = state.tempo.lfoHz;
-            state.classicRateUsesRate = true;
-        }
+        else state.lfoRateHz = state.tempo.lfoHz;
     }
     enabled = sync;
     updateTempoTiming(state.tempo);
     controls_.set(state);
-    const auto &pots = settings_.profiles[profileIndex(state.profile)].pots;
+    const auto &pots = settings_.pots;
     for (unsigned i = 0; i < 6; ++i) {
         if (pots[i].target != (echo ? PotTarget::EchoTime : PotTarget::Rate)) continue;
         pickup_[i] = PickupState{};
@@ -179,37 +187,16 @@ void PerformanceController::resetPickup() {
     for (PickupState &state : pickup_) state = PickupState{};
 }
 
-void PerformanceController::setProfile(PerformanceProfile profile) {
-    ControlState state = controls_.snapshot();
-    if (state.profile == profile) return;
-    holdToggle_ = false;
-    remoteGates_ = {};
-    resetMomentaries();
-    state = controls_.snapshot();
-    state.hold = false;
-    state.trigger = false;
-    state.modUp = state.modDown = state.echoCut = state.echoSpin = false;
-    state.liveTransposeSemitones = 0;
-    state.profile = profile;
-    appliedSound_ = PanelSound::Count;
-    if (profile == PerformanceProfile::Classic) {
-        if (state.mode >= SirenMode::Lickshot) state.mode = SirenMode::Sine1;
-        state.tuneHz = classicPitchHz(static_cast<unsigned>(state.classicPitch));
-        state.classicPitchUsesTune = true;
-        const unsigned rate = static_cast<unsigned>(state.classicModulation);
-        if (rate < 3) state.lfoRateHz = classicRateHz(rate);
-        state.classicRateUsesRate = true;
-    }
+void PerformanceController::syncZoneValues(ControlState &state) const {
     updateZoneFlags(state);
-    controls_.set(state);
-    resetPickup();
-    menuIndex_ = 0;
-    menuEditing_ = false;
-    changed();
+    if (state.pitchZonesActive)
+        state.tuneHz = classicPitchHz(static_cast<unsigned>(state.classicPitch));
+    const unsigned rate = static_cast<unsigned>(state.classicModulation);
+    if (state.rateZonesActive && rate < 3) state.lfoRateHz = classicRateHz(rate);
 }
 
 bool PerformanceController::parseSound(const String &text, PanelSound &sound) {
-    if (text == "CLASSIC") sound = PanelSound::Classic;
+    if (text == "SIREN" || text == "CLASSIC") sound = PanelSound::Classic;
     else if (text == "TWO_TONE") sound = PanelSound::TwoTone;
     else if (text == "LICKSHOT") sound = PanelSound::Lickshot;
     else if (text == "PING") sound = PanelSound::Ping;
@@ -219,26 +206,11 @@ bool PerformanceController::parseSound(const String &text, PanelSound &sound) {
     return true;
 }
 
-void PerformanceController::applySound(ControlState &state, unsigned index,
-                                       bool activate) {
-    const bool samePad = currentPad_ == index;
-    const SoundPatch &patch = settings_.patches[index];
-    const bool restore = state.profile == PerformanceProfile::Extended && patch.valid &&
-        (!samePad || appliedSound_ == PanelSound::Count);
-    if (restore) {
-        auto &button = settings_.profiles[1].buttons[index];
-        button.sound = patch.sound; button.variant = patch.variant;
-    }
-    if (activate) soundLatchArmed_ = true;
-    currentPad_ = index;
-    const ControlState previous = state;
-    const PerformanceProfile originalProfile = state.profile;
-    const ButtonConfig config = settings_.profiles[profileIndex(state.profile)].buttons[index];
-    const unsigned variant = config.variant;
-    if (originalProfile == PerformanceProfile::Extended)
-        state.profile = PerformanceProfile::Extended;
-    state.modUp = state.modDown = false;
-    switch (config.sound) {
+void PerformanceController::applyVoice(ControlState &state, PanelSound sound,
+                                       unsigned variant) {
+    // Sustained voices use the short gate; one-shots keep their own tail.
+    state.decayMs = 0.0f;
+    switch (sound) {
         case PanelSound::Classic:
             state.mode = variant == 0 ? SirenMode::Sine1
                        : variant == 1 ? SirenMode::Sine2
@@ -262,6 +234,7 @@ void PerformanceController::applySound(ControlState &state, unsigned index,
                 : variant == 2 ? LickshotArticulation::Shot
                 : variant == 3 ? LickshotArticulation::Roll : LickshotArticulation::Horn;
             state.lfoShape = variant == 0 ? LfoShape::SawDown : LfoShape::AsymDown;
+            state.decayMs = PerformanceConfig::kExtendedDecayMs;
             state.modulationEnabled = true;
             state.retrigger = true;
             break;
@@ -275,10 +248,67 @@ void PerformanceController::applySound(ControlState &state, unsigned index,
             state.modulationEnabled = false;
             state.retrigger = false;
             break;
-        case PanelSound::Gunshot: state.mode = SirenMode::Gunshot; break;
-        case PanelSound::TestTone: state.mode = SirenMode::TestTone; break;
+        case PanelSound::Gunshot:
+            state.mode = SirenMode::Gunshot;
+            state.decayMs = PerformanceConfig::kExtendedDecayMs;
+            break;
+        case PanelSound::TestTone:
+            state.mode = SirenMode::TestTone;
+            state.lfoShape = LfoShape::Classic;
+            state.modulationEnabled = true;
+            break;
         case PanelSound::Count: break;
     }
+}
+
+void PerformanceController::stepVoice(ControlState &state, int direction) {
+    voiceIndex_ = static_cast<uint8_t>(wrappedStep(voiceIndex_, direction, kVoiceCount));
+    applyVoice(state, kVoices[voiceIndex_].sound, kVoices[voiceIndex_].variant);
+    triggerVoiceApplied_ = true;
+}
+
+const char *PerformanceController::voiceName() const {
+    // Named from the live sound, so direct mode or shape commands show too.
+    const ControlState state = controls_.snapshot();
+    const char *variant = "";
+    if (state.mode == SirenMode::Square && !sirenShape(state.lfoShape))
+        variant = state.lfoShape == LfoShape::Triangle ? "TRIANGLE"
+                : state.lfoShape == LfoShape::Square ? "SQUARE" : "LFO";
+    else if (state.mode == SirenMode::Lickshot)
+        variant = state.lickshotArticulation == LickshotArticulation::Legacy
+            ? panelSoundVariantName(PanelSound::Lickshot, state.lfoShape == LfoShape::AsymDown ? 1 : 0)
+            : panelSoundVariantName(PanelSound::Lickshot,
+                                    static_cast<unsigned>(state.lickshotArticulation) + 1);
+    else if (state.mode == SirenMode::Syndrum)
+        variant = panelSoundVariantName(PanelSound::Ping, static_cast<unsigned>(state.syndrumWave));
+    const char *family = state.mode == SirenMode::Square && variant[0] ? "TWO TONE"
+                       : state.mode == SirenMode::Syndrum ? "PING" : modeName(state.mode);
+    snprintf(voiceName_, sizeof(voiceName_), variant[0] ? "%s %s" : "%s", family, variant);
+    return voiceName_;
+}
+
+bool PerformanceController::selectedIsPad() const {
+    return settings_.buttons[selectedPad_].action == ButtonAction::PlaySound;
+}
+
+void PerformanceController::applySound(ControlState &state, unsigned index,
+                                       bool activate) {
+    const bool samePad = currentPad_ == index;
+    const SoundPatch &patch = settings_.patches[index];
+    const bool restore = patch.valid &&
+        (!samePad || appliedSound_ == PanelSound::Count);
+    if (restore) {
+        auto &button = settings_.buttons[index];
+        button.sound = patch.sound; button.variant = patch.variant;
+    }
+    if (activate) soundLatchArmed_ = true;
+    triggerVoiceApplied_ = false;
+    currentPad_ = index;
+    const ControlState previous = state;
+    const ButtonConfig config = settings_.buttons[index];
+    const unsigned variant = config.variant;
+    state.modUp = state.modDown = false;
+    applyVoice(state, config.sound, variant);
     if (samePad && appliedSound_ == config.sound && appliedVariant_ == variant) {
         state.lfoShape = previous.lfoShape;
         state.modulationEnabled = previous.modulationEnabled;
@@ -295,8 +325,7 @@ void PerformanceController::applySound(ControlState &state, unsigned index,
 bool PerformanceController::savePad(unsigned padNumber) {
     if (padNumber < 1 || padNumber > 4) return false;
     const ControlState state = controls_.snapshot();
-    if (state.profile != PerformanceProfile::Extended) return false;
-    const auto &button = settings_.profiles[1].buttons[padNumber - 1];
+    const auto &button = settings_.buttons[padNumber - 1];
     if (button.action != ButtonAction::PlaySound) return false;
     SoundPatch patch;
     patch.valid = 1; patch.sound = button.sound; patch.variant = button.variant;
@@ -316,8 +345,8 @@ bool PerformanceController::savePad(unsigned padNumber) {
     patch.state = state;
     if (!validateSoundPatch(patch)) return false;
     settings_.patches[padNumber - 1] = patch;
-    settings_.profiles[1].buttons[padNumber - 1].sound = patch.sound;
-    settings_.profiles[1].buttons[padNumber - 1].variant = patch.variant;
+    settings_.buttons[padNumber - 1].sound = patch.sound;
+    settings_.buttons[padNumber - 1].variant = patch.variant;
     if (currentPad_ == padNumber - 1) { appliedSound_ = patch.sound; appliedVariant_ = patch.variant; }
     ++settingsRevision_; changed(); return true;
 }
@@ -326,8 +355,8 @@ bool PerformanceController::recallPad(unsigned padNumber) {
     if (padNumber < 1 || padNumber > 4) return false;
     const auto &patch = settings_.patches[padNumber - 1];
     ControlState state = controls_.snapshot();
-    if (state.profile != PerformanceProfile::Extended || !patch.valid || !validateSoundPatch(patch)) return false;
-    auto &button = settings_.profiles[1].buttons[padNumber - 1];
+    if (!patch.valid || !validateSoundPatch(patch)) return false;
+    auto &button = settings_.buttons[padNumber - 1];
     if (button.action != ButtonAction::PlaySound) return false;
     button.sound = patch.sound; button.variant = patch.variant;
     static_cast<SoundState &>(state) = patch.state;
@@ -350,7 +379,7 @@ bool PerformanceController::patchDirty(unsigned padNumber) const {
     if (currentPad_ != padNumber - 1) return false;
     SoundPatch live = saved;
     live.state = controls_.snapshot();
-    const auto &button = settings_.profiles[1].buttons[padNumber - 1];
+    const auto &button = settings_.buttons[padNumber - 1];
     live.sound = button.sound; live.variant = button.variant;
     for (unsigned i = 0; i < kSoundPatchValueCount; ++i)
         if (soundPatchValue(live, i) != soundPatchValue(saved, i)) return true;
@@ -362,9 +391,7 @@ void PerformanceController::captureActivation(ControlState &state) {
 }
 
 bool PerformanceController::isRelevantButton(unsigned index) const {
-    const ControlState state = controls_.snapshot();
-    const ButtonAction action = settings_.profiles[profileIndex(state.profile)]
-        .buttons[index].action;
+    const ButtonAction action = settings_.buttons[index].action;
     return action == ButtonAction::Trigger || action == ButtonAction::PlaySound;
 }
 
@@ -379,7 +406,7 @@ bool PerformanceController::pitchAvailable(const ControlState &state) const {
 }
 
 void PerformanceController::updateGate(ControlState &state) {
-    const ProfilePanelSettings &profile = settings_.profiles[profileIndex(state.profile)];
+    const auto &buttons = settings_.buttons;
     bool trigger = false;
     bool modUp = false;
     bool modDown = false;
@@ -387,7 +414,7 @@ void PerformanceController::updateGate(ControlState &state) {
     bool echoSpin = false;
     for (unsigned index = 0; index < 4; ++index) {
         if (!padDown_[index] || consumed_[index]) continue;
-        switch (profile.buttons[index].action) {
+        switch (buttons[index].action) {
             case ButtonAction::Trigger: trigger = true; break;
             case ButtonAction::PlaySound: trigger |= activePad_ >= 0; break;
             case ButtonAction::ModUp: modUp = true; break;
@@ -404,19 +431,18 @@ void PerformanceController::updateGate(ControlState &state) {
     state.echoSpin = echoSpin || remoteGates_.echoSpin;
     const unsigned soundIndex = activePad_ >= 0
         ? static_cast<unsigned>(activePad_) : currentPad_;
-    const ButtonConfig &button = profile.buttons[soundIndex];
+    const ButtonConfig &button = buttons[soundIndex];
     const bool soundLatch = soundLatchArmed_ && button.action == ButtonAction::PlaySound &&
         button.latch && panelSoundSupportsLatch(button.sound);
     state.hold = holdToggle_ || soundLatch || remoteGates_.hold;
-    if (state.profile == PerformanceProfile::Extended && encoderPressed_ &&
-        padDown_[3] && consumed_[3]) state.echoCut = true;
+    if (encoderPressed_ && padDown_[3] && consumed_[3]) state.echoCut = true;
 }
 
 int PerformanceController::latestPressedSoundButton() const {
     int latest = -1;
     unsigned order = 0;
     const ControlState state = controls_.snapshot();
-    const auto &buttons = settings_.profiles[profileIndex(state.profile)].buttons;
+    const auto &buttons = settings_.buttons;
     for (unsigned index = 0; index < 4; ++index) {
         if (padDown_[index] && !consumed_[index] &&
             buttons[index].action == ButtonAction::PlaySound &&
@@ -434,16 +460,16 @@ bool PerformanceController::setPad(unsigned padNumber, bool pressed) {
     if (padDown_[index] == pressed) return true;
     padDown_[index] = pressed;
     ControlState state = controls_.snapshot();
-    ButtonConfig &button = settings_.profiles[profileIndex(state.profile)].buttons[index];
+    ButtonConfig &button = settings_.buttons[index];
     // A quick tap can press and release between display refreshes.
     if (pressed || button.action != ButtonAction::TapTempo) {
         overlayTitle_[0] = '\0';
         overlayValue_[0] = '\0';
     }
 
-    // Extended's established encoder+button shortcuts take precedence over the
-    // configured button action and suppress the release-click menu gesture.
-    if (state.profile == PerformanceProfile::Extended && pressed && encoderPressed_) {
+    // On a sound pad the encoder+button shortcuts take precedence over playing
+    // it and suppress the release-click menu gesture.
+    if (pressed && encoderPressed_ && button.action == ButtonAction::PlaySound) {
         consumed_[index] = true;
         modifierUsed_ = true;
         if (index == 0) toggleSelectedHold();
@@ -455,7 +481,16 @@ bool PerformanceController::setPad(unsigned padNumber, bool pressed) {
         consumed_[index] = false;
         pressOrder_[index] = nextOrder_++;
         if (button.action == ButtonAction::Hold) holdToggle_ = !holdToggle_;
-        else if (button.action == ButtonAction::Trigger) captureActivation(state);
+        else if (button.action == ButtonAction::Trigger) {
+            // The Trigger always plays its own voice, also after a sound pad.
+            if (!triggerVoiceApplied_) {
+                applyVoice(state, kVoices[voiceIndex_].sound, kVoices[voiceIndex_].variant);
+                triggerVoiceApplied_ = true;
+                resetPickup();
+            }
+            selectedPad_ = index;
+            captureActivation(state);
+        }
         else if (button.action == ButtonAction::EchoLoop) state.echoLoop = !state.echoLoop;
         else if (button.action == ButtonAction::TapTempo) {
             tapTempo();
@@ -536,7 +571,6 @@ void PerformanceController::applyPotValue(ControlState &state,
             static_cast<int>(state.classicPitch), 3);
         state.classicPitch = static_cast<ClassicPitch>(zone);
         state.tuneHz = config.zones[zone];
-        state.classicPitchUsesTune = true;
         return;
     }
     if (config.mode == PotMode::Zones && config.target == PotTarget::Rate) {
@@ -544,7 +578,6 @@ void PerformanceController::applyPotValue(ControlState &state,
             static_cast<int>(state.classicModulation), 4);
         state.classicModulation = static_cast<ClassicModulation>(zone);
         if (zone < 3) state.lfoRateHz = config.zones[zone];
-        state.classicRateUsesRate = true;
         return;
     }
     const float value = mapPosition(config, position);
@@ -610,7 +643,7 @@ bool PerformanceController::setPot(unsigned potNumber, float position) {
         position < 0.0f || position > 1.0f) return false;
     const unsigned index = potNumber - 1;
     ControlState state = controls_.snapshot();
-    const PotConfig &config = settings_.profiles[profileIndex(state.profile)].pots[index];
+    const PotConfig &config = settings_.pots[index];
     PickupState &pickup = pickup_[index];
     bool apply = (settings_.potBehavior == PotBehavior::Jump && !pickup.force) || pickup.latched ||
                  config.target == PotTarget::None;
@@ -680,22 +713,6 @@ void PerformanceController::rotateEncoder(int direction) {
     if (direction == 0) return;
     if (displayMode_ == DisplayMode::Home) {
         ControlState state = controls_.snapshot();
-        // Extended BTN1+turn edits Depth before the generic live-pitch gesture.
-        // A BTN1 consumed by an encoder-click shortcut is not a held modifier.
-        if (state.profile == PerformanceProfile::Extended &&
-            padDown_[0] && !consumed_[0] && isRelevantButton(0)) {
-            modifierUsed_ = true;
-            state.lfoDepthOctaves = clampFloat(state.lfoDepthOctaves +
-                (direction < 0 ? -0.05f : 0.05f), 0.0f, 2.0f);
-            controls_.set(state);
-            notifyExternalChange(PotTarget::LfoDepth);
-            snprintf(overlayTitle_, sizeof(overlayTitle_), "DEPTH");
-            if (state.mode == SirenMode::Syndrum || state.mode == SirenMode::Gunshot)
-                snprintf(overlayValue_, sizeof(overlayValue_), "STORED - N/A");
-            else
-                snprintf(overlayValue_, sizeof(overlayValue_), "%.2f oct", state.lfoDepthOctaves);
-            return;
-        }
         if (anyRelevantButtonDown() &&
             settings_.encoderHoldAction == EncoderHoldAction::LivePitch) {
             modifierUsed_ = true;
@@ -718,18 +735,16 @@ void PerformanceController::rotateEncoder(int direction) {
             changed();
             return;
         }
-        if (state.profile == PerformanceProfile::Classic) {
-            overlayTitle_[0] = '\0';
-            overlayValue_[0] = '\0';
-            state.mode = static_cast<SirenMode>(wrappedStep(
-                static_cast<int>(state.mode), direction, 4));
-        } else {
-            overlayTitle_[0] = '\0';
-            overlayValue_[0] = '\0';
+        overlayTitle_[0] = '\0';
+        overlayValue_[0] = '\0';
+        // A selected sound pad steps its variant; otherwise the Trigger voice.
+        if (selectedIsPad()) {
             stepVariant(direction);
             return;
         }
+        stepVoice(state, direction);
         controls_.set(state);
+        resetPickup();
         changed();
         return;
     }
@@ -781,7 +796,7 @@ bool PerformanceController::selectPad(unsigned padNumber) {
 }
 
 void PerformanceController::stepAssignment(int direction) {
-    ButtonConfig &button = settings_.profiles[1].buttons[selectedPad_];
+    ButtonConfig &button = settings_.buttons[selectedPad_];
     if (button.action != ButtonAction::PlaySound) return;
     button.sound = static_cast<PanelSound>(wrappedStep(
         static_cast<int>(button.sound), direction,
@@ -789,31 +804,31 @@ void PerformanceController::stepAssignment(int direction) {
     button.variant = 0;
     if (!panelSoundSupportsLatch(button.sound)) button.latch = false;
     ControlState state = controls_.snapshot();
-    if (state.profile == PerformanceProfile::Extended && currentPad_ == selectedPad_)
+    if (currentPad_ == selectedPad_)
         applySound(state, selectedPad_, false);
     controls_.set(state);
     commitSettingsChange();
 }
 
 void PerformanceController::stepVariant(int direction) {
-    ButtonConfig &button = settings_.profiles[1].buttons[selectedPad_];
+    ButtonConfig &button = settings_.buttons[selectedPad_];
     if (button.action != ButtonAction::PlaySound) return;
     button.variant = static_cast<uint8_t>(wrappedStep(button.variant, direction,
         static_cast<int>(panelSoundVariantCount(button.sound))));
     ControlState state = controls_.snapshot();
-    if (state.profile == PerformanceProfile::Extended && currentPad_ == selectedPad_)
+    if (currentPad_ == selectedPad_)
         applySound(state, selectedPad_, false);
     controls_.set(state);
     commitSettingsChange();
 }
 
 void PerformanceController::toggleSelectedHold() {
-    ButtonConfig &button = settings_.profiles[1].buttons[selectedPad_];
+    ButtonConfig &button = settings_.buttons[selectedPad_];
     if (button.action != ButtonAction::PlaySound ||
         !panelSoundSupportsLatch(button.sound)) return;
     button.latch = !button.latch;
     ControlState state = controls_.snapshot();
-    if (state.profile == PerformanceProfile::Extended && currentPad_ == selectedPad_) {
+    if (currentPad_ == selectedPad_) {
         applySound(state, selectedPad_, false);
         updateGate(state);
         controls_.set(state);
@@ -825,63 +840,59 @@ bool PerformanceController::configurePad(unsigned padNumber, const String &sound
                                          unsigned variant, bool hold) {
     PanelSound parsed;
     if (padNumber < 1 || padNumber > 4 || !parseSound(sound, parsed)) return false;
-    return configureButtonSound(PerformanceProfile::Extended, padNumber,
+    return configureButtonSound(padNumber,
                                 parsed, variant, hold);
 }
 
 const char *PerformanceController::padSoundName(unsigned padNumber) const {
     if (padNumber < 1 || padNumber > 4) return "UNKNOWN";
-    const ButtonConfig &button = settings_.profiles[1].buttons[padNumber - 1];
+    const ButtonConfig &button = settings_.buttons[padNumber - 1];
     return button.action == ButtonAction::PlaySound
         ? panelSoundName(button.sound) : buttonActionName(button.action);
 }
 
 const char *PerformanceController::padVariantName(unsigned padNumber) const {
     if (padNumber < 1 || padNumber > 4) return "UNKNOWN";
-    const ButtonConfig &button = settings_.profiles[1].buttons[padNumber - 1];
+    const ButtonConfig &button = settings_.buttons[padNumber - 1];
     return button.action == ButtonAction::PlaySound
         ? panelSoundVariantName(button.sound, button.variant) : "N/A";
 }
 
 unsigned PerformanceController::padVariant(unsigned padNumber) const {
     return padNumber >= 1 && padNumber <= 4
-        ? settings_.profiles[1].buttons[padNumber - 1].variant : 0;
+        ? settings_.buttons[padNumber - 1].variant : 0;
 }
 
 bool PerformanceController::padHold(unsigned padNumber) const {
     return padNumber >= 1 && padNumber <= 4 &&
-        settings_.profiles[1].buttons[padNumber - 1].latch;
+        settings_.buttons[padNumber - 1].latch;
 }
 
 bool PerformanceController::padHoldSupported(unsigned padNumber) const {
     if (padNumber < 1 || padNumber > 4) return false;
-    const ButtonConfig &button = settings_.profiles[1].buttons[padNumber - 1];
+    const ButtonConfig &button = settings_.buttons[padNumber - 1];
     return button.action == ButtonAction::PlaySound &&
            panelSoundSupportsLatch(button.sound);
 }
 
-const char *PerformanceController::buttonActionNameFor(
-        PerformanceProfile profile, unsigned buttonNumber) const {
+const char *PerformanceController::buttonActionNameFor(unsigned buttonNumber) const {
     if (buttonNumber < 1 || buttonNumber > 4) return "UNKNOWN";
-    return buttonActionName(settings_.profiles[profileIndex(profile)]
-        .buttons[buttonNumber - 1].action);
+    return buttonActionName(settings_.buttons[buttonNumber - 1].action);
 }
 
-bool PerformanceController::configurePotTarget(PerformanceProfile profile,
-        unsigned potNumber, PotTarget target) {
-    if (potNumber < 1 || potNumber > 6 || !targetSupported(profile, target)) return rejectSettingsChange();
+bool PerformanceController::configurePotTarget(unsigned potNumber, PotTarget target) {
+    if (potNumber < 1 || potNumber > 6 || target >= PotTarget::Count) return rejectSettingsChange();
     PanelSettings candidate = settingsTransaction_ ? stagedSettings_ : settings_;
-    candidate.profiles[profileIndex(profile)].pots[potNumber - 1] = continuousPot(target);
+    candidate.pots[potNumber - 1] = continuousPot(target);
     if (!validatePanelSettings(candidate)) return rejectSettingsChange();
     acceptSettingsCandidate(candidate, true);
     return true;
 }
 
-bool PerformanceController::configurePotMode(PerformanceProfile profile,
-        unsigned potNumber, PotMode mode) {
+bool PerformanceController::configurePotMode(unsigned potNumber, PotMode mode) {
     if (potNumber < 1 || potNumber > 6) return rejectSettingsChange();
     PanelSettings candidate = settingsTransaction_ ? stagedSettings_ : settings_;
-    PotConfig &pot = candidate.profiles[profileIndex(profile)].pots[potNumber - 1];
+    PotConfig &pot = candidate.pots[potNumber - 1];
     pot.mode = mode;
     if (mode == PotMode::Zones) {
         if (pot.target == PotTarget::Pitch) {
@@ -895,11 +906,10 @@ bool PerformanceController::configurePotMode(PerformanceProfile profile,
     return true;
 }
 
-bool PerformanceController::configurePotRange(PerformanceProfile profile,
-        unsigned potNumber, float minimum, float maximum) {
+bool PerformanceController::configurePotRange(unsigned potNumber, float minimum, float maximum) {
     if (potNumber < 1 || potNumber > 6) return rejectSettingsChange();
     PanelSettings candidate = settingsTransaction_ ? stagedSettings_ : settings_;
-    PotConfig &pot = candidate.profiles[profileIndex(profile)].pots[potNumber - 1];
+    PotConfig &pot = candidate.pots[potNumber - 1];
     pot.minimum = minimum;
     pot.maximum = maximum;
     if (!validatePanelSettings(candidate)) return rejectSettingsChange();
@@ -907,22 +917,20 @@ bool PerformanceController::configurePotRange(PerformanceProfile profile,
     return true;
 }
 
-bool PerformanceController::configurePotZones(PerformanceProfile profile,
-        unsigned potNumber, float low, float middle, float high) {
+bool PerformanceController::configurePotZones(unsigned potNumber, float low, float middle, float high) {
     if (potNumber < 1 || potNumber > 6) return rejectSettingsChange();
     PanelSettings candidate = settingsTransaction_ ? stagedSettings_ : settings_;
-    PotConfig &pot = candidate.profiles[profileIndex(profile)].pots[potNumber - 1];
+    PotConfig &pot = candidate.pots[potNumber - 1];
     pot.zones[0] = low; pot.zones[1] = middle; pot.zones[2] = high;
     if (!validatePanelSettings(candidate)) return rejectSettingsChange();
     acceptSettingsCandidate(candidate, true);
     return true;
 }
 
-bool PerformanceController::configureButtonAction(PerformanceProfile profile,
-        unsigned buttonNumber, ButtonAction action) {
+bool PerformanceController::configureButtonAction(unsigned buttonNumber, ButtonAction action) {
     if (buttonNumber < 1 || buttonNumber > 4 || action >= ButtonAction::Count) return rejectSettingsChange();
     PanelSettings candidate = settingsTransaction_ ? stagedSettings_ : settings_;
-    ButtonConfig &button = candidate.profiles[profileIndex(profile)].buttons[buttonNumber - 1];
+    ButtonConfig &button = candidate.buttons[buttonNumber - 1];
     button.action = action;
     if (action == ButtonAction::PlaySound && button.sound >= PanelSound::Count)
         button.sound = PanelSound::Classic;
@@ -931,12 +939,11 @@ bool PerformanceController::configureButtonAction(PerformanceProfile profile,
     return true;
 }
 
-bool PerformanceController::configureButtonSound(PerformanceProfile profile,
-        unsigned buttonNumber, PanelSound sound, unsigned variant, bool latch) {
+bool PerformanceController::configureButtonSound(unsigned buttonNumber, PanelSound sound, unsigned variant, bool latch) {
     if (buttonNumber < 1 || buttonNumber > 4 ||
         variant >= panelSoundVariantCount(sound)) return rejectSettingsChange();
     PanelSettings candidate = settingsTransaction_ ? stagedSettings_ : settings_;
-    ButtonConfig &button = candidate.profiles[profileIndex(profile)].buttons[buttonNumber - 1];
+    ButtonConfig &button = candidate.buttons[buttonNumber - 1];
     if (button.action != ButtonAction::PlaySound) return rejectSettingsChange();
     button.sound = sound;
     button.variant = static_cast<uint8_t>(variant);
@@ -944,8 +951,7 @@ bool PerformanceController::configureButtonSound(PerformanceProfile profile,
     if (!validatePanelSettings(candidate)) return rejectSettingsChange();
     acceptSettingsCandidate(candidate);
     ControlState state = controls_.snapshot();
-    if (!settingsTransaction_ && profile == PerformanceProfile::Extended &&
-        state.profile == profile && currentPad_ == buttonNumber - 1) {
+    if (!settingsTransaction_ && currentPad_ == buttonNumber - 1) {
         applySound(state, buttonNumber - 1, false);
         controls_.set(state);
     }
@@ -980,14 +986,7 @@ bool PerformanceController::applySettings(const PanelSettings &settings) {
     settings_ = settings;
     resetPickup();
     ControlState state = controls_.snapshot();
-    if (state.profile == PerformanceProfile::Classic) {
-        state.tuneHz = classicPitchHz(static_cast<unsigned>(state.classicPitch));
-        state.classicPitchUsesTune = true;
-        const unsigned rate = static_cast<unsigned>(state.classicModulation);
-        if (rate < 3) state.lfoRateHz = classicRateHz(rate);
-        state.classicRateUsesRate = true;
-    }
-    updateZoneFlags(state);
+    syncZoneValues(state);
     controls_.set(state);
     commitSettingsChange();
     return true;
@@ -1001,23 +1000,15 @@ void PerformanceController::resetDefaults() {
     ControlState state = controls_.snapshot();
     state.tempo = TempoState{};
     tapStarted_ = false;
-    if (state.profile == PerformanceProfile::Classic) {
-        state.tuneHz = classicPitchHz(static_cast<unsigned>(state.classicPitch));
-        const unsigned rate = static_cast<unsigned>(state.classicModulation);
-        if (rate < 3) state.lfoRateHz = classicRateHz(rate);
-        state.classicPitchUsesTune = true;
-        state.classicRateUsesRate = true;
-    }
-    updateZoneFlags(state);
+    syncZoneValues(state);
     controls_.set(state);
     commitSettingsChange();
 }
 
 void PerformanceController::commitSettingsChange() {
     ControlState state = controls_.snapshot();
-    const ProfilePanelSettings &profile = settings_.profiles[profileIndex(state.profile)];
     bool hasHoldAction = false;
-    for (const ButtonConfig &button : profile.buttons)
+    for (const ButtonConfig &button : settings_.buttons)
         hasHoldAction |= button.action == ButtonAction::Hold;
     if (!hasHoldAction) holdToggle_ = false;
     updateGate(state);
@@ -1030,8 +1021,7 @@ void PerformanceController::commitSettingsChange() {
 void PerformanceController::updateZoneFlags(ControlState &state) const {
     state.pitchZonesActive = false;
     state.rateZonesActive = false;
-    const ProfilePanelSettings &profile = settings_.profiles[profileIndex(state.profile)];
-    for (const PotConfig &pot : profile.pots) {
+    for (const PotConfig &pot : settings_.pots) {
         state.pitchZonesActive |= pot.target == PotTarget::Pitch &&
                                   pot.mode == PotMode::Zones;
         state.rateZonesActive |= pot.target == PotTarget::Rate &&
@@ -1073,14 +1063,8 @@ bool PerformanceController::commitSettingsTransaction() {
     settings_ = stagedSettings_;
     resetPickup();
     ControlState state = controls_.snapshot();
-    if (state.profile == PerformanceProfile::Classic) {
-        state.tuneHz = classicPitchHz(static_cast<unsigned>(state.classicPitch));
-        const unsigned rate = static_cast<unsigned>(state.classicModulation);
-        if (rate < 3) state.lfoRateHz = classicRateHz(rate);
-        state.classicPitchUsesTune = true;
-        state.classicRateUsesRate = true;
-        controls_.set(state);
-    }
+    syncZoneValues(state);
+    controls_.set(state);
     commitSettingsChange();
     return true;
 }
@@ -1097,21 +1081,21 @@ void PerformanceController::notifyExternalChange(PotTarget target) {
     ControlState state = controls_.snapshot();
     updateZoneFlags(state);
     controls_.set(state);
-    const auto &pots = settings_.profiles[profileIndex(state.profile)].pots;
+    const auto &pots = settings_.pots;
     for (unsigned i = 0; i < 6; ++i)
         if (pots[i].target == target) pickup_[i] = PickupState{};
     changed();
 }
 
 float PerformanceController::classicPitchHz(unsigned index) const {
-    for (const PotConfig &pot : settings_.profiles[0].pots)
+    for (const PotConfig &pot : settings_.pots)
         if (pot.target == PotTarget::Pitch && pot.mode == PotMode::Zones)
             return pot.zones[index < 3 ? index : 1];
     return PerformanceConfig::kClassicPitchHz[index < 3 ? index : 1];
 }
 
 float PerformanceController::classicRateHz(unsigned index) const {
-    for (const PotConfig &pot : settings_.profiles[0].pots)
+    for (const PotConfig &pot : settings_.pots)
         if (pot.target == PotTarget::Rate && pot.mode == PotMode::Zones)
             return pot.zones[index < 3 ? index : 1];
     return PerformanceConfig::kClassicRateHz[index < 3 ? index : 1];
@@ -1161,7 +1145,6 @@ void PerformanceController::addMenuRow(Row row, const char *key,
 void PerformanceController::rebuildMenuView() const {
     menuRowCount_ = 0;
     const ControlState state = controls_.snapshot();
-    const unsigned profile = profileIndex(state.profile);
     char value[32];
     snprintf(menuFooterBuffer_, sizeof(menuFooterBuffer_), "%s",
         menuEditing_ ? "TURN CHANGE / PUSH DONE" : "TURN SELECT / PUSH OPEN");
@@ -1182,8 +1165,6 @@ void PerformanceController::rebuildMenuView() const {
             break;
         case MenuPage::Setup:
             snprintf(menuTitleBuffer_, sizeof(menuTitleBuffer_), "SETUP");
-            addMenuRow(Row::Profile, "PROFILE", "PROFILE",
-                       state.profile == PerformanceProfile::Classic ? "CLASSIC" : "EXTENDED");
             addMenuRow(Row::Pots, "POTS", "POTS");
             addMenuRow(Row::Buttons, "BUTTONS", "BUTTONS");
             addMenuRow(Row::Encoder, "ENCODER", "ENCODER");
@@ -1191,34 +1172,36 @@ void PerformanceController::rebuildMenuView() const {
             addMenuRow(Row::Back, "BACK", "BACK");
             break;
         case MenuPage::Sound: {
-            snprintf(menuTitleBuffer_, sizeof(menuTitleBuffer_), "SOUND P%u%s", selectedPad_ + 1, patchDirty(selectedPad_ + 1) ? " *" : "");
-            if (state.profile == PerformanceProfile::Classic) {
-                addMenuRow(Row::Voice, "VOICE", "VOICE", modeName(state.mode));
-            } else {
+            const bool pad = selectedIsPad();
+            if (pad) {
+                snprintf(menuTitleBuffer_, sizeof(menuTitleBuffer_), "SOUND P%u%s", selectedPad_ + 1, patchDirty(selectedPad_ + 1) ? " *" : "");
                 snprintf(value, sizeof(value), "%u", selectedPad_ + 1);
                 addMenuRow(Row::SelectedPad, "PAD", "PAD", value);
-                const auto &button = settings_.profiles[profile].buttons[selectedPad_];
+                const auto &button = settings_.buttons[selectedPad_];
                 addMenuRow(Row::Sound, "SOUND", "FAMILY", panelSoundName(button.sound));
                 addMenuRow(Row::Variant, "VARIANT", "VARIANT", panelSoundVariantName(button.sound, button.variant));
+            } else {
+                snprintf(menuTitleBuffer_, sizeof(menuTitleBuffer_), "SOUND");
+                addMenuRow(Row::Voice, "VOICE", "VOICE", voiceName());
             }
             if (state.mode != SirenMode::Gunshot) addSoundValue(state, Row::Tune, "TUNE", "PITCH", "Hz");
-            if (state.profile == PerformanceProfile::Extended) {
-                const bool articulated = state.mode == SirenMode::Lickshot &&
-                    (state.lickshotArticulation == LickshotArticulation::Shot || state.lickshotArticulation == LickshotArticulation::Roll);
-                if (articulated) {
-                    addSoundValue(state, Row::Length, "LENGTH", "LENGTH", "ms");
-                    addSoundValue(state, Row::Punch, "PUNCH", "PUNCH", "oct");
-                    addSoundValue(state, Row::PitchTime, "PITCH_TIME", "PITCH TAU", "ms");
-                    if (state.lickshotArticulation == LickshotArticulation::Roll) addSoundValue(state, Row::Rate, "RATE", "ROLL RATE", "Hz");
-                } else addSoundValue(state, Row::Decay, "DECAY", "DECAY TAU", "ms");
-                if (state.mode == SirenMode::Syndrum) addSoundValue(state, Row::DrumSweep, "DRUM_SWEEP", "PITCH SWEEP", "oct");
-                else if (state.mode != SirenMode::Gunshot) {
-                    addSoundValue(state, Row::Sweep, "SWEEP", "DYNAMIC SWEEP", "");
-                    addSoundValue(state, Row::SweepTime, "SWEEP_TIME", "SWEEP TAU", "ms");
-                }
-                addSoundValue(state, Row::Tone, "TONE", "DRY TONE", "Hz");
-                addSoundValue(state, Row::Contour, "CONTOUR", "FILTER CONTOUR", "oct");
-                addSoundValue(state, Row::ContourTime, "CONTOUR_TIME", "CONTOUR TAU", "ms");
+            const bool articulated = state.mode == SirenMode::Lickshot &&
+                (state.lickshotArticulation == LickshotArticulation::Shot || state.lickshotArticulation == LickshotArticulation::Roll);
+            if (articulated) {
+                addSoundValue(state, Row::Length, "LENGTH", "LENGTH", "ms");
+                addSoundValue(state, Row::Punch, "PUNCH", "PUNCH", "oct");
+                addSoundValue(state, Row::PitchTime, "PITCH_TIME", "PITCH TAU", "ms");
+                if (state.lickshotArticulation == LickshotArticulation::Roll) addSoundValue(state, Row::Rate, "RATE", "ROLL RATE", "Hz");
+            } else addSoundValue(state, Row::Decay, "DECAY", "DECAY TAU", "ms");
+            if (state.mode == SirenMode::Syndrum) addSoundValue(state, Row::DrumSweep, "DRUM_SWEEP", "PITCH SWEEP", "oct");
+            else if (state.mode != SirenMode::Gunshot) {
+                addSoundValue(state, Row::Sweep, "SWEEP", "DYNAMIC SWEEP", "");
+                addSoundValue(state, Row::SweepTime, "SWEEP_TIME", "SWEEP TAU", "ms");
+            }
+            addSoundValue(state, Row::Tone, "TONE", "DRY TONE", "Hz");
+            addSoundValue(state, Row::Contour, "CONTOUR", "FILTER CONTOUR", "oct");
+            addSoundValue(state, Row::ContourTime, "CONTOUR_TIME", "CONTOUR TAU", "ms");
+            if (pad) {
                 addMenuRow(Row::SavePatch, "SAVE", "SAVE PATCH");
                 addMenuRow(Row::RecallPatch, "RECALL", "RECALL PATCH", settings_.patches[selectedPad_].valid ? "" : "EMPTY");
             }
@@ -1235,16 +1218,19 @@ void PerformanceController::rebuildMenuView() const {
                 formatTargetValue(PotTarget::Rate, state, value, sizeof(value));
                 addMenuRow(Row::LfoDivision, "LFO_DIV", "DIVISION", value);
             }
-            if (state.profile == PerformanceProfile::Classic && !state.tempo.lfoSync) {
-                addMenuRow(Row::ClassicRate, "CLASSIC_RATE", "RATE", rateName(state.classicModulation));
-            } else if (state.profile == PerformanceProfile::Extended && state.mode != SirenMode::Syndrum && state.mode != SirenMode::Gunshot &&
-                       !(state.mode == SirenMode::Lickshot && state.lickshotArticulation != LickshotArticulation::Legacy)) {
-                static const char *shapes[] = {"RC", "TRIANGLE", "SQUARE", "SAW UP", "SAW DOWN", "ASYM UP", "ASYM DOWN", "PULSE 25", "PULSE 75", "MANUAL"};
+            if (state.rateZonesActive && !state.tempo.lfoSync)
+                addMenuRow(Row::ClassicRate, "RATE_ZONE", "RATE", rateName(state.classicModulation));
+            if (state.mode != SirenMode::Syndrum && state.mode != SirenMode::Gunshot &&
+                !(state.mode == SirenMode::Lickshot && state.lickshotArticulation != LickshotArticulation::Legacy)) {
+                static const char *shapes[] = {"SIREN", "TRIANGLE", "SQUARE", "SAW UP", "SAW DOWN", "ASYM UP", "ASYM DOWN", "PULSE 25", "PULSE 75", "MANUAL"};
                 addMenuRow(Row::Shape, "SHAPE", "SHAPE", shapes[static_cast<unsigned>(state.lfoShape)]);
                 addMenuRow(Row::Modulation, "MODULATION", "MODULATION", state.modulationEnabled ? "ON" : "OFF");
-                if (!state.tempo.lfoSync) addSoundValue(state, Row::Rate, "RATE", "RATE", "Hz");
-                if (state.mode != SirenMode::TestTone) addSoundValue(state, Row::Depth, "DEPTH", "DEPTH", "oct");
-                if (!state.tempo.lfoSync) addMenuRow(Row::Retrigger, "RETRIGGER", "RETRIGGER", state.retrigger ? "ON" : "OFF");
+                if (!state.tempo.lfoSync && !state.rateZonesActive) addSoundValue(state, Row::Rate, "RATE", "RATE", "Hz");
+                // SIREN and MANUAL have a fixed sweep and always restart on trigger.
+                if (!sirenShape(effectiveLfoShape(state))) {
+                    if (state.mode != SirenMode::TestTone) addSoundValue(state, Row::Depth, "DEPTH", "DEPTH", "oct");
+                    if (!state.tempo.lfoSync) addMenuRow(Row::Retrigger, "RETRIGGER", "RETRIGGER", state.retrigger ? "ON" : "OFF");
+                }
             }
             addMenuRow(Row::Back, "BACK", "BACK");
             break;
@@ -1261,11 +1247,9 @@ void PerformanceController::rebuildMenuView() const {
             } else addSoundValue(state, Row::EchoTime, "TIME", "TIME", "ms");
             addSoundValue(state, Row::Feedback, "FEEDBACK", "FEEDBACK", "");
             addSoundValue(state, Row::Filter, "FILTER", "FILTER LP / HP", "");
-            if (state.profile == PerformanceProfile::Extended) {
-                addSoundValue(state, Row::Color, "COLOR", "COLOR", "");
-                addMenuRow(Row::Loop, "LOOP", "LOOP", state.echoLoop ? "ON" : "OFF");
-                addMenuRow(Row::Spin, "SPIN", "SPIN (STATUS)", state.echoSpin ? "ON" : "OFF");
-            }
+            addSoundValue(state, Row::Color, "COLOR", "COLOR", "");
+            addMenuRow(Row::Loop, "LOOP", "LOOP", state.echoLoop ? "ON" : "OFF");
+            addMenuRow(Row::Spin, "SPIN", "SPIN (STATUS)", state.echoSpin ? "ON" : "OFF");
             addMenuRow(Row::Cut, "CUT", "CUT (STATUS)", state.echoCut ? "ON" : "OFF");
             addMenuRow(Row::Back, "BACK", "BACK");
             break;
@@ -1274,7 +1258,7 @@ void PerformanceController::rebuildMenuView() const {
             addMenuRow(Row::Behavior, "BEHAVIOR", "BEHAVIOR",
                        potBehaviorName(settings_.potBehavior));
             for (unsigned i = 0; i < 6; ++i) {
-                snprintf(value, sizeof(value), "%s", potTargetName(settings_.profiles[profile].pots[i].target));
+                snprintf(value, sizeof(value), "%s", potTargetName(settings_.pots[i].target));
                 static const Row rows[] = {Row::Pot1, Row::Pot2, Row::Pot3,
                     Row::Pot4, Row::Pot5, Row::Pot6};
                 static const char *keys[] = {"POT_1", "POT_2", "POT_3", "POT_4", "POT_5", "POT_6"};
@@ -1284,13 +1268,12 @@ void PerformanceController::rebuildMenuView() const {
             addMenuRow(Row::Back, "BACK", "BACK");
             break;
         case MenuPage::Pot: {
-            const PotConfig &pot = settings_.profiles[profile].pots[selectedPot_];
+            const PotConfig &pot = settings_.pots[selectedPot_];
             snprintf(menuTitleBuffer_, sizeof(menuTitleBuffer_), "POT %u - %s",
                      selectedPot_ + 1, potTargetName(pot.target));
             addMenuRow(Row::Function, "FUNCTION", "FUNCTION", potTargetName(pot.target));
             const TargetDescriptor *descriptor = targetDescriptor(pot.target);
-            if (descriptor != nullptr && descriptor->zones &&
-                state.profile == PerformanceProfile::Classic)
+            if (descriptor != nullptr && descriptor->zones)
                 addMenuRow(Row::Mode, "MODE", "MODE", potModeName(pot.mode));
             if (pot.mode == PotMode::Zones) {
                 formatConfiguredValue(pot.target, pot.zones[0], value, sizeof(value));
@@ -1315,12 +1298,12 @@ void PerformanceController::rebuildMenuView() const {
                 static const char *keys[] = {"BTN_1", "BTN_2", "BTN_3", "BTN_4"};
                 static const char *labels[] = {"BTN 1", "BTN 2", "BTN 3", "BTN 4"};
                 addMenuRow(rows[i], keys[i], labels[i],
-                    buttonActionName(settings_.profiles[profile].buttons[i].action));
+                    buttonActionName(settings_.buttons[i].action));
             }
             addMenuRow(Row::Back, "BACK", "BACK");
             break;
         case MenuPage::Button: {
-            const ButtonConfig &button = settings_.profiles[profile].buttons[selectedButton_];
+            const ButtonConfig &button = settings_.buttons[selectedButton_];
             snprintf(menuTitleBuffer_, sizeof(menuTitleBuffer_), "BTN %u", selectedButton_ + 1);
             addMenuRow(Row::Action, "ACTION", "ACTION", buttonActionName(button.action));
             if (button.action == ButtonAction::PlaySound) {
@@ -1398,7 +1381,7 @@ void PerformanceController::pressMenuItem() {
         // Pad family/variant are button assignments and persist like the Home
         // encoder path; sound, MOD and ECHO values stay live until SAVE PATCH.
         const bool assignment = row == Row::Sound || row == Row::Variant;
-        if (row != Row::Profile && (assignment || (menuPage_ != MenuPage::Sound &&
+        if ((assignment || (menuPage_ != MenuPage::Sound &&
             menuPage_ != MenuPage::Mod && menuPage_ != MenuPage::Echo))) ++settingsRevision_;
         changed();
         return;
@@ -1453,22 +1436,22 @@ void PerformanceController::editMenuItem(Row row, int direction) {
         setTempoDivision(echo, static_cast<TempoDivision>(wrappedStep(
             static_cast<int>(division), direction, 4))); return;
     }
-    const unsigned profile = profileIndex(state.profile);
-    PotConfig &pot = settings_.profiles[profile].pots[selectedPot_];
-    ButtonConfig &button = settings_.profiles[profile].buttons[menuPage_ == MenuPage::Sound ? selectedPad_ : selectedButton_];
+    PotConfig &pot = settings_.pots[selectedPot_];
+    ButtonConfig &button = settings_.buttons[menuPage_ == MenuPage::Sound ? selectedPad_ : selectedButton_];
     float minimum, maximum, step;
     if (float *value = soundValue(state, row, minimum, maximum, step)) {
         *value = clampFloat(*value + direction * step, minimum, maximum);
-        if (row == Row::Tune) { state.classicPitchUsesTune = true; state.pitchZonesActive = false; }
+        if (row == Row::Tune) state.pitchZonesActive = false;
         if (row == Row::Filter) applyEchoFilter(state, *value);
         controls_.set(state); resetPickup(); changed(); return;
     }
     switch (row) {
         case Row::SelectedPad:
-            selectedPad_ = wrappedStep(selectedPad_, direction, 4);
+            do selectedPad_ = wrappedStep(selectedPad_, direction, 4);
+            while (!selectedIsPad());
             applySound(state, selectedPad_, false); controls_.set(state); resetPickup(); break;
         case Row::Voice:
-            state.mode = static_cast<SirenMode>(wrappedStep(static_cast<int>(state.mode), direction, 4)); controls_.set(state); break;
+            stepVoice(state, direction); controls_.set(state); resetPickup(); break;
         case Row::Shape:
             state.lfoShape = static_cast<LfoShape>(wrappedStep(static_cast<int>(state.lfoShape), direction, 10)); controls_.set(state); break;
         case Row::Modulation: state.modulationEnabled = !state.modulationEnabled; controls_.set(state); break;
@@ -1478,21 +1461,14 @@ void PerformanceController::editMenuItem(Row row, int direction) {
             state.classicModulation = static_cast<ClassicModulation>(wrappedStep(static_cast<int>(state.classicModulation), direction, 4));
             if (state.classicModulation != ClassicModulation::Manual) state.lfoRateHz = classicRateHz(static_cast<unsigned>(state.classicModulation));
             controls_.set(state); resetPickup(); break;
-        case Row::Profile:
-            setProfile(state.profile == PerformanceProfile::Classic
-                ? PerformanceProfile::Extended : PerformanceProfile::Classic);
-            menuEditing_ = true;
-            break;
         case Row::Behavior:
             settings_.potBehavior = settings_.potBehavior == PotBehavior::Pickup
                 ? PotBehavior::Jump : PotBehavior::Pickup;
             resetPickup();
             break;
         case Row::Function: {
-            int candidate = static_cast<int>(pot.target);
-            do candidate = wrappedStep(candidate, direction, static_cast<int>(PotTarget::Count));
-            while (!targetSupported(state.profile, static_cast<PotTarget>(candidate)));
-            pot = continuousPot(static_cast<PotTarget>(candidate));
+            pot = continuousPot(static_cast<PotTarget>(wrappedStep(
+                static_cast<int>(pot.target), direction, static_cast<int>(PotTarget::Count))));
             resetPickup();
             break;
         }
@@ -1528,10 +1504,9 @@ void PerformanceController::editMenuItem(Row row, int direction) {
             break;
         }
         case Row::Action:
-            do { button.action = static_cast<ButtonAction>(wrappedStep(
+            button.action = static_cast<ButtonAction>(wrappedStep(
                 static_cast<int>(button.action), direction,
                 static_cast<int>(ButtonAction::Count)));
-            } while (state.profile == PerformanceProfile::Classic && (button.action == ButtonAction::EchoLoop || button.action == ButtonAction::EchoSpin));
             if (button.action == ButtonAction::PlaySound) {
                 button.sound = PanelSound::Classic;
                 button.variant = 0;
@@ -1539,17 +1514,15 @@ void PerformanceController::editMenuItem(Row row, int direction) {
             }
             break;
         case Row::Sound:
-            do { button.sound = static_cast<PanelSound>(wrappedStep(
-                    static_cast<int>(button.sound), direction,
-                    static_cast<int>(PanelSound::Count)));
-            } while (state.profile == PerformanceProfile::Classic && button.sound != PanelSound::Classic && button.sound != PanelSound::TwoTone && button.sound != PanelSound::TestTone);
+            button.sound = static_cast<PanelSound>(wrappedStep(
+                static_cast<int>(button.sound), direction,
+                static_cast<int>(PanelSound::Count)));
             button.variant = 0;
             if (!panelSoundSupportsLatch(button.sound)) button.latch = false;
             break;
         case Row::Variant:
             button.variant = static_cast<uint8_t>(wrappedStep(button.variant, direction,
-                static_cast<int>(state.profile == PerformanceProfile::Classic
-                    ? (button.sound == PanelSound::Classic ? 2 : 1) : panelSoundVariantCount(button.sound))));
+                static_cast<int>(panelSoundVariantCount(button.sound))));
             break;
         case Row::Latch: button.latch = !button.latch; break;
         case Row::HoldTurn:

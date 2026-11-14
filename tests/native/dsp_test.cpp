@@ -120,6 +120,34 @@ float sine2Duty(float modulation) {
                : duty;
 }
 
+// The former pad layout: four sound pads, continuous Pitch/Rate, 120 ms tail.
+template <typename Parser> bool padLayout(Parser &parser) {
+    static const char *sounds[] = {"SIREN", "TWO_TONE", "LICKSHOT", "PING"};
+    bool ok = true;
+    for (int i = 0; i < 4; ++i) {
+        char command[64];
+        snprintf(command, sizeof(command), "PANEL BUTTON %d ACTION PLAY_SOUND", i + 1);
+        ok &= parser.parse(command);
+        snprintf(command, sizeof(command), "PANEL BUTTON %d SOUND %s 0 0", i + 1, sounds[i]);
+        ok &= parser.parse(command);
+    }
+    ok &= parser.parse("PANEL POT 1 MODE CONTINUOUS");
+    ok &= parser.parse("PANEL POT 2 MODE CONTINUOUS");
+    ok &= parser.parse("SET DECAY_MS 120");
+    return ok;
+}
+
+// The factory layout: Trigger / Hold / Mod / Echo Cut with zoned Pitch and Rate.
+template <typename Parser> bool factoryLayout(Parser &parser) {
+    return parser.parse("PANEL RESET_DEFAULTS") && parser.parse("SET DECAY_MS 0");
+}
+
+// Raw state equivalent of the pad layout defaults.
+inline void padState(ControlState &state) {
+    state.pitchZonesActive = state.rateZonesActive = false;
+    state.decayMs = PerformanceConfig::kExtendedDecayMs;
+}
+
 float renderFrequency(ControlState state) {
     auto engine = std::make_unique<AudioEngine>();
     engine->begin();
@@ -163,19 +191,17 @@ void testParser() {
     ControlStore store;
     CommandParser parser(store);
     assert(parser.parse("SET TUNE_HZ 333"));
-    assert(parser.parse("SET PROFILE CLASSIC"));
+    assert(factoryLayout(parser));
     assert(parser.parse("SET CLASSIC_PITCH HIGH"));
     assert(parser.parse("SET CLASSIC_MOD MANUAL"));
     auto state = store.snapshot();
-    assert(state.profile == PerformanceProfile::Classic);
     assert(state.classicPitch == ClassicPitch::High);
     assert(state.classicModulation == ClassicModulation::Manual);
     assert(!parser.parse("SET CLASSIC_PITCH NOPE"));
-    assert(!parser.parse("SET PROFILE NOPE"));
-    assert(parser.parse("SET PROFILE EXTENDED"));
+    assert(!parser.parse("SET PROFILE EXTENDED"));
+    assert(padLayout(parser));
     state = store.snapshot();
-    assert(state.profile == PerformanceProfile::Extended &&
-           fabsf(state.tuneHz - PerformanceConfig::kClassicPitchHz[2]) < .001f);
+    assert(fabsf(state.tuneHz - PerformanceConfig::kClassicPitchHz[2]) < .001f);
 
     assert(parser.parse("SET MODE LICKSHOT"));
     assert(store.snapshot().mode == SirenMode::Lickshot);
@@ -228,8 +254,8 @@ void testParser() {
 void testPadController() {
     ControlStore store;
     CommandParser parser(store);
-    assert(parser.parse("SET PROFILE EXTENDED"));
-    assert(strcmp(parser.padSoundName(1), "CLASSIC") == 0);
+    assert(padLayout(parser));
+    assert(strcmp(parser.padSoundName(1), "SIREN") == 0);
     assert(strcmp(parser.padSoundName(2), "TWO TONE") == 0);
     assert(strcmp(parser.padSoundName(3), "LICKSHOT") == 0);
     assert(strcmp(parser.padSoundName(4), "PING") == 0);
@@ -301,7 +327,7 @@ void testPadController() {
 void testQueuedPadActivation() {
     ControlStore store;
     CommandParser parser(store);
-    assert(parser.parse("SET PROFILE EXTENDED"));
+    assert(padLayout(parser));
     auto engine = std::make_unique<AudioEngine>();
     engine->begin();
     int16_t block[480];
@@ -329,14 +355,12 @@ void testQueuedPadActivation() {
     assert(second.mode == SirenMode::Sine1);
     engine->render(queued, block, 480);
     assert(blockRms(block, 480) > 100.0f);
-    engine->render(queued, block, 480);
-    assert(blockRms(block, 480) > 100.0f);
 }
 
 void testPanelDisplayState() {
     ControlStore store;
     CommandParser parser(store);
-    assert(parser.parse("SET PROFILE EXTENDED"));
+    assert(padLayout(parser));
     assert(parser.displayWidth() == 320 && parser.displayHeight() == 172);
     assert(strcmp(parser.displayModeName(), "HOME") == 0);
     assert(parser.parse("ENCODER_ROTATE NEXT"));
@@ -354,11 +378,10 @@ void testPanelDisplayState() {
     for (int i = 0; i < 3; ++i) assert(parser.parse("ENCODER_ROTATE NEXT"));
     assert(parser.parse("ENCODER_SWITCH 1")); assert(parser.parse("ENCODER_SWITCH 0"));
     assert(strcmp(parser.menuTitle(), "SETUP") == 0);
-    assert(strcmp(parser.menuItemKey(0), "PROFILE") == 0);
-    assert(strcmp(parser.menuItemLabel(1), "POTS") == 0);
+    assert(strcmp(parser.menuItemKey(0), "POTS") == 0);
+    assert(strcmp(parser.menuItemLabel(1), "BUTTONS") == 0);
 
-    assert(parser.parse("ENCODER_ROTATE NEXT"));
-    assert(parser.menuIndex() == 1);
+    assert(parser.menuIndex() == 0);
     assert(parser.parse("ENCODER_SWITCH 1"));
     assert(parser.parse("ENCODER_SWITCH 0"));
     assert(!parser.menuEditing());
@@ -374,7 +397,7 @@ void testPanelDisplayState() {
     assert(parser.parse("ENCODER_SWITCH 0"));
     assert(parser.menuEditing());
     assert(parser.parse("ENCODER_ROTATE NEXT"));
-    assert(parser.panelSettings().profiles[1].pots[0].target == PotTarget::Rate);
+    assert(parser.panelSettings().pots[0].target == PotTarget::Rate);
     assert(parser.parse("ENCODER_SWITCH 1"));
     assert(parser.parse("ENCODER_SWITCH 0"));
     assert(!parser.menuEditing());
@@ -383,7 +406,7 @@ void testPanelDisplayState() {
 void testExtendedEncoderGestures() {
     ControlStore store;
     CommandParser parser(store);
-    assert(parser.parse("SET PROFILE EXTENDED"));
+    assert(padLayout(parser));
     for (unsigned pad = 1; pad <= 4; ++pad) {
         char command[24];
         snprintf(command, sizeof(command), "PAD_SELECT %u", pad);
@@ -392,7 +415,7 @@ void testExtendedEncoderGestures() {
         const float tune = store.snapshot().tuneHz;
         const unsigned sequence = store.snapshot().activationSequence;
         const unsigned count = panelSoundVariantCount(
-            parser.panelSettings().profiles[1].buttons[pad - 1].sound);
+            parser.panelSettings().buttons[pad - 1].sound);
         assert(parser.parse("ENCODER_ROTATE PREV"));
         assert(parser.padVariant(pad) == count - 1);
         assert(parser.parse("ENCODER_ROTATE NEXT"));
@@ -408,44 +431,35 @@ void testExtendedEncoderGestures() {
     }
 
     assert(parser.parse("PAD 1 1"));
-    const float tune = store.snapshot().tuneHz;
     const unsigned variant = parser.padVariant(1);
     const unsigned settingsRevision = parser.panelSettingsRevision();
     assert(parser.parse("ENCODER_ROTATE NEXT"));
-    assert(fabsf(store.snapshot().lfoDepthOctaves - 1.05f) < .0001f);
     assert(parser.padVariant(1) == variant);
-    assert(store.snapshot().liveTransposeSemitones == 0);
-    assert(store.snapshot().tuneHz == tune);
+    assert(store.snapshot().liveTransposeSemitones == 1);
     assert(parser.panelSettingsRevision() == settingsRevision);
-    assert(strcmp(parser.overlayTitle(), "DEPTH") == 0);
-    for (int i = 0; i < 50; ++i) assert(parser.parse("ENCODER_ROTATE NEXT"));
-    assert(store.snapshot().lfoDepthOctaves == 2.0f);
-    for (int i = 0; i < 50; ++i) assert(parser.parse("ENCODER_ROTATE PREV"));
-    assert(store.snapshot().lfoDepthOctaves == 0.0f);
+    assert(strcmp(parser.overlayTitle(), "LIVE PITCH") == 0);
     assert(parser.parse("PAD 1 0"));
+    assert(store.snapshot().liveTransposeSemitones == 0);
     assert(parser.parse("ENCODER_ROTATE NEXT"));
-    assert(parser.padVariant(1) == (variant + 1) % 3);
-    assert(store.snapshot().lfoDepthOctaves == 0.0f);
+    assert(parser.padVariant(1) == (variant + 1) % panelSoundVariantCount(PanelSound::Classic));
 
-    // A latched sound is not a physically held BTN1 modifier.
-    assert(parser.parse("PANEL BUTTON EXTENDED 1 SOUND CLASSIC 0 1"));
+    // A latched sound is not a physically held button.
+    assert(parser.parse("PANEL BUTTON 1 SOUND CLASSIC 0 1"));
     assert(store.snapshot().hold);
     assert(parser.parse("ENCODER_ROTATE NEXT"));
     assert(parser.padVariant(1) == 1);
-    assert(store.snapshot().lfoDepthOctaves == 0.0f);
 
     // Other sound buttons keep the configured transient pitch gesture.
     assert(parser.parse("PAD 2 1"));
     assert(parser.parse("ENCODER_ROTATE NEXT"));
     assert(store.snapshot().liveTransposeSemitones == 1);
-    assert(store.snapshot().lfoDepthOctaves == 0.0f);
     assert(parser.parse("PAD 2 0"));
     assert(store.snapshot().liveTransposeSemitones == 0);
 }
 
 void testDynamicSweep() {
     ControlState state;
-    state.profile = PerformanceProfile::Extended;
+    padState(state);
     state.mode = SirenMode::Sine1;
     state.tuneHz = 220.0f;
     state.lfoDepthOctaves = 0.0f;
@@ -509,7 +523,7 @@ void testDynamicSweep() {
 
 void testSyndrum() {
     ControlState state;
-    state.profile = PerformanceProfile::Extended;
+    padState(state);
     state.mode = SirenMode::Syndrum;
     state.tuneHz = 220.0f;
     state.decayMs = 120.0f;
@@ -594,7 +608,7 @@ void testSyndrum() {
 
 void testGunshot() {
     ControlState state;
-    state.profile = PerformanceProfile::Extended;
+    padState(state);
     state.mode = SirenMode::Gunshot;
     state.decayMs = 100.0f;
     state.echoLevel = 0.0f;
@@ -692,7 +706,7 @@ void testNewVoices() {
 
 void testPerformancePitch() {
     ControlState state;
-    state.profile = PerformanceProfile::Extended;
+    padState(state);
     state.mode = SirenMode::Sine1;
     state.tuneHz = 220.0f;
     state.lfoShape = LfoShape::SawDown;
@@ -741,8 +755,9 @@ void testPerformancePitch() {
     state.modUp = false;
     state.modDown = true;
     const float manualDown = renderFrequency(state);
-    assert(manualUp > 435.0f && manualUp < 445.0f);
-    assert(manualDown > 108.0f && manualDown < 112.0f);
+    // MANUAL ignores Depth: Up holds the selected pitch, Down sinks to the floor.
+    assert(manualUp > 218.0f && manualUp < 222.0f);
+    assert(manualDown < 60.0f);
 }
 
 void testSonarPulses() {
@@ -751,7 +766,7 @@ void testSonarPulses() {
             auto engine = std::make_unique<AudioEngine>();
             engine->begin();
             ControlState state;
-            state.profile = PerformanceProfile::Extended;
+            padState(state);
             state.mode = SirenMode::Sonar;
             state.tuneHz = 375.0f;
             state.lfoDepthOctaves = 0.0f;
@@ -790,7 +805,7 @@ void testSonarPulses() {
     auto engine = std::make_unique<AudioEngine>();
     engine->begin();
     ControlState state;
-    state.profile = PerformanceProfile::Extended;
+    padState(state);
     state.mode = SirenMode::Sonar;
     state.lfoRateHz = 1.0f;
     state.lfoDepthOctaves = 0.0f;
@@ -875,47 +890,6 @@ void testSine1DynamicVoicing() {
            harmonicRatio(fourthAbove1, 4));
     assert(harmonicRatio(fourthNotch, 4) * 1.4f <
            harmonicRatio(fourthAbove2, 4));
-}
-
-void testSharedSineVoicing() {
-    // Compare the complete Classic and Extended render paths at equal effective
-    // controls, including automatic/manual modulation and the legacy flag.
-    for (SirenMode mode : {SirenMode::Sine1, SirenMode::Sine2}) {
-        for (ClassicModulation modulation : {ClassicModulation::Medium,
-                                              ClassicModulation::Manual}) {
-            for (bool voicingV2 : {false, true}) {
-                auto classic = std::make_unique<AudioEngine>();
-                auto extended = std::make_unique<AudioEngine>();
-                classic->begin();
-                extended->begin();
-                ControlState a;
-                a.mode = mode;
-                a.classicPitchUsesTune = true;
-                a.classicRateUsesRate = true;
-                a.tuneHz = 375.0f;
-                a.lfoRateHz = 2.8f;
-                a.classicModulation = modulation;
-                a.lfoShape = modulation == ClassicModulation::Manual
-                    ? LfoShape::Manual : LfoShape::Classic;
-                a.modUp = modulation == ClassicModulation::Manual;
-                a.hold = true;
-                a.echoLevel = 0.0f;
-                a.voicingV2 = voicingV2;
-                ControlState b = a;
-                b.profile = PerformanceProfile::Extended;
-                int16_t first[480], second[480];
-                for (int block = 0; block < 200; ++block) {
-                    classic->render(a, first, 480);
-                    extended->render(b, second, 480);
-                    if (block < 100) continue;  // Different gate attacks settle.
-                    assert(blockRms(first, 480) > 1000.0f);
-                    for (int i = 0; i < 480; ++i) {
-                        assert(abs(int(first[i]) - int(second[i])) <= 1);
-                    }
-                }
-            }
-        }
-    }
 }
 
 void testSine2DynamicVoicing() {
@@ -1083,9 +1057,10 @@ void testEchoCutPreservesLoop() {
     auto engine = std::make_unique<AudioEngine>();
     engine->begin();
     ControlState state;
-    state.profile = PerformanceProfile::Extended;
+    padState(state);
     state.mode = SirenMode::Sonar;
     state.hold = true;
+    state.lfoRateHz = 0.7f;  // Keep a ping inside the 50 ms loop.
     state.lfoDepthOctaves = 0.0f;
     state.delayMs = 50.0f;
     state.feedback = 0.0f;
@@ -1113,13 +1088,13 @@ void testEngine() {
     auto engine = std::make_unique<AudioEngine>();
     engine->begin();
     ControlState state;
-    state.profile = PerformanceProfile::Extended;
+    padState(state);
     state.hold = true;
     state.feedback = 0.95f;
     int16_t block[480];
     for (int turn = 0; turn < 500; ++turn) {
-        state.profile = turn % 80 < 40 ? PerformanceProfile::Classic
-                                        : PerformanceProfile::Extended;
+        state.rateZonesActive = turn % 80 < 40;
+        state.decayMs = turn % 80 < 40 ? 0.0f : 120.0f;
         state.classicPitch = static_cast<ClassicPitch>(turn % 3);
         state.classicModulation = static_cast<ClassicModulation>(turn % 4);
         state.mode = static_cast<SirenMode>(
@@ -1135,11 +1110,11 @@ void testEngine() {
     }
 }
 
-void testProfileKeepsTail() {
+void testModeChangeKeepsTail() {
     auto engine = std::make_unique<AudioEngine>();
     engine->begin();
     ControlState state;
-    state.profile = PerformanceProfile::Extended;
+    padState(state);
     state.hold = true;
     state.decayMs = 0.0f;
     state.feedback = 0.8f;
@@ -1147,7 +1122,6 @@ void testProfileKeepsTail() {
     for (int i = 0; i < 100; ++i) engine->render(state, block, 480);
     state.hold = false;
     for (int i = 0; i < 20; ++i) engine->render(state, block, 480);
-    state.profile = PerformanceProfile::Classic;
     state.mode = SirenMode::Square;
     bool heardTail = false;
     for (int i = 0; i < 30; ++i) {
@@ -1161,25 +1135,25 @@ void testProfileKeepsTail() {
 void testClassicControls() {
     ControlStore store;
     CommandParser parser(store);
-    assert(store.snapshot().profile == PerformanceProfile::Classic);
-    assert(!parser.parse("SET MODE GUNSHOT"));
-    assert(!parser.parse("SET MODE SAW"));
-    assert(!parser.parse("SET MODE TRIANGLE"));
+    // BTN1 is the Trigger in the factory layout, not a configurable sound pad.
+    assert(!parser.parse("PAD_CONFIG 1 LICKSHOT 0 0"));
     assert(store.snapshot().mode == SirenMode::Sine1);
-    assert(parser.parse("PAD_CONFIG 1 LICKSHOT 0 0"));
-    assert(store.snapshot().profile == PerformanceProfile::Classic);
     for (int i = 0; i < 4; ++i) {
         assert(static_cast<int>(store.snapshot().mode) == i);
         assert(parser.parse("ENCODER_ROTATE NEXT"));
         assert(store.snapshot().lfoDepthOctaves == 1.0f);
         assert(fabsf(store.snapshot().tuneHz - PerformanceConfig::kClassicPitchHz[1]) < .001f);
     }
-    assert(store.snapshot().mode == SirenMode::Sine1);
+    // The Trigger voice list continues past the four original voices.
+    assert(store.snapshot().mode == SirenMode::Sonar);
+    assert(strcmp(parser.voiceName(), "SONAR") == 0);
     assert(parser.parse("ENCODER_ROTATE PREV"));
     assert(store.snapshot().mode == SirenMode::Square);
-    assert(parser.parse("SET PROFILE EXTENDED"));
-    assert(store.snapshot().mode == SirenMode::Square);
-    assert(parser.parse("SET PROFILE CLASSIC"));
+    for (int i = 0; i < 4; ++i) assert(parser.parse("ENCODER_ROTATE PREV"));
+    assert(store.snapshot().mode == SirenMode::Gunshot);
+    assert(store.snapshot().decayMs == PerformanceConfig::kExtendedDecayMs);
+    assert(parser.parse("ENCODER_ROTATE NEXT"));
+    assert(store.snapshot().mode == SirenMode::Sine1 && store.snapshot().decayMs == 0.0f);
     assert(parser.parse("PAD 1 1"));
     assert(store.snapshot().trigger);
     assert(parser.parse("PAD 2 1"));
@@ -1202,35 +1176,31 @@ void testClassicControls() {
     assert(strcmp(parser.displayModeName(), "MENU") == 0);
     for (int i = 0; i < 3; ++i) assert(parser.parse("ENCODER_ROTATE NEXT"));
     assert(parser.parse("ENCODER_SWITCH 1")); assert(parser.parse("ENCODER_SWITCH 0"));
-    assert(strcmp(parser.menuItemKey(0), "PROFILE") == 0);
-    assert(parser.parse("ENCODER_SWITCH 1"));
-    assert(parser.parse("ENCODER_SWITCH 0"));
-    assert(parser.menuEditing());
-    assert(parser.parse("ENCODER_ROTATE NEXT"));
-    assert(store.snapshot().profile == PerformanceProfile::Extended);
+    assert(strcmp(parser.menuItemKey(0), "POTS") == 0);
 }
 
 void testClassicCalibration() {
-    constexpr float expected[] = {261.63f, 392.00f, 587.33f};
-    constexpr float tolerance[] = {2.0f, 3.0f, 5.0f};
+    constexpr float expected[] = {330.0f, 680.0f, 1000.0f};
+    constexpr float tolerance[] = {3.0f, 5.0f, 8.0f};
     float observed[3];
     ControlState state;
     state.mode = SirenMode::Sine1;
     state.classicModulation = ClassicModulation::Manual;
+    state.modUp = true;  // The selected pitch is the top of the manual sweep.
 
     for (int i = 0; i < 3; ++i) {
         assert(fabsf(PerformanceConfig::kClassicPitchHz[i] - expected[i]) <
                0.001f);
-        state.classicPitch = static_cast<ClassicPitch>(i);
+        state.tuneHz = PerformanceConfig::kClassicPitchHz[i];
         observed[i] = renderFrequency(state);
         assert(fabsf(observed[i] - expected[i]) <= tolerance[i]);
     }
-    assert(fabsf(observed[1] / observed[0] - 1.498f) <= 0.01498f);
-    assert(fabsf(observed[2] / observed[0] - 2.245f) <= 0.02245f);
+    assert(fabsf(observed[1] / observed[0] - 2.061f) <= 0.02061f);
+    assert(fabsf(observed[2] / observed[0] - 3.030f) <= 0.03030f);
 
-    assert(PerformanceConfig::kClassicRateHz[0] == 0.35f);
-    assert(PerformanceConfig::kClassicRateHz[1] == 0.70f);
-    assert(PerformanceConfig::kClassicRateHz[2] == 2.80f);
+    assert(PerformanceConfig::kClassicRateHz[0] == 0.70f);
+    assert(PerformanceConfig::kClassicRateHz[1] == 3.00f);
+    assert(PerformanceConfig::kClassicRateHz[2] == 6.50f);
     assert(PerformanceConfig::kEchoTimeMinMs == 50.0f);
     assert(PerformanceConfig::kEchoTimeMaxMs == 1000.0f);
 }
@@ -1285,15 +1255,13 @@ void testConfigurablePanel() {
     const PanelSettings &factory = parser.panelSettings();
     assert(factory.schemaVersion == PanelSettings::kSchemaVersion);
     assert(factory.potBehavior == PotBehavior::Pickup);
-    assert(factory.profiles[0].pots[0].target == PotTarget::Pitch);
-    assert(factory.profiles[0].pots[0].mode == PotMode::Zones);
-    assert(factory.profiles[0].pots[1].target == PotTarget::Rate);
-    assert(factory.profiles[0].buttons[0].action == ButtonAction::Trigger);
-    assert(factory.profiles[0].buttons[1].action == ButtonAction::Hold);
-    assert(factory.profiles[0].buttons[2].action == ButtonAction::ModUp);
-    assert(factory.profiles[0].buttons[3].action == ButtonAction::EchoCut);
-    for (unsigned button = 0; button < 4; ++button)
-        assert(factory.profiles[1].buttons[button].action == ButtonAction::PlaySound);
+    assert(factory.pots[0].target == PotTarget::Pitch);
+    assert(factory.pots[0].mode == PotMode::Zones);
+    assert(factory.pots[1].target == PotTarget::Rate);
+    assert(factory.buttons[0].action == ButtonAction::Trigger);
+    assert(factory.buttons[1].action == ButtonAction::Hold);
+    assert(factory.buttons[2].action == ButtonAction::ModUp);
+    assert(factory.buttons[3].action == ButtonAction::EchoCut);
 
     // Pickup waits for a crossing after an external parameter change.
     assert(parser.parse("SET CLASSIC_PITCH MID"));
@@ -1314,60 +1282,59 @@ void testConfigurablePanel() {
     assert(store.snapshot().classicModulation == ClassicModulation::Manual);
 
     // Continuous endpoints and validated ranges are owned by the C++ descriptor.
-    assert(parser.parse("PANEL POT CLASSIC 1 MODE CONTINUOUS"));
+    assert(parser.parse("PANEL POT 1 MODE CONTINUOUS"));
     assert(!store.snapshot().pitchZonesActive);
-    assert(parser.parse("PANEL POT CLASSIC 1 RANGE 100 800"));
+    assert(parser.parse("PANEL POT 1 RANGE 100 800"));
     assert(parser.parse("POT 1 0"));
     assert(fabsf(store.snapshot().tuneHz - 100.0f) < .001f);
     assert(parser.parse("POT 1 1"));
     assert(fabsf(store.snapshot().tuneHz - 800.0f) < .01f);
-    const PotConfig validRange = parser.panelSettings().profiles[0].pots[0];
-    assert(!parser.parse("PANEL POT CLASSIC 1 RANGE 900 100"));
-    assert(parser.panelSettings().profiles[0].pots[0].minimum == validRange.minimum);
-    assert(parser.panelSettings().profiles[0].pots[0].maximum == validRange.maximum);
-    assert(!parser.parse("PANEL POT CLASSIC 1 RANGE 20 100"));
+    const PotConfig validRange = parser.panelSettings().pots[0];
+    assert(!parser.parse("PANEL POT 1 RANGE 900 100"));
+    assert(parser.panelSettings().pots[0].minimum == validRange.minimum);
+    assert(parser.panelSettings().pots[0].maximum == validRange.maximum);
+    assert(!parser.parse("PANEL POT 1 RANGE 20 100"));
 
-    assert(parser.parse("PANEL POT CLASSIC 1 MODE ZONES"));
+    assert(parser.parse("PANEL POT 1 MODE ZONES"));
     assert(store.snapshot().pitchZonesActive);
-    assert(parser.parse("PANEL POT CLASSIC 1 ZONES 220 440 880"));
-    assert(!parser.parse("PANEL POT CLASSIC 1 ZONES 440 220 880"));
-    assert(parser.panelSettings().profiles[0].pots[0].zones[1] == 440.0f);
+    assert(parser.parse("PANEL POT 1 ZONES 220 440 880"));
+    assert(!parser.parse("PANEL POT 1 ZONES 440 220 880"));
+    assert(parser.panelSettings().pots[0].zones[1] == 440.0f);
 
-    // Settings are independent per profile and unsupported targets are rejected.
-    assert(parser.parse("PANEL POT CLASSIC 3 TARGET NONE"));
-    assert(parser.parse("PANEL POT EXTENDED 3 TARGET DECAY"));
-    assert(!parser.parse("PANEL POT CLASSIC 3 TARGET DECAY"));
-    assert(parser.panelSettings().profiles[0].pots[2].target == PotTarget::None);
-    assert(parser.panelSettings().profiles[1].pots[2].target == PotTarget::Decay);
-    assert(parser.parse("SET PROFILE EXTENDED"));
+    // Every target is assignable; layouts switch the zone flags with them.
+    assert(parser.parse("PANEL POT 3 TARGET NONE"));
+    assert(parser.panelSettings().pots[2].target == PotTarget::None);
+    assert(parser.parse("PANEL POT 3 TARGET DECAY"));
+    assert(parser.panelSettings().pots[2].target == PotTarget::Decay);
+    assert(padLayout(parser));
     assert(!store.snapshot().pitchZonesActive);
     assert(!store.snapshot().rateZonesActive);
-    assert(parser.parse("SET PROFILE CLASSIC"));
+    assert(factoryLayout(parser));
     assert(store.snapshot().pitchZonesActive);
     assert(store.snapshot().rateZonesActive);
-    assert(parser.panelSettings().profiles[1].pots[2].target == PotTarget::Decay);
 
     // Configured momentary and toggle button semantics remain finite and explicit.
-    assert(!parser.parse("PANEL BUTTON CLASSIC 1 ACTION ECHO_LOOP"));
-    assert(parser.parse("PANEL BUTTON CLASSIC 4 ACTION ECHO_CUT"));
+    assert(parser.parse("PANEL BUTTON 1 ACTION ECHO_LOOP"));
+    assert(parser.parse("PANEL BUTTON 1 ACTION TRIGGER"));
+    assert(parser.parse("PANEL BUTTON 4 ACTION ECHO_CUT"));
     assert(parser.parse("PAD 4 1"));
     assert(store.snapshot().echoCut);
     assert(parser.parse("PAD 4 0"));
     assert(!store.snapshot().echoCut);
-    assert(!parser.parse("PANEL BUTTON CLASSIC 2 ACTION SCRIPT"));
+    assert(!parser.parse("PANEL BUTTON 2 ACTION SCRIPT"));
 
-    assert(parser.parse("SET PROFILE EXTENDED"));
-    assert(parser.parse("PANEL BUTTON EXTENDED 1 SOUND CLASSIC 3 0"));
+    assert(padLayout(parser));
+    assert(parser.parse("PANEL BUTTON 1 SOUND CLASSIC 3 0"));
     assert(parser.parse("PAD 1 1"));
     assert(store.snapshot().mode == SirenMode::Saw);
     assert(parser.parse("PAD 1 0"));
-    assert(parser.parse("PANEL BUTTON EXTENDED 1 SOUND CLASSIC 4 0"));
+    assert(parser.parse("PANEL BUTTON 1 SOUND CLASSIC 4 0"));
     assert(parser.parse("PAD 1 1"));
     assert(store.snapshot().mode == SirenMode::Triangle);
     assert(parser.parse("PAD 1 0"));
-    assert(!parser.parse("PANEL BUTTON EXTENDED 1 SOUND CLASSIC 5 0"));
-    assert(parser.parse("PANEL BUTTON EXTENDED 2 SOUND TWO_TONE 2 1"));
-    assert(parser.parse("PANEL BUTTON EXTENDED 3 ACTION HOLD"));
+    assert(!parser.parse("PANEL BUTTON 1 SOUND CLASSIC 5 0"));
+    assert(parser.parse("PANEL BUTTON 2 SOUND TWO_TONE 2 1"));
+    assert(parser.parse("PANEL BUTTON 3 ACTION HOLD"));
     assert(parser.parse("PAD 2 1"));
     assert(store.snapshot().mode == SirenMode::Square && store.snapshot().hold);
     assert(parser.parse("PAD 2 0"));
@@ -1378,11 +1345,11 @@ void testConfigurablePanel() {
     assert(parser.parse("PAD 3 1"));
     assert(parser.parse("PAD 3 0"));
     assert(store.snapshot().hold);
-    assert(!parser.parse("PANEL BUTTON EXTENDED 4 SOUND PING 0 1"));
+    assert(!parser.parse("PANEL BUTTON 4 SOUND PING 0 1"));
 
     // Live pitch is transient, clamped and does not alter the stored base tune.
     assert(parser.parse("PANEL RESET_DEFAULTS"));
-    assert(parser.parse("SET PROFILE CLASSIC"));
+    assert(factoryLayout(parser));
     const float storedTune = store.snapshot().tuneHz;
     assert(parser.parse("PANEL ENCODER LIVE_PITCH 1 2"));
     assert(parser.parse("PAD 1 1"));
@@ -1394,9 +1361,8 @@ void testConfigurablePanel() {
     assert(parser.parse("PAD 1 0"));
     assert(store.snapshot().liveTransposeSemitones == 0);
 
-    assert(parser.parse("SET PROFILE EXTENDED"));
-    assert(parser.parse("PANEL BUTTON EXTENDED 2 ACTION TRIGGER"));
-    assert(parser.parse("SET MODE GUNSHOT"));
+    assert(padLayout(parser));
+    assert(parser.parse("PANEL BUTTON 2 SOUND GUNSHOT 0 0"));
     assert(parser.parse("PAD 2 1"));
     assert(parser.parse("ENCODER_ROTATE NEXT"));
     assert(store.snapshot().liveTransposeSemitones == 0);
@@ -1409,25 +1375,24 @@ void testConfigurablePanel() {
 
     assert(parser.parse("PANEL RESET_DEFAULTS"));
     assert(parser.panelSettings().potBehavior == PotBehavior::Pickup);
-    assert(parser.panelSettings().profiles[0].pots[0].mode == PotMode::Zones);
-    assert(parser.panelSettings().profiles[1].buttons[3].sound == PanelSound::Ping);
+    assert(parser.panelSettings().pots[0].mode == PotMode::Zones);
+    assert(parser.panelSettings().buttons[3].action == ButtonAction::EchoCut);
 
     assert(parser.parse("PANEL BEGIN"));
-    assert(parser.parse("PANEL POT CLASSIC 1 TARGET NONE"));
-    assert(parser.panelSettings().profiles[0].pots[0].target == PotTarget::Pitch);
-    assert(!parser.parse("PANEL POT CLASSIC 2 RANGE 100 1"));
+    assert(parser.parse("PANEL POT 1 TARGET NONE"));
+    assert(parser.panelSettings().pots[0].target == PotTarget::Pitch);
+    assert(!parser.parse("PANEL POT 2 RANGE 100 1"));
     assert(!parser.parse("PANEL COMMIT"));
-    assert(parser.panelSettings().profiles[0].pots[0].target == PotTarget::Pitch);
+    assert(parser.panelSettings().pots[0].target == PotTarget::Pitch);
     assert(parser.parse("PANEL BEGIN"));
-    assert(parser.parse("PANEL POT CLASSIC 1 TARGET NONE"));
+    assert(parser.parse("PANEL POT 1 TARGET NONE"));
     assert(parser.parse("PANEL COMMIT"));
-    assert(parser.panelSettings().profiles[0].pots[0].target == PotTarget::None);
+    assert(parser.panelSettings().pots[0].target == PotTarget::None);
     assert(parser.parse("PANEL RESET_DEFAULTS"));
 
     ControlState transposeState;
     transposeState.mode = SirenMode::TestTone;
     transposeState.classicModulation = ClassicModulation::Manual;
-    transposeState.classicPitchUsesTune = true;
     transposeState.tuneHz = 392.0f;
     transposeState.modUp = true;
     transposeState.liveTransposeSemitones = 12;
@@ -1443,7 +1408,6 @@ void testClassicDryRelease() {
         ControlState state;
         state.mode = mode;
         state.echoLevel = 0;
-        state.decayMs = 3000; // Extended decay must have no effect.
         state.classicModulation = ClassicModulation::Manual;
         state.modUp = true;
         state.trigger = true;
@@ -1554,39 +1518,32 @@ void testReducingFeedbackStopsSustainedTail() {
 }
 
 void testManualAndClassicVoices() {
+    // MANUAL ignores Rate: the button pulls the level to the top, release
+    // lets it sink slowly instead of snapping back.
     Lfo slow, fast;
     slow.reset(LfoShape::Manual); fast.reset(LfoShape::Manual);
+    float held = 0, released = 0;
     for (int i = 0; i < 48000; ++i) {
         const bool pressed = i > 1000 && i < 12000;
         const float a = slow.next(LfoShape::Manual, .35f, pressed, false, kRate);
         const float b = fast.next(LfoShape::Manual, 20.0f, pressed, false, kRate);
         assert(a == b && slow.gate() == pressed && fast.gate() == pressed);
-        if (i > 24000) assert(fabsf(a) < 1e-6f);
+        if (i == 11999) held = a;
+        released = a;
     }
+    assert(held > 0.9f);
+    assert(released < held - 0.2f && released > 0.0f);
     ControlState state;
     state.classicModulation = ClassicModulation::Manual;
     state.mode = SirenMode::Square;
     const float low = renderFrequency(state);
     state.modUp = true;
     const float high = renderFrequency(state);
-    assert(low > 194 && low < 198 && high > 779 && high < 789);
+    assert(low > 417 && low < 426 && high > 675 && high < 685);
     state.mode = SirenMode::TestTone;
-    assert(fabsf(renderFrequency(state) - 392) < 3);
+    assert(fabsf(renderFrequency(state) - 680) < 5);
     state.modUp = false;
     assert(renderFrequency(state) == 0);
-    // Classic ignores advanced sweep, legacy switch and automatic bend.
-    auto a = std::make_unique<AudioEngine>(); auto b = std::make_unique<AudioEngine>();
-    a->begin(); b->begin();
-    ControlState plain, advanced;
-    plain.trigger = advanced.trigger = true;
-    plain.echoLevel = advanced.echoLevel = 0;
-    advanced.sweepAmount = 1; advanced.modUp = true;
-    advanced.voicingV2 = false; advanced.modulationEnabled = false;
-    int16_t left[480], right[480];
-    for (int i = 0; i < 200; ++i) {
-        a->render(plain, left, 480); b->render(advanced, right, 480);
-        assert(memcmp(left, right, sizeof(left)) == 0);
-    }
 }
 
 
@@ -1595,7 +1552,8 @@ void testClassicAutomaticVoices() {
         auto engine = std::make_unique<AudioEngine>(); engine->begin();
         ControlState state;
         state.mode = mode; state.hold = true; state.echoLevel = 0;
-        state.classicModulation = ClassicModulation::Fast;
+        // Slow keeps each half-cycle longer than one analysis block.
+        state.classicModulation = ClassicModulation::Slow;
         int16_t block[4800];
         bool heardLow = false, heardHigh = false;
         for (int i = 0; i < 40; ++i) {
@@ -1605,8 +1563,8 @@ void testClassicAutomaticVoices() {
                 heardHigh |= blockRms(block, 4800) > 1000;
             } else {
                 const float frequency = estimateFrequency(block, 4800);
-                heardLow |= frequency > 194 && frequency < 198;
-                heardHigh |= frequency > 779 && frequency < 789;
+                heardLow |= frequency > 417 && frequency < 426;
+                heardHigh |= frequency > 675 && frequency < 685;
             }
         }
         assert(heardLow && heardHigh);
@@ -1630,12 +1588,12 @@ void testClassicAutomaticVoices() {
 }
 
 void testShortTriggerEvents() {
-    for (const char *profile : {"SET PROFILE CLASSIC", "SET PROFILE EXTENDED"}) {
+    for (bool pads : {false, true}) {
         for (int route = 0; route < 3; ++route) {
             ControlStore store; CommandParser parser(store);
-            assert(parser.parse(profile));
+            assert(pads ? padLayout(parser) : factoryLayout(parser));
             assert(parser.parse("SET ECHO_LEVEL 0"));
-            if (route == 2) assert(parser.parse("PANEL BUTTON CLASSIC 3 ACTION TRIGGER"));
+            if (route == 2) assert(parser.parse("PANEL BUTTON 3 ACTION TRIGGER"));
             auto engine = std::make_unique<AudioEngine>(); engine->begin();
             int16_t block[480];
             engine->render(store.snapshot(), block, 480);
@@ -1675,7 +1633,7 @@ void testTwoTonePitchTrajectories() {
     for (int route = 0; route < 2; ++route) {
         for (unsigned variant = 0; variant < 3; ++variant) {
             ControlStore store; CommandParser parser(store);
-            assert(parser.parse("SET PROFILE EXTENDED"));
+            assert(padLayout(parser));
             assert(parser.parse("SET TUNE_HZ 220"));
             assert(parser.parse("SET LFO_RATE_HZ 2"));
             assert(parser.parse("SET ECHO_LEVEL 0"));
@@ -1693,12 +1651,20 @@ void testTwoTonePitchTrajectories() {
                 engine->render(store.snapshot(), block, 2400);
                 if (i >= 10) frequency[variant][i-10] = estimateFrequency(block, 2400);
             }
-            assert(frequency[variant][4] > 350);
-            assert(frequency[variant][9] < 160);
+            if (variant == 0) {
+                // SIREN two-tone: only the selected pitch and 0.62 of it.
+                int high = 0, low = 0;
+                for (float value : frequency[0]) {
+                    high += fabsf(value - 220.0f) < 3.0f;
+                    low += fabsf(value - 136.4f) < 3.0f;
+                }
+                assert(high >= 2 && low >= 2 && high + low >= 7);
+            } else {
+                assert(frequency[variant][4] > 350);
+                assert(frequency[variant][9] < 160);
+            }
         }
-        // RC rises quickly and rounds off; triangle continues rising; square plateaus.
-        assert(frequency[0][1] > frequency[1][1] + 70);
-        assert(frequency[2][1] > frequency[0][1] + 30);
+        // Triangle continues rising; square plateaus.
         assert(frequency[1][4] > frequency[1][1] + 150);
         assert(fabsf(frequency[2][4] - frequency[2][1]) < 10);
     }
@@ -1707,7 +1673,7 @@ void testTwoTonePitchTrajectories() {
 void testLickshotArticulations() {
     for (unsigned variant = 2; variant <= 4; ++variant) {
         ControlStore store; CommandParser parser(store);
-        assert(parser.parse("SET PROFILE EXTENDED"));
+        assert(padLayout(parser));
         assert(parser.parse("SET ECHO_LEVEL 0"));
         assert(parser.parse("SET LFO_RATE_HZ 4"));
         char command[64]; snprintf(command, sizeof(command), "PAD_CONFIG 3 LICKSHOT %u 0", variant);
@@ -1739,7 +1705,7 @@ void testDryToneAndContour() {
     float highEnergy[3] = {};
     for (int version = 0; version < 3; ++version) {
         auto engine = std::make_unique<AudioEngine>(); engine->begin();
-        ControlState state; state.profile = PerformanceProfile::Extended;
+        ControlState state; padState(state);
         state.mode = SirenMode::Square; state.modulationEnabled = false;
         state.tuneHz = 220; state.echoLevel = 0;
         state.dryToneHz = version == 0 ? 19000 : 500;
@@ -1764,26 +1730,17 @@ void testDryToneAndContour() {
     }
     assert(highEnergy[1] < highEnergy[0] * .5f);
     assert(highEnergy[2] > highEnergy[1] * 3);
-    auto a = std::make_unique<AudioEngine>(), b = std::make_unique<AudioEngine>();
-    a->begin(); b->begin();
-    ControlState neutral, edited; neutral.trigger = edited.trigger = true;
-    edited.dryToneHz = 200; edited.filterContourOctaves = 4;
-    int16_t left[480], right[480];
-    for (int i = 0; i < 100; ++i) {
-        a->render(neutral, left, 480); b->render(edited, right, 480);
-        assert(memcmp(left, right, sizeof(left)) == 0);
-    }
 }
 
-void testProfileSwitchFadesDryTone() {
-    // Leaving Extended must fade the Tone filter out (5 ms), not drop it at
+void testToneBypassFadesOut() {
+    // Turning the Tone filter off must fade it out (5 ms), not drop it at
     // once. Switch at several waveform phases and keep the worst step.
     int steadyJump = 0, switchJump = 0;
     for (int offset = 0; offset < 480; offset += 24) {
         auto engine = std::make_unique<AudioEngine>();
         engine->begin();
         ControlState state;
-        state.profile = PerformanceProfile::Extended;
+        padState(state);
         state.mode = SirenMode::Sine1;
         state.hold = true;
         state.dryToneHz = 500.0f;
@@ -1798,7 +1755,7 @@ void testProfileSwitchFadesDryTone() {
                 previous = block[i];
             }
         }
-        state.profile = PerformanceProfile::Classic;
+        state.dryToneHz = 19000.0f;
         engine->render(state, block, 8);
         for (int i = 0; i < 8; ++i) {
             switchJump = std::max(switchJump, abs(block[i] - previous));
@@ -1827,7 +1784,7 @@ void testColoredEchoDecay() {
 
 void testPerformanceMenu() {
     ControlStore store; CommandParser parser(store);
-    assert(parser.parse("SET PROFILE EXTENDED"));
+    assert(padLayout(parser));
     auto click = [&]() { assert(parser.parse("ENCODER_SWITCH 1")); assert(parser.parse("ENCODER_SWITCH 0")); };
     auto go = [&](const char *key) {
         unsigned steps = 0;
@@ -1854,9 +1811,7 @@ void testPerformanceMenu() {
     assert(store.snapshot().mode == SirenMode::Gunshot);
     assert(parser.parse("PAD 1 1")); assert(parser.parse("PAD 1 0"));
     assert(store.snapshot().mode == SirenMode::Gunshot);
-    assert(!parser.parse("PANEL BUTTON CLASSIC 1 ACTION ECHO_SPIN"));
-    assert(!parser.parse("PANEL BUTTON CLASSIC 1 ACTION ECHO_LOOP"));
-    assert(parser.parse("PANEL BUTTON EXTENDED 1 ACTION ECHO_CUT"));
+    assert(parser.parse("PANEL BUTTON 1 ACTION ECHO_CUT"));
     go("BACK"); go("BACK");
     const float depth = store.snapshot().lfoDepthOctaves;
     assert(parser.parse("PAD 1 1")); assert(parser.parse("ENCODER_ROTATE NEXT"));
@@ -1865,7 +1820,7 @@ void testPerformanceMenu() {
 
 void testPadMemories() {
     ControlStore store; CommandParser parser(store);
-    assert(parser.parse("SET PROFILE EXTENDED"));
+    assert(padLayout(parser));
     for (unsigned pad = 1; pad <= 4; ++pad) {
         char command[64];
         snprintf(command, sizeof(command), "PAD %u 1", pad); assert(parser.parse(command));
@@ -1879,7 +1834,7 @@ void testPadMemories() {
     const PanelSettings saved = parser.panelSettings();
     ControlStore reboot; CommandParser restored(reboot);
     assert(restored.applyPanelSettings(saved));
-    assert(restored.parse("SET PROFILE EXTENDED"));
+    assert(padLayout(restored));
     assert(!reboot.snapshot().trigger && !reboot.snapshot().hold && !reboot.snapshot().echoLoop);
     assert(restored.parse("SET ECHO_LEVEL 0.7")); assert(restored.parse("SET MASTER 0.3"));
     for (unsigned pad = 1; pad <= 4; ++pad) {
@@ -1897,11 +1852,8 @@ void testPadMemories() {
         snprintf(command, sizeof(command), "PAD %u 0", pad); assert(restored.parse(command));
         assert(restored.parse("POT 1 0")); assert(restored.pickupWaiting(1));
     }
-    PanelSettingsV1 legacy = static_cast<const PanelSettingsV1 &>(saved); legacy.schemaVersion = 1;
-    legacy.profiles[0].buttons[0].action = ButtonAction::EchoLoop;
-    PanelSettings migrated; assert(migratePanelSettings(legacy, migrated));
-    assert(migrated.schemaVersion == 2 && !migrated.patches[0].valid);
-    assert(migrated.profiles[0].buttons[0].action == ButtonAction::None);
+    PanelSettings outdated = saved; outdated.schemaVersion = 2;
+    assert(!restored.applyPanelSettings(outdated));
     PanelSettings corrupt = saved; corrupt.patches[0].state.tuneHz = NAN;
     assert(!restored.applyPanelSettings(corrupt));
     assert(restored.panelSettings().patches[0].state.tuneHz == 220);
@@ -1939,29 +1891,29 @@ void testPanelValidationAndCancelledClicks() {
     const char *invalid[] = {
         "PANEL ENCODER LIVE_PITCH 257 268", "PANEL ENCODER LIVE_PITCH 1 268",
         "PANEL ENCODER LIVE_PITCH 4294967297 12",
-        "PANEL BUTTON EXTENDED 1 SOUND CLASSIC 256 0",
-        "PANEL BUTTON EXTENDED 4294967297 SOUND CLASSIC 0 0",
-        "PANEL POT CLASSIC 1 RANGE 100", "PANEL POT CLASSIC 1 MODE UNKNOWN",
-        "PANEL POT CLASSIC 1 TARGET UNKNOWN", "PANEL BEHAVIOR UNKNOWN",
-        "PANEL BUTTON CLASSIC 1 ACTION UNKNOWN", "PANEL UNKNOWN"
+        "PANEL BUTTON 1 SOUND CLASSIC 256 0",
+        "PANEL BUTTON 4294967297 SOUND CLASSIC 0 0",
+        "PANEL POT 1 RANGE 100", "PANEL POT 1 MODE UNKNOWN",
+        "PANEL POT 1 TARGET UNKNOWN", "PANEL BEHAVIOR UNKNOWN",
+        "PANEL BUTTON 1 ACTION UNKNOWN", "PANEL UNKNOWN"
     };
     for (const char *command : invalid) {
         const unsigned revision = parser.panelSettingsRevision();
         assert(parser.parse("PANEL BEGIN"));
-        assert(parser.parse("PANEL POT CLASSIC 1 TARGET NONE"));
+        assert(parser.parse("PANEL POT 1 TARGET NONE"));
         assert(!parser.parse(command));
         assert(!parser.parse("PANEL COMMIT"));
         assert(parser.panelSettingsRevision() == revision);
-        assert(parser.panelSettings().profiles[0].pots[0].target == PotTarget::Pitch);
+        assert(parser.panelSettings().pots[0].target == PotTarget::Pitch);
     }
     PanelSettings corrupt = factoryPanelSettings();
-    corrupt.profiles[0].pots[0].mode = static_cast<PotMode>(255);
+    corrupt.pots[0].mode = static_cast<PotMode>(255);
     assert(!parser.applyPanelSettings(corrupt));
     corrupt = factoryPanelSettings();
-    corrupt.profiles[1].pots[0].zones[0] = NAN;
+    corrupt.pots[0].zones[0] = NAN;
     assert(!parser.applyPanelSettings(corrupt));
     corrupt = factoryPanelSettings();
-    corrupt.profiles[0].buttons[0].sound = static_cast<PanelSound>(255);
+    corrupt.buttons[0].sound = static_cast<PanelSound>(255);
     assert(!parser.applyPanelSettings(corrupt));
 
     assert(parser.parse("ENCODER_SWITCH 1"));
@@ -1985,7 +1937,7 @@ void testPanelValidationAndCancelledClicks() {
 void testPatchTransactionAndRemoteGates() {
     ControlStore store;
     CommandParser parser(store);
-    assert(parser.parse("SET PROFILE EXTENDED"));
+    assert(padLayout(parser));
     assert(parser.parse("PANEL SAVE 1"));
     char patch[512] = "PANEL PATCH 2";
     for (unsigned i = 0; i < kSoundPatchValueCount; ++i) {
@@ -2026,10 +1978,6 @@ void testPatchTransactionAndRemoteGates() {
     state = store.snapshot();
     assert(!state.hold && !state.modUp && !state.echoSpin);
     assert(parser.setPhysicalPad(1, false));
-    assert(parser.parse("HOLD 1"));
-    assert(parser.parse("SET PROFILE CLASSIC"));
-    assert(parser.parse("ENCODER_ROTATE NEXT"));
-    assert(!store.snapshot().hold);
 
     // Device errors no longer hide NVS errors or the menu footer.
     parser.setDeviceStatus("I2S WRITE FAILED");
@@ -2047,7 +1995,7 @@ void testVariantSaveRule() {
     // sound edits stay live until SAVE PATCH.
     ControlStore store;
     CommandParser parser(store);
-    assert(parser.parse("SET PROFILE EXTENDED"));
+    assert(padLayout(parser));
     auto click = [&]() { assert(parser.parse("ENCODER_SWITCH 1")); assert(parser.parse("ENCODER_SWITCH 0")); };
     auto go = [&](const char *key) {
         unsigned steps = 0;
@@ -2173,7 +2121,7 @@ void testTempoControls() {
     assert(store.snapshot().delayMs == 1000);
     assert(parser.parse("SET DELAY_MS 375"));
 
-    assert(parser.parse("PANEL BUTTON CLASSIC 4 ACTION TAP_TEMPO"));
+    assert(parser.parse("PANEL BUTTON 4 ACTION TAP_TEMPO"));
     const unsigned sequence = store.snapshot().activationSequence;
     assert(parser.parse("PAD 4 1"));
     const unsigned revision = parser.panelRevision();
@@ -2187,10 +2135,10 @@ void testTempoControls() {
     ControlStore reboot;
     CommandParser restored(reboot);
     assert(restored.applyPanelSettings(parser.panelSettings()));
-    assert(restored.panelSettings().profiles[0].buttons[3].action == ButtonAction::TapTempo);
+    assert(restored.panelSettings().buttons[3].action == ButtonAction::TapTempo);
     assert(!reboot.snapshot().tempo.known && !reboot.snapshot().tempo.lfoSync);
 
-    assert(parser.parse("SET PROFILE EXTENDED"));
+    assert(padLayout(parser));
     assert(parser.parse("PANEL SAVE 1"));
     assert(parser.parse("PANEL RECALL 1"));
     assert(store.snapshot().tempo.lfoSync);
@@ -2213,7 +2161,6 @@ void testTempoAudioContinuity() {
     ControlState state;
     state.hold = true;
     state.tempo.known = state.tempo.echoSync = state.tempo.lfoSync = true;
-    state.classicRateUsesRate = true;
     int16_t actual[480], expected[480];
     bool tail = false;
     for (unsigned block = 0; block < 260; ++block) {
@@ -2239,7 +2186,7 @@ void testTempoAudioContinuity() {
     reference = std::make_unique<AudioEngine>();
     synced->begin(); reference->begin();
     state = ControlState{};
-    state.profile = PerformanceProfile::Extended;
+    padState(state);
     state.lfoShape = LfoShape::Triangle;
     state.tempo.known = state.tempo.lfoSync = true;
     state.retrigger = true;
@@ -2274,7 +2221,6 @@ int main() {
     testShortTriggerEvents();
     testClassicAutomaticVoices();
     testSine1DynamicVoicing();
-    testSharedSineVoicing();
     testSine2DynamicVoicing();
     testSine2Stability();
     testSine1SafetyDcAndGain();
@@ -2308,8 +2254,8 @@ int main() {
     testEchoLoop();
     testFractionalEchoLoopKeepsHighs();
     testEchoCutPreservesLoop();
-    testProfileSwitchFadesDryTone();
+    testToneBypassFadesOut();
     testEngine();
-    testProfileKeepsTail();
+    testModeChangeKeepsTail();
     puts("native DSP tests passed");
 }

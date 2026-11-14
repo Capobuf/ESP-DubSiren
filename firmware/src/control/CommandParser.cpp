@@ -70,12 +70,6 @@ bool CommandParser::parse(const String &rawCommand) {
 
         if (name == "MODE") {
             if (!parseMode(valueText, state.mode)) return false;
-            if (state.mode >= SirenMode::Lickshot && state.profile == PerformanceProfile::Classic) return false;
-        } else if (name == "PROFILE") {
-            if (valueText == "CLASSIC") performance_.setProfile(PerformanceProfile::Classic);
-            else if (valueText == "EXTENDED") performance_.setProfile(PerformanceProfile::Extended);
-            else return false;
-            return true;
         } else if (name == "CLASSIC_PITCH") {
             if (valueText == "LOW") state.classicPitch = ClassicPitch::Low;
             else if (valueText == "MID") state.classicPitch = ClassicPitch::Mid;
@@ -83,7 +77,6 @@ bool CommandParser::parse(const String &rawCommand) {
             else return false;
             state.tuneHz = performance_.classicPitchHz(
                 static_cast<unsigned>(state.classicPitch));
-            state.classicPitchUsesTune = true;
             state.pitchZonesActive = true;
         } else if (name == "CLASSIC_MOD") {
             if (valueText == "SLOW") state.classicModulation = ClassicModulation::Slow;
@@ -94,12 +87,10 @@ bool CommandParser::parse(const String &rawCommand) {
             if (state.classicModulation != ClassicModulation::Manual)
                 state.lfoRateHz = performance_.classicRateHz(
                     static_cast<unsigned>(state.classicModulation));
-            state.classicRateUsesRate = true;
             state.rateZonesActive = true;
         } else if (name == "LFO_SHAPE") {
             if (!parseLfoShape(valueText, state.lfoShape)) return false;
         } else if (name == "LICKSHOT_MODE") {
-            if (state.profile != PerformanceProfile::Extended) return false;
             if (valueText == "LEGACY") state.lickshotArticulation = LickshotArticulation::Legacy;
             else if (valueText == "SHOT") state.lickshotArticulation = LickshotArticulation::Shot;
             else if (valueText == "ROLL") state.lickshotArticulation = LickshotArticulation::Roll;
@@ -115,27 +106,23 @@ bool CommandParser::parse(const String &rawCommand) {
             return false;
         } else if (name == "PITCH_POSITION" || name == "RATE_POSITION") {
             if (value < 0.0f || value > 1.0f) return false;
+            // A position follows the control's stored mode: zones or continuous.
             if (name == "PITCH_POSITION") {
                 state.pitchPosition = value;
                 state.classicPitch = static_cast<ClassicPitch>(PerformanceConfig::selectorZone(
                     value, static_cast<int>(state.classicPitch), 3));
-                state.tuneHz = state.profile == PerformanceProfile::Extended
-                    ? 80.0f * powf(20.0f, value)
-                    : performance_.classicPitchHz(
-                        static_cast<unsigned>(state.classicPitch));
-                state.classicPitchUsesTune = true;
-                state.pitchZonesActive = state.profile == PerformanceProfile::Classic;
+                state.tuneHz = state.pitchZonesActive
+                    ? performance_.classicPitchHz(static_cast<unsigned>(state.classicPitch))
+                    : 80.0f * powf(20.0f, value);
             } else {
                 state.ratePosition = value;
                 state.classicModulation = static_cast<ClassicModulation>(PerformanceConfig::selectorZone(
                     value, static_cast<int>(state.classicModulation), 4));
-                if (state.profile == PerformanceProfile::Extended)
+                if (!state.rateZonesActive)
                     state.lfoRateHz = 0.15f * powf(20.0f / 0.15f, value);
                 else if (state.classicModulation != ClassicModulation::Manual)
                     state.lfoRateHz = performance_.classicRateHz(
                         static_cast<unsigned>(state.classicModulation));
-                state.classicRateUsesRate = true;
-                state.rateZonesActive = state.profile == PerformanceProfile::Classic;
             }
         } else if (name == "ECHO_FILTER") {
             if (value < -1.0f || value > 1.0f) return false;
@@ -171,17 +158,14 @@ bool CommandParser::parse(const String &rawCommand) {
             state.echoFilterFlat = false;
             state.lowPassHz = clampValue(value, 200.0f, 19000.0f);
         } else if (name == "LICKSHOT_LENGTH_MS" || name == "LICKSHOT_PUNCH_OCT" || name == "LICKSHOT_PITCH_MS") {
-            if (state.profile != PerformanceProfile::Extended) return false;
             if (name == "LICKSHOT_LENGTH_MS") state.lickshotLengthMs = clampValue(value, 20.0f, 1000.0f);
             else if (name == "LICKSHOT_PUNCH_OCT") state.lickshotPunchOctaves = clampValue(value, 0.0f, 3.0f);
             else state.lickshotPitchMs = clampValue(value, 10.0f, 300.0f);
         } else if (name == "DRY_TONE_HZ" || name == "FILTER_CONTOUR_OCT" || name == "FILTER_CONTOUR_MS") {
-            if (state.profile != PerformanceProfile::Extended) return false;
             if (name == "DRY_TONE_HZ") state.dryToneHz = clampValue(value, 200.0f, 19000.0f);
             else if (name == "FILTER_CONTOUR_OCT") state.filterContourOctaves = clampValue(value, -4.0f, 4.0f);
             else state.filterContourMs = clampValue(value, 10.0f, 3000.0f);
         } else if (name == "ECHO_COLOR") {
-            if (state.profile != PerformanceProfile::Extended) return false;
             state.echoColor = clampValue(value, 0.0f, 1.0f);
         } else if (name == "MASTER") {
             state.masterVolume = clampValue(value, 0.0f, 1.0f);
@@ -307,70 +291,66 @@ bool CommandParser::parsePanelCommand(const String &command) {
         return performance_.configureEncoder(action, step, range);
     }
     if (command.startsWith("PANEL POT ")) {
-        char profileText[12] = {}, field[12] = {}, valueText[24] = {};
+        char field[12] = {}, valueText[24] = {};
         unsigned pot = 0;
-        PerformanceProfile profile;
-        if (sscanf(command.c_str(), "PANEL POT %11s %9u %11s",
-                   profileText, &pot, field) != 3 ||
-            !parseProfileName(profileText, profile)) return false;
+        if (sscanf(command.c_str(), "PANEL POT %9u %11s",
+                   &pot, field) != 2) return false;
         if (strcmp(field, "TARGET") == 0) {
             char extra = 0;
-            if (sscanf(command.c_str(), "PANEL POT %11s %9u TARGET %23s %c",
-                       profileText, &pot, valueText, &extra) != 3) return false;
+            if (sscanf(command.c_str(), "PANEL POT %9u TARGET %23s %c",
+                       &pot, valueText, &extra) != 2) return false;
             PotTarget target;
             return parsePotTargetName(valueText, target) &&
-                performance_.configurePotTarget(profile, pot, target);
+                performance_.configurePotTarget(pot, target);
         }
         if (strcmp(field, "MODE") == 0) {
             char extra = 0;
-            if (sscanf(command.c_str(), "PANEL POT %11s %9u MODE %23s %c",
-                       profileText, &pot, valueText, &extra) != 3) return false;
+            if (sscanf(command.c_str(), "PANEL POT %9u MODE %23s %c",
+                       &pot, valueText, &extra) != 2) return false;
             if (strcmp(valueText, "CONTINUOUS") == 0)
-                return performance_.configurePotMode(profile, pot, PotMode::Continuous);
+                return performance_.configurePotMode(pot, PotMode::Continuous);
             if (strcmp(valueText, "ZONES") == 0)
-                return performance_.configurePotMode(profile, pot, PotMode::Zones);
+                return performance_.configurePotMode(pot, PotMode::Zones);
             return false;
         }
         if (strcmp(field, "RANGE") == 0) {
             float minimum = 0.0f, maximum = 0.0f;
             char extra = 0;
-            if (sscanf(command.c_str(), "PANEL POT %11s %9u RANGE %f %f %c",
-                       profileText, &pot, &minimum, &maximum, &extra) != 4) return false;
-            return performance_.configurePotRange(profile, pot, minimum, maximum);
+            if (sscanf(command.c_str(), "PANEL POT %9u RANGE %f %f %c",
+                       &pot, &minimum, &maximum, &extra) != 3) return false;
+            return performance_.configurePotRange(pot, minimum, maximum);
         }
         if (strcmp(field, "ZONES") == 0) {
             float low = 0.0f, middle = 0.0f, high = 0.0f;
             char extra = 0;
-            if (sscanf(command.c_str(), "PANEL POT %11s %9u ZONES %f %f %f %c",
-                       profileText, &pot, &low, &middle, &high, &extra) != 5) return false;
-            return performance_.configurePotZones(profile, pot, low, middle, high);
+            if (sscanf(command.c_str(), "PANEL POT %9u ZONES %f %f %f %c",
+                       &pot, &low, &middle, &high, &extra) != 4) return false;
+            return performance_.configurePotZones(pot, low, middle, high);
         }
         return false;
     }
     if (command.startsWith("PANEL BUTTON ")) {
-        char profileText[12] = {}, field[12] = {}, valueText[24] = {};
+        char field[12] = {}, valueText[24] = {};
         unsigned button = 0;
-        PerformanceProfile profile;
-        if (sscanf(command.c_str(), "PANEL BUTTON %11s %9u %11s",
-                   profileText, &button, field) != 3 ||
-            !parseProfileName(profileText, profile)) return false;
+        if (sscanf(command.c_str(), "PANEL BUTTON %9u %11s",
+                   &button, field) != 2) return false;
         if (strcmp(field, "ACTION") == 0) {
             char extra = 0;
-            if (sscanf(command.c_str(), "PANEL BUTTON %11s %9u ACTION %23s %c",
-                       profileText, &button, valueText, &extra) != 3) return false;
+            if (sscanf(command.c_str(), "PANEL BUTTON %9u ACTION %23s %c",
+                       &button, valueText, &extra) != 2) return false;
             ButtonAction action;
             return parseButtonActionName(valueText, action) &&
-                performance_.configureButtonAction(profile, button, action);
+                performance_.configureButtonAction(button, action);
         }
         if (strcmp(field, "SOUND") == 0) {
             unsigned variant = 0, latch = 0;
             char extra = 0;
-            if (sscanf(command.c_str(), "PANEL BUTTON %11s %9u SOUND %23s %9u %9u %c",
-                       profileText, &button, valueText, &variant, &latch, &extra) != 5 ||
+            if (sscanf(command.c_str(), "PANEL BUTTON %9u SOUND %23s %9u %9u %c",
+                       &button, valueText, &variant, &latch, &extra) != 4 ||
                 latch > 1) return false;
             PanelSound sound;
             return PerformanceController::parseSound(valueText, sound) &&
-                performance_.configureButtonSound(profile, button, sound,
+                performance_.configureButtonSound(button, sound,
                                                    variant, latch != 0);
         }
         return false;
@@ -493,7 +473,7 @@ bool CommandParser::parseSyndrumWave(const String &text, SyndrumWave &wave) {
 }
 
 bool CommandParser::parseLfoShape(const String &text, LfoShape &shape) {
-    if (text == "CLASSIC") shape = LfoShape::Classic;
+    if (text == "SIREN" || text == "CLASSIC") shape = LfoShape::Classic;
     else if (text == "TRIANGLE") shape = LfoShape::Triangle;
     else if (text == "SQUARE") shape = LfoShape::Square;
     else if (text == "SAW_UP") shape = LfoShape::SawUp;
@@ -503,14 +483,6 @@ bool CommandParser::parseLfoShape(const String &text, LfoShape &shape) {
     else if (text == "PULSE_25") shape = LfoShape::Pulse25;
     else if (text == "PULSE_75") shape = LfoShape::Pulse75;
     else if (text == "MANUAL") shape = LfoShape::Manual;
-    else return false;
-    return true;
-}
-
-bool CommandParser::parseProfileName(const char *text,
-                                     PerformanceProfile &profile) {
-    if (strcmp(text, "CLASSIC") == 0) profile = PerformanceProfile::Classic;
-    else if (strcmp(text, "EXTENDED") == 0) profile = PerformanceProfile::Extended;
     else return false;
     return true;
 }

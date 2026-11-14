@@ -65,33 +65,27 @@ String panelSettingsJson() {
         (settings.encoderHoldAction == EncoderHoldAction::LivePitch
             ? "LIVE_PITCH" : "OFF") +
         "\",\"step\":" + static_cast<unsigned>(settings.encoderStepSemitones) +
-        ",\"range\":" + static_cast<unsigned>(settings.encoderRangeSemitones) + "},\"profiles\":{";
-    for (unsigned profile = 0; profile < 2; ++profile) {
-        if (profile) json += ",";
-        json += profile == 0 ? "\"CLASSIC\":{" : "\"EXTENDED\":{";
-        json += "\"pots\":[";
-        for (unsigned pot = 0; pot < 6; ++pot) {
-            if (pot) json += ",";
-            const PotConfig &config = settings.profiles[profile].pots[pot];
-            json += String("{\"target\":\"") + potTargetName(config.target) +
-                "\",\"mode\":\"" + potModeName(config.mode) +
-                "\",\"min\":" + String(config.minimum, 5) +
-                ",\"max\":" + String(config.maximum, 5) +
-                ",\"zones\":[" + String(config.zones[0], 5) + "," +
-                String(config.zones[1], 5) + "," + String(config.zones[2], 5) + "]}";
-        }
-        json += "],\"buttons\":[";
-        for (unsigned button = 0; button < 4; ++button) {
-            if (button) json += ",";
-            const ButtonConfig &config = settings.profiles[profile].buttons[button];
-            json += String("{\"action\":\"") + buttonActionName(config.action) +
-                "\",\"sound\":\"" + panelSoundName(config.sound) +
-                "\",\"variant\":" + static_cast<unsigned>(config.variant) +
-                ",\"latch\":" + (config.latch ? "true" : "false") + "}";
-        }
-        json += "]}";
+        ",\"range\":" + static_cast<unsigned>(settings.encoderRangeSemitones) + "},\"pots\":[";
+    for (unsigned pot = 0; pot < 6; ++pot) {
+        if (pot) json += ",";
+        const PotConfig &config = settings.pots[pot];
+        json += String("{\"target\":\"") + potTargetName(config.target) +
+            "\",\"mode\":\"" + potModeName(config.mode) +
+            "\",\"min\":" + String(config.minimum, 5) +
+            ",\"max\":" + String(config.maximum, 5) +
+            ",\"zones\":[" + String(config.zones[0], 5) + "," +
+            String(config.zones[1], 5) + "," + String(config.zones[2], 5) + "]}";
     }
-    json += "},\"patches\":[";
+    json += "],\"buttons\":[";
+    for (unsigned button = 0; button < 4; ++button) {
+        if (button) json += ",";
+        const ButtonConfig &config = settings.buttons[button];
+        json += String("{\"action\":\"") + buttonActionName(config.action) +
+            "\",\"sound\":\"" + panelSoundName(config.sound) +
+            "\",\"variant\":" + static_cast<unsigned>(config.variant) +
+            ",\"latch\":" + (config.latch ? "true" : "false") + "}";
+    }
+    json += "],\"patches\":[";
     for (unsigned pad = 0; pad < 4; ++pad) {
         if (pad) json += ",";
         json += "[";
@@ -118,11 +112,15 @@ void loadPanelSettings() {
     }
     PanelSettings stored;
     bool loaded = false;
-    if (storedSize == sizeof(PanelSettingsV1)) {
-        PanelSettingsV1 legacy;
-        loaded = panelPreferences.getBytes("settings", &legacy, sizeof(legacy)) == sizeof(legacy) && migratePanelSettings(legacy, stored);
-    } else if (storedSize == sizeof(stored)) {
-        loaded = panelPreferences.getBytes("settings", &stored, sizeof(stored)) == sizeof(stored);
+    // Layouts stored by an earlier schema are dropped: factory settings apply.
+    if (storedSize != sizeof(stored)) {
+        savedPanelSettingsRevision = 0;
+        return;
+    }
+    loaded = panelPreferences.getBytes("settings", &stored, sizeof(stored)) == sizeof(stored);
+    if (loaded && stored.schemaVersion != PanelSettings::kSchemaVersion) {
+        savedPanelSettingsRevision = 0;
+        return;
     }
     if (!loaded || !commandParser.applyPanelSettings(stored)) {
         commandParser.setPersistenceStatus("INVALID SAVED CONFIG");
@@ -225,8 +223,7 @@ bool sendStatus() {
     String buttons = "[";
     for (unsigned button = 1; button <= 4; ++button) {
         if (button > 1) buttons += ",";
-        buttons += String("\"") + commandParser.buttonActionNameFor(
-            displayState.profile, button) + "\"";
+        buttons += String("\"") + commandParser.buttonActionNameFor(button) + "\"";
     }
     buttons += "]";
     const String json =
@@ -275,8 +272,8 @@ bool sendStatus() {
         ",\"overlay\":{\"title\":\"" + commandParser.overlayTitle() +
         "\",\"value\":\"" + commandParser.overlayValue() + "\"}" +
         ",\"buttons\":" + buttons +
-        ",\"profile\":\"" + (displayState.profile == PerformanceProfile::Classic ? "CLASSIC" : "EXTENDED") +
-        "\",\"voice\":\"" + modeName(displayState.mode) +
+        ",\"padSelected\":" + (commandParser.selectedIsPad() ? "true" : "false") +
+        ",\"voice\":\"" + commandParser.voiceName() +
         "\",\"pitch\":\"" + pitchName(displayState.classicPitch) +
         "\",\"rate\":\"" + rateName(displayState.classicModulation) + "\"" +
         ",\"pitchMode\":\"" + (pitchZones ? "ZONES" : "CONTINUOUS") + "\"" +

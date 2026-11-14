@@ -182,9 +182,8 @@ class TkRuntimeTests(unittest.TestCase):
         settings = json.loads(json.dumps(self.app.panel_state["settings"]))
         # The two audit cases: a non-PLAY SOUND button with a leftover sound
         # and a CONTINUOUS pot with non-default zones.
-        settings["profiles"]["EXTENDED"]["buttons"][2].update(action="HOLD", sound="PING")
-        classic_pot = settings["profiles"]["CLASSIC"]["pots"][0]
-        classic_pot.update(mode="CONTINUOUS", zones=[0.1, 0.4, 0.9])
+        settings["buttons"][2].update(action="HOLD", sound="PING")
+        settings["pots"][0].update(mode="CONTINUOUS", zones=[0.1, 0.4, 0.9])
         save_panel_config(physical_ui.panel_config_path(), settings)
         self.app.disconnect()
         self.app.connect()

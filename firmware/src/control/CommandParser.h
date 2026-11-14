@@ -38,9 +38,8 @@ public:
         performance_.setEncoderPressed(physicalEncoder_, !physicalEncoder_);
     }
     bool physicalTrigger() const {
-        const auto profile = profileIndex(controls_.snapshot().profile);
         for (unsigned i = 0; i < 4; ++i) {
-            const auto action = performance_.settings().profiles[profile].buttons[i].action;
+            const auto action = performance_.settings().buttons[i].action;
             if (physicalPads_[i] && (action == ButtonAction::Trigger || action == ButtonAction::PlaySound)) return true;
         }
         return false;
@@ -103,9 +102,10 @@ public:
     }
     const char *persistenceStatus() const { return performance_.persistenceStatus(); }
     const char *deviceStatus() const { return deviceStatus_; }
-    const char *buttonActionNameFor(PerformanceProfile profile,
-                                    unsigned button) const {
-        return performance_.buttonActionNameFor(profile, button);
+    bool selectedIsPad() const { return performance_.selectedIsPad(); }
+    const char *voiceName() const { return performance_.voiceName(); }
+    const char *buttonActionNameFor(unsigned button) const {
+        return performance_.buttonActionNameFor(button);
     }
     bool pickupWaiting(unsigned pot) const {
         return performance_.pickupWaiting(pot);
@@ -130,7 +130,6 @@ private:
     static bool parseMode(const String &text, SirenMode &mode);
     static bool parseLfoShape(const String &text, LfoShape &shape);
     static bool parseSyndrumWave(const String &text, SyndrumWave &wave);
-    static bool parseProfileName(const char *text, PerformanceProfile &profile);
     static bool parsePotTargetName(const char *text, PotTarget &target);
     static bool parseButtonActionName(const char *text, ButtonAction &action);
     bool parsePanelCommand(const String &command);

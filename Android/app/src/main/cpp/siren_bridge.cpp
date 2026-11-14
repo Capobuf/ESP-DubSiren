@@ -58,14 +58,14 @@ void loadPanelSettings() {
     fseek(file, 0, SEEK_SET);
     PanelSettings stored;
     bool loaded = false;
-    if (storedSize == static_cast<long>(sizeof(PanelSettingsV1))) {
-        PanelSettingsV1 legacy;
-        loaded = fread(&legacy, 1, sizeof(legacy), file) == sizeof(legacy) &&
-                 migratePanelSettings(legacy, stored);
-    } else if (storedSize == static_cast<long>(sizeof(stored))) {
-        loaded = fread(&stored, 1, sizeof(stored), file) == sizeof(stored);
-    }
+    // Layouts stored by an earlier schema are dropped: factory settings apply.
+    const bool current = storedSize == static_cast<long>(sizeof(stored));
+    if (current) loaded = fread(&stored, 1, sizeof(stored), file) == sizeof(stored);
     fclose(file);
+    if (!current || (loaded && stored.schemaVersion != PanelSettings::kSchemaVersion)) {
+        savedPanelSettingsRevision = 0;
+        return;
+    }
     if (!loaded || !parser.applyPanelSettings(stored)) {
         parser.setPersistenceStatus("INVALID SAVED CONFIG");
     }
@@ -341,22 +341,20 @@ JNIEXPORT jint JNICALL JNI_FN(nativePanelRevision)(JNIEnv *, jobject) {
     return siren ? static_cast<jint>(siren->parser.panelRevision()) : 0;
 }
 
-// Current assignment of POT1..6 and BTN1..4 in the active profile, one per
-// line. Simulator aid only: the physical panel has no such labels.
+// Current assignment of POT1..6 and BTN1..4, one per line.
+// Simulator aid only: the physical panel has no such labels.
 JNIEXPORT jstring JNICALL JNI_FN(nativeControlLabels)(JNIEnv *env, jobject) {
     if (!siren) return env->NewStringUTF("");
-    const PerformanceProfile profile = siren->controls.snapshot().profile;
     const PanelSettings &settings = siren->parser.panelSettings();
     std::string text;
     for (unsigned pot = 0; pot < 6; ++pot) {
-        text += potTargetName(settings.profiles[profileIndex(profile)].pots[pot].target);
+        text += potTargetName(settings.pots[pot].target);
         text += '\n';
     }
     for (unsigned button = 1; button <= 4; ++button) {
-        text += siren->parser.buttonActionNameFor(profile, button);
+        text += siren->parser.buttonActionNameFor(button);
         text += '\n';
     }
-    text += profile == PerformanceProfile::Classic ? "CLASSIC" : "EXTENDED";
     return env->NewStringUTF(text.c_str());
 }
 

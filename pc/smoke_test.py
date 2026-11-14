@@ -10,8 +10,10 @@ import time
 from transport import SerialTransport
 
 
-# Factory Classic LOW/MID/HIGH, firmware PerformanceConfig::kClassicPitchHz.
-CLASSIC_PITCH_HZ = (261.63, 392.00, 587.33)
+# Factory pitch zones LOW/MID/HIGH, firmware PerformanceConfig::kClassicPitchHz.
+PITCH_ZONE_HZ = (330.0, 680.0, 1000.0)
+# SIREN/MANUAL sweep floor, firmware PerformanceConfig::kSirenFloorRatio.
+SIREN_FLOOR_RATIO = 0.12
 
 
 def samples(pcm: bytes) -> tuple[int, ...]:
@@ -100,7 +102,8 @@ class SmokeTest:
 
         self.send(
             "SET OUTPUT PC",
-            "SET PROFILE EXTENDED",
+            # A zoned Rate control left on MANUAL would force the MANUAL shape.
+            "SET CLASSIC_MOD MEDIUM",
             "SET MODE SINE1",
             "SET LFO_SHAPE TRIANGLE",
             "SET LFO_DEPTH_OCT 0",
@@ -243,48 +246,51 @@ class SmokeTest:
         self.send("RETRIGGER 0", "HOLD 1")
         print("RETRIGGER", {"start_hz": starts, "direction": directions})
 
+        # MANUAL ignores Depth: Up pulls the pitch to the selected one, release
+        # lets it sink slowly, Down pushes it to the floor (0.12 x pitch).
         self.send(
             "SET MODE SINE1",
             "SET LFO_SHAPE MANUAL",
-            "SET LFO_DEPTH_OCT 1",
             "SET TUNE_HZ 220",
             "MOD_UP 1",
         )
-        self.settle(0.25)
+        self.settle(0.80)
         hz_up = metrics(self.grab(40))[2]
-        self.send("MOD_UP 0", "MOD_DOWN 1")
+        self.send("MOD_UP 0")
         self.settle(0.25)
-        hz_down = metrics(self.grab(40))[2]
-        self.send("MOD_UP 1")
-        self.settle(0.25)
-        hz_both = metrics(self.grab(40))[2]
-        assert 430 <= hz_up <= 450
-        assert 105 <= hz_down <= 115
-        assert 215 <= hz_both <= 225
-        self.send("MOD_UP 0", "MOD_DOWN 0")
-        print("MANUAL", {"up_hz": hz_up, "down_hz": hz_down, "both_hz": hz_both})
+        hz_release = metrics(self.grab(40))[2]
+        self.send("MOD_DOWN 1")
+        self.settle(0.80)
+        hz_down = metrics(self.grab(80))[2]
+        self.send("MOD_DOWN 0")
+        floor_hz = 220 * SIREN_FLOOR_RATIO
+        assert 213 <= hz_up <= 223
+        assert 150 <= hz_release <= hz_up - 5
+        assert floor_hz - 4 <= hz_down <= floor_hz + 4
+        print("MANUAL", {"up_hz": hz_up, "release_hz": hz_release, "down_hz": hz_down})
 
-        # SET PROFILE releases Hold: send it again after every profile change.
-        self.send("SET MODE SINE1", "SET CLASSIC_MOD MANUAL",
-                  "SET PROFILE CLASSIC", "HOLD 1")
-        classic_hz = []
+        # The MANUAL rate zone forces the MANUAL shape; held Up keeps each
+        # pitch zone at its nominal frequency.
+        self.send("SET LFO_SHAPE TRIANGLE", "SET CLASSIC_MOD MANUAL", "MOD_UP 1")
+        zone_hz = []
         for pitch in ("LOW", "MID", "HIGH"):
             self.send(f"SET CLASSIC_PITCH {pitch}")
-            self.settle(0.20)
-            classic_hz.append(metrics(self.grab(40))[2])
-        for measured, expected in zip(classic_hz, CLASSIC_PITCH_HZ):
+            self.settle(0.80)
+            zone_hz.append(metrics(self.grab(40))[2])
+        for measured, expected in zip(zone_hz, PITCH_ZONE_HZ):
             assert abs(measured - expected) <= expected * 0.03, (measured, expected)
-        self.send("SET PROFILE EXTENDED", "HOLD 1", "SET LFO_DEPTH_OCT 0",
+        # Leaving the MANUAL zone gives the stored shape back.
+        self.send("MOD_UP 0", "SET CLASSIC_MOD MEDIUM", "SET LFO_DEPTH_OCT 0",
                   "SET TUNE_HZ 220")
         self.settle(0.20)
         assert 215 <= metrics(self.grab(30))[2] <= 225
-        print("CLASSIC_PROFILE", {"low_mid_high_hz": classic_hz,
-                                  "extended_restored": True})
+        print("PITCH_ZONES", {"low_mid_high_hz": zone_hz,
+                              "stored_shape_restored": True})
 
         shape_hashes = {}
         self.send("SET LFO_RATE_HZ 8", "SET LFO_DEPTH_OCT 1")
         for shape in (
-            "CLASSIC",
+            "SIREN",
             "TRIANGLE",
             "SQUARE",
             "SAW_UP",

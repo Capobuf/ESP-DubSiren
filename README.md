@@ -4,16 +4,18 @@ Dub siren controllata da una GUI Windows. Il DSP gira interamente sull'ESP32-S3
 e il PCM mono già elaborato può essere inviato al PC, a un DAC PCM5102A via
 I2S, oppure a entrambe le destinazioni senza resampling.
 
-La baseline predefinita **Classic** offre SINE 1, SINE 2, TEST TONE e
-SQUARE, Pitch a tre posizioni e Rate a tre velocità più Manual. Il dry usa solo
-un gate anti-click di 2 ms in attacco e 3 ms in rilascio. Echo Level zero esclude
+Il pannello ha un solo layout con opzioni. Quello di fabbrica offre SINE 1,
+SINE 2, TEST TONE e SQUARE, Pitch a tre posizioni e Rate a tre velocità più
+Manual. Con Decay a zero (default) il dry usa solo un gate anti-click di 2 ms
+in attacco e 3 ms in rilascio. Echo Level zero esclude
 completamente il wet. Le voci e la risposta dei controlli hanno una taratura
 di progetto; una corrispondenza sonora con strumenti esterni non è misurata.
 
-**Extended** conserva Lickshot, Sonar, Syndrum, Gunshot, Dynamic Sweep, forme
-LFO aggiuntive e controlli avanzati, e aggiunge i carrier SAW e TRIANGLE.
-Sine 1 e Sine 2 usano le stesse voci di
-Classic; Sonar emette ping pulsanti con cadenza regolata da Rate.
+L'encoder scorre in tutto 18 voci: alle quattro di base si aggiungono Sonar,
+Saw, Triangle, due Two Tone, cinque Lickshot, tre Ping (Syndrum) e Gunshot.
+Dynamic Sweep, forme LFO aggiuntive, Tone/Contour ed Echo Color/Loop/Spin sono
+opzioni dello stesso layout, raggiungibili dal menu; Sonar emette ping
+pulsanti con cadenza regolata da Rate.
 Il DSP/control C++ è condiviso da firmware
 e Virtual ESP. Tarature, fonti e limiti sono in [controls](docs/controls.md);
 le verifiche della revisione sono in [baseline validation](docs/baseline-validation.md).
@@ -89,18 +91,19 @@ del firmware; la libreria host viene ricompilata automaticamente quando quei
 sorgenti cambiano.
 
 La superficie predefinita presenta PITCH, RATE, ECHO LEVEL, ECHO TIME,
-ECHO FEEDBACK ed ECHO FILTER; BTN1 TRIGGER, BTN2 HOLD, BTN3 MANUAL MOD e
-BTN4 ECHO CUT. L'encoder cicla i quattro voicing; premendolo si apre il menu
-al rilascio del click. I sei pot e i quattro pulsanti sono configurabili per
-profilo dal controller C++ condiviso; Pickup evita salti dopo cambio profilo o
-parametro. In Extended la rotazione libera cambia la variante del pad;
-BTN1 premuto + rotazione regola Depth. Con gli altri pulsanti sonori
-fisicamente premuti, l'encoder applica un transpose live temporaneo; in
-Classic vale anche per BTN1. Il Master resta separato e non assegnabile sul
+ECHO FEEDBACK ed ECHO FILTER; BTN1 TRIGGER, BTN2 HOLD, BTN3 MOD UP e
+BTN4 ECHO CUT. L'encoder scorre le voci del Trigger; premendolo si apre il menu
+al rilascio del click. I sei pot e i quattro pulsanti sono configurabili da
+SETUP nel controller C++ condiviso; Pickup evita salti dopo un cambio di
+assegnazione o di parametro. Un pulsante può diventare un pad Play Sound con
+un suono proprio: quando è selezionato, la rotazione libera cambia la variante
+del pad. Con un pulsante Trigger o Play Sound
+fisicamente premuto, l'encoder applica un transpose live temporaneo; Depth si
+regola dal menu MOD o da un pot. Il Master resta separato e non assegnabile sul
 retro. La Home 320x172 mostra insieme etichette e valori fisici, con overlay
 temporanei dei pot.
 Il prodotto finale userà un display piccolo, principalmente testuale, per
-stato, parametri, menu e impostazioni. Classic ed Extended mostrano solo testo;
+stato, parametri, menu e impostazioni; la Home mostra solo testo e
 il driver ST7789 usa la configurazione del 5393, ancora da verificare su hardware.
 Dettagli: [pannello UI](docs/panel-ui.md).
 
@@ -120,8 +123,8 @@ Con l'hardware reale:
 2. scegliere **PC**, **PCM5102A** o **Both** nel selettore Output;
 3. premere **Connect** e attendere `Connected · firmware 0.9.0`;
 4. premere **Start Audio**;
-5. usare BTN1 Trigger, BTN2 Hold, BTN3 Manual Mod e BTN4 Echo Cut;
-   ruotare l'encoder per scegliere il voicing, premerlo per il menu.
+5. usare BTN1 Trigger, BTN2 Hold, BTN3 Mod Up e BTN4 Echo Cut;
+   ruotare l'encoder per scegliere la voce, premerlo per il menu.
 
 **Stop Audio** silenzia sia il PC sia il DAC. **Connect** prende il controllo
 delle uscite e le mantiene silenziose fino a **Start Audio**; **Disconnect**
@@ -145,8 +148,8 @@ Per creare ventotto brevi WAV di confronto direttamente dal PCM firmware
 ```
 
 Lo script stampa la directory temporanea che contiene i WAV. Usare
-`--output-dir <percorso>` per scegliere una destinazione persistente. Il profilo
-CLASSIC offre preset di progetto, non una riproduzione misurata di altri modelli.
+`--output-dir <percorso>` per scegliere una destinazione persistente. Le
+capture usano preset di progetto, non una riproduzione misurata di altri modelli.
 Le capture includono Dynamic Sweep su SINE1/LICKSHOT/SONAR, Syndrum up/down e
 sine/square, più Gunshot dry/echo; richiedono hardware reale e non costituiscono
 uno smoke test I2S/DAC.
@@ -211,7 +214,7 @@ con la scheda definitiva restano da verificare.
 ## Firmware per il pannello autonomo (issue #5-#12)
 
 La revisione aggiunge articolazioni Lickshot, Tone/Contour, Echo Color,
-menu Sound/Mod/Echo/Setup e quattro memorie Extended con SAVE/RECALL.
+menu Sound/Mod/Echo/Setup e quattro memorie sonore con SAVE/RECALL.
 Vedi [controlli](docs/controls.md), [menu e memorie](docs/panel-ui.md) e
 [pinout, build autonoma e verifiche hardware pendenti](docs/standalone.md).
 `STREAM 0` interrompe soltanto USB; `LOCAL_AUDIO 0` silenzia l'uscita locale.
