@@ -139,12 +139,15 @@ unverified on the [current PCB](../hardware/README.md).
 
 Rendering runs from `loop()`, never from `audioTask`. Home and Menu redraw on
 state changes, at most once every 100 ms; temporary parameter text expires
-after 1100 ms. The menu shows a gold title, three rows of large text (2x3)
-with the value on the right (boxed between arrows while editing), a scroll
-bar, the controller's footer and the BACK key. Text uses the classic GFX 5x7
-font scaled per axis (1x2 to 2x3), bold by drawing it
-twice; the glass has 3 mm rounded corners, so the layout keeps 8 px side
-margins. Each frame is drawn in a 110 kB `GFXcanvas16` and sent with one
+after 1100 ms. The menu shows a gold title, three rows of large text with the
+value on the right (boxed between arrows while editing), a scroll bar, the
+controller's footer and the BACK key. Text uses Teko SemiBold (SIL OFL 1.1)
+as Adafruit GFX fonts with cap heights of 10, 14, 21 and 26 px, in
+`firmware/src/display/fonts/`; each text takes the largest that fits, and a
+pot name too long for one line puts its first word small above the rest
+(`ECHO` / `FEEDBACK`). `python firmware/tools/make_display_fonts.py`
+regenerates them from a pinned, hash-checked copy of the font. The glass has
+3 mm rounded corners, so the layout keeps 8 px side margins. Each frame is drawn in a 110 kB `GFXcanvas16` and sent with one
 `drawRGBBitmap`, so the panel never shows a cleared screen; if the buffer
 cannot be allocated, drawing falls back to the panel directly. No PSRAM is
 required. `displayRenderUs` and `maxDisplayRenderUs` remain available in STATUS

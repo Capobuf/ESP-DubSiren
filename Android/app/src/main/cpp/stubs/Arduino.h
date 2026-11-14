@@ -34,6 +34,11 @@ inline double radians(double degrees) { return degrees * 0.017453292519943295; }
 // Declared only: Adafruit GFX names it in signatures the firmware never calls.
 class __FlashStringHelper;
 
+// Flash placement on the ESP32 (fonts); ordinary memory here.
+#ifndef PROGMEM
+#define PROGMEM
+#endif
+
 constexpr uint8_t LOW = 0;
 constexpr uint8_t HIGH = 1;
 constexpr uint8_t INPUT = 0;

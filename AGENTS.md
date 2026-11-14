@@ -15,7 +15,7 @@
 - **Grafica** (`app/src/main/java/com/capobuf/dubsiren/`):
   - `PcbArt.kt` disegna la faccia frontale del PCB da `app/src/main/assets/pcb_front.json`, generato da `python Android/tools/export_pcb_front.py`. Va rilanciato dopo ogni modifica di `hardware/kicad/ESP-DubSiren.kicad_pcb`.
   - `PanelView.kt` disegna manopole, encoder, tasti e display e gestisce il multitouch. Nessuna scritta oltre alla serigrafia del PCB: le funzioni dei comandi le mostra il display. Le posizioni dei comandi sono costanti in mm prese dal PCB: i tasti sono al centro dello switch, non sull'origine del footprint MX.
-- **Cosa segue il firmware:** le modifiche a DSP, controller e `PanelDisplay.cpp` arrivano nell'app ricompilando.
+- **Cosa segue il firmware:** le modifiche a DSP, controller e `PanelDisplay.cpp` arrivano nell'app ricompilando. I font del display (Teko SemiBold, OFL) sono in `firmware/src/display/fonts/` e si rigenerano con `python firmware/tools/make_display_fonts.py`.
 - **Cosa la rompe:** se cambia la versione di Adafruit GFX in `firmware/platformio.ini`, vanno aggiornati URL e SHA256 in `app/src/main/cpp/CMakeLists.txt`; un nuovo simbolo Arduino usato dal firmware va aggiunto negli stub.
 - **Build:** dalla cartella `Android`, con `JAVA_HOME` sulla JBR di Android Studio o su un JDK 17+, eseguire `.\gradlew.bat assembleRelease`. Gradle scrive in `%USERPROFILE%\.dubsiren-android`, fuori da OneDrive, che bloccava il packaging. Se un build fallisce non installare: l'APK in uscita sarebbe quella precedente.
 - **Installazione sui dispositivi:**

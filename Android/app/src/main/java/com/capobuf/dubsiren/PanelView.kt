@@ -6,6 +6,8 @@ import android.content.SharedPreferences
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.ColorMatrix
+import android.graphics.ColorMatrixColorFilter
 import android.graphics.LinearGradient
 import android.graphics.Paint
 import android.graphics.Path
@@ -117,7 +119,17 @@ class PanelView(context: Context, private val prefs: SharedPreferences) : View(c
 
     private val fill = Paint(Paint.ANTI_ALIAS_FLAG)
     private val stroke = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.STROKE }
-    private val pixelPaint = Paint().apply { isFilterBitmap = false }
+    // The 5393 is a 320x172 IPS panel, about 10 pixels per mm: seen as glass,
+    // not as enlarged squares. Filtered scaling, and black slightly lifted by
+    // the backlight (a visual approximation, not a measured panel value).
+    private val pixelPaint = Paint(Paint.FILTER_BITMAP_FLAG).apply {
+        colorFilter = ColorMatrixColorFilter(ColorMatrix(floatArrayOf(
+            0.97f, 0f, 0f, 0f, 6f,
+            0f, 0.97f, 0f, 0f, 6f,
+            0f, 0f, 0.97f, 0f, 8f,
+            0f, 0f, 0f, 1f, 0f)))
+    }
+    private val pixelGrid = Paint().apply { color = Color.argb(70, 0, 0, 0) }
     private val rect = RectF()
     private val path = Path()
 
@@ -295,6 +307,19 @@ class PanelView(context: Context, private val prefs: SharedPreferences) : View(c
         path.addRoundRect(rect, corner, corner, Path.Direction.CW)
         canvas.clipPath(path)
         canvas.drawBitmap(display, null, rect, pixelPaint)
+        // Gaps between pixels, only where a pixel spans several screen pixels.
+        val pixelMm = rect.width() / display.width
+        if (pixelMm * scale >= 4f) {
+            pixelGrid.strokeWidth = pixelMm * 0.15f
+            for (column in 1 until display.width) {
+                val x = rect.left + column * pixelMm
+                canvas.drawLine(x, rect.top, x, rect.bottom, pixelGrid)
+            }
+            for (row in 1 until display.height) {
+                val y = rect.top + row * pixelMm
+                canvas.drawLine(rect.left, y, rect.right, y, pixelGrid)
+            }
+        }
         // Glass reflection.
         fill.shader = LinearGradient(rect.left, rect.top, rect.left + rect.width() * 0.55f, rect.bottom,
             intArrayOf(Color.argb(34, 255, 255, 255), Color.argb(8, 255, 255, 255), Color.argb(0, 255, 255, 255)),

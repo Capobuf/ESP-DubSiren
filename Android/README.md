@@ -57,6 +57,13 @@ nel footprint: vetro, area attiva 32,35x17,4 mm con angoli R3, fori del modulo.
 La luce viene dall'alto a sinistra. Le parti alte (manopole, keycap, modulo
 display) mostrano il lato rivolto verso chi guarda.
 
+Il display imita il vetro IPS del 5393 (circa 10 pixel per mm): il
+framebuffer è scalato con filtro, non a quadretti, con il nero appena
+sollevato dalla retroilluminazione e il riflesso del vetro. La griglia tra i
+pixel compare solo quando un pixel copre almeno 4 punti dello schermo, cioè
+nella vista ingrandita. Sono approssimazioni visive, non misure del pannello;
+i pixel restano quelli del firmware.
+
 | Gesto | Equivalente fisico |
 |---|---|
 | Trascinamento verticale su un pot | rotazione; 55 mm di trascinamento = corsa di 300° (PTV111) |

@@ -21,11 +21,7 @@ public:
     uint32_t maximumRenderUs() const { return maximumRenderUs_; }
 
 private:
-    // Classic GFX font scaled per axis; bold draws it twice, one pixel apart.
-    struct Style {
-        uint8_t sx, sy;
-        bool bold;
-    };
+    enum class Arrow : uint8_t { Up, Down, Left, Right };
 
     static constexpr uint32_t kRefreshMs = 100;
     static constexpr uint32_t kOverlayDurationMs = 1100;
@@ -38,10 +34,17 @@ private:
     void drawBanner(const ControlState &state, bool linked);
     void drawEncoder(int16_t x, int16_t y);
     void drawKey(unsigned button, int16_t x, int16_t y, const ControlState &state);
-    void text(int16_t x, int16_t y, const char *value, Style style, uint16_t color);
-    // Largest style of the list that fits; the last one is cut to fit.
-    Style fitted(char *value, int16_t width, const Style *styles, unsigned count) const;
-    static int16_t textWidth(const char *value, Style style);
+    // Text at a baseline, in one of the GFX fonts of PanelDisplay.cpp.
+    void text(int16_t x, int16_t baseline, const char *value, const GFXfont *font,
+              uint16_t color);
+    void arrow(int16_t x, int16_t y, int16_t size, Arrow direction, uint16_t color);
+    // Largest font of the list that fits; the text is cut to fit the last one.
+    static const GFXfont *fitted(char *value, int16_t width, const GFXfont *const *fonts,
+                                 unsigned count);
+    static int16_t textWidth(const char *value, const GFXfont *font);
+    static int16_t capHeight(const GFXfont *font);
+    // "ECHO FEEDBACK" becomes "ECHO" and "FEEDBACK"; false without a space.
+    static bool splitFirstWord(char *value, char *rest);
     static bool displayedStateChanged(const ControlState &before,
                                       const ControlState &after);
 
