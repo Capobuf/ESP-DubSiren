@@ -71,7 +71,7 @@ public:
     unsigned overlayPot() const { return performance_.overlayPot(); }
     bool buttonDown(unsigned button) const { return performance_.buttonDown(button); }
     bool encoderPressed() const { return performance_.encoderPressed(); }
-    bool livePitchArmed() const { return performance_.livePitchArmed(); }
+    bool modUpTaps() const { return performance_.modUpTaps(); }
     float potValueNormalized(unsigned pot) const {
         return performance_.potValueNormalized(pot);
     }

@@ -28,7 +28,7 @@ never produces a false acceptance indication.
 | POT1..POT6 | `POT <1..6> <0..1>`; C++ applies the stored mapping |
 | BTN1 TRIGGER | `PAD 1 0|1` |
 | BTN2 HOLD | `PAD 2 0|1`; toggle on rising edge |
-| BTN3 MOD UP | `PAD 3 0|1` |
+| BTN3 MOD UP | `PAD 3 0|1`; TAP TEMPO outside MANUAL |
 | BTN4 ECHO CUT | `PAD 4 0|1` |
 | Encoder turn | `ENCODER_ROTATE PREV|NEXT`; steps the Trigger voice, or the selected pad's variant |
 | Encoder push | `ENCODER_SWITCH 0|1`; opens Menu on completed click/release |
@@ -41,12 +41,16 @@ including Play Sound, Echo Loop, Echo Spin and Tap Tempo, is assignable in
 SETUP. Pitch and Rate can use zones or continuous ranges;
 target-specific curves, validation and formatting live in C++. Pickup is the
 factory behavior, with an UP/DOWN direction shown until the physical pot
-crosses the current value. Rear Master is fixed and remains immediately live.
+crosses the current value. The first reading of each pot after power-on is
+taken at once, silently: at boot nothing stored outranks the knob, so a Rate
+pot sitting at SLOW is SLOW from the start. Pickup applies after a voice
+change, a patch recall or a new assignment. Rear Master is fixed and remains
+immediately live.
 
 Home is a map of the front panel, which has no silkscreen. Each cell sits
 where its control is: the top row stands for POT1-POT3 above the display, the
-bottom row for POT4-POT6 below it, the right cell of the middle row for the
-encoder beside it and the last row for the four keys. A pot cell shows only
+bottom row for POT4-POT6 below it, the middle row is the voice banner and the
+last row stands for the four keys. A pot cell shows only
 the assigned function and a horizontal bar with the current position: one
 segment per zone with zoned Pitch and Rate, centred for the bipolar Echo
 Filter. No number is shown in the cell. While Pickup waits, the bar turns red
@@ -54,9 +58,7 @@ with an up/down arrow. A key cell shows its action (for a
 Play Sound pad the family and variant), gold while pressed, red while latched
 (Hold, Echo Loop, a latched pad) and outlined green when it is the selected
 pad; Tap Tempo shows the BPM. While the encoder is held, pad keys show their
-shortcut in green. The encoder cell says what turning does: VOICE, VARIANT for
-a selected pad, PITCH while a Trigger or Play Sound key is held. The gold
-banner shows the Trigger voice or the pad sound, the live transpose and USB
+shortcut in green. The gold banner, across the whole width, shows the Trigger voice or the pad sound, the live transpose and USB
 when linked; a moved pot lights its cell and the banner shows the
 controller's title and value for 1100 ms. Persistence and device errors turn
 the banner red. Labels and values come from the C++ controller; Python does

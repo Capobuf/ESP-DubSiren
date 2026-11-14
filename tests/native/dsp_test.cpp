@@ -426,6 +426,28 @@ void testPanelDisplayState() {
     assert(strcmp(parser.displayModeName(), "HOME") == 0);
 }
 
+void testPowerOnPotReading() {
+    // Factory Rate is zoned and starts at MID: a pot already at SLOW when the
+    // panel powers on takes over at once, without waiting for Pickup.
+    ControlStore store;
+    CommandParser parser(store);
+    assert(store.snapshot().classicModulation == ClassicModulation::Medium);
+    assert(parser.setPhysicalPot(2, 0.05f));
+    assert(store.snapshot().classicModulation == ClassicModulation::Slow);
+    assert(!parser.pickupWaiting(2));
+    assert(parser.overlayTitle()[0] == '\0');
+    assert(parser.setPhysicalPot(2, 0.95f));
+    assert(store.snapshot().classicModulation == ClassicModulation::Manual);
+
+    // After that, Pickup still protects a changed value: a new voice resets
+    // it, and the knob must cross the stored value again.
+    assert(parser.setPhysicalPot(1, 0.5f));
+    assert(parser.parse("ENCODER_ROTATE NEXT"));
+    assert(parser.setPhysicalPot(1, 0.95f));
+    assert(parser.pickupWaiting(1));
+    assert(store.snapshot().classicPitch == ClassicPitch::Mid);
+}
+
 void testExtendedEncoderGestures() {
     ControlStore store;
     CommandParser parser(store);
@@ -1187,6 +1209,14 @@ void testClassicControls() {
     assert(parser.parse("PAD 2 0"));
     assert(parser.parse("PAD 2 1"));
     assert(!store.snapshot().hold);
+    // BTN3 bends only in MANUAL; with the SIREN shape it taps the tempo.
+    assert(parser.modUpTaps());
+    assert(parser.parse("PAD 3 1"));
+    assert(!store.snapshot().modUp);
+    assert(strcmp(parser.overlayTitle(), "TAP TEMPO") == 0);
+    assert(parser.parse("PAD 3 0"));
+    assert(parser.parse("SET CLASSIC_MOD MANUAL"));
+    assert(!parser.modUpTaps());
     assert(parser.parse("PAD 3 1"));
     assert(store.snapshot().modUp);
     assert(parser.parse("PAD 4 1"));
@@ -1286,7 +1316,9 @@ void testConfigurablePanel() {
     assert(factory.buttons[2].action == ButtonAction::ModUp);
     assert(factory.buttons[3].action == ButtonAction::EchoCut);
 
-    // Pickup waits for a crossing after an external parameter change.
+    // Pickup waits for a crossing after an external parameter change (the
+    // power-on reading before it is taken at once).
+    assert(parser.parse("POT 1 0.5"));
     assert(parser.parse("SET CLASSIC_PITCH MID"));
     const float baseTune = store.snapshot().tuneHz;
     assert(parser.parse("POT 1 0"));
@@ -1859,6 +1891,8 @@ void testPadMemories() {
     assert(restored.applyPanelSettings(saved));
     assert(padLayout(restored));
     assert(!reboot.snapshot().trigger && !reboot.snapshot().hold && !reboot.snapshot().echoLoop);
+    // Power-on scan of POT1, taken at once; Pickup below follows each recall.
+    assert(restored.parse("POT 1 0.5")); assert(!restored.pickupWaiting(1));
     assert(restored.parse("SET ECHO_LEVEL 0.7")); assert(restored.parse("SET MASTER 0.3"));
     for (unsigned pad = 1; pad <= 4; ++pad) {
         char command[64]; snprintf(command, sizeof(command), "PANEL RECALL %u", pad);
@@ -1951,6 +1985,9 @@ void testPanelValidationAndCancelledClicks() {
     assert(parser.parse("ENCODER_SWITCH 1"));
     assert(parser.parse("ENCODER_SWITCH 0"));
     assert(strcmp(parser.displayModeName(), "MENU") == 0);
+    // The power-on reading is silent; the next movement shows in the footer.
+    assert(parser.parse("POT 3 0.5"));
+    assert(strcmp(parser.menuFooter(), "TURN SELECT / PUSH OPEN") == 0);
     assert(parser.parse("POT 3 0"));
     assert(strstr(parser.menuFooter(), "ECHO LEVEL") != nullptr);
     assert(parser.parse("ENCODER_ROTATE NEXT"));
@@ -2044,10 +2081,15 @@ void testTapTempo() {
     PerformanceController panel(store);
     assert(panel.tapTempo(100000));
     assert(!store.snapshot().tempo.known);
+    assert(!store.snapshot().tempo.echoSync);
     assert(!panel.tapTempo(150000));
     assert(strstr(panel.overlayValue(), "IGNORED"));
     assert(panel.tapTempo(600000));
     assert(fabsf(store.snapshot().tempo.bpm - 120.0f) < .001f);
+    // A free echo follows the tapped tempo; the LFO keeps its own Rate.
+    assert(store.snapshot().tempo.echoSync && !store.snapshot().tempo.lfoSync);
+    assert(fabsf(store.snapshot().tempo.echoMs - 500.0f) < .001f);
+    assert(strcmp(panel.overlayTitle(), "TAP TEMPO") == 0);
     assert(panel.tapTempo(1110000));
     assert(fabsf(store.snapshot().tempo.bpm - 60000000.0f / 505000) < .001f);
     assert(panel.tapTempo(1600000));
@@ -2263,6 +2305,7 @@ int main() {
     testPadController();
     testQueuedPadActivation();
     testPanelDisplayState();
+    testPowerOnPotReading();
     testExtendedEncoderGestures();
     testDynamicSweep();
     testSyndrum();

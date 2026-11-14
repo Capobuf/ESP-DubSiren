@@ -111,7 +111,8 @@ public:
     // Display helpers: physical input state and a pot's target position 0..1.
     bool buttonDown(unsigned buttonNumber) const;
     bool encoderPressed() const { return encoderPressed_; }
-    bool livePitchArmed() const;
+    // Mod Up only acts in MANUAL; with any other shape its key taps the tempo.
+    bool modUpTaps() const;
     float potValueNormalized(unsigned potNumber) const;
     bool pickupWaiting(unsigned potNumber) const;
     int pickupDirection(unsigned potNumber) const;
@@ -210,6 +211,10 @@ private:
     bool soundLatchArmed_ = false;
     RemoteGates remoteGates_;
     PickupState pickup_[6];
+    // Per pot: false until its first reading since power-on.
+    bool potReported_[6] = {};
+    // Per key: a Mod Up press that tapped the tempo instead.
+    bool modUpTapping_[4] = {};
     bool tapStarted_ = false;
     uint32_t lastTapUs_ = 0;
     uint32_t tapIntervals_[4] = {};

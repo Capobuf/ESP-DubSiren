@@ -87,6 +87,12 @@ bool PerformanceController::tapTempo(uint32_t nowUs) {
     state.tempo.known = true;
     updateTempoTiming(state.tempo);
     controls_.set(state);
+    // Tapping is for the riddim: a free echo follows the tapped tempo.
+    if (!state.tempo.echoSync) {
+        setTempoSync(true, true);
+        snprintf(overlayTitle_, sizeof(overlayTitle_), "TAP TEMPO");
+        overlayPot_ = 0;
+    }
     snprintf(overlayValue_, sizeof(overlayValue_), "%.1f BPM", state.tempo.bpm);
     changed();
     return true;
@@ -403,13 +409,12 @@ bool PerformanceController::anyRelevantButtonDown() const {
     return false;
 }
 
-bool PerformanceController::buttonDown(unsigned buttonNumber) const {
-    return buttonNumber >= 1 && buttonNumber <= 4 && padDown_[buttonNumber - 1];
+bool PerformanceController::modUpTaps() const {
+    return effectiveLfoShape(controls_.snapshot()) != LfoShape::Manual;
 }
 
-bool PerformanceController::livePitchArmed() const {
-    return settings_.encoderHoldAction == EncoderHoldAction::LivePitch &&
-           anyRelevantButtonDown();
+bool PerformanceController::buttonDown(unsigned buttonNumber) const {
+    return buttonNumber >= 1 && buttonNumber <= 4 && padDown_[buttonNumber - 1];
 }
 
 float PerformanceController::potValueNormalized(unsigned potNumber) const {
@@ -434,7 +439,7 @@ void PerformanceController::updateGate(ControlState &state) {
         switch (buttons[index].action) {
             case ButtonAction::Trigger: trigger = true; break;
             case ButtonAction::PlaySound: trigger |= activePad_ >= 0; break;
-            case ButtonAction::ModUp: modUp = true; break;
+            case ButtonAction::ModUp: modUp |= !modUpTapping_[index]; break;
             case ButtonAction::ModDown: modDown = true; break;
             case ButtonAction::EchoCut: echoCut = true; break;
             case ButtonAction::EchoSpin: echoSpin = true; break;
@@ -479,7 +484,7 @@ bool PerformanceController::setPad(unsigned padNumber, bool pressed) {
     ControlState state = controls_.snapshot();
     ButtonConfig &button = settings_.buttons[index];
     // A quick tap can press and release between display refreshes.
-    if (pressed || button.action != ButtonAction::TapTempo) {
+    if (pressed || (button.action != ButtonAction::TapTempo && !modUpTapping_[index])) {
         overlayTitle_[0] = '\0';
         overlayValue_[0] = '\0';
     }
@@ -519,6 +524,10 @@ bool PerformanceController::setPad(unsigned padNumber, bool pressed) {
         else if (button.action == ButtonAction::TapTempo) {
             tapTempo();
             state = controls_.snapshot();
+        } else if (button.action == ButtonAction::ModUp && modUpTaps()) {
+            modUpTapping_[index] = true;
+            tapTempo();
+            state = controls_.snapshot();
         } else if (button.action == ButtonAction::PlaySound) {
             selectedPad_ = index;
             activePad_ = static_cast<int>(index);
@@ -526,6 +535,7 @@ bool PerformanceController::setPad(unsigned padNumber, bool pressed) {
         }
     } else {
         pressOrder_[index] = 0;
+        modUpTapping_[index] = false;
         if (!consumed_[index] && button.action == ButtonAction::PlaySound &&
             activePad_ == static_cast<int>(index)) {
             activePad_ = latestPressedSoundButton();
@@ -669,6 +679,14 @@ bool PerformanceController::setPot(unsigned potNumber, float position) {
     ControlState state = controls_.snapshot();
     const PotConfig &config = settings_.pots[index];
     PickupState &pickup = pickup_[index];
+    // The first reading after power-on is where the knob sits: nothing stored
+    // outranks it, so it applies at once instead of waiting for Pickup.
+    const bool firstReading = !potReported_[index];
+    potReported_[index] = true;
+    if (firstReading) {
+        pickup.seen = pickup.latched = true;
+        pickup.previous = position;
+    }
     bool apply = (settings_.potBehavior == PotBehavior::Jump && !pickup.force) || pickup.latched ||
                  config.target == PotTarget::None;
     if (!apply) {
@@ -711,6 +729,8 @@ bool PerformanceController::setPot(unsigned potNumber, float position) {
         snprintf(overlayValue_, sizeof(overlayValue_), "%s PICKUP - %s",
                  pickup.direction > 0 ? "UP" : "DOWN", value);
     }
+    // The power-on scan is not a gesture: no overlay for it.
+    if (firstReading) overlayTitle_[0] = overlayValue_[0] = '\0';
     changed();
     return true;
 }
@@ -802,6 +822,7 @@ void PerformanceController::resetMomentaries() {
         padDown_[index] = false;
         consumed_[index] = false;
         pressOrder_[index] = 0;
+        modUpTapping_[index] = false;
     }
     activePad_ = -1;
     encoderPressed_ = false;

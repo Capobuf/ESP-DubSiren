@@ -42,7 +42,7 @@ constexpr int16_t kKeyY = 132;
 constexpr int16_t kKeyX[4] = {8, 85, 162, 239};
 constexpr int16_t kKeyW = 73;
 constexpr int16_t kBannerX = kMargin;
-constexpr int16_t kBannerW = 201;
+constexpr int16_t kBannerW = kWidth - 2 * kMargin;
 constexpr int16_t kRadius = 5;
 
 // Menu.
@@ -155,7 +155,6 @@ void PanelDisplay::renderHome(const ControlState &state, bool linked) {
         drawPot(column + 4, kColumnX[column], kBottomY, state);
     }
     drawBanner(state, linked);
-    drawEncoder(kColumnX[2], kMiddleY);
     for (unsigned button = 1; button <= 4; ++button)
         drawKey(button, kKeyX[button - 1], kKeyY, state);
 }
@@ -258,34 +257,6 @@ void PanelDisplay::drawBanner(const ControlState &state, bool linked) {
                      "USB", kSmall, kInk);
 }
 
-void PanelDisplay::drawEncoder(int16_t x, int16_t y) {
-    const bool pressed = controller_.encoderPressed();
-    const uint16_t background = pressed ? kGold : kCell;
-    const uint16_t color = pressed ? kInk : kGold;
-    const uint16_t textColor = pressed ? kInk : kCream;
-    gfx_->fillRoundRect(x, y, kColumnW, kRowH, kRadius, background);
-
-    // The knob seen from above: ring, pointer and the push face.
-    const int16_t cx = x + 14, cy = y + kRowH / 2;
-    gfx_->fillCircle(cx, cy, 10, pressed ? kGoldDeep : kTrack);
-    gfx_->drawCircle(cx, cy, 10, color);
-    gfx_->drawCircle(cx, cy, 9, color);
-    gfx_->fillCircle(cx, cy, 3, color);
-    gfx_->drawFastVLine(cx, cy - 9, 4, color);
-
-    // Turning, then pushing.
-    const int16_t textX = x + 41, width = kColumnW - 45;
-    char line[24];
-    snprintf(line, sizeof(line), "%s", controller_.livePitchArmed() ? "PITCH"
-             : controller_.selectedIsPad() ? "VARIANT" : "VOICE");
-    arrow(x + 27, y + 9, 5, Arrow::Left, textColor);
-    arrow(x + 33, y + 9, 5, Arrow::Right, textColor);
-    text(textX, y + 18, line, fitted(line, width, kLabelFonts, 2), textColor);
-    gfx_->fillCircle(x + 33, y + 29, 3, textColor);
-    snprintf(line, sizeof(line), "MENU");
-    text(textX, y + 36, line, fitted(line, width, kLabelFonts, 2), textColor);
-}
-
 void PanelDisplay::drawKey(unsigned button, int16_t x, int16_t y,
                            const ControlState &state) {
     const ButtonConfig &config = controller_.panelSettings().buttons[button - 1];
@@ -306,6 +277,13 @@ void PanelDisplay::drawKey(unsigned button, int16_t x, int16_t y,
                 latched = state.hold && controller_.padHold(button) &&
                           controller_.currentPad() == button;
                 break;
+            case ButtonAction::ModUp:
+                // Outside MANUAL a Mod Up key taps the tempo.
+                if (!controller_.modUpTaps()) {
+                    snprintf(label, sizeof(label), "MOD UP");
+                    break;
+                }
+                [[fallthrough]];
             case ButtonAction::TapTempo:
                 snprintf(label, sizeof(label), "TAP TEMPO");
                 if (state.tempo.known) snprintf(detail, sizeof(detail), "%.0f BPM", state.tempo.bpm);
@@ -334,7 +312,7 @@ void PanelDisplay::drawKey(unsigned button, int16_t x, int16_t y,
     }
 
     // One centred line, or two: label and detail, or a label split in two.
-    const int16_t width = kKeyW - 8;
+    const int16_t width = kKeyW - 4;
     if (!detail[0] && textWidth(label, kMedium) > width) splitFirstWord(label, detail);
     if (!detail[0]) {
         const GFXfont *font = fitted(label, width, kLabelFonts, 2);

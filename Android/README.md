@@ -67,13 +67,15 @@ i pixel restano quelli del firmware.
 | Gesto | Equivalente fisico |
 |---|---|
 | Trascinamento verticale su un pot | rotazione; 55 mm di trascinamento = corsa di 300° (PTV111) |
+| Due dita sulla stessa manopola, ruotate | la manopola gira dello stesso angolo della linea tra le dita, come afferrandola; il secondo dito la prende anche fino a 8 mm fuori dal bordo |
 | Rotazione attorno all'encoder | scatti da 20° (PEC11R-4120F-S0018: 18 scatti/giro), con vibrazione a ogni scatto |
 | Tocco al centro dell'encoder | push |
 | Tocco su un tasto | MX2A premuto finché il dito resta giù |
 | Doppio tocco sul display | scala reale o ingrandito; ingrandito in automatico se il pannello è disegnato sotto 1,2 volte la grandezza reale |
 
 Il multitouch permette le combinazioni dell'hardware: tasto tenuto più
-rotazione dell'encoder (Live Pitch), push più tasto, più tasti insieme.
+rotazione dell'encoder (Live Pitch), push più tasto, più tasti insieme, più
+pot insieme (un dito ciascuno).
 
 Pot e Master passano dallo stesso percorso di `PanelInputs.cpp`: la posizione
 diventa millivolt interi sui massimi nominali del partitore (2672,1 mV per i pot,

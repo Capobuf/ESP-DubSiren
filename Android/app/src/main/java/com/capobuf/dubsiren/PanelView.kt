@@ -88,6 +88,8 @@ class PanelView(context: Context, private val prefs: SharedPreferences) : View(c
         const val MODULE_HEIGHT = 8f
 
         const val DRAG_MM_FULL_TRAVEL = 55f
+        // A second finger this far outside a held knob's skirt still grips it.
+        const val TWIST_REACH = 8f
         const val DEFAULT_POT = 0.5f
         const val ZOOM_UNSET = -1
     }
@@ -97,6 +99,9 @@ class PanelView(context: Context, private val prefs: SharedPreferences) : View(c
     private class Grab(val kind: Kind, val index: Int, var lastX: Float, var lastY: Float) {
         var lastAngle = 0f
         var accumulated = 0f
+        // Latest position; pots are updated once all fingers have moved.
+        var x = lastX
+        var y = lastY
     }
 
     private val art = PcbArt(context)
@@ -105,6 +110,8 @@ class PanelView(context: Context, private val prefs: SharedPreferences) : View(c
     private var encoderPointers = 0
     private var encoderDetents = 0
     private val grabs = HashMap<Int, Grab>()
+    // Per pot: last angle of the line between the two gripping fingers, NaN if none.
+    private val twistAngle = FloatArray(6) { Float.NaN }
     private var zoomSetting = prefs.getInt("zoomDisplayMode", ZOOM_UNSET) // -1 auto, 0 real, 1 zoom
     private var zoomDisplay = false
     private var lastDisplayTap = 0L
@@ -458,6 +465,7 @@ class PanelView(context: Context, private val prefs: SharedPreferences) : View(c
             }
             MotionEvent.ACTION_MOVE -> {
                 for (i in 0 until event.pointerCount) move(event.getPointerId(i), event.getX(i), event.getY(i))
+                for (pot in 0..5) turnPot(pot)
             }
             MotionEvent.ACTION_UP, MotionEvent.ACTION_POINTER_UP -> end(event.getPointerId(event.actionIndex))
             MotionEvent.ACTION_CANCEL -> releaseAll()
@@ -468,6 +476,15 @@ class PanelView(context: Context, private val prefs: SharedPreferences) : View(c
     private fun begin(pointer: Int, x: Float, y: Float) {
         val px = mx(x)
         val py = my(y)
+        // A second finger on or near a held knob grips it: two fingers twist it.
+        for (i in 0..5) {
+            if (grabs.values.any { it.kind == Kind.POT && it.index == i } &&
+                hypot(px - POT_X[i], py - POT_Y[i]) <= POT_SKIRT_R + TWIST_REACH) {
+                grabs[pointer] = Grab(Kind.POT, i, x, y)
+                twistAngle[i] = Float.NaN
+                return
+            }
+        }
         for (i in 0..3) {
             val margin = 1.8f
             if (abs(px - KEY_X[i]) <= KEYCAP / 2 + margin && abs(py - KEY_Y) <= KEYCAP / 2 + margin) {
@@ -518,18 +535,9 @@ class PanelView(context: Context, private val prefs: SharedPreferences) : View(c
 
     private fun move(pointer: Int, x: Float, y: Float) {
         val grab = grabs[pointer] ?: return
+        grab.x = x
+        grab.y = y
         when (grab.kind) {
-            Kind.POT -> {
-                // Vertical drag turns the knob; DRAG_MM_FULL_TRAVEL covers 300 degrees.
-                val delta = (grab.lastY - y) / (DRAG_MM_FULL_TRAVEL * scale)
-                grab.lastY = y
-                val next = (positions[grab.index] + delta).coerceIn(0f, 1f)
-                if (next != positions[grab.index]) {
-                    positions[grab.index] = next
-                    NativeSiren.nativeSetPot(grab.index, next)
-                    invalidate()
-                }
-            }
             Kind.ENC_TURN -> {
                 val angle = angleAround(x, y)
                 var diff = angle - grab.lastAngle
@@ -541,6 +549,46 @@ class PanelView(context: Context, private val prefs: SharedPreferences) : View(c
                 while (grab.accumulated <= -DETENT_DEG) { detent(-1); grab.accumulated += DETENT_DEG }
             }
             else -> Unit
+        }
+    }
+
+    /**
+     * One finger: vertical drag, DRAG_MM_FULL_TRAVEL covers the 300 degrees.
+     * Two fingers (the two lowest pointer ids): the knob turns by the angle the
+     * line between them turns, clockwise = up, like gripping the real knob.
+     */
+    private fun turnPot(pot: Int) {
+        var first: Map.Entry<Int, Grab>? = null
+        var second: Map.Entry<Int, Grab>? = null
+        for (entry in grabs) {
+            if (entry.value.kind != Kind.POT || entry.value.index != pot) continue
+            if (first == null || entry.key < first.key) { second = first; first = entry }
+            else if (second == null || entry.key < second.key) second = entry
+        }
+        if (first == null) return
+        val delta = if (second == null) {
+            val grab = first.value
+            val travel = (grab.lastY - grab.y) / (DRAG_MM_FULL_TRAVEL * scale)
+            grab.lastY = grab.y
+            travel
+        } else {
+            val a = first.value
+            val b = second.value
+            val angle = Math.toDegrees(atan2((b.y - a.y).toDouble(), (b.x - a.x).toDouble())).toFloat()
+            val previous = twistAngle[pot]
+            twistAngle[pot] = angle
+            if (previous.isNaN()) 0f else {
+                var diff = angle - previous
+                if (diff > 180f) diff -= 360f
+                if (diff < -180f) diff += 360f
+                diff / POT_TRAVEL
+            }
+        }
+        val next = (positions[pot] + delta).coerceIn(0f, 1f)
+        if (next != positions[pot]) {
+            positions[pot] = next
+            NativeSiren.nativeSetPot(pot, next)
+            invalidate()
         }
     }
 
@@ -563,7 +611,13 @@ class PanelView(context: Context, private val prefs: SharedPreferences) : View(c
                 encoderPointers = 0
                 NativeSiren.nativeSetEncoderPressed(false)
             }
-            Kind.POT -> savePositions()
+            Kind.POT -> {
+                // A finger left alone goes back to dragging from where it is.
+                twistAngle[grab.index] = Float.NaN
+                for (other in grabs.values)
+                    if (other.kind == Kind.POT && other.index == grab.index) other.lastY = other.y
+                savePositions()
+            }
             else -> Unit
         }
         invalidate()

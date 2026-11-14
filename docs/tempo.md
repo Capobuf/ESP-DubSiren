@@ -4,7 +4,13 @@ Il controller C++ condiviso da ESP e app Android gestisce la issue #13.
 Nel menu PERFORMANCE, **TAP TEMPO** acquisisce un tap a ogni click completo.
 La stessa azione si può assegnare a qualsiasi pulsante in SETUP → BUTTONS:
 acquisisce solo la pressione, non il rilascio né la ripetizione di uno stato
-già premuto.
+già premuto. Anche un pulsante MOD UP (BTN3 di fabbrica) batte il tempo
+quando la forma effettiva del LFO non è MANUAL: fa MOD UP solo in MANUAL, e il
+display mostra sul tasto la funzione del momento.
+
+Il tap serve ad agganciare il riddim: quando un tap acquisisce il tempo e
+l'echo è in FREE, l'echo passa in SYNC alla sua divisione (1/4 di fabbrica).
+Il LFO resta come è: entra in SYNC solo dal menu MOD.
 
 Due tap validi definiscono il tempo; i successivi usano la media degli ultimi
 quattro intervalli. Sono ammessi intervalli da 200 a 2000 ms (300–30 BPM).

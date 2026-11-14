@@ -9,8 +9,8 @@
 #include "control/ControlState.h"
 
 // Home is a map of the front panel, which has no silkscreen: the top and
-// bottom rows stand for the pots above and below the display, the right cell
-// for the encoder beside it and the last row for the four keys.
+// bottom rows stand for the pots above and below the display, the middle row
+// shows the voice and the last row stands for the four keys.
 class PanelDisplay {
 public:
     PanelDisplay(ControlStore &controls, CommandParser &controller);
@@ -32,7 +32,6 @@ private:
     void drawBar(unsigned pot, int16_t x, int16_t y, int16_t w,
                  const ControlState &state, uint16_t on, uint16_t off);
     void drawBanner(const ControlState &state, bool linked);
-    void drawEncoder(int16_t x, int16_t y);
     void drawKey(unsigned button, int16_t x, int16_t y, const ControlState &state);
     // Text at a baseline, in one of the GFX fonts of PanelDisplay.cpp.
     void text(int16_t x, int16_t baseline, const char *value, const GFXfont *font,

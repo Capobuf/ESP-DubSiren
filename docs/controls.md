@@ -31,7 +31,9 @@ same 120 ms constant.
 
 The other shapes (TRIANGLE, SQUARE, SAW UP, SAW DOWN, ASYM UP, ASYM DOWN,
 PULSE 25, PULSE 75) modulate the pitch symmetrically by Depth (0-2 octaves),
-honour Retrigger and turn Mod Up / Mod Down into a +1 / -1 octave bend.
+honour Retrigger and turn Mod Down into a -1 octave bend. A MOD UP button taps
+the tempo outside MANUAL (see BTN3 below); the +1 octave bend remains for
+the `MOD_UP` command.
 
 These are this project's implemented behaviors and tuning values. No matched
 hardware A/B recording is included, so sonic equivalence is unverified.
@@ -62,7 +64,7 @@ Musical calibration, voice defaults and DSP safety constants live in
 | POT6 | ECHO FILTER: LP <- FLAT -> HP |
 | BTN1 | momentary TRIGGER |
 | BTN2 | HOLD toggle on press; release and keyboard repeat do not toggle |
-| BTN3 | momentary MOD UP: with MANUAL, pitch up while held and slow fall after release; no effect with the automatic SIREN shape; +1 octave bend with the other shapes |
+| BTN3 | MOD UP in MANUAL: pitch up while held and slow fall after release. With any other shape it is TAP TEMPO: a free echo follows the tapped tempo ([tempo](tempo.md)) |
 | BTN4 | momentary ECHO CUT; BACK while the menu is open |
 | Encoder | previous/next Trigger voice, one step per detent, wraps |
 | Encoder push | MENU |
