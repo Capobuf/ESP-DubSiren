@@ -172,6 +172,12 @@ di sweep e verificare che restino sotto 10.000 µs per blocco.
 `displayRenderUs` e `maxDisplayRenderUs` misurano separatamente il ridisegno
 del testo ST7789 e devono restare sotto il budget display di 100.000 µs.
 
+## App Android
+
+[Android](Android/README.md) contiene un simulatore della sirena in un'unica
+APK. Compila con l'NDK gli stessi sorgenti `firmware/src` audio, control e
+display, e riproduce il pannello fisico con le misure del PCB.
+
 ## Hardware
 
 **PCB desktop a vista** 86 × 126 mm, senza custodia obbligatoria:

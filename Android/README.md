@@ -1,0 +1,94 @@
+# DubSiren Android
+
+Simulatore Android della sirena in un'unica APK. Suono, logica e display
+vengono dagli stessi sorgenti C++ del firmware, compilati con l'NDK senza
+modifiche:
+
+| Parte | Sorgente | Su Android |
+|---|---|---|
+| DSP | `firmware/src/audio/*.cpp` | blocchi da 480 campioni mono a 48 kHz, uscita AAudio |
+| Controller, menu, profili, Pickup | `firmware/src/control/*.cpp` | input fisici dal pannello touch |
+| Display | `firmware/src/display/PanelDisplay.cpp` | framebuffer 320x172 RGB565 al posto dell'ST7789 |
+
+Nessuna logica della sirena è riscritta in Kotlin. L'app offre solo i gesti
+del pannello fisico: sei pot frontali, quattro tasti momentanei, encoder a
+scatti e push. Tutto il resto (profili, mappature, menu, impostazioni) passa dal
+menu dell'encoder, come sull'hardware. Il Master posteriore non compare: resta
+al massimo e il livello si regola con i tasti volume del dispositivo.
+
+## Build
+
+Requisiti: Android SDK (platform 36) e JDK 17 o successivo; va bene la JBR di
+Android Studio. Al primo avvio Gradle installa da solo NDK 27.0.12077973 e
+CMake 3.22.1, se la licenza SDK è già accettata.
+
+```powershell
+cd Android
+$env:JAVA_HOME = "C:\Program Files\Android\Android Studio\jbr"
+.\gradlew.bat assembleRelease
+```
+
+Gradle compila fuori dal repository, in `%USERPROFILE%\.dubsiren-android`:
+OneDrive tiene aperti i file durante la sincronizzazione e fa fallire il
+packaging. L'APK è firmata con la chiave debug locale e si installa direttamente:
+
+```powershell
+adb install -r "$env:USERPROFILE\.dubsiren-android\app\outputs\apk\release\app-release.apk"
+```
+
+Si può anche aprire la cartella `Android` in Android Studio. La build release
+è ottimizzata (`-O2`); conviene usarla anche per provare l'audio.
+
+## Pannello
+
+La geometria viene da `hardware/kicad/ESP-DubSiren.kicad_pcb` (8/11/2026). La
+faccia frontale è esportata in `app/src/main/assets/pcb_front.json`: contorno
+con asole, piano GND e piste F.Cu, vie coperte dalla maschera, pad ENIG e
+serigrafia. Dopo ogni modifica del PCB va rigenerata:
+
+```powershell
+python Android\tools\export_pcb_front.py
+```
+
+RV1-RV6 e SW7 sono sull'asse del footprint. I tasti SW1-SW4 sono al centro
+dello switch (foro da 4 mm: x 10/32/54/76, y 100). Le manopole sono le Davies
+1100 (Ø 19,84 mm). Il display U5 usa la geometria Eagle di Adafruit contenuta
+nel footprint: vetro, area attiva 32,35x17,4 mm con angoli R3, fori del modulo.
+La luce viene dall'alto a sinistra. Le parti alte (manopole, keycap, modulo
+display) mostrano il lato rivolto verso chi guarda.
+
+| Gesto | Equivalente fisico |
+|---|---|
+| Trascinamento verticale su un pot | rotazione; 55 mm di trascinamento = corsa di 300° (PTV111) |
+| Rotazione attorno all'encoder | scatti da 20° (PEC11R-4120F-S0018: 18 scatti/giro), con vibrazione a ogni scatto |
+| Tocco al centro dell'encoder | push |
+| Tocco su un tasto | MX2A premuto finché il dito resta giù |
+| Doppio tocco sul display | scala reale o ingrandito; ingrandito in automatico se il pannello è disegnato sotto 1,2 volte la grandezza reale |
+
+Il multitouch permette le combinazioni dell'hardware: tasto tenuto più
+rotazione dell'encoder (Live Pitch, Depth), push più tasto, più tasti insieme.
+
+Pot e Master passano dallo stesso percorso di `PanelInputs.cpp`: la posizione
+diventa millivolt interi sui massimi nominali del partitore (2672,1 mV per i pot,
+2244,9 mV per il Master), con la soglia di variazione di 5 mV. Il Master parte da
+zero e all'avvio viene portato a fine corsa. Le posizioni delle manopole restano salvate, come
+su un pot fisico spento. Le impostazioni del pannello (`PanelSettings`) si
+salvano come blob binario identico a quello in NVS, 2 s dopo l'ultima modifica.
+
+Le scritte verdi sopra i pot e sui tasti indicano la funzione assegnata nel
+profilo attivo. Servono solo al simulatore: sul pannello fisico non ci sono.
+
+## Limiti
+
+- ADC ideale: niente rumore, offset, tolleranze o diafonia del mux. Il
+  debounce non serve, perché il touch non rimbalza.
+- Verso dell'encoder: orario = NEXT. Sull'hardware resta da verificare
+  (`docs/standalone.md`).
+- La latenza dipende dal telefono. AAudio parte in low latency con due burst di
+  buffer e aggiunge un burst a ogni underrun. La riga di stato in basso mostra
+  sample rate, buffer, xrun e tempo di render del blocco. Se il dispositivo non
+  apre lo stream a 48 kHz, compare `(!48k)`: il DSP resta a 48 kHz e
+  l'intonazione cambierebbe.
+- Diametro della manopola SAK-023, colore del PCB del modulo display, altezze
+  delle parti e keycap (ancora senza MPN) sono solo rappresentazioni visive.
+- USB/PC, I2S e STATUS non esistono nell'app: l'uscita è l'audio del telefono.
