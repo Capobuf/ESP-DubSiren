@@ -32,6 +32,8 @@ public:
     void notifyExternalChange(PotTarget target);
     bool setPad(unsigned padNumber, bool pressed);
     bool setPot(unsigned potNumber, float position);
+    // Rear Master: live, no Pickup; shows an overlay like the front pots.
+    void setMaster(float position);
     bool tapTempo(uint32_t nowUs = micros());
     bool setTempoBpm(float bpm);
     bool setTempoSync(bool echo, bool sync);
@@ -213,6 +215,7 @@ private:
     PickupState pickup_[6];
     // Per pot: false until its first reading since power-on.
     bool potReported_[6] = {};
+    bool masterReported_ = false;
     // Per key: a Mod Up press that tapped the tempo instead.
     bool modUpTapping_[4] = {};
     bool tapStarted_ = false;

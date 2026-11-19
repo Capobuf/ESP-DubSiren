@@ -735,6 +735,23 @@ bool PerformanceController::setPot(unsigned potNumber, float position) {
     return true;
 }
 
+void PerformanceController::setMaster(float position) {
+    if (!isfinite(position)) return;
+    position = clampFloat(position, 0.0f, 1.0f);
+    ControlState state = controls_.snapshot();
+    state.masterVolume = position;
+    controls_.set(state);
+    // As for the pots, the power-on reading is not a gesture.
+    if (masterReported_) {
+        snprintf(overlayTitle_, sizeof(overlayTitle_), "MASTER");
+        snprintf(overlayValue_, sizeof(overlayValue_), "%d%%",
+                 static_cast<int>(lroundf(position * 100.0f)));
+        overlayPot_ = 0;
+    }
+    masterReported_ = true;
+    changed();
+}
+
 void PerformanceController::setEncoderPressed(bool pressed, bool cancelClick) {
     if (encoderPressed_ == pressed) return;
     if (cancelClick && !pressed) modifierUsed_ = true;

@@ -10,6 +10,10 @@ constexpr int kButtons[] = {38, 39, 40, 41, 42};
 constexpr int kEncoderA = 1, kEncoderB = 2;
 constexpr uint32_t kMuxSettleUs = 6000;
 constexpr uint32_t kDebounceUs = 2000;
+// Measured on the first assembled PCB with the knobs still: single reads
+// swing up to 27 mV peak-to-peak, the mean of 16 stays within 5 mV.
+constexpr int kAdcSamples = 16;
+constexpr int kAdcThresholdMv = 8;
 }
 
 void PanelInputs::selectChannel(unsigned channel) {
@@ -81,15 +85,17 @@ void PanelInputs::poll() {
         while (encoderRemainder_ <= -4) { parser_.rotatePhysicalEncoder(-1); encoderRemainder_ += 4; }
     }
     if (now - selectedAt_ < kMuxSettleUs) return;
-    const int millivolts = analogReadMilliVolts(kAdc);
-    if (lastMillivolts_[channel_] < 0 || abs(millivolts - lastMillivolts_[channel_]) >= 5) {
+    int sum = 0;
+    for (int sample = 0; sample < kAdcSamples; ++sample) sum += analogReadMilliVolts(kAdc);
+    const int millivolts = sum / kAdcSamples;
+    if (lastMillivolts_[channel_] < 0 ||
+        abs(millivolts - lastMillivolts_[channel_]) >= kAdcThresholdMv) {
         lastMillivolts_[channel_] = millivolts;
         // Nominal divider maxima: 3.3 V * Rpot / (Rpot + 4.7k).
         const float maximum = channel_ == 6 ? 2244.9f : 2672.1f;
         const float position = fminf(1.0f, fmaxf(0.0f, millivolts / maximum));
         if (channel_ == 6) {
-            ControlState state = controls_.snapshot(); state.masterVolume = position; controls_.set(state);
-            parser_.notifyPhysicalMaster();
+            parser_.setPhysicalMaster(position);
         } else parser_.setPhysicalPot(channel_ + 1, position);
     }
     // Master every other slot: no pickup; pot mappings use shared pickup.

@@ -98,7 +98,7 @@ pot insieme (un dito ciascuno).
 
 Pot e Master passano dallo stesso percorso di `PanelInputs.cpp`: la posizione
 diventa millivolt interi sui massimi nominali del partitore (2672,1 mV per i pot,
-2244,9 mV per il Master), con la soglia di variazione di 5 mV. Il Master parte da
+2244,9 mV per il Master), con la soglia di variazione di 8 mV. Il Master parte da
 zero e all'avvio viene portato a fine corsa. Le posizioni delle manopole restano salvate, come
 su un pot fisico spento. Le impostazioni del pannello (`PanelSettings`) si
 salvano come blob binario identico a quello in NVS, 2 s dopo l'ultima modifica.

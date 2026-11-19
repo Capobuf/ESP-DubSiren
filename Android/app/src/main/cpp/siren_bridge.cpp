@@ -103,12 +103,12 @@ void savePanelSettingsIfNeeded() {
 // Nominal divider maxima from PanelInputs.cpp: 3.3 V * Rpot / (Rpot + 4.7k).
 constexpr float kPotMaximumMv = 2672.1f;
 constexpr float kMasterMaximumMv = 2244.9f;
-constexpr int kAdcThresholdMv = 5;
+constexpr int kAdcThresholdMv = 8;
 int lastMillivolts[7] = {-1, -1, -1, -1, -1, -1, -1};
 
 // channel 0..5 = POT1..6 (mux A0..A5), 6 = Master (A6). The position is the
 // wiper travel 0..1; it is quantized to integer millivolts with the firmware's
-// 5 mV change threshold before entering the shared controller.
+// 8 mV change threshold before entering the shared controller.
 void physicalPot(unsigned channel, float position) {
     if (channel > 6) return;
     const float maximum = channel == 6 ? kMasterMaximumMv : kPotMaximumMv;
@@ -118,10 +118,7 @@ void physicalPot(unsigned channel, float position) {
     lastMillivolts[channel] = millivolts;
     const float normalized = fminf(1.0f, fmaxf(0.0f, millivolts / maximum));
     if (channel == 6) {
-        ControlState state = siren->controls.snapshot();
-        state.masterVolume = normalized;
-        siren->controls.set(state);
-        siren->parser.notifyPhysicalMaster();
+        siren->parser.setPhysicalMaster(normalized);
     } else {
         siren->parser.setPhysicalPot(channel + 1, normalized);
     }

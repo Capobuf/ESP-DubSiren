@@ -22,12 +22,8 @@ jobs:
         with:
           python-version: '3.13'
           cache: pip
-          cache-dependency-path: |
-            pc/requirements.txt
-            tests/native/requirements.txt
-      - run: python -m pip install -r pc/requirements.txt -r tests/native/requirements.txt
-      - name: Desktop GUI regressions (stop on first failure)
-        run: python -m unittest discover -s pc -p "test_*.py" -f
+          cache-dependency-path: tests/native/requirements.txt
+      - run: python -m pip install -r tests/native/requirements.txt
       - name: Native DSP and controller regressions
         run: python tests/native/run.py
 

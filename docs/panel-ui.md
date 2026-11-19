@@ -45,7 +45,8 @@ crosses the current value. The first reading of each pot after power-on is
 taken at once, silently: at boot nothing stored outranks the knob, so a Rate
 pot sitting at SLOW is SLOW from the start. Pickup applies after a voice
 change, a patch recall or a new assignment. Rear Master is fixed and remains
-immediately live.
+immediately live, without Pickup; turning it shows MASTER and the level in
+percent as an overlay, except for its first reading after power-on.
 
 Home is a map of the front panel, which has no silkscreen. Each cell sits
 where its control is: the top row stands for POT1-POT3 above the display, the

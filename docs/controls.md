@@ -181,9 +181,8 @@ is a pad.
 
 Holding a Trigger or Play Sound button while turning the encoder is always the
 live-pitch gesture. Depth is edited in the MOD menu or assigned to a pot.
-`pc/app.py` exposes the original debug controls; Tone/Contour, articulation,
-Color and tempo controls are available through the shared encoder menu and
-protocol.
+Tone/Contour, articulation, Color and tempo controls are available through the
+shared encoder menu and protocol.
 
 ### Two Tone (#7)
 

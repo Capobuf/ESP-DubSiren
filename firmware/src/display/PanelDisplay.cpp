@@ -81,9 +81,10 @@ bool PanelDisplay::begin() {
     digitalWrite(Config::kDisplayBacklightPin, HIGH);
     SPI.begin(Config::kSpiSckPin, Config::kSpiMisoPin,
               Config::kSpiMosiPin, Config::kDisplayCsPin);
-    // Adafruit Product 5393: 172x320 native, 320x172 at rotation 1.
+    // Adafruit Product 5393: 172x320 native, 320x172 landscape. Rotation 3
+    // matches how U5 is mounted on the PCB (rotation 1 shows it upside down).
     tft_.init(172, 320);
-    tft_.setRotation(1);
+    tft_.setRotation(3);
     ready_ = tft_.width() == kWidth && tft_.height() == kHeight;
     if (!ready_) return false;
 
