@@ -24,11 +24,12 @@ GPIO e ADC Arduino-ESP32, quadratura nel PCNT nativo ESP-IDF. Nessuna nuova
 libreria. Compilare con:
 
 ```powershell
-pc\.venv\Scripts\python.exe -m platformio run -d firmware -e panel-prototype
+python -m platformio run -d firmware -e panel-prototype
 ```
 
-Il PCNT conta quattro transizioni per scatto; direzione e numero di scatti
-vanno verificati con l'encoder montato. Il filtro PCNT e il debounce pulsanti
+Il PCNT conta quattro transizioni per scatto. Sul primo PCB montato il senso
+orario contava all'indietro: il firmware inverte il conteggio, cosi orario
+e +1. Il numero di scatti resta da verificare con l'encoder montato. Il filtro PCNT e il debounce pulsanti
 (2 ms) sono tarature iniziali, non misure. Un pulsante premuto al boot deve
 prima essere rilasciato; nessun gate viene richiamato dalle memorie.
 
@@ -36,35 +37,32 @@ Il mux attende almeno 6 ms per canale, senza bloccare il loop: 20k + 4,7k e
 100 nF danno una costante RC nominale massima di circa 0,62 ms. Master viene
 letto ogni due canali, senza Pickup; i sei pot usano il Pickup del controller.
 La normalizzazione ADC usa i massimi nominali dei divisori a 3,3 V (2672,1 mV
-per i pot da 20k, 2244,9 mV per Master da 10k) e una soglia di variazione 5 mV.
-Tolleranze, estremi ADC, diafonia e assestamento devono essere misurati.
-Master parte da zero fino alla prima lettura valida. Il display puo ritardare
-il polling: STATUS espone `maxInputPollGapUs`; il PCNT continua a contare.
+per i pot da 20k, 2244,9 mV per Master da 10k). Ogni lettura è la media di 16
+conversioni, con soglia di variazione 8 mV: sul primo PCB montato, a manopole
+ferme, una conversione singola oscilla fino a 27 mV picco-picco, la media entro
+5 mV. Estremi ADC e diafonia restano da misurare.
+Master parte da zero fino alla prima lettura valida. Il display ritarda il
+polling: `loop()` e il task audio condividono il core 1, e sul primo PCB un
+ridisegno completo dura circa 160 ms, con buchi di polling fino a circa 240 ms.
+Spostare `loop()` sul core 0 li riduce a circa 70 ms ma porta il render audio
+oltre i 10 ms del blocco (contesa fra i core), quindi non è adottato.
+STATUS espone `maxInputPollGapUs`; il PCNT continua a contare.
 Questi tempi non sono una promessa di latenza pulsante/uscita.
 
 ## Audio e USB
 
-Dopo inizializzazione I2S riuscita, l'uscita locale e abilitata al boot, con
-Trigger/Hold spenti. `STREAM 0|1` riguarda solo il flusso USB; `LOCAL_AUDIO 0|1`
-controlla il mute locale. `SET OUTPUT PC|GPIO|BOTH` conserva la scelta delle
-destinazioni: PC esclude I2S, GPIO esclude USB, BOTH le permette entrambe.
-La rimozione improvvisa di USB arresta lo streaming USB e rilascia gli input
-remoti momentanei, preservando input fisici e Hold intenzionali. Stop Audio e
-Disconnect della GUI silenziano anche I2S tramite `LOCAL_AUDIO 0`; per tornare
-all'uso autonomo abilitare l'uscita locale oppure riavviare.
+L'audio esce soltanto via I2S verso il PCM5102A, sempre attivo dopo
+un'inizializzazione riuscita, con Trigger/Hold spenti al boot. La USB porta
+solo comandi e STATUS. La rimozione improvvisa di USB rilascia gli input remoti
+momentanei, preservando input fisici e Hold intenzionali. Il writer USB prova a
+scrivere un pacchetto intero solo quando c'e spazio nel ring del driver; mutex
+e timeout sono non bloccanti e fuori dal task audio.
 
-Il task audio scrive prima I2S. Il sink USB prova a scrivere un pacchetto intero
-solo quando c'e spazio nel ring del driver; mutex e timeout sono non bloccanti.
-Se il PC non tiene il passo, il pacchetto USB viene scartato e il numero di
-sequenza permette al ricevitore di rilevare il salto. Nessuna attesa da 500 ms
-nel percorso audio o nel polling del pannello.
-
-STATUS aggiunge `localAudio`, `usbStreaming`, `usbDroppedPackets`,
-`i2sWriteFailures`, `panelInputsReady`, `maxInputPollGapUs`. Gli errori di
-inizializzazione pannello/I2S/task audio e scrittura I2S compaiono sul display.
-`panelInputsReady` conferma solo l'inizializzazione software: ADC/GPIO non
-possono riconoscere un pot o un filo assente. Gli errori latched I2S richiedono
-riavvio dopo la diagnosi.
+STATUS aggiunge `i2sWriteFailures`, `panelInputsReady`, `maxInputPollGapUs`.
+Gli errori di inizializzazione pannello/I2S/task audio e scrittura I2S
+compaiono sul display. `panelInputsReady` conferma solo l'inizializzazione
+software: ADC/GPIO non possono riconoscere un pot o un filo assente. Gli errori
+latched I2S richiedono riavvio dopo la diagnosi.
 
 ## Verifica ancora necessaria sulla scheda
 
@@ -72,16 +70,19 @@ riavvio dopo la diagnosi.
    completa, sei pot, quattro pulsanti, encoder/menu e cambio voce.
 2. Misurare offset ADC, estremi e diafonia del mux. Verificare conteggio/senso
    encoder e rimbalzo pulsanti; osservare maxInputPollGapUs con display attivo.
-3. Trigger/Hold/echo durante collegamento, scollegamento e backpressure USB.
+3. Trigger/Hold/echo durante collegamento e scollegamento USB.
 4. Misurare acquisizione -> audio, render/cycle/I2S/display: percentili e massimo.
-   Non chiudere #12 in base alla sola compilazione o al VirtualESP.
+   Non chiudere #12 in base alla sola compilazione o all'app Android.
 
 ## Confronti offline
 
-`pc\.venv\Scripts\python.exe pc\offline_capture.py` genera 37 WAV e metriche
-in una directory temporanea: SHOT tap/hold/retrigger, ROLL lento/veloce, HORN,
-Two Tone, Tone su quattro voci e tre registri, Contour ed Echo Color/Cut.
-Usare `--output-dir artifacts/offline-issues-5-12` per conservarli nel progetto.
+Lo script `pc\offline_capture.py` è stato rimosso insieme al Virtual ESP su
+cui si basava; la descrizione resta come registro delle metriche salvate in
+`artifacts/offline-issues-5-12/metrics.json`.
+
+Lo script generava 37 WAV e metriche in una directory temporanea: SHOT
+tap/hold/retrigger, ROLL lento/veloce, HORN, Two Tone, Tone su quattro voci e
+tre registri, Contour ed Echo Color/Cut.
 I file sono normalizzati allo stesso RMS dei campioni attivi (sopra l'1% del
 picco originale), senza clipping. Le metriche originali restano nel JSON.
 Questo prepara il confronto d'ascolto, non sostituisce il giudizio sul riddim.

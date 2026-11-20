@@ -8,34 +8,23 @@
 #include "control/PanelInputs.h"
 #include "display/PanelDisplay.h"
 #include "output/I2sPcm5102Sink.h"
-#include "output/UsbPcmSink.h"
+#include "output/UsbPacketWriter.h"
 
 namespace {
 
-enum class OutputMode : uint8_t {
-    Pc,
-    Gpio,
-    Both,
-};
-
-UsbPcmSink usbSink;
+UsbPacketWriter usbLink;
 I2sPcm5102Sink i2sSink;
 AudioEngine engine;
 ControlStore controls;
 CommandParser commandParser(controls);
 PanelDisplay panelDisplay(controls, commandParser);
 PanelInputs panelInputs(controls, commandParser);
-std::atomic<bool> streamEnabled{false};
-std::atomic<bool> localAudioEnabled{true};
-std::atomic<uint32_t> usbDroppedPackets{0};
 std::atomic<uint32_t> i2sWriteFailures{0};
-std::atomic<OutputMode> outputMode{OutputMode::Both};
 std::atomic<uint32_t> lastRenderUs{0};
 std::atomic<uint32_t> droppedActivations{0};
 std::atomic<uint32_t> maximumRenderUs{0};
 std::atomic<uint32_t> lastCycleUs{0};
 std::atomic<uint32_t> maximumCycleUs{0};
-std::atomic<uint32_t> maximumUsbWriteUs{0};
 std::atomic<uint32_t> maximumI2sWriteUs{0};
 bool i2sReady = false;
 bool hostLinked = false;
@@ -155,31 +144,6 @@ void savePanelSettingsIfNeeded() {
     }
 }
 
-const char *outputModeName(OutputMode mode) {
-    switch (mode) {
-        case OutputMode::Pc:
-            return "PC";
-        case OutputMode::Gpio:
-            return "GPIO";
-        case OutputMode::Both:
-            return "BOTH";
-    }
-    return "PC";
-}
-
-bool parseOutputMode(const String &value, OutputMode &mode) {
-    if (value == "PC") {
-        mode = OutputMode::Pc;
-    } else if (value == "GPIO") {
-        mode = OutputMode::Gpio;
-    } else if (value == "BOTH") {
-        mode = OutputMode::Both;
-    } else {
-        return false;
-    }
-    return true;
-}
-
 void updateMaximum(std::atomic<uint32_t> &maximum, uint32_t value) {
     uint32_t observed = maximum.load(std::memory_order_relaxed);
     while (value > observed &&
@@ -189,7 +153,6 @@ void updateMaximum(std::atomic<uint32_t> &maximum, uint32_t value) {
 }
 
 bool sendStatus() {
-    const OutputMode mode = outputMode.load(std::memory_order_relaxed);
     const ControlState displayState = controls.snapshot();
     const bool pitchZones = displayState.pitchZonesActive;
     const bool rateZones = displayState.rateZonesActive;
@@ -227,7 +190,8 @@ bool sendStatus() {
     }
     buttons += "]";
     const String json =
-        String("{\"name\":\"DubSiren\",\"protocol\":1,\"sampleRate\":") +
+        String("{\"name\":\"DubSiren\",\"protocol\":") + Config::kProtocolVersion +
+        ",\"sampleRate\":" +
         Config::kSampleRate + ",\"blockSamples\":" + Config::kBlockSamples +
         ",\"firmware\":\"" + Config::kFirmwareVersion +
         "\",\"renderUs\":" + lastRenderUs.load(std::memory_order_relaxed) +
@@ -237,17 +201,11 @@ bool sendStatus() {
         ",\"cycleUs\":" + lastCycleUs.load(std::memory_order_relaxed) +
         ",\"maxCycleUs\":" +
         maximumCycleUs.load(std::memory_order_relaxed) +
-        ",\"maxUsbWriteUs\":" +
-        maximumUsbWriteUs.load(std::memory_order_relaxed) +
         ",\"maxI2sWriteUs\":" +
         maximumI2sWriteUs.load(std::memory_order_relaxed) +
         ",\"displayRenderUs\":" + panelDisplay.lastRenderUs() +
         ",\"maxDisplayRenderUs\":" + panelDisplay.maximumRenderUs() +
-        ",\"output\":\"" + outputModeName(mode) +
-        "\",\"i2sReady\":" + (i2sReady ? "true" : "false") +
-        ",\"localAudio\":" + (localAudioEnabled.load() ? "true" : "false") +
-        ",\"usbStreaming\":" + (streamEnabled.load() ? "true" : "false") +
-        ",\"usbDroppedPackets\":" + usbDroppedPackets.load() +
+        ",\"i2sReady\":" + (i2sReady ? "true" : "false") +
         ",\"i2sWriteFailures\":" + i2sWriteFailures.load() +
         ",\"panelInputsReady\":" + (panelInputs.ready() ? "true" : "false") +
         ",\"maxInputPollGapUs\":" + panelInputs.maximumPollGapUs() +
@@ -296,7 +254,7 @@ bool sendStatus() {
         ",\"echoSpin\":" + (displayState.echoSpin ? "true" : "false") +
         ",\"echoLoop\":" + (displayState.echoLoop ? "true" : "false") +
         "}}}";
-    return usbSink.writeStatus(json.c_str(), json.length());
+    return usbLink.writeStatus(json.c_str(), json.length());
 }
 
 void handleCommand(String command) {
@@ -307,23 +265,9 @@ void handleCommand(String command) {
         hostLinked = true;
         sendStatus();
         return;
-    } else if (command == "STREAM 1") {
-        streamEnabled.store(true, std::memory_order_release);
-    } else if (command == "STREAM 0") {
-        streamEnabled.store(false, std::memory_order_release);
-    } else if (command == "LOCAL_AUDIO 0" || command == "LOCAL_AUDIO 1") {
-        localAudioEnabled.store(command == "LOCAL_AUDIO 1", std::memory_order_release);
-    } else if (command.startsWith("SET OUTPUT ")) {
-        OutputMode requested;
-        if (parseOutputMode(command.substring(11), requested) &&
-            (requested == OutputMode::Pc || i2sReady)) {
-            outputMode.store(requested, std::memory_order_release);
-        } else {
-            accepted = false;
-        }
     } else {
         // STATUS follows from loop() at most every 200 ms: one per POT command
-        // would crowd the shared TX buffer and drop audio packets.
+        // would crowd the shared TX buffer.
         accepted = commandParser.parse(command);
     }
     pendingCommandResult = command;
@@ -335,7 +279,7 @@ void pollCommands() {
     // Retain one reply until the non-blocking USB writer can accept it.
     // Do not consume another command and overwrite its result under load.
     if (!pendingCommandResult.isEmpty()) {
-        if (!usbSink.writeCommandResult(pendingCommandResult.c_str(),
+        if (!usbLink.writeCommandResult(pendingCommandResult.c_str(),
                                        pendingCommandResult.length(), pendingCommandAccepted)) return;
         pendingCommandResult = "";
     }
@@ -362,7 +306,6 @@ void pollCommands() {
 void audioTask(void *) {
     int16_t block[Config::kBlockSamples];
     TickType_t nextWake = xTaskGetTickCount();
-    bool i2sWasActive = false;
 
     while (true) {
         const uint32_t cycleStartUs = micros();
@@ -373,25 +316,10 @@ void audioTask(void *) {
         const uint32_t renderUs = micros() - renderStartUs;
         lastRenderUs.store(renderUs, std::memory_order_relaxed);
         updateMaximum(maximumRenderUs, renderUs);
-        const bool enabled = streamEnabled.load(std::memory_order_acquire);
-        const OutputMode mode = outputMode.load(std::memory_order_acquire);
-        const bool pcActive =
-            enabled && (mode == OutputMode::Pc || mode == OutputMode::Both);
-        const bool i2sActive =
-            localAudioEnabled.load(std::memory_order_acquire) && i2sReady &&
-            (mode == OutputMode::Gpio || mode == OutputMode::Both);
-        if (i2sActive) {
+        if (i2sReady) {
             const uint32_t writeStartUs = micros();
             if (!i2sSink.write(block, Config::kBlockSamples)) ++i2sWriteFailures;
             updateMaximum(maximumI2sWriteUs, micros() - writeStartUs);
-        } else if (i2sWasActive) {
-            i2sSink.silence();
-        }
-        i2sWasActive = i2sActive;
-        if (pcActive) {
-            const uint32_t writeStartUs = micros();
-            if (!usbSink.write(block, Config::kBlockSamples)) ++usbDroppedPackets;
-            updateMaximum(maximumUsbWriteUs, micros() - writeStartUs);
         }
 
         const uint32_t cycleUs = micros() - cycleStartUs;
@@ -404,18 +332,15 @@ void audioTask(void *) {
 }  // namespace
 
 void setup() {
-    // One packet is 970 bytes; the driver's 256-byte default causes writes to
-    // wait for USB during the audio task. Allocate the ring before CDC begins.
+    // A STATUS packet is several kB; the driver's 256-byte default could not
+    // hold one. Allocate the ring before CDC begins.
     Serial.setTxBufferSize(8192);
     Serial.begin(115200);
     Serial.setTxTimeoutMs(0);
     commandBuffer.reserve(512);
-    if (!usbSink.begin()) commandParser.setDeviceStatus("USB SINK INIT FAILED");
+    if (!usbLink.begin()) commandParser.setDeviceStatus("USB LINK INIT FAILED");
     i2sReady = i2sSink.begin();
-    if (!i2sReady) {
-        outputMode.store(OutputMode::Pc, std::memory_order_relaxed);
-        commandParser.setDeviceStatus("I2S INIT FAILED");
-    }
+    if (!i2sReady) commandParser.setDeviceStatus("I2S INIT FAILED");
     engine.begin();
     loadPanelSettings();
 #if defined(DUBSIREN_PHYSICAL_PANEL) && DUBSIREN_PHYSICAL_PANEL
@@ -438,7 +363,6 @@ void loop() {
         }
         hostLinked = false;
         pendingCommandResult = "";
-        streamEnabled.store(false);
         commandBuffer = "";
         discardCommand = false;
     }

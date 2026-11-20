@@ -1,10 +1,9 @@
-#include "UsbPcmSink.h"
+#include "UsbPacketWriter.h"
 
 #include "Config.h"
 
 namespace {
 
-constexpr uint8_t kAudioPacket = 0x01;
 constexpr uint8_t kStatusPacket = 0x02;
 
 #pragma pack(push, 1)
@@ -21,29 +20,21 @@ static_assert(sizeof(PacketHeader) == 10, "Unexpected packet header size");
 
 }  // namespace
 
-UsbPcmSink::UsbPcmSink()
-    : mutex_(nullptr), audioSequence_(0), statusSequence_(0) {}
+UsbPacketWriter::UsbPacketWriter()
+    : mutex_(nullptr), statusSequence_(0) {}
 
-UsbPcmSink::~UsbPcmSink() {
+UsbPacketWriter::~UsbPacketWriter() {
     if (mutex_ != nullptr) {
         vSemaphoreDelete(mutex_);
     }
 }
 
-bool UsbPcmSink::begin() {
+bool UsbPacketWriter::begin() {
     mutex_ = xSemaphoreCreateMutex();
     return mutex_ != nullptr;
 }
 
-bool UsbPcmSink::write(const int16_t *samples, size_t count) {
-    const size_t byteCount = count * sizeof(int16_t);
-    if (samples == nullptr || byteCount > UINT16_MAX) return false;
-    return writePacket(kAudioPacket,
-                       reinterpret_cast<const uint8_t *>(samples), byteCount,
-                       audioSequence_++);
-}
-
-bool UsbPcmSink::writeStatus(const char *payload, size_t length) {
+bool UsbPacketWriter::writeStatus(const char *payload, size_t length) {
     if (length > UINT16_MAX) {
         return false;
     }
@@ -52,7 +43,7 @@ bool UsbPcmSink::writeStatus(const char *payload, size_t length) {
                        statusSequence_++);
 }
 
-bool UsbPcmSink::writeCommandResult(const char *command, size_t length, bool accepted) {
+bool UsbPacketWriter::writeCommandResult(const char *command, size_t length, bool accepted) {
     if (length == 0 || length > 511) return false;
     uint8_t payload[512];
     payload[0] = accepted ? 1 : 0;
@@ -60,7 +51,7 @@ bool UsbPcmSink::writeCommandResult(const char *command, size_t length, bool acc
     return writePacket(0x03, payload, length + 1, statusSequence_++);
 }
 
-bool UsbPcmSink::writePacket(uint8_t type, const uint8_t *payload,
+bool UsbPacketWriter::writePacket(uint8_t type, const uint8_t *payload,
                              size_t length, uint32_t sequence) {
     if (mutex_ == nullptr || length + sizeof(PacketHeader) > sizeof(packetBuffer_) ||
         !Serial.isConnected() || xSemaphoreTake(mutex_, 0) != pdTRUE) return false;

@@ -192,23 +192,18 @@ laterale con materiale idoneo, verificata sul pezzo. Nessuna cornice stampata
    SW5 RESET è sul retro a (81;64), SW6 BOOT a (81;80) mm, accessibili da
    sotto/bordo destro: tenere BOOT, premere/rilasciare RESET, rilasciare BOOT.
    Usare un utensile isolante se il dito non passa; non fare leva sui componenti.
-3. Con cavo dati e porta Espressif effettiva, dalla radice del repository:
-
-   ```powershell
-   pc\.venv\Scripts\python.exe pc\smoke_test.py COM6
-   ```
-
-   Sostituire COM6. Lo script si arresta al primo errore: verifica protocollo,
-   PCM USB e stato/routing I2S, **non misura l'uscita analogica né i controlli
-   fisici**. Non è stato eseguito su questo PCB.
-4. Per la prova fisica, collegare J2 a un ingresso **di linea** con volume
+   Se dopo il flash la scheda resta nel bootloader anche con un RESET, GPIO0
+   (rete `/BOOT`: R7, SW6, U1 pad 27) è basso: va trovato il corto prima di
+   proseguire. Una porta seriale aperta con DTR/RTS alti resetta il chip:
+   aprirla con le due linee basse.
+3. Per la prova fisica, collegare J2 a un ingresso **di linea** con volume
    inizialmente basso; il [6250](https://learn.adafruit.com/adafruit-pcm510x-i2s-dac/pinouts)
-   richiede un carico ≥1 kΩ. Abilitare l'audio locale dalla GUI oppure riavviare
-   dopo Disconnect; aumentare MASTER gradualmente. Provare Trigger, Hold,
-   Manual Mod, Echo Cut, sei pot con Pickup, rotazione/click encoder, display
-   e RESET. Verificare le assegnazioni correnti, senza cancellare impostazioni
-   salvate. Controllare il silenzio con MASTER minimo e Stop Audio.
-5. Verificare USB/mono/MASTER con i cavi inseriti, stabilità degli appoggi e
+   richiede un carico ≥1 kΩ. L'uscita I2S è attiva dall'avvio; aumentare
+   MASTER gradualmente. Provare Trigger, Hold, Manual Mod, Echo Cut, sei pot
+   con Pickup, rotazione/click encoder, display e RESET. Verificare le
+   assegnazioni correnti, senza cancellare impostazioni salvate. Controllare
+   il silenzio con MASTER minimo.
+4. Verificare USB/mono/MASTER con i cavi inseriti, stabilità degli appoggi e
    spazio sotto la scheda. Annotare tensioni, corrente, rumore, transitori e
    problemi: display, DAC e ADC del prototipo restano da qualificare sul reale.
 

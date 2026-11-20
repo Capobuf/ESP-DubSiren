@@ -45,7 +45,7 @@ public:
         return false;
     }
     void rotatePhysicalEncoder(int direction) { performance_.rotateEncoder(direction); }
-    void notifyPhysicalMaster() { performance_.notifyControlsChanged(); }
+    void setPhysicalMaster(float position) { performance_.setMaster(position); }
 
     unsigned panelRevision() const { return performance_.revision(); }
     unsigned panelMenuRevision() const { return performance_.menuRevision(); }
@@ -68,6 +68,13 @@ public:
     const char *menuFooter() const { return performance_.menuFooter(); }
     const char *overlayTitle() const { return performance_.overlayTitle(); }
     const char *overlayValue() const { return performance_.overlayValue(); }
+    unsigned overlayPot() const { return performance_.overlayPot(); }
+    bool buttonDown(unsigned button) const { return performance_.buttonDown(button); }
+    bool encoderPressed() const { return performance_.encoderPressed(); }
+    bool modUpTaps() const { return performance_.modUpTaps(); }
+    float potValueNormalized(unsigned pot) const {
+        return performance_.potValueNormalized(pot);
+    }
     unsigned selectedPad() const { return performance_.selectedPad(); }
     unsigned currentPad() const { return performance_.currentPad(); }
     int activePad() const { return performance_.activePad(); }

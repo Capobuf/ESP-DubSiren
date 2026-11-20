@@ -1,25 +1,21 @@
 # USB protocol
 
-The device uses Arduino Hardware CDC / USB Serial-JTAG. Control traffic from PC
-to ESP is ASCII, newline-delimited. ESP-to-PC traffic is binary only; firmware
-does not print diagnostic text into the PCM stream.
+The device uses Arduino Hardware CDC / USB Serial-JTAG. The link carries
+control and diagnostics only: audio leaves the device solely through I2S to the
+PCM5102A, which is always enabled once initialized. Host-to-ESP traffic is
+ASCII, newline-delimited. ESP-to-host traffic is binary framed packets; firmware
+does not print diagnostic text into them.
 
-## PC to ESP
+## Host to ESP
 
 Connection commands:
 
 ```text
 HELLO
-STREAM 1
-STREAM 0
-LOCAL_AUDIO 0|1
-SET OUTPUT PC|GPIO|BOTH
 ```
 
-`STREAM` enables only USB AUDIO packets; `LOCAL_AUDIO` independently enables
-the PCM5102A I2S sink. OUTPUT selects which enabled sinks receive the same
-rendered PCM block: PC, GPIO or BOTH. USB commands and STATUS remain available
-in every output mode, including when both audio sinks are disabled.
+Protocol 2 removed USB PCM streaming together with `STREAM`, `LOCAL_AUDIO`
+and `SET OUTPUT`; those commands are now rejected like any unknown command.
 
 Control commands:
 
@@ -109,9 +105,9 @@ resets that pot to the target's continuous default range. `PANEL BUTTON ...
 SOUND`, `PAD_CONFIG`, `PANEL SAVE` and `PANEL RECALL` are rejected unless the
 button's action is PLAY_SOUND. Existing semantic `SET` commands remain
 available for development and cause matching Pickup latches to re-arm.
-VirtualESP wraps a restored `panel.json` in `PANEL BEGIN` / `PANEL COMMIT` and
-sends `PANEL CANCEL` on any rejected field, so a damaged file cannot partially
-replace the running configuration.
+`PANEL BEGIN` stages the following configuration commands; `PANEL COMMIT`
+validates and applies them together and `PANEL CANCEL` discards them, so a
+rejected field cannot partially replace the running configuration.
 
 The encoder menu opens on release of an unconsumed click.
 While a physical Trigger or Play Sound button is held, Home rotation applies
@@ -203,23 +199,22 @@ ECHO_LEVEL zero excludes wet at the next audio snapshot; ECHO_CUT ramps the
 wet gain down/up over 2 ms. The buffer continues evolving. Detailed behavior and
 source references: [controls](controls.md).
 
-## ESP to PC
+## ESP to host
 
 Every packet begins with this packed, 10-byte little-endian header:
 
 | Offset | Field | Type | Value |
 |---:|---|---|---|
 | 0 | magic | 2 bytes | `DS` |
-| 2 | version | uint8 | `1` |
-| 3 | type | uint8 | AUDIO `0x01`, STATUS `0x02`, COMMAND_RESULT `0x03` |
+| 2 | version | uint8 | `2` |
+| 3 | type | uint8 | STATUS `0x02`, COMMAND_RESULT `0x03` (`0x01` was AUDIO up to protocol 1) |
 | 4 | payload length | uint16 | bytes |
-| 6 | sequence | uint32 | separate audio counter; STATUS and COMMAND_RESULT share a counter |
+| 6 | sequence | uint32 | shared by STATUS and COMMAND_RESULT |
 
-An AUDIO payload is always 960 bytes: 480 signed int16 mono PCM samples at
-48,000 Hz. A STATUS payload is UTF-8 JSON. `HELLO` currently returns:
+A STATUS payload is UTF-8 JSON. `HELLO` currently returns:
 
 ```json
-{"name":"DubSiren","protocol":1,"sampleRate":48000,"blockSamples":480,"firmware":"0.9.0","output":"BOTH","i2sReady":true,"panel":{"revision":1,"settings":{"schema":3,"revision":1,"potBehavior":"PICKUP","encoder":{"holdTurn":"LIVE_PITCH","step":1,"range":12},"pots":[{"target":"PITCH","mode":"ZONES","min":80.00000,"max":1600.00000,"zones":[330.00000,680.00000,1000.00000]}],"buttons":[{"action":"TRIGGER","sound":"SIREN","variant":0,"latch":false}],"patches":[]},"persistenceStatus":"","display":{"width":320,"height":172,"mode":"HOME","menuIndex":0,"editing":false,"title":"PERFORMANCE","rows":[{"key":"SOUND","label":"SOUND","value":""}],"buttons":["TRIGGER","HOLD","MOD UP","ECHO CUT"],"padSelected":false,"voice":"SINE 1","pitch":"MID","pitchMode":"ZONES","rate":"MID","rateMode":"ZONES","tuneHz":680.0000,"rateHz":3.0000,"liveTranspose":0}}}
+{"name":"DubSiren","protocol":2,"sampleRate":48000,"blockSamples":480,"firmware":"0.9.0","i2sReady":true,"panel":{"revision":1,"settings":{"schema":3,"revision":1,"potBehavior":"PICKUP","encoder":{"holdTurn":"LIVE_PITCH","step":1,"range":12},"pots":[{"target":"PITCH","mode":"ZONES","min":80.00000,"max":1600.00000,"zones":[330.00000,680.00000,1000.00000]}],"buttons":[{"action":"TRIGGER","sound":"SIREN","variant":0,"latch":false}],"patches":[]},"persistenceStatus":"","display":{"width":320,"height":172,"mode":"HOME","menuIndex":0,"editing":false,"title":"PERFORMANCE","rows":[{"key":"SOUND","label":"SOUND","value":""}],"buttons":["TRIGGER","HOLD","MOD UP","ECHO CUT"],"padSelected":false,"voice":"SINE 1","pitch":"MID","pitchMode":"ZONES","rate":"MID","rateMode":"ZONES","tuneHz":680.0000,"rateHz":3.0000,"liveTranspose":0}}}
 ```
 
 `COMMAND_RESULT` has a 2–512 byte payload: byte 0 is `1` (accepted) or `0`
@@ -233,21 +228,12 @@ before consuming the next command. Disconnect clears that pending reply.
 Audio rendering continues independently. Rejection also requests a fresh STATUS;
 periodic STATUS retries cover a full USB buffer.
 
-Virtual ESP delivers the same `{command, accepted}` result to an optional
-command callback, separate from its STATUS callback. Its synchronous API still
-raises on rejection for scripts and transactional configuration restoration.
-Older firmware without results leaves GUI requests explicitly unconfirmed;
-the GUI does not infer acceptance from a successful serial write. Existing
-clients can ignore packet type `0x03`; protocol version and PCM framing stay 1.
-
 Timing zeros above are placeholders, not measured performance. `renderUs` is the
 most recent 480-sample render time and `maxRenderUs` is the
-maximum observed since boot. `cycleUs` and `maxCycleUs` include selected output
-writes. `maxUsbWriteUs` and `maxI2sWriteUs` isolate the maximum time spent in
-each output write. `displayRenderUs` and `maxDisplayRenderUs` measure complete
-ST7789 text redraws independently from the audio counters. `output` reports the
-active routing selection and `i2sReady` reports
-whether I2S initialization succeeded. `panel` reports controller-owned runtime
+maximum observed since boot. `cycleUs` and `maxCycleUs` include the I2S
+write, whose maximum alone is `maxI2sWriteUs`. `displayRenderUs` and
+`maxDisplayRenderUs` measure complete ST7789 redraws independently from the
+audio counters. `i2sReady` reports whether I2S initialization succeeded. `panel` reports controller-owned runtime
 and settings state; the example intentionally omits timing and other fields
 and shortens `pots` (six entries), `buttons` (four), `patches` (four) and the
 menu rows. `panel.display` is logical state, not pixels: it reports the fixed
@@ -258,8 +244,6 @@ labels and modes, Hold, Echo Cut and tuneHz/rateHz. Firmware sends an updated ST
 or menu state changes, at most every 200 ms, and at least once per second after
 HELLO while USB has space available; accepted commands no longer trigger an
 immediate STATUS. Failed periodic sends are retried no faster than every 200 ms.
-These are additive status/command changes: existing
-commands, packet framing, and protocol version 1 remain compatible.
 
 In firmware 0.9.0, `panel.settings` contains the complete schema-3 persistent
 panel configuration and its revision: `potBehavior`, `encoder`, and `pots`,
@@ -274,26 +258,21 @@ and `liveTranspose` are included for connection reconstruction.
 NVS is written once the settings revision has been stable for 2 s; a failed
 write is retried after another 2 s.
 
-There is no CRC because USB is the reliable transport. The Python parser scans
-again for `DS` after invalid data or lost framing and rejects AUDIO payloads of
-the wrong length before waiting for their payload. STATUS payloads must fit
-the firmware's 8192-byte packet buffer (8182 payload bytes). Invalid UTF-8,
-JSON and non-object status payloads are discarded without stopping the reader.
+There is no CRC because USB is the reliable transport. A reader should scan
+again for `DS` after invalid data or lost framing. STATUS payloads must fit
+the firmware's 8192-byte packet buffer (8182 payload bytes).
 
 ## Revisione uso autonomo (#12)
 
-`STREAM 0|1` controlla ora solo il PCM USB. `LOCAL_AUDIO 0|1` controlla
-l'abilitazione locale (default ON); la destinazione OUTPUT resta applicabile.
-Stop Audio/Disconnect del client inviano entrambi i comandi di disabilitazione,
-silenziano USB e I2S, e lasciano il DSP attivo. Connect mantiene le uscite mute
-fino a Start Audio. La rimozione improvvisa di USB rilascia i comandi remoti
-momentanei, conserva quelli fisici e non cambia l'abilitazione locale.
+La rimozione improvvisa di USB rilascia i comandi remoti momentanei e conserva
+quelli fisici.
 Lo stesso rilascio avviene se un host collegato non invia byte per 3 s (app
-terminata con il cavo inserito): `SerialTransport` invia una riga vuota ogni
-secondo come keepalive, ignorata dal firmware e senza COMMAND_RESULT.
+terminata con il cavo inserito): un host che vuole restare collegato invia una
+riga vuota ogni secondo come keepalive, ignorata dal firmware e senza
+COMMAND_RESULT.
 Le nuove metriche e la configurazione del pannello sono in [standalone](standalone.md).
 
 ## Tap tempo
 
 I comandi `TAP_TEMPO` e `TEMPO` e il campo `panel.display.tempo` sono descritti
-in [Tap tempo e sincronizzazione](tempo.md). Framing invariato, versione 1.
+in [Tap tempo e sincronizzazione](tempo.md).

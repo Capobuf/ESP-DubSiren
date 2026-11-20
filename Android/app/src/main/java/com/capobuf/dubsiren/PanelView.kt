@@ -6,6 +6,8 @@ import android.content.SharedPreferences
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.ColorMatrix
+import android.graphics.ColorMatrixColorFilter
 import android.graphics.LinearGradient
 import android.graphics.Paint
 import android.graphics.Path
@@ -13,7 +15,6 @@ import android.graphics.RadialGradient
 import android.graphics.RectF
 import android.graphics.Shader
 import android.graphics.SweepGradient
-import android.graphics.Typeface
 import android.os.SystemClock
 import android.view.HapticFeedbackConstants
 import android.view.MotionEvent
@@ -87,6 +88,8 @@ class PanelView(context: Context, private val prefs: SharedPreferences) : View(c
         const val MODULE_HEIGHT = 8f
 
         const val DRAG_MM_FULL_TRAVEL = 55f
+        // A second finger this far outside a held knob's skirt still grips it.
+        const val TWIST_REACH = 8f
         const val DEFAULT_POT = 0.5f
         const val ZOOM_UNSET = -1
     }
@@ -96,6 +99,9 @@ class PanelView(context: Context, private val prefs: SharedPreferences) : View(c
     private class Grab(val kind: Kind, val index: Int, var lastX: Float, var lastY: Float) {
         var lastAngle = 0f
         var accumulated = 0f
+        // Latest position; pots are updated once all fingers have moved.
+        var x = lastX
+        var y = lastY
     }
 
     private val art = PcbArt(context)
@@ -104,13 +110,11 @@ class PanelView(context: Context, private val prefs: SharedPreferences) : View(c
     private var encoderPointers = 0
     private var encoderDetents = 0
     private val grabs = HashMap<Int, Grab>()
+    // Per pot: last angle of the line between the two gripping fingers, NaN if none.
+    private val twistAngle = FloatArray(6) { Float.NaN }
     private var zoomSetting = prefs.getInt("zoomDisplayMode", ZOOM_UNSET) // -1 auto, 0 real, 1 zoom
     private var zoomDisplay = false
     private var lastDisplayTap = 0L
-
-    private val potLabels = Array(6) { "" }
-    private val keyLabels = Array(4) { "" }
-    private var status = ""
 
     private val display = Bitmap.createBitmap(
         NativeSiren.nativeDisplayWidth(), NativeSiren.nativeDisplayHeight(), Bitmap.Config.ARGB_8888)
@@ -119,20 +123,20 @@ class PanelView(context: Context, private val prefs: SharedPreferences) : View(c
     private var scale = 1f
     private var originX = 0f
     private var originY = 0f
-    private var statusTop = 0f
 
     private val fill = Paint(Paint.ANTI_ALIAS_FLAG)
     private val stroke = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.STROKE }
-    private val hint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        textAlign = Paint.Align.CENTER
-        typeface = Typeface.create("sans-serif-condensed", Typeface.BOLD)
-        color = Color.rgb(0xB4, 0xE0, 0x3C)
+    // The 5393 is a 320x172 IPS panel, about 10 pixels per mm: seen as glass,
+    // not as enlarged squares. Filtered scaling, and black slightly lifted by
+    // the backlight (a visual approximation, not a measured panel value).
+    private val pixelPaint = Paint(Paint.FILTER_BITMAP_FLAG).apply {
+        colorFilter = ColorMatrixColorFilter(ColorMatrix(floatArrayOf(
+            0.97f, 0f, 0f, 0f, 6f,
+            0f, 0.97f, 0f, 0f, 6f,
+            0f, 0f, 0.97f, 0f, 8f,
+            0f, 0f, 0f, 1f, 0f)))
     }
-    private val mono = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        typeface = Typeface.MONOSPACE
-        color = Color.rgb(0x70, 0x76, 0x7A)
-    }
-    private val pixelPaint = Paint().apply { isFilterBitmap = false }
+    private val pixelGrid = Paint().apply { color = Color.argb(70, 0, 0, 0) }
     private val rect = RectF()
     private val path = Path()
 
@@ -194,34 +198,15 @@ class PanelView(context: Context, private val prefs: SharedPreferences) : View(c
         invalidate()
     }
 
-    fun setLabels(labels: String) {
-        val lines = labels.split('\n')
-        for (i in 0..5) potLabels[i] = lines.getOrElse(i) { "" }.replace('_', ' ')
-        for (i in 0..3) keyLabels[i] = lines.getOrElse(6 + i) { "" }.replace('_', ' ')
-        invalidate()
-    }
-
-    fun setStatus(value: String) {
-        if (value != status) {
-            status = value
-            invalidate()
-        }
-    }
-
     // ---- Layout ------------------------------------------------------------
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         if (w == 0 || h == 0) return
-        val density = resources.displayMetrics.density
-        val statusHeight = 16f * density
         val modelW = BOARD_W + 8f
         val modelH = BOARD_BOTTOM - BOARD_TOP + 10f
-        scale = min(w / modelW, (h - statusHeight) / modelH)
+        scale = min(w / modelW, h / modelH)
         originX = (w - BOARD_W * scale) / 2f
-        val used = modelH * scale + statusHeight
-        originY = (h - used) / 2f + (-BOARD_TOP + 4f) * scale
-        statusTop = originY + (BOARD_BOTTOM + 5f) * scale
-        mono.textSize = 9f * resources.displayMetrics.scaledDensity
+        originY = (h - modelH * scale) / 2f + (-BOARD_TOP + 4f) * scale
         // Real-size display unless the panel is drawn smaller than ~1.2x life size.
         val pixelsPerRealMm = resources.displayMetrics.xdpi / 25.4f
         zoomDisplay = if (zoomSetting == ZOOM_UNSET) scale / pixelsPerRealMm < 1.2f else zoomSetting == 1
@@ -291,8 +276,6 @@ class PanelView(context: Context, private val prefs: SharedPreferences) : View(c
         drawEncoder(canvas)
         for (i in 0..3) drawKey(canvas, i)
         canvas.restore()
-        drawHints(canvas)
-        canvas.drawText(status, sx(0f), statusTop + mono.textSize, mono)
     }
 
     private fun drawDisplay(canvas: Canvas) {
@@ -331,6 +314,19 @@ class PanelView(context: Context, private val prefs: SharedPreferences) : View(c
         path.addRoundRect(rect, corner, corner, Path.Direction.CW)
         canvas.clipPath(path)
         canvas.drawBitmap(display, null, rect, pixelPaint)
+        // Gaps between pixels, only where a pixel spans several screen pixels.
+        val pixelMm = rect.width() / display.width
+        if (pixelMm * scale >= 4f) {
+            pixelGrid.strokeWidth = pixelMm * 0.15f
+            for (column in 1 until display.width) {
+                val x = rect.left + column * pixelMm
+                canvas.drawLine(x, rect.top, x, rect.bottom, pixelGrid)
+            }
+            for (row in 1 until display.height) {
+                val y = rect.top + row * pixelMm
+                canvas.drawLine(rect.left, y, rect.right, y, pixelGrid)
+            }
+        }
         // Glass reflection.
         fill.shader = LinearGradient(rect.left, rect.top, rect.left + rect.width() * 0.55f, rect.bottom,
             intArrayOf(Color.argb(34, 255, 255, 255), Color.argb(8, 255, 255, 255), Color.argb(0, 255, 255, 255)),
@@ -458,22 +454,6 @@ class PanelView(context: Context, private val prefs: SharedPreferences) : View(c
         }
     }
 
-    private fun drawHints(canvas: Canvas) {
-        // Simulator aid (not on the hardware): current function of each control.
-        hint.textSize = 2.0f * scale
-        hint.setShadowLayer(0.4f * scale, 0f, 0.15f * scale, Color.BLACK)
-        for (i in 0..5) {
-            canvas.drawText(potLabels[i], sx(POT_X[i]), sy(POT_Y[i] - POT_SKIRT_R - 1.4f), hint)
-        }
-        for (i in 0..3) {
-            val pressed = keyPointers[i] > 0
-            val lift = (KEY_HEIGHT - if (pressed) KEY_TRAVEL else 0f) * LIFT_PER_MM
-            hint.textSize = 1.9f * scale
-            canvas.drawText(keyLabels[i], sx(KEY_X[i]), sy(KEY_Y - 0.4f - lift), hint)
-        }
-        hint.clearShadowLayer()
-    }
-
     // ---- Touch -------------------------------------------------------------
 
     @SuppressLint("ClickableViewAccessibility")
@@ -485,6 +465,7 @@ class PanelView(context: Context, private val prefs: SharedPreferences) : View(c
             }
             MotionEvent.ACTION_MOVE -> {
                 for (i in 0 until event.pointerCount) move(event.getPointerId(i), event.getX(i), event.getY(i))
+                for (pot in 0..5) turnPot(pot)
             }
             MotionEvent.ACTION_UP, MotionEvent.ACTION_POINTER_UP -> end(event.getPointerId(event.actionIndex))
             MotionEvent.ACTION_CANCEL -> releaseAll()
@@ -495,6 +476,15 @@ class PanelView(context: Context, private val prefs: SharedPreferences) : View(c
     private fun begin(pointer: Int, x: Float, y: Float) {
         val px = mx(x)
         val py = my(y)
+        // A second finger on or near a held knob grips it: two fingers twist it.
+        for (i in 0..5) {
+            if (grabs.values.any { it.kind == Kind.POT && it.index == i } &&
+                hypot(px - POT_X[i], py - POT_Y[i]) <= POT_SKIRT_R + TWIST_REACH) {
+                grabs[pointer] = Grab(Kind.POT, i, x, y)
+                twistAngle[i] = Float.NaN
+                return
+            }
+        }
         for (i in 0..3) {
             val margin = 1.8f
             if (abs(px - KEY_X[i]) <= KEYCAP / 2 + margin && abs(py - KEY_Y) <= KEYCAP / 2 + margin) {
@@ -545,18 +535,9 @@ class PanelView(context: Context, private val prefs: SharedPreferences) : View(c
 
     private fun move(pointer: Int, x: Float, y: Float) {
         val grab = grabs[pointer] ?: return
+        grab.x = x
+        grab.y = y
         when (grab.kind) {
-            Kind.POT -> {
-                // Vertical drag turns the knob; DRAG_MM_FULL_TRAVEL covers 300 degrees.
-                val delta = (grab.lastY - y) / (DRAG_MM_FULL_TRAVEL * scale)
-                grab.lastY = y
-                val next = (positions[grab.index] + delta).coerceIn(0f, 1f)
-                if (next != positions[grab.index]) {
-                    positions[grab.index] = next
-                    NativeSiren.nativeSetPot(grab.index, next)
-                    invalidate()
-                }
-            }
             Kind.ENC_TURN -> {
                 val angle = angleAround(x, y)
                 var diff = angle - grab.lastAngle
@@ -568,6 +549,46 @@ class PanelView(context: Context, private val prefs: SharedPreferences) : View(c
                 while (grab.accumulated <= -DETENT_DEG) { detent(-1); grab.accumulated += DETENT_DEG }
             }
             else -> Unit
+        }
+    }
+
+    /**
+     * One finger: vertical drag, DRAG_MM_FULL_TRAVEL covers the 300 degrees.
+     * Two fingers (the two lowest pointer ids): the knob turns by the angle the
+     * line between them turns, clockwise = up, like gripping the real knob.
+     */
+    private fun turnPot(pot: Int) {
+        var first: Map.Entry<Int, Grab>? = null
+        var second: Map.Entry<Int, Grab>? = null
+        for (entry in grabs) {
+            if (entry.value.kind != Kind.POT || entry.value.index != pot) continue
+            if (first == null || entry.key < first.key) { second = first; first = entry }
+            else if (second == null || entry.key < second.key) second = entry
+        }
+        if (first == null) return
+        val delta = if (second == null) {
+            val grab = first.value
+            val travel = (grab.lastY - grab.y) / (DRAG_MM_FULL_TRAVEL * scale)
+            grab.lastY = grab.y
+            travel
+        } else {
+            val a = first.value
+            val b = second.value
+            val angle = Math.toDegrees(atan2((b.y - a.y).toDouble(), (b.x - a.x).toDouble())).toFloat()
+            val previous = twistAngle[pot]
+            twistAngle[pot] = angle
+            if (previous.isNaN()) 0f else {
+                var diff = angle - previous
+                if (diff > 180f) diff -= 360f
+                if (diff < -180f) diff += 360f
+                diff / POT_TRAVEL
+            }
+        }
+        val next = (positions[pot] + delta).coerceIn(0f, 1f)
+        if (next != positions[pot]) {
+            positions[pot] = next
+            NativeSiren.nativeSetPot(pot, next)
+            invalidate()
         }
     }
 
@@ -590,7 +611,13 @@ class PanelView(context: Context, private val prefs: SharedPreferences) : View(c
                 encoderPointers = 0
                 NativeSiren.nativeSetEncoderPressed(false)
             }
-            Kind.POT -> savePositions()
+            Kind.POT -> {
+                // A finger left alone goes back to dragging from where it is.
+                twistAngle[grab.index] = Float.NaN
+                for (other in grabs.values)
+                    if (other.kind == Kind.POT && other.index == grab.index) other.lastY = other.y
+                savePositions()
+            }
             else -> Unit
         }
         invalidate()

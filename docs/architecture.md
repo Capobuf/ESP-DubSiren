@@ -3,10 +3,8 @@
 ## Data flow
 
 ```text
-tkinter panel actions
-      |
-newline commands over USB
-      |
+panel inputs (pots, buttons, encoder)   newline commands over USB
+                   \                      /
 CommandParser -> PerformanceController -> synchronized ControlStore
                          |                          \
                   logical display state             \-> PanelDisplay -> ST7789/SPI
@@ -21,12 +19,12 @@ ControlState -> gate + activation sequence -> tonal oscillator + gated envelope
                     delay -> dry + wet -> master -> soft clip -> int16
                                                                       |
                                                         mono int16 PCM block
-                                                            /         \
-                                                   UsbPcmSink    I2sPcm5102Sink
-                                                        |               |
-                                             binary PCM over USB   stereo I2S
-                                                        |               |
-                                                RawOutputStream      PCM5102A
+                                                                      |
+                                                              I2sPcm5102Sink
+                                                                      |
+                                                                 stereo I2S
+                                                                      |
+                                                                  PCM5102A
 ```
 
 `audioTask` produces exactly 480 mono samples per iteration and is paced with
@@ -35,24 +33,24 @@ signed little-endian int16 only at the final output. The task takes one locked
 snapshot of `ControlState` at each block boundary; command parsing never mutates
 the state concurrently.
 
-`AudioEngine` includes no USB, Python or PCM5102A dependencies. Its one rendered
-block is routed through the `AudioSink` interface to `UsbPcmSink`,
-`I2sPcm5102Sink`, or both. `UsbPcmSink` adds the binary framing and serializes
-AUDIO and STATUS writes with a mutex. STATUS remains available over USB even
-when USB AUDIO packets are disabled. Hardware CDC's TX ring is set to 8192 bytes
-before USB startup, so a 970-byte audio packet can be queued without waiting
-for the default 256-byte ring to drain. The sink reserves space for a complete
-packet and issues one non-blocking write; a short write reports failure.
+`AudioEngine` includes no USB or PCM5102A dependencies. Its one rendered block
+goes to `I2sPcm5102Sink` only; USB carries no audio. `UsbPacketWriter`, used by
+the main loop, adds the binary framing to STATUS and COMMAND_RESULT packets and
+serializes them with a mutex. Hardware CDC's TX ring is set to 8192 bytes
+before USB startup, so a complete STATUS packet can be queued. The writer
+reserves space for a complete packet and issues one non-blocking write; a short
+write reports failure.
 
 `PanelDisplay` is outside `audioTask`. The main loop reads controller and
-`ControlStore` state and renders text for Home or Menu directly through
-Adafruit GFX/ST7789. It redraws on state changes or parameter-overlay expiry,
-at most once every 100 ms. No display buffer is allocated. STATUS exposes
+`ControlStore` state and renders Home or Menu with Adafruit GFX into a
+320x172 `GFXcanvas16` (110 kB of heap), then sends the frame to the ST7789 in
+one transfer; without the buffer it draws on the panel directly. It redraws on
+state changes or parameter-overlay expiry, at most once every 100 ms. STATUS exposes
 `displayRenderUs` and `maxDisplayRenderUs` separately from audio timing.
 The audio task contains no SPI or display calls.
 
-The intended product display is a small, primarily text-based interface for
-status, parameters, menus and settings. ST7789 initialization targets Adafruit
+Home maps the panel controls to their position; see
+[panel UI](panel-ui.md). ST7789 initialization targets Adafruit
 Product 5393 at 320x172 in landscape; physical wiring and mounting remain
 unverified. The existing SPI GPIO assignments are retained.
 
@@ -140,7 +138,7 @@ an abrupt boundary.
 
 ## Performance controller
 
-`PerformanceController` is compiled into both firmware and VirtualESP.
+`PerformanceController` is compiled into both firmware and the Android app.
 `PanelSettings` (schema 3) owns the single versioned POT and BTN mapping,
 Pickup/Jump behavior, zones/ranges, the live-pitch encoder gesture and the
 four sound patches. Raw numbered POT inputs, target curves, hysteresis and the
@@ -148,14 +146,12 @@ filter macro are interpreted only in shared C++. The controller also owns the
 Trigger voice list stepped by the encoder; Play Sound pads keep last-pressed
 priority, combinations and their encoder+button shortcuts.
 
-VirtualESP exports the same compact logical display state through its C ABI:
-320x172 dimensions, Home/Menu mode, controller-formatted title, ordered rows,
-values, footer and temporary overlay, plus the full versioned panel settings.
-`VirtualTransport` adds these values to `panel.display`. Both the desktop text
-widget and the Adafruit renderer therefore show the same
-state, parameter values and encoder menus without rebuilding UI semantics in
-Python. The desktop widget uses Tk text directly and requires no external
-resources.
+The firmware reports the same compact logical display state in STATUS
+`panel.display`: 320x172 dimensions, Home/Menu mode, controller-formatted title,
+ordered rows, values, footer and temporary overlay, plus the full versioned
+panel settings in `panel.settings`. The Adafruit renderer and any host reading
+STATUS therefore show the same state, parameter values and encoder menus
+without rebuilding UI semantics.
 
 A Trigger or pad activation updates the mode-specific configuration and an eight-entry
 activation ring in one `ControlStore` write. The audio engine transfers unseen
@@ -167,7 +163,7 @@ The first captured event starts at the block boundary. With DECAY 0 a
 zero-duration tap receives a 2 ms minimum gate and the usual 3 ms release;
 with any other DECAY it keeps a 10 ms minimum gate and the exponential/one-shot
 tails. Hardware input latency,
-block wait, I2S buffering and PC buffering must be measured separately. The sequence is
+block wait and I2S buffering must be measured separately. The sequence is
 independent of the gate, so pressing another pad while one remains held still
 retriggers the appropriate envelope, and rapid press/release pairs survive a
 block snapshot. The active gate uses independent pad states and returns to the
@@ -185,32 +181,3 @@ instrument remains future work requiring recordings or measurements. No
 circuit or audio identity with a third-party device is claimed. Syndrum follows
 the broad behavior of analog percussion synthesis; Gunshot is procedural
 synthesis rather than sample playback.
-
-## PC concurrency
-
-- tkinter runs only on the main thread;
-- `SerialTransport` owns a reader thread and a resynchronizing packet parser;
-- a bounded 12-block queue drops the oldest PCM when full;
-- `AudioPlayer` owns the `sounddevice.RawOutputStream` thread and writes silence
-  if a block is temporarily unavailable.
-- mouse and keyboard sources are latched independently; focus loss sends
-  `PANEL_RESET` to release momentary actions;
-- dial traffic uses one periodic 25 ms timer per control and sends the final
-  value synchronously on release.
-
-The PC has no oscillator, LFO, envelope, delay or filter implementation.
-
-## Output routing
-
-`STREAM 0` disables USB PCM without stopping local I2S or USB control.
-`LOCAL_AUDIO 0` disables local I2S; it defaults to enabled after successful initialization.
-`STREAM 1` sends the same rendered block according to the atomic output mode:
-
-```text
-                         +-> UsbPcmSink -> PC
-AudioEngine -> PCM ------+
-                         +-> I2sPcm5102Sink -> PCM5102A
-```
-
-`SET OUTPUT PC|GPIO|BOTH` changes the destinations at a block boundary without
-restarting `AudioEngine` or resetting oscillator, envelope, delay, or filters.

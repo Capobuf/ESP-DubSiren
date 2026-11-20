@@ -1,7 +1,7 @@
 # Physical panel UI
 
 The panel remains six front pots, four buttons, one encoder with push, one
-small, primarily text-based Adafruit Product 5393 display (320x172) and one
+Adafruit Product 5393 display (320x172) and one
 separate rear Master. No extra performance knobs.
 
 The desktop layout places three pots above the display/encoder, three below,
@@ -10,9 +10,9 @@ panel; both axes can scroll in small windows or at larger text scaling. Tab
 focus automatically scrolls a control into view. The debug UI uses the same
 connection/status area and scrolling behavior.
 
-Connecting runs build/open in one background worker; Tk stays responsive and
-reports `Building / opening Virtual ESP…`. Connect is disabled until it finishes
-to avoid overlapping builds. On failure it becomes available for retry. Closing
+Connecting opens the serial port in one background worker; Tk stays responsive
+and reports `Opening device…`. Connect is disabled until it finishes to avoid
+overlapping connections. On failure it becomes available for retry. Closing
 the window cancels adoption of a late connection and releases its transport.
 
 `Requested (unconfirmed)`, `Accepted` and `Rejected` describe command delivery.
@@ -28,7 +28,7 @@ never produces a false acceptance indication.
 | POT1..POT6 | `POT <1..6> <0..1>`; C++ applies the stored mapping |
 | BTN1 TRIGGER | `PAD 1 0|1` |
 | BTN2 HOLD | `PAD 2 0|1`; toggle on rising edge |
-| BTN3 MOD UP | `PAD 3 0|1` |
+| BTN3 MOD UP | `PAD 3 0|1`; TAP TEMPO outside MANUAL |
 | BTN4 ECHO CUT | `PAD 4 0|1` |
 | Encoder turn | `ENCODER_ROTATE PREV|NEXT`; steps the Trigger voice, or the selected pad's variant |
 | Encoder push | `ENCODER_SWITCH 0|1`; opens Menu on completed click/release |
@@ -41,16 +41,29 @@ including Play Sound, Echo Loop, Echo Spin and Tap Tempo, is assignable in
 SETUP. Pitch and Rate can use zones or continuous ranges;
 target-specific curves, validation and formatting live in C++. Pickup is the
 factory behavior, with an UP/DOWN direction shown until the physical pot
-crosses the current value. Rear Master is fixed and remains immediately live.
+crosses the current value. The first reading of each pot after power-on is
+taken at once, silently: at boot nothing stored outranks the knob, so a Rate
+pot sitting at SLOW is SLOW from the start. Pickup applies after a voice
+change, a patch recall or a new assignment. Rear Master is fixed and remains
+immediately live, without Pickup; turning it shows MASTER and the level in
+percent as an overlay, except for its first reading after power-on.
 
-Home has two views. While the selected button is not a Play Sound pad it shows
-the large siren view: Trigger voice name, PITCH, RATE and a status line. While
-it is a pad, Home shows the pad view: pad number, family and variant, Tune,
-Rate, Depth, Master, echo values and status. With zoned Pitch and Rate the
-siren view shows symbolic and physical values together, for example
-`PITCH MID / 680 Hz` and `RATE SLOW / 0.70 Hz`. Selector labels and values come
-from C++ STATUS, including hysteresis; Python does not implement a second
-selector or any DSP.
+Home is a map of the front panel, which has no silkscreen. Each cell sits
+where its control is: the top row stands for POT1-POT3 above the display, the
+bottom row for POT4-POT6 below it, the middle row is the voice banner and the
+last row stands for the four keys. A pot cell shows only
+the assigned function and a horizontal bar with the current position: one
+segment per zone with zoned Pitch and Rate, centred for the bipolar Echo
+Filter. No number is shown in the cell. While Pickup waits, the bar turns red
+with an up/down arrow. A key cell shows its action (for a
+Play Sound pad the family and variant), gold while pressed, red while latched
+(Hold, Echo Loop, a latched pad) and outlined green when it is the selected
+pad; Tap Tempo shows the BPM. While the encoder is held, pad keys show their
+shortcut in green. The gold banner, across the whole width, shows the Trigger voice or the pad sound, the live transpose and USB
+when linked; a moved pot lights its cell and the banner shows the
+controller's title and value for 1100 ms. Persistence and device errors turn
+the banner red. Labels and values come from the C++ controller; Python does
+not implement a second selector or any DSP.
 
 The root menu contains Sound, Mod, Echo, Setup, Tap Tempo and Back. Setup
 contains Pots, Buttons, Encoder, Reset Defaults and Back. Submenus expose only applicable
@@ -58,6 +71,12 @@ fields and the controller supplies the
 page title, ordered rows, labels, values and footer to both renderers. Moving a
 pot while Menu is open updates the footer without replacing the menu. Reset
 Defaults requires an explicit YES confirmation.
+
+While Menu is open, BTN4 (the key under the encoder) is BACK, whatever its
+assigned action: it ends editing like the push (a Reset confirmation is
+cancelled instead), otherwise it does what the page's BACK row does, up to
+Home. It neither plays nor runs its own action; with the encoder held it
+behaves as it does at Home. The menu footer shows it as `◄ BACK`.
 
 The pot footer yields to the navigation hint on the next encoder turn/click.
 Target descriptors own range limits, mapping and numeric units/formatting.
@@ -98,29 +117,22 @@ on release.
 
 The ESP32 stores schema-3 `PanelSettings` in Preferences/NVS and reports corrupt
 loads and save failures. A layout stored by another schema is discarded at
-load, without migration: factory settings apply. VirtualESP stores the same
-logical settings in `%APPDATA%/ESP-DubSiren/panel.json` and likewise discards
-a file with an older schema; invalid files are surfaced instead of silently
-ignored. A real device is authoritative on
+load, without migration: factory settings apply. The device is authoritative on
 connection: the PC adopts STATUS and never pushes a mapping or stale local
 default. No pressed
 state, gate, live transpose or other transient state is restored from disk.
 
 Malformed configuration commands invalidate an entire staged restore, including
 syntax errors. Integer fields are checked before narrowing and corrupt enum or
-non-finite values are rejected on load. Host saves use a temporary file and an
-atomic replacement, preserving the previous file if replacement fails. Focus loss cancels an encoder
+non-finite values are rejected on load. Focus loss cancels an encoder
 click rather than opening/committing a menu; physically held inputs retain ownership.
-
-Microsoft Store Python may redirect the AppData file into its package's
-`LocalCache/Roaming/ESP-DubSiren` directory.
 
 Feedback at 0% still produces one delayed repeat. Set Echo Level to 0% for
 dry output, or hold ECHO CUT to mute the echo temporarily.
 
 ## Hardware display
 
-The Adafruit GFX/ST7789 text renderer targets Adafruit Product 5393.
+The Adafruit GFX/ST7789 renderer targets Adafruit Product 5393.
 It retains SPI GPIO11 MOSI and GPIO12 SCK, GPIO9 CS, GPIO8 DC, GPIO7 reset,
 and GPIO14 backlight held high. Initialization is `init(172, 320)` with
 rotation 1 (320x172), as specified in the
@@ -130,13 +142,20 @@ unverified on the [current PCB](../hardware/README.md).
 
 Rendering runs from `loop()`, never from `audioTask`. Home and Menu redraw on
 state changes, at most once every 100 ms; temporary parameter text expires
-after 1100 ms. The siren view shows voice, Pitch/Rate and Hold/Echo status. The
-pad view shows pad/sound/variant, Tune, Rate, Depth, Master, echo values and status.
-The encoder menu retains selection, editing, values and navigation hints.
-Text is drawn directly, with no display buffer or PSRAM requirement.
-`displayRenderUs` and `maxDisplayRenderUs` remain available in STATUS.
-The desktop panel draws text with Tk; its existing control callbacks manage
-parameter overlays. Audio, controls and VirtualESP synthesis remain unchanged.
+after 1100 ms. The menu shows a gold title, three rows of large text with the
+value on the right (boxed between arrows while editing), a scroll bar, the
+controller's footer and the BACK key. Text uses Teko SemiBold (SIL OFL 1.1)
+as Adafruit GFX fonts with cap heights of 10, 14, 21 and 26 px, in
+`firmware/src/display/fonts/`; each text takes the largest that fits, and a
+pot name too long for one line puts its first word small above the rest
+(`ECHO` / `FEEDBACK`). `python firmware/tools/make_display_fonts.py`
+regenerates them from a pinned, hash-checked copy of the font. The glass has
+3 mm rounded corners, so the layout keeps 8 px side margins. Each frame is drawn in a 110 kB `GFXcanvas16` and sent with one
+`drawRGBBitmap`, so the panel never shows a cleared screen; if the buffer
+cannot be allocated, drawing falls back to the panel directly. No PSRAM is
+required. `displayRenderUs` and `maxDisplayRenderUs` remain available in STATUS
+and include the transfer. The desktop panel draws text with Tk; its existing
+control callbacks manage parameter overlays.
 
 On the PCB, U5 is the Adafruit 5393 SPI display.
 
@@ -160,7 +179,8 @@ Decay TAU indica la costante esponenziale, non il tempo al silenzio; a 0
 seleziona il gate finito di 2 ms in attacco e 3 ms in rilascio.
 Le modifiche sonore sono live e il click termina l'editing (DONE); il salvataggio
 della patch è una funzione separata. Home mantiene Hold/Cut/Spin/Loop fuori
-dall'area degli overlay. Leggibilità ST7789 da verificare sull'hardware.
+dall'area degli overlay. Leggibilità, memoria libera e tempo di invio del
+frame ST7789 da verificare sull'hardware.
 
 ## Quattro memorie sonore (#11)
 
@@ -186,7 +206,7 @@ caricamento e valgono le impostazioni di fabbrica, con quattro memorie vuote.
 Trigger, Hold, latch attivo, Loop e transpose non fanno parte della patch.
 
 STATUS include `settings.patches`, quattro vettori numerici versionati di 23
-campi, definiti da `soundPatchValue` in PanelSettings.h. Il ripristino VirtualESP
+campi, definiti da `soundPatchValue` in PanelSettings.h. Un ripristino
 usa `PANEL PATCH n <23 valori>` dentro PANEL BEGIN/COMMIT, validando il candidato
 prima di applicarlo. La persistenza NVS fisica resta da verificare al riavvio.
 

@@ -61,6 +61,7 @@ void PerformanceController::changed() { ++revision_; }
 
 bool PerformanceController::tapTempo(uint32_t nowUs) {
     snprintf(overlayTitle_, sizeof(overlayTitle_), "TAP TEMPO");
+    overlayPot_ = 0;
     const uint32_t interval = nowUs - lastTapUs_;
     if (!tapStarted_ || interval > 2000000u) {
         tapStarted_ = true;
@@ -86,6 +87,12 @@ bool PerformanceController::tapTempo(uint32_t nowUs) {
     state.tempo.known = true;
     updateTempoTiming(state.tempo);
     controls_.set(state);
+    // Tapping is for the riddim: a free echo follows the tapped tempo.
+    if (!state.tempo.echoSync) {
+        setTempoSync(true, true);
+        snprintf(overlayTitle_, sizeof(overlayTitle_), "TAP TEMPO");
+        overlayPot_ = 0;
+    }
     snprintf(overlayValue_, sizeof(overlayValue_), "%.1f BPM", state.tempo.bpm);
     changed();
     return true;
@@ -100,6 +107,7 @@ bool PerformanceController::setTempoBpm(float bpm) {
     controls_.set(state);
     tapStarted_ = false;
     snprintf(overlayTitle_, sizeof(overlayTitle_), "TEMPO");
+    overlayPot_ = 0;
     snprintf(overlayValue_, sizeof(overlayValue_), "%.1f BPM", bpm);
     changed();
     return true;
@@ -401,6 +409,20 @@ bool PerformanceController::anyRelevantButtonDown() const {
     return false;
 }
 
+bool PerformanceController::modUpTaps() const {
+    return effectiveLfoShape(controls_.snapshot()) != LfoShape::Manual;
+}
+
+bool PerformanceController::buttonDown(unsigned buttonNumber) const {
+    return buttonNumber >= 1 && buttonNumber <= 4 && padDown_[buttonNumber - 1];
+}
+
+float PerformanceController::potValueNormalized(unsigned potNumber) const {
+    if (potNumber < 1 || potNumber > 6) return 0.0f;
+    return clampFloat(currentTargetNormalized(settings_.pots[potNumber - 1],
+                                              controls_.snapshot()), 0.0f, 1.0f);
+}
+
 bool PerformanceController::pitchAvailable(const ControlState &state) const {
     return state.mode != SirenMode::Gunshot;
 }
@@ -417,7 +439,7 @@ void PerformanceController::updateGate(ControlState &state) {
         switch (buttons[index].action) {
             case ButtonAction::Trigger: trigger = true; break;
             case ButtonAction::PlaySound: trigger |= activePad_ >= 0; break;
-            case ButtonAction::ModUp: modUp = true; break;
+            case ButtonAction::ModUp: modUp |= !modUpTapping_[index]; break;
             case ButtonAction::ModDown: modDown = true; break;
             case ButtonAction::EchoCut: echoCut = true; break;
             case ButtonAction::EchoSpin: echoSpin = true; break;
@@ -462,14 +484,21 @@ bool PerformanceController::setPad(unsigned padNumber, bool pressed) {
     ControlState state = controls_.snapshot();
     ButtonConfig &button = settings_.buttons[index];
     // A quick tap can press and release between display refreshes.
-    if (pressed || button.action != ButtonAction::TapTempo) {
+    if (pressed || (button.action != ButtonAction::TapTempo && !modUpTapping_[index])) {
         overlayTitle_[0] = '\0';
         overlayValue_[0] = '\0';
     }
 
+    // With the menu open, the key under the encoder steps back one level
+    // instead of doing its own action.
+    if (pressed && displayMode_ == DisplayMode::Menu && !encoderPressed_ &&
+        padNumber == kMenuBackButton) {
+        consumed_[index] = true;
+        menuBack();
+        state = controls_.snapshot();
     // On a sound pad the encoder+button shortcuts take precedence over playing
     // it and suppress the release-click menu gesture.
-    if (pressed && encoderPressed_ && button.action == ButtonAction::PlaySound) {
+    } else if (pressed && encoderPressed_ && button.action == ButtonAction::PlaySound) {
         consumed_[index] = true;
         modifierUsed_ = true;
         if (index == 0) toggleSelectedHold();
@@ -495,6 +524,10 @@ bool PerformanceController::setPad(unsigned padNumber, bool pressed) {
         else if (button.action == ButtonAction::TapTempo) {
             tapTempo();
             state = controls_.snapshot();
+        } else if (button.action == ButtonAction::ModUp && modUpTaps()) {
+            modUpTapping_[index] = true;
+            tapTempo();
+            state = controls_.snapshot();
         } else if (button.action == ButtonAction::PlaySound) {
             selectedPad_ = index;
             activePad_ = static_cast<int>(index);
@@ -502,6 +535,7 @@ bool PerformanceController::setPad(unsigned padNumber, bool pressed) {
         }
     } else {
         pressOrder_[index] = 0;
+        modUpTapping_[index] = false;
         if (!consumed_[index] && button.action == ButtonAction::PlaySound &&
             activePad_ == static_cast<int>(index)) {
             activePad_ = latestPressedSoundButton();
@@ -645,6 +679,14 @@ bool PerformanceController::setPot(unsigned potNumber, float position) {
     ControlState state = controls_.snapshot();
     const PotConfig &config = settings_.pots[index];
     PickupState &pickup = pickup_[index];
+    // The first reading after power-on is where the knob sits: nothing stored
+    // outranks it, so it applies at once instead of waiting for Pickup.
+    const bool firstReading = !potReported_[index];
+    potReported_[index] = true;
+    if (firstReading) {
+        pickup.seen = pickup.latched = true;
+        pickup.previous = position;
+    }
     bool apply = (settings_.potBehavior == PotBehavior::Jump && !pickup.force) || pickup.latched ||
                  config.target == PotTarget::None;
     if (!apply) {
@@ -663,6 +705,7 @@ bool PerformanceController::setPot(unsigned potNumber, float position) {
         if (apply) pickup.latched = true;
     }
     snprintf(overlayTitle_, sizeof(overlayTitle_), "%s", potTargetName(config.target));
+    overlayPot_ = potNumber;
     if (apply) {
         applyPotValue(state, config, position);
         formatTargetValue(config.target, state, overlayValue_, sizeof(overlayValue_));
@@ -686,8 +729,27 @@ bool PerformanceController::setPot(unsigned potNumber, float position) {
         snprintf(overlayValue_, sizeof(overlayValue_), "%s PICKUP - %s",
                  pickup.direction > 0 ? "UP" : "DOWN", value);
     }
+    // The power-on scan is not a gesture: no overlay for it.
+    if (firstReading) overlayTitle_[0] = overlayValue_[0] = '\0';
     changed();
     return true;
+}
+
+void PerformanceController::setMaster(float position) {
+    if (!isfinite(position)) return;
+    position = clampFloat(position, 0.0f, 1.0f);
+    ControlState state = controls_.snapshot();
+    state.masterVolume = position;
+    controls_.set(state);
+    // As for the pots, the power-on reading is not a gesture.
+    if (masterReported_) {
+        snprintf(overlayTitle_, sizeof(overlayTitle_), "MASTER");
+        snprintf(overlayValue_, sizeof(overlayValue_), "%d%%",
+                 static_cast<int>(lroundf(position * 100.0f)));
+        overlayPot_ = 0;
+    }
+    masterReported_ = true;
+    changed();
 }
 
 void PerformanceController::setEncoderPressed(bool pressed, bool cancelClick) {
@@ -717,6 +779,7 @@ void PerformanceController::rotateEncoder(int direction) {
             settings_.encoderHoldAction == EncoderHoldAction::LivePitch) {
             modifierUsed_ = true;
             snprintf(overlayTitle_, sizeof(overlayTitle_), "LIVE PITCH");
+            overlayPot_ = 0;
             if (!pitchAvailable(state)) {
                 snprintf(overlayValue_, sizeof(overlayValue_), "N/A");
             } else {
@@ -776,6 +839,7 @@ void PerformanceController::resetMomentaries() {
         padDown_[index] = false;
         consumed_[index] = false;
         pressOrder_[index] = 0;
+        modUpTapping_[index] = false;
     }
     activePad_ = -1;
     encoderPressed_ = false;
@@ -1407,17 +1471,38 @@ void PerformanceController::pressMenuItem() {
         resetConfirmed_ = false;
         setMenuPage(MenuPage::Reset);
     } else if (row == Row::Back) {
-        if (menuPage_ == MenuPage::Root) {
-            displayMode_ = DisplayMode::Home;
-            changed();
-        } else if (menuPage_ == MenuPage::Pot) setMenuPage(MenuPage::Pots);
-        else if (menuPage_ == MenuPage::Button) setMenuPage(MenuPage::Buttons);
-        else if (menuPage_ == MenuPage::Pots || menuPage_ == MenuPage::Buttons || menuPage_ == MenuPage::Encoder || menuPage_ == MenuPage::Reset) setMenuPage(MenuPage::Setup);
-        else setMenuPage(MenuPage::Root);
+        leaveMenuPage();
     } else {
         menuEditing_ = true;
         changed();
     }
+}
+
+void PerformanceController::leaveMenuPage() {
+    if (menuPage_ == MenuPage::Root) {
+        displayMode_ = DisplayMode::Home;
+        changed();
+    } else if (menuPage_ == MenuPage::Pot) setMenuPage(MenuPage::Pots);
+    else if (menuPage_ == MenuPage::Button) setMenuPage(MenuPage::Buttons);
+    else if (menuPage_ == MenuPage::Pots || menuPage_ == MenuPage::Buttons || menuPage_ == MenuPage::Encoder || menuPage_ == MenuPage::Reset) setMenuPage(MenuPage::Setup);
+    else setMenuPage(MenuPage::Root);
+}
+
+void PerformanceController::menuBack() {
+    normalizeMenuIndex();
+    rebuildMenuView();
+    if (!menuEditing_) {
+        leaveMenuPage();
+        return;
+    }
+    // Ends editing like the push (DONE), but never confirms a Reset.
+    if (menuRowCount_ > 0 && menuRows_[menuIndex_].row == Row::Confirm) {
+        menuEditing_ = false;
+        resetConfirmed_ = false;
+        changed();
+        return;
+    }
+    pressMenuItem();
 }
 
 void PerformanceController::editMenuItem(Row row, int direction) {

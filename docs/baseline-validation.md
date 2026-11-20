@@ -59,11 +59,9 @@ reported no errors. Home, filter and menu text were inspected at 320x170.
 This was an application/PCM check, not a human listening verdict or a test of
 physical ADCs, the hardware display, I2S or an external reference instrument.
 
-Reproduce listening files with:
-
-```powershell
-pc\.venv\Scripts\python.exe pc\baseline_capture.py
-```
+Virtual ESP has since been removed (the Android app is now the simulator),
+together with the `pc\baseline_capture.py` script that produced these clips
+through it; the description below records that run.
 
 `artifacts/baseline/` contains 16 short trigger/echo clips, four longer dry
 performance clips and `metrics.json`. Each uses MID pitch, MID rate and the

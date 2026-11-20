@@ -9,6 +9,8 @@ class PerformanceController {
 public:
     static constexpr unsigned kDisplayWidth = 320;
     static constexpr unsigned kDisplayHeight = 172;
+    // Key under the encoder: BACK while the menu is open.
+    static constexpr unsigned kMenuBackButton = 4;
 
     enum class DisplayMode : uint8_t { Home, Menu };
     enum class MenuPage : uint8_t { Root, Setup, Sound, Mod, Echo, Pots, Pot, Buttons, Button, Encoder, Reset };
@@ -30,6 +32,8 @@ public:
     void notifyExternalChange(PotTarget target);
     bool setPad(unsigned padNumber, bool pressed);
     bool setPot(unsigned potNumber, float position);
+    // Rear Master: live, no Pickup; shows an overlay like the front pots.
+    void setMaster(float position);
     bool tapTempo(uint32_t nowUs = micros());
     bool setTempoBpm(float bpm);
     bool setTempoSync(bool echo, bool sync);
@@ -104,6 +108,14 @@ public:
     const char *menuItemValue(unsigned index) const;
     const char *overlayTitle() const { return overlayTitle_; }
     const char *overlayValue() const { return overlayValue_; }
+    // Pot (1..6) that produced the current overlay, 0 for any other source.
+    unsigned overlayPot() const { return overlayTitle_[0] ? overlayPot_ : 0; }
+    // Display helpers: physical input state and a pot's target position 0..1.
+    bool buttonDown(unsigned buttonNumber) const;
+    bool encoderPressed() const { return encoderPressed_; }
+    // Mod Up only acts in MANUAL; with any other shape its key taps the tempo.
+    bool modUpTaps() const;
+    float potValueNormalized(unsigned potNumber) const;
     bool pickupWaiting(unsigned potNumber) const;
     int pickupDirection(unsigned potNumber) const;
     float classicPitchHz(unsigned index) const;
@@ -152,6 +164,8 @@ private:
     bool pitchAvailable(const ControlState &state) const;
     void openMenu();
     void pressMenuItem();
+    void leaveMenuPage();
+    void menuBack();
     void editMenuItem(Row item, int direction);
     static float *soundValue(ControlState &state, Row row, float &minimum, float &maximum, float &step);
     void addSoundValue(const ControlState &state, Row row, const char *key, const char *label, const char *unit) const;
@@ -199,6 +213,11 @@ private:
     bool soundLatchArmed_ = false;
     RemoteGates remoteGates_;
     PickupState pickup_[6];
+    // Per pot: false until its first reading since power-on.
+    bool potReported_[6] = {};
+    bool masterReported_ = false;
+    // Per key: a Mod Up press that tapped the tempo instead.
+    bool modUpTapping_[4] = {};
     bool tapStarted_ = false;
     uint32_t lastTapUs_ = 0;
     uint32_t tapIntervals_[4] = {};
@@ -215,6 +234,7 @@ private:
     mutable char menuFooterBuffer_[48] = "TURN SELECT / PUSH OPEN";
     char overlayTitle_[24] = "";
     char overlayValue_[40] = "";
+    unsigned overlayPot_ = 0;
     char persistenceStatus_[40] = "";
     unsigned revision_ = 1;
     unsigned menuRevision_ = 0;

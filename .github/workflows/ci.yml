@@ -1,4 +1,4 @@
-name: Firmware and simulator
+name: Firmware and host tests
 
 on:
   push:
@@ -13,7 +13,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  simulator:
+  host-tests:
     runs-on: windows-latest
     timeout-minutes: 20
     steps:
@@ -22,10 +22,8 @@ jobs:
         with:
           python-version: '3.13'
           cache: pip
-          cache-dependency-path: pc/requirements.txt
-      - run: python -m pip install -r pc/requirements.txt
-      - name: Python and Virtual ESP regressions (stop on first failure)
-        run: python -m unittest discover -s pc -p "test_*.py" -f
+          cache-dependency-path: tests/native/requirements.txt
+      - run: python -m pip install -r tests/native/requirements.txt
       - name: Native DSP and controller regressions
         run: python tests/native/run.py
 
