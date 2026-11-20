@@ -80,7 +80,8 @@ void PanelInputs::poll() {
         if (delta > 16384) delta -= 32768;
         else if (delta < -16384) delta += 32767;
         previousEncoderCount_ = count;
-        encoderRemainder_ += delta;
+        // On the PCB a clockwise turn counts down: negate so clockwise is +1.
+        encoderRemainder_ -= delta;
         while (encoderRemainder_ >= 4) { parser_.rotatePhysicalEncoder(1); encoderRemainder_ -= 4; }
         while (encoderRemainder_ <= -4) { parser_.rotatePhysicalEncoder(-1); encoderRemainder_ += 4; }
     }

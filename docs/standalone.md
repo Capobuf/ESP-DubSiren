@@ -27,8 +27,9 @@ libreria. Compilare con:
 python -m platformio run -d firmware -e panel-prototype
 ```
 
-Il PCNT conta quattro transizioni per scatto; direzione e numero di scatti
-vanno verificati con l'encoder montato. Il filtro PCNT e il debounce pulsanti
+Il PCNT conta quattro transizioni per scatto. Sul primo PCB montato il senso
+orario contava all'indietro: il firmware inverte il conteggio, cosi orario
+e +1. Il numero di scatti resta da verificare con l'encoder montato. Il filtro PCNT e il debounce pulsanti
 (2 ms) sono tarature iniziali, non misure. Un pulsante premuto al boot deve
 prima essere rilasciato; nessun gate viene richiamato dalle memorie.
 
