@@ -78,7 +78,6 @@ Configurable-panel commands (additive in firmware 0.9.0):
 
 ```text
 POT <1..6> <0..1>
-PANEL BEHAVIOR PICKUP|JUMP
 PANEL POT <1..6> TARGET NONE|PITCH|RATE|LFO_DEPTH|ECHO_LEVEL|ECHO_TIME|ECHO_FEEDBACK|ECHO_FILTER|DECAY|SWEEP_AMOUNT|SWEEP_TIME
 PANEL POT <1..6> MODE CONTINUOUS|ZONES
 PANEL POT <1..6> RANGE <minimum> <maximum>
@@ -97,14 +96,14 @@ accepted as `CLASSIC`. Variant counts are SIREN 5, TWO_TONE 3, LICKSHOT 5,
 PING 3, GUNSHOT 1 and TEST_TONE 1.
 
 `POT` is the raw normalized front-pot input. Assignment, zone/continuous
-mapping, musical ranges and Pickup are applied only by the shared C++
+mapping and musical ranges are applied only by the shared C++
 controller. Configuration commands validate a complete candidate before
 mutation; invalid ranges, ZONES on a target other than Pitch or Rate and
 invalid sound/latch combinations are rejected atomically. `PANEL POT ... TARGET`
 resets that pot to the target's continuous default range. `PANEL BUTTON ...
 SOUND`, `PAD_CONFIG`, `PANEL SAVE` and `PANEL RECALL` are rejected unless the
 button's action is PLAY_SOUND. Existing semantic `SET` commands remain
-available for development and cause matching Pickup latches to re-arm.
+available for development.
 `PANEL BEGIN` stages the following configuration commands; `PANEL COMMIT`
 validates and applies them together and `PANEL CANCEL` discards them, so a
 rejected field cannot partially replace the running configuration.
@@ -214,14 +213,14 @@ Every packet begins with this packed, 10-byte little-endian header:
 A STATUS payload is UTF-8 JSON. `HELLO` currently returns:
 
 ```json
-{"name":"DubSiren","protocol":2,"sampleRate":48000,"blockSamples":480,"firmware":"0.9.0","i2sReady":true,"panel":{"revision":1,"settings":{"schema":3,"revision":1,"potBehavior":"PICKUP","encoder":{"holdTurn":"LIVE_PITCH","step":1,"range":12},"pots":[{"target":"PITCH","mode":"ZONES","min":80.00000,"max":1600.00000,"zones":[330.00000,680.00000,1000.00000]}],"buttons":[{"action":"TRIGGER","sound":"SIREN","variant":0,"latch":false}],"patches":[]},"persistenceStatus":"","display":{"width":320,"height":172,"mode":"HOME","menuIndex":0,"editing":false,"title":"PERFORMANCE","rows":[{"key":"SOUND","label":"SOUND","value":""}],"buttons":["TRIGGER","HOLD","MOD UP","ECHO CUT"],"padSelected":false,"voice":"SINE 1","pitch":"MID","pitchMode":"ZONES","rate":"MID","rateMode":"ZONES","tuneHz":680.0000,"rateHz":3.0000,"liveTranspose":0}}}
+{"name":"DubSiren","protocol":2,"sampleRate":48000,"blockSamples":480,"firmware":"0.9.0","i2sReady":true,"panel":{"revision":1,"settings":{"schema":4,"revision":1,"encoder":{"holdTurn":"LIVE_PITCH","step":1,"range":12},"pots":[{"target":"PITCH","mode":"ZONES","min":80.00000,"max":1600.00000,"zones":[330.00000,680.00000,1000.00000]}],"buttons":[{"action":"TRIGGER","sound":"SIREN","variant":0,"latch":false}],"patches":[]},"persistenceStatus":"","display":{"width":320,"height":172,"mode":"HOME","menuIndex":0,"editing":false,"title":"PERFORMANCE","rows":[{"key":"SOUND","label":"SOUND","value":""}],"buttons":["TRIGGER","HOLD","MOD UP","ECHO CUT"],"padSelected":false,"voice":"SINE 1","pitch":"MID","pitchMode":"ZONES","rate":"MID","rateMode":"ZONES","tuneHz":680.0000,"rateHz":3.0000,"liveTranspose":0}}}
 ```
 
 `COMMAND_RESULT` has a 2–512 byte payload: byte 0 is `1` (accepted) or `0`
 (rejected), followed by the original trimmed ASCII command, without newline.
 Every non-empty command of at most 511 bytes receives a result except `HELLO`,
 which returns STATUS. Oversize lines are discarded. Acceptance means the
-controller accepted the operation; clamping, pickup and tempo sync can still
+controller accepted the operation; clamping and tempo sync can still
 determine the effective value, reported separately in `panel.display`.
 Firmware retains one pending result and retries the non-blocking USB write
 before consuming the next command. Disconnect clears that pending reply.
@@ -245,8 +244,8 @@ or menu state changes, at most every 200 ms, and at least once per second after
 HELLO while USB has space available; accepted commands no longer trigger an
 immediate STATUS. Failed periodic sends are retried no faster than every 200 ms.
 
-In firmware 0.9.0, `panel.settings` contains the complete schema-3 persistent
-panel configuration and its revision: `potBehavior`, `encoder`, and `pots`,
+In firmware 0.9.0, `panel.settings` contains the complete schema-4 persistent
+panel configuration and its revision: `encoder`, and `pots`,
 `buttons` and `patches` at top level. A configuration stored by another schema
 is discarded at load and the factory settings apply. `panel.display.rows` contains ordered
 objects with controller-owned `key`, `label` and already-formatted `value`,

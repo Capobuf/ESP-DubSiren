@@ -386,9 +386,8 @@ void testPanelDisplayState() {
     assert(parser.parse("ENCODER_SWITCH 0"));
     assert(!parser.menuEditing());
     assert(strcmp(parser.menuTitle(), "POT CONTROLS") == 0);
-    assert(strcmp(parser.menuItemKey(0), "BEHAVIOR") == 0);
+    assert(strcmp(parser.menuItemKey(0), "POT_1") == 0);
 
-    assert(parser.parse("ENCODER_ROTATE NEXT"));
     assert(parser.parse("ENCODER_SWITCH 1"));
     assert(parser.parse("ENCODER_SWITCH 0"));
     assert(strcmp(parser.menuTitle(), "POT 1 - PITCH") == 0);
@@ -428,24 +427,22 @@ void testPanelDisplayState() {
 
 void testPowerOnPotReading() {
     // Factory Rate is zoned and starts at MID: a pot already at SLOW when the
-    // panel powers on takes over at once, without waiting for Pickup.
+    // panel powers on takes over at once, without an overlay.
     ControlStore store;
     CommandParser parser(store);
     assert(store.snapshot().classicModulation == ClassicModulation::Medium);
     assert(parser.setPhysicalPot(2, 0.05f));
     assert(store.snapshot().classicModulation == ClassicModulation::Slow);
-    assert(!parser.pickupWaiting(2));
     assert(parser.overlayTitle()[0] == '\0');
     assert(parser.setPhysicalPot(2, 0.95f));
     assert(store.snapshot().classicModulation == ClassicModulation::Manual);
 
-    // After that, Pickup still protects a changed value: a new voice resets
-    // it, and the knob must cross the stored value again.
+    // After a new voice the next turn applies at once and shows its value.
     assert(parser.setPhysicalPot(1, 0.5f));
     assert(parser.parse("ENCODER_ROTATE NEXT"));
     assert(parser.setPhysicalPot(1, 0.95f));
-    assert(parser.pickupWaiting(1));
-    assert(store.snapshot().classicPitch == ClassicPitch::Mid);
+    assert(store.snapshot().classicPitch == ClassicPitch::High);
+    assert(strcmp(parser.overlayTitle(), "PITCH") == 0);
 }
 
 void testExtendedEncoderGestures() {
@@ -1307,7 +1304,6 @@ void testConfigurablePanel() {
     CommandParser parser(store);
     const PanelSettings &factory = parser.panelSettings();
     assert(factory.schemaVersion == PanelSettings::kSchemaVersion);
-    assert(factory.potBehavior == PotBehavior::Pickup);
     assert(factory.pots[0].target == PotTarget::Pitch);
     assert(factory.pots[0].mode == PotMode::Zones);
     assert(factory.pots[1].target == PotTarget::Rate);
@@ -1316,20 +1312,9 @@ void testConfigurablePanel() {
     assert(factory.buttons[2].action == ButtonAction::ModUp);
     assert(factory.buttons[3].action == ButtonAction::EchoCut);
 
-    // Pickup waits for a crossing after an external parameter change (the
-    // power-on reading before it is taken at once).
+    // A knob applies at once, also after an external parameter change.
     assert(parser.parse("POT 1 0.5"));
     assert(parser.parse("SET CLASSIC_PITCH MID"));
-    const float baseTune = store.snapshot().tuneHz;
-    assert(parser.parse("POT 1 0"));
-    assert(store.snapshot().classicPitch == ClassicPitch::Mid);
-    assert(store.snapshot().tuneHz == baseTune);
-    assert(parser.pickupWaiting(1) && parser.pickupDirection(1) > 0);
-    assert(parser.parse("POT 1 0.9"));
-    assert(store.snapshot().classicPitch == ClassicPitch::High);
-    assert(!parser.pickupWaiting(1));
-
-    assert(parser.parse("PANEL BEHAVIOR JUMP"));
     assert(parser.parse("POT 1 0"));
     assert(store.snapshot().classicPitch == ClassicPitch::Low);
     assert(fabsf(store.snapshot().tuneHz - PerformanceConfig::kClassicPitchHz[0]) < .001f);
@@ -1424,12 +1409,11 @@ void testConfigurablePanel() {
     assert(strcmp(parser.overlayValue(), "N/A") == 0);
     assert(parser.parse("PAD 2 0"));
 
-    // Rear Master remains direct and is never subject to Pickup.
+    // Rear Master is direct.
     assert(parser.parse("SET MASTER 0.23"));
     assert(fabsf(store.snapshot().masterVolume - .23f) < .0001f);
 
     assert(parser.parse("PANEL RESET_DEFAULTS"));
-    assert(parser.panelSettings().potBehavior == PotBehavior::Pickup);
     assert(parser.panelSettings().pots[0].mode == PotMode::Zones);
     assert(parser.panelSettings().buttons[3].action == ButtonAction::EchoCut);
 
@@ -1891,8 +1875,8 @@ void testPadMemories() {
     assert(restored.applyPanelSettings(saved));
     assert(padLayout(restored));
     assert(!reboot.snapshot().trigger && !reboot.snapshot().hold && !reboot.snapshot().echoLoop);
-    // Power-on scan of POT1, taken at once; Pickup below follows each recall.
-    assert(restored.parse("POT 1 0.5")); assert(!restored.pickupWaiting(1));
+    // Power-on scan of POT1; each recall below still restores its patch.
+    assert(restored.parse("POT 1 0.5"));
     assert(restored.parse("SET ECHO_LEVEL 0.7")); assert(restored.parse("SET MASTER 0.3"));
     for (unsigned pad = 1; pad <= 4; ++pad) {
         char command[64]; snprintf(command, sizeof(command), "PANEL RECALL %u", pad);
@@ -1907,7 +1891,7 @@ void testPadMemories() {
         const auto &event = state.activationEvents[(state.activationSequence-1) % kActivationEventCapacity];
         assert(event.tuneHz == state.tuneHz && event.decayMs == state.decayMs);
         snprintf(command, sizeof(command), "PAD %u 0", pad); assert(restored.parse(command));
-        assert(restored.parse("POT 1 0")); assert(restored.pickupWaiting(1));
+        assert(restored.parse("POT 1 0"));
     }
     PanelSettings outdated = saved; outdated.schemaVersion = 2;
     assert(!restored.applyPanelSettings(outdated));
@@ -1951,7 +1935,7 @@ void testPanelValidationAndCancelledClicks() {
         "PANEL BUTTON 1 SOUND CLASSIC 256 0",
         "PANEL BUTTON 4294967297 SOUND CLASSIC 0 0",
         "PANEL POT 1 RANGE 100", "PANEL POT 1 MODE UNKNOWN",
-        "PANEL POT 1 TARGET UNKNOWN", "PANEL BEHAVIOR UNKNOWN",
+        "PANEL POT 1 TARGET UNKNOWN",
         "PANEL BUTTON 1 ACTION UNKNOWN", "PANEL UNKNOWN"
     };
     for (const char *command : invalid) {
@@ -2164,7 +2148,6 @@ void testTempoControls() {
     assert(tempoEchoAvailable(store.snapshot().tempo));
     assert(store.snapshot().tempo.echoMs == 1000);
     assert(parser.parse("TEMPO BPM 120"));
-    assert(parser.parse("PANEL BEHAVIOR JUMP"));
     assert(parser.parse("POT 4 0"));
     assert(store.snapshot().tempo.echoDivision == TempoDivision::Quarter);
     assert(parser.parse("POT 4 0.26"));
@@ -2178,11 +2161,7 @@ void testTempoControls() {
     assert(parser.parse("TEMPO ECHO FREE"));
     assert(store.snapshot().tempo.lfoSync);
     assert(store.snapshot().delayMs == 250);
-    assert(parser.parse("POT 4 0"));
-    assert(parser.pickupWaiting(4));
-    assert(store.snapshot().delayMs == 250);
     assert(parser.parse("POT 4 1"));
-    assert(!parser.pickupWaiting(4));
     assert(store.snapshot().delayMs == 1000);
     assert(parser.parse("SET DELAY_MS 375"));
 
@@ -2208,12 +2187,7 @@ void testTempoControls() {
     assert(parser.parse("PANEL RECALL 1"));
     assert(store.snapshot().tempo.lfoSync);
     assert(parser.parse("TEMPO LFO FREE"));
-    const float freeRate = store.snapshot().lfoRateHz;
-    assert(parser.parse("POT 2 0"));
-    assert(parser.pickupWaiting(2));
-    assert(store.snapshot().lfoRateHz == freeRate);
     assert(parser.parse("POT 2 1"));
-    assert(!parser.pickupWaiting(2));
     assert(store.snapshot().lfoRateHz == 20);
     assert(parser.parse("PANEL RESET_DEFAULTS"));
     assert(!store.snapshot().tempo.echoSync && !store.snapshot().tempo.lfoSync);

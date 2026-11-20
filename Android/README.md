@@ -7,7 +7,7 @@ modifiche:
 | Parte | Sorgente | Su Android |
 |---|---|---|
 | DSP | `firmware/src/audio/*.cpp` | blocchi da 480 campioni mono a 48 kHz, uscita AAudio |
-| Controller, menu, mappature, Pickup | `firmware/src/control/*.cpp` | input fisici dal pannello touch |
+| Controller, menu, mappature | `firmware/src/control/*.cpp` | input fisici dal pannello touch |
 | Display | `firmware/src/display/PanelDisplay.cpp` e Adafruit GFX 1.12.6 | framebuffer 320x172 RGB565 al posto dell'ST7789 |
 
 Nessuna logica della sirena è riscritta in Kotlin. L'app offre solo i gesti

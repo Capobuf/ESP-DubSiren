@@ -13,7 +13,7 @@
 namespace {
 
 // Gold on black, sound system flyer style. Red and green mark state only:
-// red = latched or waiting for pickup, green = selected pad or shortcut.
+// red = latched, green = selected pad or shortcut.
 constexpr uint16_t kInk = 0x0000;
 constexpr uint16_t kGold = 0xFDE5;      // 255, 190, 40
 constexpr uint16_t kGoldDim = 0x7AA1;   // 120, 85, 15
@@ -181,15 +181,8 @@ void PanelDisplay::drawPot(unsigned pot, int16_t x, int16_t y,
     }
     if (unused) return;
 
-    // While Pickup waits the bar is red, with an arrow to turn the pot by.
-    const bool pickup = controller_.pickupWaiting(pot);
-    const int16_t barY = y + kRowH - 7, barW = kColumnW - 12 - (pickup ? 10 : 0);
-    drawBar(pot, x + 6, barY, barW, state, focus ? kInk : pickup ? kRed : kGold,
+    drawBar(pot, x + 6, y + kRowH - 7, kColumnW - 12, state, focus ? kInk : kGold,
             focus ? kGoldDeep : kTrack);
-    if (pickup)
-        arrow(x + kColumnW - 11, barY - 1, 7,
-              controller_.pickupDirection(pot) > 0 ? Arrow::Up : Arrow::Down,
-              focus ? kInk : kRed);
 }
 
 void PanelDisplay::drawBar(unsigned pot, int16_t x, int16_t y, int16_t w,

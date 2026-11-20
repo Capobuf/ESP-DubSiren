@@ -18,7 +18,7 @@ the window cancels adoption of a late connection and releases its transport.
 `Requested (unconfirmed)`, `Accepted` and `Rejected` describe command delivery.
 The separate `Confirmed` row shows Tune, Rate, Delay, Depth and Master from
 STATUS, including effective synchronized Rate/Delay. Sliders and pot positions
-are requests; an accepted pot movement may still await pickup. A rejection
+are requests. A rejection
 remains visible across STATUS updates and subsequent replies from the same
 batch, until another command is requested. Firmware without result packets
 never produces a false acceptance indication.
@@ -39,14 +39,13 @@ There is one panel layout. The factory mapping is POT1 Pitch (zones), POT2 Rate
 BTN2 Hold, BTN3 Mod Up and BTN4 Echo Cut; every POT target and BTN action,
 including Play Sound, Echo Loop, Echo Spin and Tap Tempo, is assignable in
 SETUP. Pitch and Rate can use zones or continuous ranges;
-target-specific curves, validation and formatting live in C++. Pickup is the
-factory behavior, with an UP/DOWN direction shown until the physical pot
-crosses the current value. The first reading of each pot after power-on is
-taken at once, silently: at boot nothing stored outranks the knob, so a Rate
-pot sitting at SLOW is SLOW from the start. Pickup applies after a voice
-change, a patch recall or a new assignment. Rear Master is fixed and remains
-immediately live, without Pickup; turning it shows MASTER and the level in
-percent as an overlay, except for its first reading after power-on.
+target-specific curves, validation and formatting live in C++. Every pot
+reading applies at once, also after a voice change, a patch recall or a new
+assignment: the knob always owns its value. The first reading of each pot
+after power-on is taken silently, so a Rate pot sitting at SLOW is SLOW from
+the start. Rear Master is fixed and immediately live; turning it shows MASTER
+and the level in percent as an overlay, except for its first reading after
+power-on.
 
 Home is a map of the front panel, which has no silkscreen. Each cell sits
 where its control is: the top row stands for POT1-POT3 above the display, the
@@ -54,8 +53,7 @@ bottom row for POT4-POT6 below it, the middle row is the voice banner and the
 last row stands for the four keys. A pot cell shows only
 the assigned function and a horizontal bar with the current position: one
 segment per zone with zoned Pitch and Rate, centred for the bipolar Echo
-Filter. No number is shown in the cell. While Pickup waits, the bar turns red
-with an up/down arrow. A key cell shows its action (for a
+Filter. No number is shown in the cell. A key cell shows its action (for a
 Play Sound pad the family and variant), gold while pressed, red while latched
 (Hold, Echo Loop, a latched pad) and outlined green when it is the selected
 pad; Tap Tempo shows the BPM. While the encoder is held, pad keys show their
@@ -81,7 +79,7 @@ behaves as it does at Home. The menu footer shows it as `◄ BACK`.
 The pot footer yields to the navigation hint on the next encoder turn/click.
 Target descriptors own range limits, mapping and numeric units/formatting.
 Both renderers fit long text within the safe width; firmware overlays
-use the controller's title (including Pickup and Live Pitch) instead of a
+use the controller's title (including Live Pitch) instead of a
 fixed Tune label. Text sizing is presentation only; the C++ content remains
 authoritative.
 
@@ -115,7 +113,7 @@ commands keep
 one 25 ms timer per control, flush periodically and send the final position
 on release.
 
-The ESP32 stores schema-3 `PanelSettings` in Preferences/NVS and reports corrupt
+The ESP32 stores schema-4 `PanelSettings` in Preferences/NVS and reports corrupt
 loads and save failures. A layout stored by another schema is discarded at
 load, without migration: factory settings apply. The device is authoritative on
 connection: the PC adopts STATUS and never pushes a mapping or stale local
@@ -198,10 +196,10 @@ della scrittura NVS.
 
 La patch contiene voce/variante, Tune, Rate, Depth, Decay, Sweep, parametri
 Lickshot, Tone/Contour, Syndrum, modulazione, retrigger e voicing. Echo e Master
-restano globali; Recall non cancella il delay e riarma Pickup. Gli eventi audio
+restano globali; Recall non cancella il delay. Gli eventi audio
 catturano l'intero stato sonoro.
 
-Schema 3: un layout salvato con uno schema precedente viene scartato al
+Schema 4: un layout salvato con uno schema precedente viene scartato al
 caricamento e valgono le impostazioni di fabbrica, con quattro memorie vuote.
 Trigger, Hold, latch attivo, Loop e transpose non fanno parte della patch.
 

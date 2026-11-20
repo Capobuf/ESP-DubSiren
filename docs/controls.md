@@ -152,9 +152,8 @@ safety limiter. Echo never controls the dry gate.
   SPIN), protected self-oscillation remains available. ECHO LOOP deliberately
   sustains the buffer independently of feedback.
 - For a short tail, start with ECHO TIME 150-250 ms and FEEDBACK 30-50%.
-  ECHO LEVEL controls volume, not tail duration. With Pickup, follow the UP/DOWN
-  indication until the pot reaches the stored value, then lower it; while
-  PICKUP is shown the stored feedback is unchanged.
+  ECHO LEVEL controls volume, not tail duration. A pot applies its value as
+  soon as it moves.
 - ECHO CUT ramps wet gain to zero over 2 ms after the next block snapshot;
   release also takes 2 ms. The ring buffer, filters and feedback continue
   evolving. No buffer is cleared. Perceived clicks still require listening.
