@@ -83,7 +83,7 @@ regola dal menu MOD o da un pot. Il Master resta separato e non assegnabile sul
 retro; girandolo il display mostra MASTER e il livello. Il PCB non ha serigrafia: la Home 320x172 è una mappa del pannello, con
 ogni pot e tasto nella sua posizione, la funzione assegnata, la posizione dei
 pot e lo stato (Hold, pad selezionato), e al centro la voce. Il driver ST7789 usa la
-configurazione del 5393, ancora da verificare su hardware.
+configurazione del 5393, verificata sul primo PCB (orientamento, centratura, colori).
 Dettagli: [pannello UI](docs/panel-ui.md).
 
 Dettagli: [architettura](docs/architecture.md), [protocollo](docs/protocol.md) e
@@ -107,8 +107,8 @@ Il test nativo usa Zig C++ (`tests/native/requirements.txt`) oppure il compilato
 da `CXX`; esegue parser e DSP senza scheda. Con hardware collegato, leggere
 `renderUs`, `maxRenderUs`, `cycleUs` e `maxCycleUs` da STATUS durante gli scenari
 di sweep e verificare che restino sotto 10.000 µs per blocco.
-`displayRenderUs` e `maxDisplayRenderUs` misurano separatamente il ridisegno
-del display ST7789 e devono restare sotto il budget display di 100.000 µs.
+`displayRenderUs` e `maxDisplayRenderUs` misurano separatamente il tempo che
+`loop()` passa a disegnare un frame; l'invio all'ST7789 avviene poi via DMA.
 
 ## App Android
 
@@ -139,9 +139,10 @@ GPIO14 -> backlight (livello fisso HIGH)
 ```
 
 GPIO13/MISO non serve al TFT write-only e la microSD del breakout non è
-implementata. Le librerie sono **Adafruit GFX Library** e **Adafruit ST7735 and
-ST7789 Library**. In base alla [guida ufficiale Adafruit 5393](https://learn.adafruit.com/adafruit-1-47-round-rectangle-tft-display/arduino-wiring-test),
-gli offset del pannello sono gestiti dalla libreria.
+implementata. Il disegno usa **Adafruit GFX Library**; l'invio del frame usa il
+driver nativo ESP-IDF `esp_lcd` (ST7789, SPI con DMA) in
+`firmware/src/display/PanelLcd.cpp`, con l'inizializzazione e gli offset che la
+libreria Adafruit ST7789 usa per il 5393.
 
 Il funzionamento del display sull'hardware reale e l'integrazione del firmware
 con la scheda definitiva restano da verificare.

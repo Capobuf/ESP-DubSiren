@@ -130,13 +130,14 @@ dry output, or hold ECHO CUT to mute the echo temporarily.
 
 ## Hardware display
 
-The Adafruit GFX/ST7789 renderer targets Adafruit Product 5393.
+The Adafruit GFX renderer targets Adafruit Product 5393; `PanelLcd` sends
+each frame with the ESP-IDF `esp_lcd` ST7789 driver over SPI DMA at 40 MHz.
 It retains SPI GPIO11 MOSI and GPIO12 SCK, GPIO9 CS, GPIO8 DC, GPIO7 reset,
-and GPIO14 backlight held high. Initialization is `init(172, 320)` with
-rotation 1 (320x172), as specified in the
-[Adafruit guide](https://learn.adafruit.com/adafruit-1-47-round-rectangle-tft-display/arduino-wiring-test).
-The library supplies the centered panel offsets. Physical operation remains
-unverified on the [current PCB](../hardware/README.md).
+and GPIO14 backlight held high. Initialization matches the Adafruit library's
+`init(172, 320)` with rotation 3 (320x172, how U5 is mounted): MADCTL MX|MV,
+inversion on and the 172 px glass centred in the 240 px controller RAM, as in the
+[Adafruit guide](https://learn.adafruit.com/adafruit-1-47-round-rectangle-tft-display/arduino-wiring-test). Orientation, centring and
+colours are verified on the first [PCB](../hardware/README.md).
 
 Rendering runs from `loop()`, never from `audioTask`. Home and Menu redraw on
 state changes, at most once every 100 ms; temporary parameter text expires

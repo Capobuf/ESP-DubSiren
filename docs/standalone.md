@@ -41,12 +41,16 @@ per i pot da 20k, 2244,9 mV per Master da 10k). Ogni lettura è la media di 16
 conversioni, con soglia di variazione 8 mV: sul primo PCB montato, a manopole
 ferme, una conversione singola oscilla fino a 27 mV picco-picco, la media entro
 5 mV. Estremi ADC e diafonia restano da misurare.
-Master parte da zero fino alla prima lettura valida. Il display ritarda il
-polling: `loop()` e il task audio condividono il core 1, e sul primo PCB un
-ridisegno completo dura circa 160 ms, con buchi di polling fino a circa 240 ms.
-Spostare `loop()` sul core 0 li riduce a circa 70 ms ma porta il render audio
-oltre i 10 ms del blocco (contesa fra i core), quindi non è adottato.
-STATUS espone `maxInputPollGapUs`; il PCNT continua a contare.
+Master parte da zero fino alla prima lettura valida. `loop()` e il task audio
+condividono il core 1, con l'audio a priorità più alta. Con l'invio SPI
+bloccante di Adafruit un ridisegno completo durava sul primo PCB circa 160 ms,
+con buchi di polling fino a circa 240 ms; spostare `loop()` sul core 0 portava
+il render audio oltre i 10 ms del blocco (contesa fra i core). Ora il frame
+parte via DMA (`esp_lcd`) e `loop()` non aspetta il bus. Con anche `-O2` al posto
+di `-Os`, sul primo PCB con il PC collegato e i pot in movimento: render audio
+5,5 ms medi e 7,1 ms massimi sui 10 ms del blocco, disegno del display circa
+20 ms (max 29), buco di polling massimo 47-60 ms, nessun errore I2S. Con il PC
+collegato `loop()` costruisce anche STATUS, quindi il buco senza PC non è misurato. STATUS espone `maxInputPollGapUs`; il PCNT continua a contare.
 Questi tempi non sono una promessa di latenza pulsante/uscita.
 
 ## Audio e USB

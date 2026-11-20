@@ -9,7 +9,7 @@
 - **Cosa fa:** è il simulatore della sirena e dell'ESP32 (il Virtual ESP desktop non esiste più): simula la sirena in una sola APK, sia nel suono sia nell'aspetto, ed è il banco di prova del firmware prima dell'hardware. Non deve mai offrire funzioni che il pannello fisico non ha: sei pot, quattro tasti MX, encoder con push, display. Il Master posteriore è fisso al massimo; il volume si regola con i tasti del dispositivo.
 - **Come funziona:** l'NDK compila senza modifiche `firmware/src/audio/*.cpp`, `firmware/src/control/*.cpp` e `firmware/src/display/PanelDisplay.cpp`. In Kotlin non c'è logica della sirena.
 - **Strato nativo** (`app/src/main/cpp/`):
-  - `stubs/` sostituisce Arduino, FreeRTOS e l'ST7789: il display usa la vera Adafruit GFX 1.12.6, scaricata da CMake, e finisce in un framebuffer 320x172.
+  - `stubs/` sostituisce Arduino, FreeRTOS e il driver del pannello (`PanelLcd.cpp`, esp_lcd): il display usa la vera Adafruit GFX 1.12.6, scaricata da CMake, e finisce in un framebuffer 320x172.
   - `siren_bridge.cpp` fa da `main.cpp`: il thread UI fa da loop() e passa gli input fisici al controller; il callback AAudio fa da `audioTask` e produce blocchi da 480 campioni mono a 48 kHz.
   - Persistenza di `PanelSettings` e quantizzazione ADC dei pot sono ricopiate a mano da `main.cpp` e `PanelInputs.cpp`: se cambiano lì, vanno aggiornate qui.
 - **Grafica** (`app/src/main/java/com/capobuf/dubsiren/`):

@@ -110,8 +110,8 @@ la funzione di ogni comando si legge sul display.
 
 La libreria Adafruit GFX è la stessa versione fissata in
 `firmware/platformio.ini`: CMake la scarica (URL e SHA256 in
-`app/src/main/cpp/CMakeLists.txt`) e lo stub `Adafruit_ST7789` scrive solo i
-pixel nel framebuffer. Font, primitive e canvas sono quelli della libreria.
+`app/src/main/cpp/CMakeLists.txt`). `stubs/PanelLcd.cpp` sostituisce il driver
+`esp_lcd` del firmware e copia il frame nel framebuffer. Font, primitive e canvas sono quelli della libreria.
 
 ## Limiti
 

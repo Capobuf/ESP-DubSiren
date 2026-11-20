@@ -16,6 +16,5 @@ constexpr int kDisplayDcPin = 8;
 constexpr int kDisplayCsPin = 9;
 constexpr int kSpiMosiPin = 11;
 constexpr int kSpiSckPin = 12;
-constexpr int kSpiMisoPin = 13;
 constexpr int kDisplayBacklightPin = 14;
 }
