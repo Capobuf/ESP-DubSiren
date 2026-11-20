@@ -35,7 +35,7 @@ prima essere rilasciato; nessun gate viene richiamato dalle memorie.
 
 Il mux attende almeno 6 ms per canale, senza bloccare il loop: 20k + 4,7k e
 100 nF danno una costante RC nominale massima di circa 0,62 ms. Master viene
-letto ogni due canali, senza Pickup; i sei pot usano il Pickup del controller.
+letto ogni due canali; i sei pot si alternano in mezzo e valgono subito.
 La normalizzazione ADC usa i massimi nominali dei divisori a 3,3 V (2672,1 mV
 per i pot da 20k, 2244,9 mV per Master da 10k). Ogni lettura è la media di 16
 conversioni, con soglia di variazione 8 mV: sul primo PCB montato, a manopole

@@ -272,12 +272,6 @@ bool CommandParser::parsePanelCommand(const String &command) {
         performance_.cancelSettingsTransaction();
         return true;
     }
-    if (command.startsWith("PANEL BEHAVIOR ")) {
-        const String value = command.substring(15);
-        if (value == "PICKUP") return performance_.configurePotBehavior(PotBehavior::Pickup);
-        if (value == "JUMP") return performance_.configurePotBehavior(PotBehavior::Jump);
-        return false;
-    }
     if (command.startsWith("PANEL ENCODER ")) {
         char actionText[20] = {};
         unsigned step = 0, range = 0;

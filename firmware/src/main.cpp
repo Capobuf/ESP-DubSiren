@@ -49,8 +49,7 @@ String panelSettingsJson() {
     const PanelSettings &settings = commandParser.panelSettings();
     String json = String("{\"schema\":") + settings.schemaVersion +
         ",\"revision\":" + commandParser.panelSettingsRevision() +
-        ",\"potBehavior\":\"" + potBehaviorName(settings.potBehavior) +
-        "\",\"encoder\":{\"holdTurn\":\"" +
+        ",\"encoder\":{\"holdTurn\":\"" +
         (settings.encoderHoldAction == EncoderHoldAction::LivePitch
             ? "LIVE_PITCH" : "OFF") +
         "\",\"step\":" + static_cast<unsigned>(settings.encoderStepSemitones) +

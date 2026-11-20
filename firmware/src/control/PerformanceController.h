@@ -32,7 +32,7 @@ public:
     void notifyExternalChange(PotTarget target);
     bool setPad(unsigned padNumber, bool pressed);
     bool setPot(unsigned potNumber, float position);
-    // Rear Master: live, no Pickup; shows an overlay like the front pots.
+    // Rear Master: live; shows an overlay like the front pots.
     void setMaster(float position);
     bool tapTempo(uint32_t nowUs = micros());
     bool setTempoBpm(float bpm);
@@ -67,7 +67,6 @@ public:
                                ButtonAction action);
     bool configureButtonSound(unsigned buttonNumber,
                               PanelSound sound, unsigned variant, bool latch);
-    bool configurePotBehavior(PotBehavior behavior);
     bool configureEncoder(EncoderHoldAction action, unsigned step,
                           unsigned range);
     bool beginSettingsTransaction();
@@ -116,8 +115,6 @@ public:
     // Mod Up only acts in MANUAL; with any other shape its key taps the tempo.
     bool modUpTaps() const;
     float potValueNormalized(unsigned potNumber) const;
-    bool pickupWaiting(unsigned potNumber) const;
-    int pickupDirection(unsigned potNumber) const;
     float classicPitchHz(unsigned index) const;
     float classicRateHz(unsigned index) const;
     void formatCurrentValue(PotTarget target, char *buffer,
@@ -125,7 +122,7 @@ public:
 
 private:
     enum class Row : uint8_t {
-        Pots, Buttons, Encoder, ResetDefaults, Back, Behavior,
+        Pots, Buttons, Encoder, ResetDefaults, Back,
         Pot1, Pot2, Pot3, Pot4, Pot5, Pot6, Function, Mode,
         Low, Middle, High, Minimum, Maximum,
         Button1, Button2, Button3, Button4, Action, Sound, Variant, Latch,
@@ -143,13 +140,6 @@ private:
         const char *key;
         const char *label;
         char value[32];
-    };
-    struct PickupState {
-        bool seen = false;
-        bool latched = false;
-        bool force = false;
-        float previous = 0.0f;
-        int direction = 0;
     };
 
     void applySound(ControlState &state, unsigned buttonIndex, bool activate);
@@ -176,9 +166,7 @@ private:
                     const char *value = "") const;
     void commitSettingsChange();
     void updateZoneFlags(ControlState &state) const;
-    void acceptSettingsCandidate(const PanelSettings &candidate,
-                                 bool resetPotPickup = false);
-    void resetPickup();
+    void acceptSettingsCandidate(const PanelSettings &candidate);
     float currentTargetNormalized(const PotConfig &config,
                                   const ControlState &state) const;
     void applyPotValue(ControlState &state, const PotConfig &config,
@@ -212,7 +200,6 @@ private:
     bool holdToggle_ = false;
     bool soundLatchArmed_ = false;
     RemoteGates remoteGates_;
-    PickupState pickup_[6];
     // Per pot: false until its first reading since power-on.
     bool potReported_[6] = {};
     bool masterReported_ = false;

@@ -99,7 +99,7 @@ void PanelInputs::poll() {
             parser_.setPhysicalMaster(position);
         } else parser_.setPhysicalPot(channel_ + 1, position);
     }
-    // Master every other slot: no pickup; pot mappings use shared pickup.
+    // Master every other slot; the pots take turns in between.
     if (channel_ == 6) { selectChannel(nextPot_); nextPot_ = (nextPot_ + 1) % 6; }
     else selectChannel(6);
 }

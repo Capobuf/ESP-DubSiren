@@ -114,12 +114,6 @@ public:
     const char *buttonActionNameFor(unsigned button) const {
         return performance_.buttonActionNameFor(button);
     }
-    bool pickupWaiting(unsigned pot) const {
-        return performance_.pickupWaiting(pot);
-    }
-    int pickupDirection(unsigned pot) const {
-        return performance_.pickupDirection(pot);
-    }
     void formatCurrentValue(PotTarget target, char *buffer,
                             unsigned size) const {
         performance_.formatCurrentValue(target, buffer, size);

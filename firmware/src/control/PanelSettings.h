@@ -23,7 +23,6 @@ enum class PotTarget : uint8_t {
 };
 
 enum class PotMode : uint8_t { Continuous, Zones };
-enum class PotBehavior : uint8_t { Pickup, Jump };
 enum class ButtonAction : uint8_t {
     None,
     Trigger,
@@ -78,9 +77,8 @@ struct SoundPatch {
 
 // One panel layout: older stored schemas are discarded, not migrated.
 struct PanelSettings {
-    static constexpr uint16_t kSchemaVersion = 3;
+    static constexpr uint16_t kSchemaVersion = 4;
     uint16_t schemaVersion = kSchemaVersion;
-    PotBehavior potBehavior = PotBehavior::Pickup;
     EncoderHoldAction encoderHoldAction = EncoderHoldAction::LivePitch;
     uint8_t encoderStepSemitones = 1;
     uint8_t encoderRangeSemitones = 12;
@@ -126,10 +124,6 @@ inline const char *potTargetName(PotTarget target) {
 
 inline const char *potModeName(PotMode mode) {
     return mode == PotMode::Zones ? "ZONES" : "CONTINUOUS";
-}
-
-inline const char *potBehaviorName(PotBehavior behavior) {
-    return behavior == PotBehavior::Pickup ? "PICKUP" : "JUMP";
 }
 
 inline const char *buttonActionName(ButtonAction action) {
@@ -244,7 +238,6 @@ inline bool validateSoundPatch(const SoundPatch &patch) {
 
 inline bool validatePanelSettings(const PanelSettings &settings) {
     if (settings.schemaVersion != PanelSettings::kSchemaVersion ||
-        settings.potBehavior > PotBehavior::Jump ||
         settings.encoderHoldAction > EncoderHoldAction::LivePitch ||
         settings.encoderStepSemitones < 1 || settings.encoderStepSemitones > 12 ||
         settings.encoderRangeSemitones < settings.encoderStepSemitones ||

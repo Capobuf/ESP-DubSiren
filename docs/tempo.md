@@ -26,7 +26,7 @@ non viene regolato, confermato nel menu o ricevuto tramite due tap.
 
 MOD ed ECHO hanno ciascuno CLOCK = FREE/SYNC e condividono il BPM.
 In SYNC compare DIVISION; i pot assegnati a RATE/ECHO TIME selezionano le
-stesse quattro zone, usando Pickup e l'isteresi già presenti nel controller.
+stesse quattro zone, usando l'isteresi già presente nel controller.
 La sequenza delle zone è 1/4, 1/8, 1/8D, 1/8T.
 
 | Divisione | Durata in quarti | Echo a 120 BPM | LFO a 120 BPM |
@@ -45,9 +45,9 @@ richiede 1000 ms ed è disponibile. Se non esiste ancora un valore Sync valido,
 viene mantenuto quello Free presente all'attivazione.
 La selezione diventa disponibile automaticamente quando il BPM lo consente.
 
-Il ritorno FREE conserva il valore temporale corrente e riattiva Pickup
-anche se il comportamento generale è Jump. Dopo l'aggancio torna la mappatura
-configurata del pot: continua, oppure le zone già configurate.
+Il ritorno FREE conserva il valore temporale corrente finché il pot non si
+muove; da lì torna la mappatura configurata del pot: continua, oppure le zone
+già configurate.
 La zona MANUAL di un Rate a zone torna operativa in Free.
 Echo Free conserva il pitch bend manuale del delay.
 
@@ -106,7 +106,7 @@ non cambia il tempo. RESET DEFAULTS lo azzera insieme alle assegnazioni.
 ## Verifiche
 
 I test nativi coprono intervalli deterministici, media, timeout, tap ignorati,
-rollover del timer, limiti BPM, conversioni, N/A, isteresi, Pickup e PCM
+rollover del timer, limiti BPM, conversioni, N/A, isteresi e PCM
 confrontato con un riferimento Free equivalente durante cambi tempo/divisione
 e coda echo.
 

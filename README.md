@@ -74,16 +74,15 @@ La superficie predefinita presenta PITCH, RATE, ECHO LEVEL, ECHO TIME,
 ECHO FEEDBACK ed ECHO FILTER; BTN1 TRIGGER, BTN2 HOLD, BTN3 MOD UP e
 BTN4 ECHO CUT. L'encoder scorre le voci del Trigger; premendolo si apre il menu
 al rilascio del click. I sei pot e i quattro pulsanti sono configurabili da
-SETUP nel controller C++ condiviso; Pickup evita salti dopo un cambio di
-assegnazione o di parametro, mentre all'accensione ogni pot vale subito dove si
-trova. Un pulsante può diventare un pad Play Sound con
+SETUP nel controller C++ condiviso; ogni pot agisce subito appena si muove,
+anche all'accensione e dopo un cambio di voce. Un pulsante può diventare un pad Play Sound con
 un suono proprio: quando è selezionato, la rotazione libera cambia la variante
 del pad. Con un pulsante Trigger o Play Sound
 fisicamente premuto, l'encoder applica un transpose live temporaneo; Depth si
 regola dal menu MOD o da un pot. Il Master resta separato e non assegnabile sul
 retro; girandolo il display mostra MASTER e il livello. Il PCB non ha serigrafia: la Home 320x172 è una mappa del pannello, con
 ogni pot e tasto nella sua posizione, la funzione assegnata, la posizione dei
-pot e lo stato (Pickup, Hold, pad selezionato), e al centro la voce. Il driver ST7789 usa la
+pot e lo stato (Hold, pad selezionato), e al centro la voce. Il driver ST7789 usa la
 configurazione del 5393, ancora da verificare su hardware.
 Dettagli: [pannello UI](docs/panel-ui.md).
 

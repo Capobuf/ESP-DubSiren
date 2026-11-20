@@ -139,8 +139,8 @@ an abrupt boundary.
 ## Performance controller
 
 `PerformanceController` is compiled into both firmware and the Android app.
-`PanelSettings` (schema 3) owns the single versioned POT and BTN mapping,
-Pickup/Jump behavior, zones/ranges, the live-pitch encoder gesture and the
+`PanelSettings` (schema 4) owns the single versioned POT and BTN mapping,
+zones/ranges, the live-pitch encoder gesture and the
 four sound patches. Raw numbered POT inputs, target curves, hysteresis and the
 filter macro are interpreted only in shared C++. The controller also owns the
 Trigger voice list stepped by the encoder; Play Sound pads keep last-pressed

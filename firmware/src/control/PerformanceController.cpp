@@ -13,11 +13,6 @@ float clampFloat(float value, float minimum, float maximum) {
     return value < minimum ? minimum : (value > maximum ? maximum : value);
 }
 
-bool crossed(float before, float after, float target) {
-    return (before <= target && after >= target) ||
-           (before >= target && after <= target);
-}
-
 float editingStep(const TargetDescriptor &descriptor, float value, int direction) {
     if (descriptor.mapping == MappingType::Logarithmic && value > 0.0f)
         return value * (direction < 0 ? 0.95f : 1.05f);
@@ -127,13 +122,6 @@ bool PerformanceController::setTempoSync(bool echo, bool sync) {
     enabled = sync;
     updateTempoTiming(state.tempo);
     controls_.set(state);
-    const auto &pots = settings_.pots;
-    for (unsigned i = 0; i < 6; ++i) {
-        if (pots[i].target != (echo ? PotTarget::EchoTime : PotTarget::Rate)) continue;
-        pickup_[i] = PickupState{};
-        // Returning to an absolute free control must not jump, even in Jump mode.
-        pickup_[i].force = !sync;
-    }
     overlayTitle_[0] = overlayValue_[0] = '\0';
     changed();
     return true;
@@ -189,10 +177,6 @@ void PerformanceController::setPersistenceStatus(const char *status) {
     snprintf(persistenceStatus_, sizeof(persistenceStatus_), "%s",
              status == nullptr ? "" : status);
     changed();
-}
-
-void PerformanceController::resetPickup() {
-    for (PickupState &state : pickup_) state = PickupState{};
 }
 
 void PerformanceController::syncZoneValues(ControlState &state) const {
@@ -324,7 +308,7 @@ void PerformanceController::applySound(ControlState &state, unsigned index,
         state.decayMs = previous.decayMs;
         state.syndrumSweepOctaves = previous.syndrumSweepOctaves;
     }
-    if (restore) { static_cast<SoundState &>(state) = patch.state; resetPickup(); }
+    if (restore) static_cast<SoundState &>(state) = patch.state;
     appliedSound_ = config.sound;
     appliedVariant_ = variant;
     if (activate) captureActivation(state);
@@ -370,7 +354,7 @@ bool PerformanceController::recallPad(unsigned padNumber) {
     static_cast<SoundState &>(state) = patch.state;
     currentPad_ = selectedPad_ = padNumber - 1;
     appliedSound_ = patch.sound; appliedVariant_ = patch.variant;
-    controls_.set(state); resetPickup(); changed(); return true;
+    controls_.set(state); changed(); return true;
 }
 
 bool PerformanceController::importPatch(unsigned padNumber, const SoundPatch &patch) {
@@ -515,7 +499,6 @@ bool PerformanceController::setPad(unsigned padNumber, bool pressed) {
             if (!triggerVoiceApplied_) {
                 applyVoice(state, kVoices[voiceIndex_].sound, kVoices[voiceIndex_].variant);
                 triggerVoiceApplied_ = true;
-                resetPickup();
             }
             selectedPad_ = index;
             captureActivation(state);
@@ -678,57 +661,27 @@ bool PerformanceController::setPot(unsigned potNumber, float position) {
     const unsigned index = potNumber - 1;
     ControlState state = controls_.snapshot();
     const PotConfig &config = settings_.pots[index];
-    PickupState &pickup = pickup_[index];
-    // The first reading after power-on is where the knob sits: nothing stored
-    // outranks it, so it applies at once instead of waiting for Pickup.
+    // Every reading applies at once: the knob always owns its value.
     const bool firstReading = !potReported_[index];
     potReported_[index] = true;
-    if (firstReading) {
-        pickup.seen = pickup.latched = true;
-        pickup.previous = position;
-    }
-    bool apply = (settings_.potBehavior == PotBehavior::Jump && !pickup.force) || pickup.latched ||
-                 config.target == PotTarget::None;
-    if (!apply) {
-        const float target = currentTargetNormalized(config, state);
-        if (!pickup.seen) {
-            pickup.seen = true;
-            pickup.previous = position;
-            pickup.direction = position < target ? 1 : position > target ? -1 : 0;
-            apply = fabsf(position - target) <= 0.015f;
-        } else {
-            apply = crossed(pickup.previous, position, target) ||
-                    fabsf(position - target) <= 0.015f;
-            pickup.previous = position;
-            pickup.direction = position < target ? 1 : position > target ? -1 : 0;
-        }
-        if (apply) pickup.latched = true;
-    }
     snprintf(overlayTitle_, sizeof(overlayTitle_), "%s", potTargetName(config.target));
     overlayPot_ = potNumber;
-    if (apply) {
-        applyPotValue(state, config, position);
-        formatTargetValue(config.target, state, overlayValue_, sizeof(overlayValue_));
-        if (config.mode == PotMode::Continuous && config.target == PotTarget::Pitch)
-            snprintf(overlayValue_, sizeof(overlayValue_), "%.0f Hz", state.tuneHz);
-        if (config.mode == PotMode::Continuous && config.target == PotTarget::Rate && !state.tempo.lfoSync)
-            snprintf(overlayValue_, sizeof(overlayValue_), "%.2f Hz", state.lfoRateHz);
-        const bool transient = state.mode == SirenMode::Syndrum ||
-                               state.mode == SirenMode::Gunshot;
-        const bool inactive = (config.target == PotTarget::Pitch &&
-                               state.mode == SirenMode::Gunshot) ||
-            (transient && (config.target == PotTarget::Rate ||
-                           config.target == PotTarget::LfoDepth ||
-                           config.target == PotTarget::SweepAmount ||
-                           config.target == PotTarget::SweepTime));
-        if (inactive) snprintf(overlayValue_, sizeof(overlayValue_), "STORED - N/A");
-        controls_.set(state);
-    } else {
-        char value[24];
-        formatTargetValue(config.target, state, value, sizeof(value));
-        snprintf(overlayValue_, sizeof(overlayValue_), "%s PICKUP - %s",
-                 pickup.direction > 0 ? "UP" : "DOWN", value);
-    }
+    applyPotValue(state, config, position);
+    formatTargetValue(config.target, state, overlayValue_, sizeof(overlayValue_));
+    if (config.mode == PotMode::Continuous && config.target == PotTarget::Pitch)
+        snprintf(overlayValue_, sizeof(overlayValue_), "%.0f Hz", state.tuneHz);
+    if (config.mode == PotMode::Continuous && config.target == PotTarget::Rate && !state.tempo.lfoSync)
+        snprintf(overlayValue_, sizeof(overlayValue_), "%.2f Hz", state.lfoRateHz);
+    const bool transient = state.mode == SirenMode::Syndrum ||
+                           state.mode == SirenMode::Gunshot;
+    const bool inactive = (config.target == PotTarget::Pitch &&
+                           state.mode == SirenMode::Gunshot) ||
+        (transient && (config.target == PotTarget::Rate ||
+                       config.target == PotTarget::LfoDepth ||
+                       config.target == PotTarget::SweepAmount ||
+                       config.target == PotTarget::SweepTime));
+    if (inactive) snprintf(overlayValue_, sizeof(overlayValue_), "STORED - N/A");
+    controls_.set(state);
     // The power-on scan is not a gesture: no overlay for it.
     if (firstReading) overlayTitle_[0] = overlayValue_[0] = '\0';
     changed();
@@ -807,7 +760,6 @@ void PerformanceController::rotateEncoder(int direction) {
         }
         stepVoice(state, direction);
         controls_.set(state);
-        resetPickup();
         changed();
         return;
     }
@@ -949,7 +901,7 @@ bool PerformanceController::configurePotTarget(unsigned potNumber, PotTarget tar
     PanelSettings candidate = settingsTransaction_ ? stagedSettings_ : settings_;
     candidate.pots[potNumber - 1] = continuousPot(target);
     if (!validatePanelSettings(candidate)) return rejectSettingsChange();
-    acceptSettingsCandidate(candidate, true);
+    acceptSettingsCandidate(candidate);
     return true;
 }
 
@@ -966,7 +918,7 @@ bool PerformanceController::configurePotMode(unsigned potNumber, PotMode mode) {
         }
     }
     if (!validatePanelSettings(candidate)) return rejectSettingsChange();
-    acceptSettingsCandidate(candidate, true);
+    acceptSettingsCandidate(candidate);
     return true;
 }
 
@@ -977,7 +929,7 @@ bool PerformanceController::configurePotRange(unsigned potNumber, float minimum,
     pot.minimum = minimum;
     pot.maximum = maximum;
     if (!validatePanelSettings(candidate)) return rejectSettingsChange();
-    acceptSettingsCandidate(candidate, true);
+    acceptSettingsCandidate(candidate);
     return true;
 }
 
@@ -987,7 +939,7 @@ bool PerformanceController::configurePotZones(unsigned potNumber, float low, flo
     PotConfig &pot = candidate.pots[potNumber - 1];
     pot.zones[0] = low; pot.zones[1] = middle; pot.zones[2] = high;
     if (!validatePanelSettings(candidate)) return rejectSettingsChange();
-    acceptSettingsCandidate(candidate, true);
+    acceptSettingsCandidate(candidate);
     return true;
 }
 
@@ -1022,14 +974,6 @@ bool PerformanceController::configureButtonSound(unsigned buttonNumber, PanelSou
     return true;
 }
 
-bool PerformanceController::configurePotBehavior(PotBehavior behavior) {
-    if (behavior > PotBehavior::Jump) return rejectSettingsChange();
-    PanelSettings candidate = settingsTransaction_ ? stagedSettings_ : settings_;
-    candidate.potBehavior = behavior;
-    acceptSettingsCandidate(candidate, true);
-    return true;
-}
-
 bool PerformanceController::configureEncoder(EncoderHoldAction action,
         unsigned step, unsigned range) {
     if (step < 1 || step > 12 || range < step || range > 24)
@@ -1048,7 +992,6 @@ bool PerformanceController::applySettings(const PanelSettings &settings) {
     settingsTransaction_ = false;
     settingsTransactionInvalid_ = false;
     settings_ = settings;
-    resetPickup();
     ControlState state = controls_.snapshot();
     syncZoneValues(state);
     controls_.set(state);
@@ -1060,7 +1003,6 @@ void PerformanceController::resetDefaults() {
     settingsTransaction_ = false;
     settingsTransactionInvalid_ = false;
     settings_ = factoryPanelSettings();
-    resetPickup();
     ControlState state = controls_.snapshot();
     state.tempo = TempoState{};
     tapStarted_ = false;
@@ -1094,13 +1036,12 @@ void PerformanceController::updateZoneFlags(ControlState &state) const {
 }
 
 void PerformanceController::acceptSettingsCandidate(
-        const PanelSettings &candidate, bool resetPotPickup) {
+        const PanelSettings &candidate) {
     if (settingsTransaction_) {
         stagedSettings_ = candidate;
         return;
     }
     settings_ = candidate;
-    if (resetPotPickup) resetPickup();
     commitSettingsChange();
 }
 
@@ -1125,7 +1066,6 @@ bool PerformanceController::commitSettingsTransaction() {
     }
     settingsTransaction_ = false;
     settings_ = stagedSettings_;
-    resetPickup();
     ControlState state = controls_.snapshot();
     syncZoneValues(state);
     controls_.set(state);
@@ -1145,9 +1085,6 @@ void PerformanceController::notifyExternalChange(PotTarget target) {
     ControlState state = controls_.snapshot();
     updateZoneFlags(state);
     controls_.set(state);
-    const auto &pots = settings_.pots;
-    for (unsigned i = 0; i < 6; ++i)
-        if (pots[i].target == target) pickup_[i] = PickupState{};
     changed();
 }
 
@@ -1165,15 +1102,6 @@ float PerformanceController::classicRateHz(unsigned index) const {
     return PerformanceConfig::kClassicRateHz[index < 3 ? index : 1];
 }
 
-bool PerformanceController::pickupWaiting(unsigned potNumber) const {
-    return potNumber >= 1 && potNumber <= 6 && pickup_[potNumber - 1].seen &&
-           !pickup_[potNumber - 1].latched &&
-           (settings_.potBehavior == PotBehavior::Pickup || pickup_[potNumber - 1].force);
-}
-
-int PerformanceController::pickupDirection(unsigned potNumber) const {
-    return potNumber >= 1 && potNumber <= 6 ? pickup_[potNumber - 1].direction : 0;
-}
 
 const char *PerformanceController::displayModeName() const {
     return displayMode_ == DisplayMode::Home ? "HOME" : "MENU";
@@ -1319,8 +1247,6 @@ void PerformanceController::rebuildMenuView() const {
             break;
         case MenuPage::Pots:
             snprintf(menuTitleBuffer_, sizeof(menuTitleBuffer_), "POT CONTROLS");
-            addMenuRow(Row::Behavior, "BEHAVIOR", "BEHAVIOR",
-                       potBehaviorName(settings_.potBehavior));
             for (unsigned i = 0; i < 6; ++i) {
                 snprintf(value, sizeof(value), "%s", potTargetName(settings_.pots[i].target));
                 static const Row rows[] = {Row::Pot1, Row::Pot2, Row::Pot3,
@@ -1528,15 +1454,15 @@ void PerformanceController::editMenuItem(Row row, int direction) {
         *value = clampFloat(*value + direction * step, minimum, maximum);
         if (row == Row::Tune) state.pitchZonesActive = false;
         if (row == Row::Filter) applyEchoFilter(state, *value);
-        controls_.set(state); resetPickup(); changed(); return;
+        controls_.set(state); changed(); return;
     }
     switch (row) {
         case Row::SelectedPad:
             do selectedPad_ = wrappedStep(selectedPad_, direction, 4);
             while (!selectedIsPad());
-            applySound(state, selectedPad_, false); controls_.set(state); resetPickup(); break;
+            applySound(state, selectedPad_, false); controls_.set(state); break;
         case Row::Voice:
-            stepVoice(state, direction); controls_.set(state); resetPickup(); break;
+            stepVoice(state, direction); controls_.set(state); break;
         case Row::Shape:
             state.lfoShape = static_cast<LfoShape>(wrappedStep(static_cast<int>(state.lfoShape), direction, 10)); controls_.set(state); break;
         case Row::Modulation: state.modulationEnabled = !state.modulationEnabled; controls_.set(state); break;
@@ -1545,16 +1471,10 @@ void PerformanceController::editMenuItem(Row row, int direction) {
         case Row::ClassicRate:
             state.classicModulation = static_cast<ClassicModulation>(wrappedStep(static_cast<int>(state.classicModulation), direction, 4));
             if (state.classicModulation != ClassicModulation::Manual) state.lfoRateHz = classicRateHz(static_cast<unsigned>(state.classicModulation));
-            controls_.set(state); resetPickup(); break;
-        case Row::Behavior:
-            settings_.potBehavior = settings_.potBehavior == PotBehavior::Pickup
-                ? PotBehavior::Jump : PotBehavior::Pickup;
-            resetPickup();
-            break;
+            controls_.set(state); break;
         case Row::Function: {
             pot = continuousPot(static_cast<PotTarget>(wrappedStep(
                 static_cast<int>(pot.target), direction, static_cast<int>(PotTarget::Count))));
-            resetPickup();
             break;
         }
         case Row::Mode:
@@ -1564,7 +1484,6 @@ void PerformanceController::editMenuItem(Row row, int direction) {
                     ? PerformanceConfig::kClassicPitchHz : PerformanceConfig::kClassicRateHz;
                 for (unsigned i = 0; i < 3; ++i) pot.zones[i] = defaults[i];
             }
-            resetPickup();
             break;
         case Row::Minimum:
         case Row::Maximum: {
@@ -1574,7 +1493,6 @@ void PerformanceController::editMenuItem(Row row, int direction) {
                                              descriptor.absoluteMin, descriptor.absoluteMax);
             if ((row == Row::Minimum && edited < pot.maximum) ||
                 (row == Row::Maximum && edited > pot.minimum)) value = edited;
-            resetPickup();
             break;
         }
         case Row::Low:
@@ -1631,7 +1549,7 @@ void PerformanceController::editMenuItem(Row row, int direction) {
     if (menuPage_ == MenuPage::Sound && (row == Row::Sound || row == Row::Variant)) {
         button.action = ButtonAction::PlaySound;
         applySound(state, selectedPad_, false);
-        controls_.set(state); resetPickup();
+        controls_.set(state);
     }
     changed();
 }
