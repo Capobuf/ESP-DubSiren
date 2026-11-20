@@ -103,9 +103,14 @@ struct ControlState : SoundState {
 
 // The MANUAL position of a zoned Rate control overrides the stored shape.
 inline LfoShape effectiveLfoShape(const ControlState &state) {
-    return state.rateZonesActive && !state.tempo.lfoSync &&
+    const LfoShape shape = state.rateZonesActive && !state.tempo.lfoSync &&
            state.classicModulation == ClassicModulation::Manual
         ? LfoShape::Manual : state.lfoShape;
+    // Sonar is its LFO: one ping per cycle. It is never manual; the MANUAL
+    // zone leaves it at the last rate, the stored MANUAL shape becomes SIREN.
+    if (state.mode == SirenMode::Sonar && shape == LfoShape::Manual)
+        return state.lfoShape == LfoShape::Manual ? LfoShape::Classic : state.lfoShape;
+    return shape;
 }
 
 // SIREN and MANUAL share the capacitor-like pitch model instead of Depth.
@@ -123,6 +128,12 @@ inline bool tempoLfoActive(const ControlState &state) {
 inline const char *pitchName(ClassicPitch pitch) {
     static const char *names[] = {"LOW", "MID", "HIGH"};
     return names[static_cast<unsigned>(pitch)];
+}
+
+// Zones of a zoned Rate control: SLOW, MID, FAST and, except for Sonar that
+// is never manual, MANUAL.
+inline int rateZoneCount(const ControlState &state) {
+    return state.mode == SirenMode::Sonar ? 3 : 4;
 }
 
 inline const char *rateName(ClassicModulation rate) {

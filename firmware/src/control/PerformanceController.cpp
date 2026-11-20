@@ -29,18 +29,25 @@ void formatConfiguredValue(PotTarget target, float value,
     else snprintf(buffer, size, descriptor->valueFormat, value * descriptor->displayScale);
 }
 
-// The Trigger voice list: the four original voices first, then every other
-// sound and variant.
+// The one sound list of the panel, for the pads and for the Trigger voice.
+// The other families and variants stay reachable over the serial protocol.
 struct Voice { PanelSound sound; uint8_t variant; };
 constexpr Voice kVoices[] = {
-    {PanelSound::Classic, 0}, {PanelSound::Classic, 1}, {PanelSound::TestTone, 0},
-    {PanelSound::TwoTone, 0}, {PanelSound::Classic, 2}, {PanelSound::Classic, 3},
-    {PanelSound::Classic, 4}, {PanelSound::TwoTone, 1}, {PanelSound::TwoTone, 2},
-    {PanelSound::Lickshot, 0}, {PanelSound::Lickshot, 1}, {PanelSound::Lickshot, 2},
-    {PanelSound::Lickshot, 3}, {PanelSound::Lickshot, 4}, {PanelSound::Ping, 0},
-    {PanelSound::Ping, 1}, {PanelSound::Ping, 2}, {PanelSound::Gunshot, 0},
+    {PanelSound::Classic, 0}, {PanelSound::Classic, 1}, {PanelSound::TwoTone, 0},
+    {PanelSound::Classic, 2}, {PanelSound::Ping, 0}, {PanelSound::Gunshot, 0},
 };
 constexpr int kVoiceCount = sizeof(kVoices) / sizeof(kVoices[0]);
+
+// A sound outside the list (set over serial) steps to the first voice.
+void stepPadVoice(ButtonConfig &button, int direction) {
+    int index = -1;
+    for (int i = 0; i < kVoiceCount; ++i)
+        if (kVoices[i].sound == button.sound && kVoices[i].variant == button.variant) index = i;
+    index = index < 0 ? 0 : wrappedStep(index, direction, kVoiceCount);
+    button.sound = kVoices[index].sound;
+    button.variant = kVoices[index].variant;
+    if (!panelSoundSupportsLatch(button.sound)) button.latch = false;
+}
 
 }  // namespace
 
@@ -257,6 +264,32 @@ void PerformanceController::stepVoice(ControlState &state, int direction) {
     voiceIndex_ = static_cast<uint8_t>(wrappedStep(voiceIndex_, direction, kVoiceCount));
     applyVoice(state, kVoices[voiceIndex_].sound, kVoices[voiceIndex_].variant);
     triggerVoiceApplied_ = true;
+    reapplyRatePots(state);
+}
+
+// The one-shots (Ping, Gunshot) have no LFO: there a Rate pot sets the Decay,
+// the length of the hit, instead of doing nothing.
+PotConfig PerformanceController::effectivePot(const PotConfig &config,
+                                              const ControlState &state) const {
+    const bool oneShot = state.mode == SirenMode::Syndrum || state.mode == SirenMode::Gunshot;
+    if (config.target != PotTarget::Rate || !oneShot) return config;
+    // Never shorter than the one-shot default, wherever the Rate pot was left.
+    PotConfig decay = continuousPot(PotTarget::Decay);
+    decay.minimum = PerformanceConfig::kExtendedDecayMs;
+    return decay;
+}
+
+PotConfig PerformanceController::potConfig(unsigned potNumber) const {
+    if (potNumber < 1 || potNumber > 6) return PotConfig();
+    return effectivePot(settings_.pots[potNumber - 1], controls_.snapshot());
+}
+
+// After a change of sound a Rate pot may have changed function: the knob
+// still owns its value, so its position is applied to the new one.
+void PerformanceController::reapplyRatePots(ControlState &state) {
+    for (unsigned index = 0; index < 6; ++index)
+        if (potReported_[index] && settings_.pots[index].target == PotTarget::Rate)
+            applyPotValue(state, effectivePot(settings_.pots[index], state), potPosition_[index]);
 }
 
 const char *PerformanceController::voiceName() const {
@@ -271,9 +304,10 @@ const char *PerformanceController::voiceName() const {
             ? panelSoundVariantName(PanelSound::Lickshot, state.lfoShape == LfoShape::AsymDown ? 1 : 0)
             : panelSoundVariantName(PanelSound::Lickshot,
                                     static_cast<unsigned>(state.lickshotArticulation) + 1);
-    else if (state.mode == SirenMode::Syndrum)
+    else if (state.mode == SirenMode::Syndrum && state.syndrumWave != SyndrumWave::Sine)
         variant = panelSoundVariantName(PanelSound::Ping, static_cast<unsigned>(state.syndrumWave));
-    const char *family = state.mode == SirenMode::Square && variant[0] ? "TWO TONE"
+    // Named as the keys and the menu name them.
+    const char *family = state.mode == SirenMode::Square ? "TWO TONE"
                        : state.mode == SirenMode::Syndrum ? "PING" : modeName(state.mode);
     snprintf(voiceName_, sizeof(voiceName_), variant[0] ? "%s %s" : "%s", family, variant);
     return voiceName_;
@@ -309,6 +343,9 @@ void PerformanceController::applySound(ControlState &state, unsigned index,
         state.syndrumSweepOctaves = previous.syndrumSweepOctaves;
     }
     if (restore) static_cast<SoundState &>(state) = patch.state;
+    // A saved patch keeps its own values; any other new sound takes the pot's.
+    else if (!samePad || appliedSound_ != config.sound || appliedVariant_ != variant)
+        reapplyRatePots(state);
     appliedSound_ = config.sound;
     appliedVariant_ = variant;
     if (activate) captureActivation(state);
@@ -403,8 +440,9 @@ bool PerformanceController::buttonDown(unsigned buttonNumber) const {
 
 float PerformanceController::potValueNormalized(unsigned potNumber) const {
     if (potNumber < 1 || potNumber > 6) return 0.0f;
-    return clampFloat(currentTargetNormalized(settings_.pots[potNumber - 1],
-                                              controls_.snapshot()), 0.0f, 1.0f);
+    const ControlState state = controls_.snapshot();
+    return clampFloat(currentTargetNormalized(
+        effectivePot(settings_.pots[potNumber - 1], state), state), 0.0f, 1.0f);
 }
 
 bool PerformanceController::pitchAvailable(const ControlState &state) const {
@@ -441,7 +479,6 @@ void PerformanceController::updateGate(ControlState &state) {
     const bool soundLatch = soundLatchArmed_ && button.action == ButtonAction::PlaySound &&
         button.latch && panelSoundSupportsLatch(button.sound);
     state.hold = holdToggle_ || soundLatch || remoteGates_.hold;
-    if (encoderPressed_ && padDown_[3] && consumed_[3]) state.echoCut = true;
 }
 
 int PerformanceController::latestPressedSoundButton() const {
@@ -480,25 +517,26 @@ bool PerformanceController::setPad(unsigned padNumber, bool pressed) {
         consumed_[index] = true;
         menuBack();
         state = controls_.snapshot();
-    // On a sound pad the encoder+button shortcuts take precedence over playing
-    // it and suppress the release-click menu gesture.
-    } else if (pressed && encoderPressed_ && button.action == ButtonAction::PlaySound) {
+    // In the controls list any other key opens its own page instead of acting.
+    } else if (pressed && displayMode_ == DisplayMode::Menu && menuPage_ == MenuPage::Setup) {
         consumed_[index] = true;
-        modifierUsed_ = true;
-        if (index == 0) toggleSelectedHold();
-        else if (index == 1) stepVariant(-1);
-        else if (index == 2) stepVariant(1);
-        else state.echoCut = true;
-        state = controls_.snapshot();
+        selectedButton_ = index;
+        setMenuPage(MenuPage::Button);
     } else if (pressed) {
         consumed_[index] = false;
         pressOrder_[index] = nextOrder_++;
+        // The Hold gesture in the other order: encoder first, then the key.
+        if (encoderPressed_ && displayMode_ == DisplayMode::Home && isRelevantButton(index)) {
+            holdToggle_ = !holdToggle_;
+            modifierUsed_ = true;
+        }
         if (button.action == ButtonAction::Hold) holdToggle_ = !holdToggle_;
         else if (button.action == ButtonAction::Trigger) {
             // The Trigger always plays its own voice, also after a sound pad.
             if (!triggerVoiceApplied_) {
                 applyVoice(state, kVoices[voiceIndex_].sound, kVoices[voiceIndex_].variant);
                 triggerVoiceApplied_ = true;
+                reapplyRatePots(state);
             }
             selectedPad_ = index;
             captureActivation(state);
@@ -591,8 +629,10 @@ void PerformanceController::applyPotValue(ControlState &state,
         return;
     }
     if (config.mode == PotMode::Zones && config.target == PotTarget::Rate) {
-        const int zone = PerformanceConfig::selectorZone(position,
-            static_cast<int>(state.classicModulation), 4);
+        const int count = rateZoneCount(state);
+        int current = static_cast<int>(state.classicModulation);
+        if (current >= count) current = count - 1;
+        const int zone = PerformanceConfig::selectorZone(position, current, count);
         state.classicModulation = static_cast<ClassicModulation>(zone);
         if (zone < 3) state.lfoRateHz = config.zones[zone];
         return;
@@ -626,7 +666,7 @@ float PerformanceController::currentTargetNormalized(
         const unsigned zone = config.target == PotTarget::Pitch
             ? static_cast<unsigned>(state.classicPitch)
             : static_cast<unsigned>(state.classicModulation);
-        const unsigned count = config.target == PotTarget::Pitch ? 3 : 4;
+        const unsigned count = config.target == PotTarget::Pitch ? 3 : rateZoneCount(state);
         return (zone + 0.5f) / count;
     }
     float value = config.minimum;
@@ -660,10 +700,11 @@ bool PerformanceController::setPot(unsigned potNumber, float position) {
         position < 0.0f || position > 1.0f) return false;
     const unsigned index = potNumber - 1;
     ControlState state = controls_.snapshot();
-    const PotConfig &config = settings_.pots[index];
+    const PotConfig config = effectivePot(settings_.pots[index], state);
     // Every reading applies at once: the knob always owns its value.
     const bool firstReading = !potReported_[index];
     potReported_[index] = true;
+    potPosition_[index] = position;
     snprintf(overlayTitle_, sizeof(overlayTitle_), "%s", potTargetName(config.target));
     overlayPot_ = potNumber;
     applyPotValue(state, config, position);
@@ -674,16 +715,18 @@ bool PerformanceController::setPot(unsigned potNumber, float position) {
         snprintf(overlayValue_, sizeof(overlayValue_), "%.2f Hz", state.lfoRateHz);
     const bool transient = state.mode == SirenMode::Syndrum ||
                            state.mode == SirenMode::Gunshot;
-    const bool inactive = (config.target == PotTarget::Pitch &&
-                           state.mode == SirenMode::Gunshot) ||
-        (transient && (config.target == PotTarget::Rate ||
-                       config.target == PotTarget::LfoDepth ||
-                       config.target == PotTarget::SweepAmount ||
-                       config.target == PotTarget::SweepTime));
+    const bool inactive = transient && (config.target == PotTarget::LfoDepth ||
+                                        config.target == PotTarget::SweepAmount ||
+                                        config.target == PotTarget::SweepTime);
     if (inactive) snprintf(overlayValue_, sizeof(overlayValue_), "STORED - N/A");
     controls_.set(state);
     // The power-on scan is not a gesture: no overlay for it.
     if (firstReading) overlayTitle_[0] = overlayValue_[0] = '\0';
+    // In the controls list a moved pot opens its own page.
+    else if (displayMode_ == DisplayMode::Menu && menuPage_ == MenuPage::Setup) {
+        selectedPot_ = index;
+        setMenuPage(MenuPage::Pot);
+    }
     changed();
     return true;
 }
@@ -713,6 +756,11 @@ void PerformanceController::setEncoderPressed(bool pressed, bool cancelClick) {
     encoderPressed_ = pressed;
     if (pressed) {
         modifierUsed_ = false;
+        // Hold gesture: a playing key together with the encoder push.
+        if (displayMode_ == DisplayMode::Home && anyRelevantButtonDown()) {
+            holdToggle_ = !holdToggle_;
+            modifierUsed_ = true;
+        }
     } else if (displayMode_ == DisplayMode::Menu) {
         if (!modifierUsed_) pressMenuItem();
     } else if (!modifierUsed_) {
@@ -753,9 +801,13 @@ void PerformanceController::rotateEncoder(int direction) {
         }
         overlayTitle_[0] = '\0';
         overlayValue_[0] = '\0';
-        // A selected sound pad steps its variant; otherwise the Trigger voice.
+        // Free rotation steps the sound of the last pressed pad, shown on its
+        // key and in the banner; with a Trigger selected, the Trigger voice.
         if (selectedIsPad()) {
-            stepVariant(direction);
+            stepPadVoice(settings_.buttons[selectedPad_], direction);
+            if (currentPad_ == selectedPad_) applySound(state, selectedPad_, false);
+            controls_.set(state);
+            commitSettingsChange();
             return;
         }
         stepVoice(state, direction);
@@ -872,6 +924,14 @@ const char *PerformanceController::padVariantName(unsigned padNumber) const {
     const ButtonConfig &button = settings_.buttons[padNumber - 1];
     return button.action == ButtonAction::PlaySound
         ? panelSoundVariantName(button.sound, button.variant) : "N/A";
+}
+
+const char *PerformanceController::padVoiceName(unsigned padNumber) const {
+    if (padNumber < 1 || padNumber > 4) return "UNKNOWN";
+    const ButtonConfig &button = settings_.buttons[padNumber - 1];
+    // The siren family is named by its variant, the others by the family.
+    return button.sound == PanelSound::Classic
+        ? panelSoundVariantName(button.sound, button.variant) : panelSoundName(button.sound);
 }
 
 unsigned PerformanceController::padVariant(unsigned padNumber) const {
@@ -1003,6 +1063,7 @@ void PerformanceController::resetDefaults() {
     settingsTransaction_ = false;
     settingsTransactionInvalid_ = false;
     settings_ = factoryPanelSettings();
+    holdToggle_ = false;
     ControlState state = controls_.snapshot();
     state.tempo = TempoState{};
     tapStarted_ = false;
@@ -1013,10 +1074,6 @@ void PerformanceController::resetDefaults() {
 
 void PerformanceController::commitSettingsChange() {
     ControlState state = controls_.snapshot();
-    bool hasHoldAction = false;
-    for (const ButtonConfig &button : settings_.buttons)
-        hasHoldAction |= button.action == ButtonAction::Hold;
-    if (!hasHoldAction) holdToggle_ = false;
     updateGate(state);
     updateZoneFlags(state);
     controls_.set(state);
@@ -1134,137 +1191,169 @@ void PerformanceController::addMenuRow(Row row, const char *key,
     snprintf(view.value, sizeof(view.value), "%s", value == nullptr ? "" : value);
 }
 
+// Fixed positions or a free sweep for one pot; the knob takes over at once
+// in its new way of moving. Only Pitch and Rate have positions.
+void PerformanceController::setPotMode(ControlState &state, unsigned index, PotMode mode) {
+    PotConfig &pot = settings_.pots[index];
+    const TargetDescriptor *descriptor = targetDescriptor(pot.target);
+    if (descriptor == nullptr || !descriptor->zones) return;
+    pot.mode = mode;
+    if (mode == PotMode::Zones) {
+        const float *defaults = pot.target == PotTarget::Pitch
+            ? PerformanceConfig::kClassicPitchHz : PerformanceConfig::kClassicRateHz;
+        for (unsigned i = 0; i < 3; ++i) pot.zones[i] = defaults[i];
+    }
+    if (potReported_[index])
+        applyPotValue(state, effectivePot(pot, state), potPosition_[index]);
+    updateZoneFlags(state);
+}
+
+// 1 when every pot that has positions uses them, 0 when none does, -1 if mixed
+// or if no pot has any.
+int PerformanceController::allPotsZoned() const {
+    int zoned = 0, total = 0;
+    for (const PotConfig &pot : settings_.pots) {
+        const TargetDescriptor *descriptor = targetDescriptor(pot.target);
+        if (descriptor == nullptr || !descriptor->zones) continue;
+        ++total;
+        zoned += pot.mode == PotMode::Zones;
+    }
+    return total == 0 ? -1 : zoned == total ? 1 : zoned == 0 ? 0 : -1;
+}
+
 void PerformanceController::rebuildMenuView() const {
+    // Labels and titles are Italian; the names of sounds, pot functions,
+    // button actions and LFO shapes stay as the Home screen shows them.
     menuRowCount_ = 0;
     const ControlState state = controls_.snapshot();
     char value[32];
     snprintf(menuFooterBuffer_, sizeof(menuFooterBuffer_), "%s",
-        menuEditing_ ? "TURN CHANGE / PUSH DONE" : "TURN SELECT / PUSH OPEN");
-    if (displayMode_ == DisplayMode::Menu && overlayTitle_[0])
-        snprintf(menuFooterBuffer_, sizeof(menuFooterBuffer_), "%s %s",
-                 overlayTitle_, overlayValue_);
-    if (persistenceStatus_[0]) snprintf(menuFooterBuffer_, sizeof(menuFooterBuffer_),
-                                       "%s", persistenceStatus_);
+        menuEditing_ ? "RUOTA CAMBIA / PREMI OK"
+        : menuPage_ == MenuPage::Setup ? "MUOVI POT / PREMI TASTO"
+                                       : "RUOTA SCEGLI / PREMI APRI");
     switch (menuPage_) {
         case MenuPage::Root:
-            snprintf(menuTitleBuffer_, sizeof(menuTitleBuffer_), "PERFORMANCE");
-            addMenuRow(Row::SoundPage, "SOUND", "SOUND");
-            addMenuRow(Row::ModPage, "MOD", "MOD");
-            addMenuRow(Row::EchoPage, "ECHO", "ECHO");
-            addMenuRow(Row::SetupPage, "SETUP", "SETUP");
-            addMenuRow(Row::TapTempo, "TAP_TEMPO", "TAP TEMPO");
-            addMenuRow(Row::Back, "BACK", "BACK");
+            snprintf(menuTitleBuffer_, sizeof(menuTitleBuffer_), "MENU");
+            addMenuRow(Row::SetupPage, "SETUP", "COMANDI");
+            addMenuRow(Row::SoundPage, "SOUND", "SUONO");
+            addMenuRow(Row::ModPage, "MOD", "MODULAZIONE");
+            addMenuRow(Row::EchoPage, "ECHO", "ECO");
+            addMenuRow(Row::TempoPage, "TEMPO", "TEMPO");
+            addMenuRow(Row::Back, "BACK", "INDIETRO");
             break;
-        case MenuPage::Setup:
-            snprintf(menuTitleBuffer_, sizeof(menuTitleBuffer_), "SETUP");
-            addMenuRow(Row::Pots, "POTS", "POTS");
-            addMenuRow(Row::Buttons, "BUTTONS", "BUTTONS");
+        case MenuPage::Setup: {
+            // Every control in one list; moving a pot or pressing a key opens it.
+            snprintf(menuTitleBuffer_, sizeof(menuTitleBuffer_), "COMANDI");
+            const int zoned = allPotsZoned();
+            addMenuRow(Row::AllModes, "VALUES", "VALORI",
+                       zoned == 1 ? "LOW/MID/HIGH" : zoned == 0 ? "LIBERI" : "MISTI");
+            static const Row potRows[] = {Row::Pot1, Row::Pot2, Row::Pot3,
+                Row::Pot4, Row::Pot5, Row::Pot6};
+            static const char *potKeys[] = {"POT_1", "POT_2", "POT_3", "POT_4", "POT_5", "POT_6"};
+            static const char *potLabels[] = {"POT 1", "POT 2", "POT 3", "POT 4", "POT 5", "POT 6"};
+            for (unsigned i = 0; i < 6; ++i)
+                addMenuRow(potRows[i], potKeys[i], potLabels[i],
+                           potTargetName(settings_.pots[i].target));
+            static const Row buttonRows[] = {Row::Button1, Row::Button2, Row::Button3, Row::Button4};
+            static const char *buttonKeys[] = {"BTN_1", "BTN_2", "BTN_3", "BTN_4"};
+            static const char *buttonLabels[] = {"TASTO 1", "TASTO 2", "TASTO 3", "TASTO 4"};
+            for (unsigned i = 0; i < 4; ++i)
+                addMenuRow(buttonRows[i], buttonKeys[i], buttonLabels[i],
+                    settings_.buttons[i].action == ButtonAction::PlaySound
+                        ? padVoiceName(i + 1) : buttonActionName(settings_.buttons[i].action));
             addMenuRow(Row::Encoder, "ENCODER", "ENCODER");
-            addMenuRow(Row::ResetDefaults, "RESET_DEFAULTS", "RESET DEFAULTS");
-            addMenuRow(Row::Back, "BACK", "BACK");
+            addMenuRow(Row::ResetDefaults, "RESET_DEFAULTS", "RIPRISTINA");
+            addMenuRow(Row::Back, "BACK", "INDIETRO");
             break;
+        }
         case MenuPage::Sound: {
             const bool pad = selectedIsPad();
             if (pad) {
-                snprintf(menuTitleBuffer_, sizeof(menuTitleBuffer_), "SOUND P%u%s", selectedPad_ + 1, patchDirty(selectedPad_ + 1) ? " *" : "");
+                snprintf(menuTitleBuffer_, sizeof(menuTitleBuffer_), "SUONO TASTO %u%s", selectedPad_ + 1, patchDirty(selectedPad_ + 1) ? " *" : "");
                 snprintf(value, sizeof(value), "%u", selectedPad_ + 1);
-                addMenuRow(Row::SelectedPad, "PAD", "PAD", value);
-                const auto &button = settings_.buttons[selectedPad_];
-                addMenuRow(Row::Sound, "SOUND", "FAMILY", panelSoundName(button.sound));
-                addMenuRow(Row::Variant, "VARIANT", "VARIANT", panelSoundVariantName(button.sound, button.variant));
+                addMenuRow(Row::SelectedPad, "PAD", "TASTO", value);
+                addMenuRow(Row::Sound, "SOUND", "SUONO", padVoiceName(selectedPad_ + 1));
             } else {
-                snprintf(menuTitleBuffer_, sizeof(menuTitleBuffer_), "SOUND");
-                addMenuRow(Row::Voice, "VOICE", "VOICE", voiceName());
+                snprintf(menuTitleBuffer_, sizeof(menuTitleBuffer_), "SUONO");
+                addMenuRow(Row::Voice, "VOICE", "SUONO", voiceName());
             }
             if (state.mode != SirenMode::Gunshot) addSoundValue(state, Row::Tune, "TUNE", "PITCH", "Hz");
             const bool articulated = state.mode == SirenMode::Lickshot &&
                 (state.lickshotArticulation == LickshotArticulation::Shot || state.lickshotArticulation == LickshotArticulation::Roll);
             if (articulated) {
-                addSoundValue(state, Row::Length, "LENGTH", "LENGTH", "ms");
+                addSoundValue(state, Row::Length, "LENGTH", "DURATA", "ms");
                 addSoundValue(state, Row::Punch, "PUNCH", "PUNCH", "oct");
-                addSoundValue(state, Row::PitchTime, "PITCH_TIME", "PITCH TAU", "ms");
-                if (state.lickshotArticulation == LickshotArticulation::Roll) addSoundValue(state, Row::Rate, "RATE", "ROLL RATE", "Hz");
-            } else addSoundValue(state, Row::Decay, "DECAY", "DECAY TAU", "ms");
-            if (state.mode == SirenMode::Syndrum) addSoundValue(state, Row::DrumSweep, "DRUM_SWEEP", "PITCH SWEEP", "oct");
+                addSoundValue(state, Row::PitchTime, "PITCH_TIME", "TEMPO PITCH", "ms");
+                if (state.lickshotArticulation == LickshotArticulation::Roll) addSoundValue(state, Row::Rate, "RATE", "RATE", "Hz");
+            } else addSoundValue(state, Row::Decay, "DECAY", "DECAY", "ms");
+            if (state.mode == SirenMode::Syndrum) addSoundValue(state, Row::DrumSweep, "DRUM_SWEEP", "SWEEP PITCH", "oct");
             else if (state.mode != SirenMode::Gunshot) {
-                addSoundValue(state, Row::Sweep, "SWEEP", "DYNAMIC SWEEP", "");
-                addSoundValue(state, Row::SweepTime, "SWEEP_TIME", "SWEEP TAU", "ms");
+                addSoundValue(state, Row::Sweep, "SWEEP", "SWEEP", "");
+                addSoundValue(state, Row::SweepTime, "SWEEP_TIME", "TEMPO SWEEP", "ms");
             }
-            addSoundValue(state, Row::Tone, "TONE", "DRY TONE", "Hz");
-            addSoundValue(state, Row::Contour, "CONTOUR", "FILTER CONTOUR", "oct");
-            addSoundValue(state, Row::ContourTime, "CONTOUR_TIME", "CONTOUR TAU", "ms");
+            addSoundValue(state, Row::Tone, "TONE", "TONO", "Hz");
+            addSoundValue(state, Row::Contour, "CONTOUR", "CONTOUR", "oct");
+            addSoundValue(state, Row::ContourTime, "CONTOUR_TIME", "TEMPO CONTOUR", "ms");
             if (pad) {
-                addMenuRow(Row::SavePatch, "SAVE", "SAVE PATCH");
-                addMenuRow(Row::RecallPatch, "RECALL", "RECALL PATCH", settings_.patches[selectedPad_].valid ? "" : "EMPTY");
+                addMenuRow(Row::SavePatch, "SAVE", "SALVA");
+                addMenuRow(Row::RecallPatch, "RECALL", "RICHIAMA", settings_.patches[selectedPad_].valid ? "" : "VUOTA");
             }
-            addMenuRow(Row::Back, "BACK", "BACK");
+            addMenuRow(Row::Back, "BACK", "INDIETRO");
             break;
         }
         case MenuPage::Mod:
-            snprintf(menuTitleBuffer_, sizeof(menuTitleBuffer_), "MODULATION");
-            addMenuRow(Row::LfoSync, "LFO_SYNC", "CLOCK", state.tempo.lfoSync ? "SYNC" : "FREE");
-            snprintf(value, sizeof(value), state.tempo.known ? "%.1f" : "%.1f (SET)", state.tempo.bpm);
-            addMenuRow(Row::Bpm, "BPM", "BPM", value);
-            addMenuRow(Row::TapTempo, "TAP_TEMPO", "TAP TEMPO");
+            snprintf(menuTitleBuffer_, sizeof(menuTitleBuffer_), "MODULAZIONE");
             if (state.tempo.lfoSync) {
                 formatTargetValue(PotTarget::Rate, state, value, sizeof(value));
-                addMenuRow(Row::LfoDivision, "LFO_DIV", "DIVISION", value);
+                addMenuRow(Row::LfoDivision, "LFO_DIV", "DIVISIONE", value);
             }
             if (state.rateZonesActive && !state.tempo.lfoSync)
                 addMenuRow(Row::ClassicRate, "RATE_ZONE", "RATE", rateName(state.classicModulation));
             if (state.mode != SirenMode::Syndrum && state.mode != SirenMode::Gunshot &&
                 !(state.mode == SirenMode::Lickshot && state.lickshotArticulation != LickshotArticulation::Legacy)) {
                 static const char *shapes[] = {"SIREN", "TRIANGLE", "SQUARE", "SAW UP", "SAW DOWN", "ASYM UP", "ASYM DOWN", "PULSE 25", "PULSE 75", "MANUAL"};
-                addMenuRow(Row::Shape, "SHAPE", "SHAPE", shapes[static_cast<unsigned>(state.lfoShape)]);
-                addMenuRow(Row::Modulation, "MODULATION", "MODULATION", state.modulationEnabled ? "ON" : "OFF");
+                addMenuRow(Row::Shape, "SHAPE", "FORMA", shapes[static_cast<unsigned>(state.lfoShape)]);
+                addMenuRow(Row::Modulation, "MODULATION", "MODULAZIONE", state.modulationEnabled ? "ON" : "OFF");
                 if (!state.tempo.lfoSync && !state.rateZonesActive) addSoundValue(state, Row::Rate, "RATE", "RATE", "Hz");
                 // SIREN and MANUAL have a fixed sweep and always restart on trigger.
                 if (!sirenShape(effectiveLfoShape(state))) {
-                    if (state.mode != SirenMode::TestTone) addSoundValue(state, Row::Depth, "DEPTH", "DEPTH", "oct");
+                    if (state.mode != SirenMode::TestTone) addSoundValue(state, Row::Depth, "DEPTH", "AMPIEZZA", "oct");
                     if (!state.tempo.lfoSync) addMenuRow(Row::Retrigger, "RETRIGGER", "RETRIGGER", state.retrigger ? "ON" : "OFF");
                 }
             }
-            addMenuRow(Row::Back, "BACK", "BACK");
+            addMenuRow(Row::Back, "BACK", "INDIETRO");
             break;
         case MenuPage::Echo:
-            snprintf(menuTitleBuffer_, sizeof(menuTitleBuffer_), "ECHO");
-            addSoundValue(state, Row::EchoLevel, "LEVEL", "LEVEL", "");
-            addMenuRow(Row::EchoSync, "ECHO_SYNC", "CLOCK", state.tempo.echoSync ? "SYNC" : "FREE");
-            snprintf(value, sizeof(value), state.tempo.known ? "%.1f" : "%.1f (SET)", state.tempo.bpm);
-            addMenuRow(Row::Bpm, "BPM", "BPM", value);
-            addMenuRow(Row::TapTempo, "TAP_TEMPO", "TAP TEMPO");
+            snprintf(menuTitleBuffer_, sizeof(menuTitleBuffer_), "ECO");
+            addSoundValue(state, Row::EchoLevel, "LEVEL", "LIVELLO", "");
             if (state.tempo.echoSync) {
                 formatTargetValue(PotTarget::EchoTime, state, value, sizeof(value));
-                addMenuRow(Row::EchoDivision, "ECHO_DIV", "DIVISION", value);
-            } else addSoundValue(state, Row::EchoTime, "TIME", "TIME", "ms");
+                addMenuRow(Row::EchoDivision, "ECHO_DIV", "DIVISIONE", value);
+            } else addSoundValue(state, Row::EchoTime, "TIME", "RITARDO", "ms");
             addSoundValue(state, Row::Feedback, "FEEDBACK", "FEEDBACK", "");
-            addSoundValue(state, Row::Filter, "FILTER", "FILTER LP / HP", "");
-            addSoundValue(state, Row::Color, "COLOR", "COLOR", "");
+            addSoundValue(state, Row::Filter, "FILTER", "FILTRO LP / HP", "");
+            addSoundValue(state, Row::Color, "COLOR", "COLORE", "");
             addMenuRow(Row::Loop, "LOOP", "LOOP", state.echoLoop ? "ON" : "OFF");
-            addMenuRow(Row::Spin, "SPIN", "SPIN (STATUS)", state.echoSpin ? "ON" : "OFF");
-            addMenuRow(Row::Cut, "CUT", "CUT (STATUS)", state.echoCut ? "ON" : "OFF");
-            addMenuRow(Row::Back, "BACK", "BACK");
+            addMenuRow(Row::Back, "BACK", "INDIETRO");
             break;
-        case MenuPage::Pots:
-            snprintf(menuTitleBuffer_, sizeof(menuTitleBuffer_), "POT CONTROLS");
-            for (unsigned i = 0; i < 6; ++i) {
-                snprintf(value, sizeof(value), "%s", potTargetName(settings_.pots[i].target));
-                static const Row rows[] = {Row::Pot1, Row::Pot2, Row::Pot3,
-                    Row::Pot4, Row::Pot5, Row::Pot6};
-                static const char *keys[] = {"POT_1", "POT_2", "POT_3", "POT_4", "POT_5", "POT_6"};
-                static const char *labels[] = {"POT 1", "POT 2", "POT 3", "POT 4", "POT 5", "POT 6"};
-                addMenuRow(rows[i], keys[i], labels[i], value);
-            }
-            addMenuRow(Row::Back, "BACK", "BACK");
+        case MenuPage::Tempo:
+            // The tempo is tapped on its key; here it is typed and routed.
+            snprintf(menuTitleBuffer_, sizeof(menuTitleBuffer_), "TEMPO");
+            snprintf(value, sizeof(value), state.tempo.known ? "%.1f" : "%.1f (IMPOSTA)", state.tempo.bpm);
+            addMenuRow(Row::Bpm, "BPM", "BPM", value);
+            addMenuRow(Row::LfoSync, "LFO_SYNC", "LFO A TEMPO", state.tempo.lfoSync ? "ON" : "OFF");
+            addMenuRow(Row::EchoSync, "ECHO_SYNC", "ECO A TEMPO", state.tempo.echoSync ? "ON" : "OFF");
+            addMenuRow(Row::Back, "BACK", "INDIETRO");
             break;
         case MenuPage::Pot: {
             const PotConfig &pot = settings_.pots[selectedPot_];
             snprintf(menuTitleBuffer_, sizeof(menuTitleBuffer_), "POT %u - %s",
                      selectedPot_ + 1, potTargetName(pot.target));
-            addMenuRow(Row::Function, "FUNCTION", "FUNCTION", potTargetName(pot.target));
+            addMenuRow(Row::Function, "FUNCTION", "FUNZIONE", potTargetName(pot.target));
             const TargetDescriptor *descriptor = targetDescriptor(pot.target);
             if (descriptor != nullptr && descriptor->zones)
-                addMenuRow(Row::Mode, "MODE", "MODE", potModeName(pot.mode));
+                addMenuRow(Row::Mode, "MODE", "VALORI", pot.mode != PotMode::Zones ? "LIBERI"
+                    : pot.target == PotTarget::Pitch ? "LOW/MID/HIGH" : "SLOW/MID/FAST");
             if (pot.mode == PotMode::Zones) {
                 formatConfiguredValue(pot.target, pot.zones[0], value, sizeof(value));
                 addMenuRow(Row::Low, "LOW", pot.target == PotTarget::Pitch ? "LOW" : "SLOW", value);
@@ -1274,53 +1363,100 @@ void PerformanceController::rebuildMenuView() const {
                 addMenuRow(Row::High, "HIGH", pot.target == PotTarget::Pitch ? "HIGH" : "FAST", value);
             } else if (pot.target != PotTarget::None) {
                 formatConfiguredValue(pot.target, pot.minimum, value, sizeof(value));
-                addMenuRow(Row::Minimum, "MIN", "MIN", value);
+                addMenuRow(Row::Minimum, "MIN", "MINIMO", value);
                 formatConfiguredValue(pot.target, pot.maximum, value, sizeof(value));
-                addMenuRow(Row::Maximum, "MAX", "MAX", value);
+                addMenuRow(Row::Maximum, "MAX", "MASSIMO", value);
             }
-            addMenuRow(Row::Back, "BACK", "BACK");
+            addMenuRow(Row::Back, "BACK", "INDIETRO");
             break;
         }
-        case MenuPage::Buttons:
-            snprintf(menuTitleBuffer_, sizeof(menuTitleBuffer_), "BUTTONS");
-            for (unsigned i = 0; i < 4; ++i) {
-                static const Row rows[] = {Row::Button1, Row::Button2, Row::Button3, Row::Button4};
-                static const char *keys[] = {"BTN_1", "BTN_2", "BTN_3", "BTN_4"};
-                static const char *labels[] = {"BTN 1", "BTN 2", "BTN 3", "BTN 4"};
-                addMenuRow(rows[i], keys[i], labels[i],
-                    buttonActionName(settings_.buttons[i].action));
-            }
-            addMenuRow(Row::Back, "BACK", "BACK");
-            break;
         case MenuPage::Button: {
             const ButtonConfig &button = settings_.buttons[selectedButton_];
-            snprintf(menuTitleBuffer_, sizeof(menuTitleBuffer_), "BTN %u", selectedButton_ + 1);
-            addMenuRow(Row::Action, "ACTION", "ACTION", buttonActionName(button.action));
+            snprintf(menuTitleBuffer_, sizeof(menuTitleBuffer_), "TASTO %u", selectedButton_ + 1);
+            addMenuRow(Row::Action, "ACTION", "AZIONE", buttonActionName(button.action));
             if (button.action == ButtonAction::PlaySound) {
-                addMenuRow(Row::Sound, "SOUND", "SOUND", panelSoundName(button.sound));
-                addMenuRow(Row::Variant, "VARIANT", "VARIANT",
-                           panelSoundVariantName(button.sound, button.variant));
+                addMenuRow(Row::Sound, "SOUND", "SUONO", padVoiceName(selectedButton_ + 1));
                 if (panelSoundSupportsLatch(button.sound))
                     addMenuRow(Row::Latch, "LATCH", "LATCH", button.latch ? "ON" : "OFF");
             }
-            addMenuRow(Row::Back, "BACK", "BACK");
+            addMenuRow(Row::Back, "BACK", "INDIETRO");
             break;
         }
         case MenuPage::Encoder:
             snprintf(menuTitleBuffer_, sizeof(menuTitleBuffer_), "ENCODER");
-            addMenuRow(Row::HoldTurn, "HOLD_TURN", "HOLD+TURN",
+            addMenuRow(Row::HoldTurn, "HOLD_TURN", "TIENI+RUOTA",
                 settings_.encoderHoldAction == EncoderHoldAction::LivePitch ? "LIVE PITCH" : "OFF");
             snprintf(value, sizeof(value), "%u st", settings_.encoderStepSemitones);
-            addMenuRow(Row::Step, "STEP", "STEP", value);
+            addMenuRow(Row::Step, "STEP", "PASSO", value);
             snprintf(value, sizeof(value), "+/-%u st", settings_.encoderRangeSemitones);
-            addMenuRow(Row::Range, "RANGE", "RANGE", value);
-            addMenuRow(Row::Back, "BACK", "BACK");
+            addMenuRow(Row::Range, "RANGE", "ESCURSIONE", value);
+            addMenuRow(Row::Back, "BACK", "INDIETRO");
             break;
         case MenuPage::Reset:
-            snprintf(menuTitleBuffer_, sizeof(menuTitleBuffer_), "RESET DEFAULTS");
-            addMenuRow(Row::Confirm, "CONFIRM", "CONFIRM", resetConfirmed_ ? "YES" : "NO");
-            addMenuRow(Row::Back, "BACK", "BACK");
+            snprintf(menuTitleBuffer_, sizeof(menuTitleBuffer_), "RIPRISTINA");
+            addMenuRow(Row::Confirm, "CONFIRM", "CONFERMA", resetConfirmed_ ? "SI" : "NO");
+            addMenuRow(Row::Back, "BACK", "INDIETRO");
             break;
+    }
+    // The footer describes the selected row; a moved pot or an error replaces it.
+    const char *help = menuIndex_ < menuRowCount_ ? rowHelp(menuRows_[menuIndex_].row, state) : nullptr;
+    if (help) snprintf(menuFooterBuffer_, sizeof(menuFooterBuffer_), "%s", help);
+    if (displayMode_ == DisplayMode::Menu && overlayTitle_[0])
+        snprintf(menuFooterBuffer_, sizeof(menuFooterBuffer_), "%s %s",
+                 overlayTitle_, overlayValue_);
+    if (persistenceStatus_[0]) snprintf(menuFooterBuffer_, sizeof(menuFooterBuffer_),
+                                       "%s", persistenceStatus_);
+}
+
+// One short line per row, null where the label says it all. The footer is
+// 184 px wide in the 16 px font: about 27 characters.
+const char *PerformanceController::rowHelp(Row row, const ControlState &state) const {
+    switch (row) {
+        case Row::SoundPage: return "SUONO E SUOI PARAMETRI";
+        case Row::ModPage: return "MOVIMENTO DEL PITCH (LFO)";
+        case Row::EchoPage: return "LIVELLO, RITARDO, FILTRO";
+        case Row::TempoPage: return "BPM, LFO ED ECO A TEMPO";
+        case Row::SetupPage: return "ASSEGNA POT E TASTI";
+        case Row::ResetDefaults:
+        case Row::Confirm: return "RIPORTA TUTTO DI FABBRICA";
+        case Row::Bpm: return "SI BATTE SUL TASTO TAP";
+        case Row::LfoSync: return state.tempo.lfoSync ? "IL RATE SEGUE IL BPM" : "RATE LIBERO, IN HZ";
+        case Row::EchoSync: return state.tempo.echoSync ? "IL RITARDO SEGUE IL BPM" : "RITARDO LIBERO, IN MS";
+        case Row::LfoDivision:
+        case Row::EchoDivision: return "FRAZIONE DELLA BATTUTA";
+        case Row::Decay: return "CODA DOPO IL RILASCIO";
+        case Row::Sweep: return "PARTE BASSO E POI SALE";
+        case Row::SweepTime: return "DURATA DELLO SWEEP";
+        case Row::DrumSweep: return "CADUTA DI PITCH DEL COLPO";
+        case Row::Tone: return "TAGLIA GLI ACUTI DEL SUONO";
+        case Row::Contour: return "MUOVE IL FILTRO AL TRIGGER";
+        case Row::ContourTime: return "DURATA DEL CONTOUR";
+        case Row::SavePatch: return "MEMORIZZA SUONO NEL TASTO";
+        case Row::RecallPatch: return "TORNA AL SUONO SALVATO";
+        case Row::Shape: return "ANDAMENTO DEL PITCH";
+        case Row::Modulation: return "ON: IL PITCH SI MUOVE";
+        case Row::Depth: return "QUANTO SI MUOVE IL PITCH";
+        case Row::Retrigger: return "ON: RIPARTE A OGNI TRIGGER";
+        case Row::Feedback: return "QUANTE RIPETIZIONI";
+        case Row::Filter: return "SINISTRA LP, DESTRA HP";
+        case Row::Color: return "SCURISCE E SATURA LE CODE";
+        case Row::Loop: return "ON: L'ECO GIRA SENZA FINE";
+        case Row::Function: return "COSA REGOLA IL POT";
+        case Row::Mode:
+            return settings_.pots[selectedPot_].mode == PotMode::Zones
+                ? "ORA A POSIZIONI FISSE" : "ORA SCORRE DA MIN A MAX";
+        case Row::AllModes: return "VALE PER TUTTI I POT";
+        case Row::Low:
+        case Row::Middle:
+        case Row::High: return "VALORE DI QUESTA POSIZIONE";
+        case Row::Minimum: return "VALORE A POT TUTTO GIU";
+        case Row::Maximum: return "VALORE A POT TUTTO SU";
+        case Row::Action: return "COSA FA IL TASTO";
+        case Row::Latch: return "ON: RESTA ACCESO DA SOLO";
+        case Row::HoldTurn: return "TASTO TENUTO + ENCODER";
+        case Row::Step: return "SEMITONI PER SCATTO";
+        case Row::Range: return "LIMITE IN SEMITONI";
+        default: return nullptr;
     }
 }
 
@@ -1370,29 +1506,26 @@ void PerformanceController::pressMenuItem() {
         }
         // Pad family/variant are button assignments and persist like the Home
         // encoder path; sound, MOD and ECHO values stay live until SAVE PATCH.
-        const bool assignment = row == Row::Sound || row == Row::Variant;
-        if ((assignment || (menuPage_ != MenuPage::Sound &&
-            menuPage_ != MenuPage::Mod && menuPage_ != MenuPage::Echo))) ++settingsRevision_;
+        const bool assignment = row == Row::Sound;
+        if ((assignment || (menuPage_ != MenuPage::Sound && menuPage_ != MenuPage::Mod &&
+            menuPage_ != MenuPage::Echo && menuPage_ != MenuPage::Tempo))) ++settingsRevision_;
         changed();
         return;
     }
     if (row == Row::SavePatch) { savePad(selectedPad_ + 1); return; }
-    if (row == Row::TapTempo) { tapTempo(); return; }
     if (row == Row::RecallPatch) { recallPad(selectedPad_ + 1); return; }
     if (row == Row::SoundPage) { selectedButton_ = selectedPad_; setMenuPage(MenuPage::Sound); }
     else if (row == Row::ModPage) setMenuPage(MenuPage::Mod);
     else if (row == Row::EchoPage) setMenuPage(MenuPage::Echo);
+    else if (row == Row::TempoPage) setMenuPage(MenuPage::Tempo);
     else if (row == Row::SetupPage) setMenuPage(MenuPage::Setup);
-    else if (row == Row::Spin || row == Row::Cut) return;
     else if (row >= Row::Pot1 && row <= Row::Pot6) {
         selectedPot_ = static_cast<unsigned>(row) - static_cast<unsigned>(Row::Pot1);
         setMenuPage(MenuPage::Pot);
     } else if (row >= Row::Button1 && row <= Row::Button4) {
         selectedButton_ = static_cast<unsigned>(row) - static_cast<unsigned>(Row::Button1);
         setMenuPage(MenuPage::Button);
-    } else if (row == Row::Pots) setMenuPage(MenuPage::Pots);
-    else if (row == Row::Buttons) setMenuPage(MenuPage::Buttons);
-    else if (row == Row::Encoder) setMenuPage(MenuPage::Encoder);
+    } else if (row == Row::Encoder) setMenuPage(MenuPage::Encoder);
     else if (row == Row::ResetDefaults) {
         resetConfirmed_ = false;
         setMenuPage(MenuPage::Reset);
@@ -1408,9 +1541,8 @@ void PerformanceController::leaveMenuPage() {
     if (menuPage_ == MenuPage::Root) {
         displayMode_ = DisplayMode::Home;
         changed();
-    } else if (menuPage_ == MenuPage::Pot) setMenuPage(MenuPage::Pots);
-    else if (menuPage_ == MenuPage::Button) setMenuPage(MenuPage::Buttons);
-    else if (menuPage_ == MenuPage::Pots || menuPage_ == MenuPage::Buttons || menuPage_ == MenuPage::Encoder || menuPage_ == MenuPage::Reset) setMenuPage(MenuPage::Setup);
+    } else if (menuPage_ == MenuPage::Pot || menuPage_ == MenuPage::Button ||
+               menuPage_ == MenuPage::Encoder || menuPage_ == MenuPage::Reset) setMenuPage(MenuPage::Setup);
     else setMenuPage(MenuPage::Root);
 }
 
@@ -1469,7 +1601,7 @@ void PerformanceController::editMenuItem(Row row, int direction) {
         case Row::Retrigger: state.retrigger = !state.retrigger; controls_.set(state); break;
         case Row::Loop: state.echoLoop = !state.echoLoop; controls_.set(state); break;
         case Row::ClassicRate:
-            state.classicModulation = static_cast<ClassicModulation>(wrappedStep(static_cast<int>(state.classicModulation), direction, 4));
+            state.classicModulation = static_cast<ClassicModulation>(wrappedStep(static_cast<int>(state.classicModulation), direction, rateZoneCount(state)));
             if (state.classicModulation != ClassicModulation::Manual) state.lfoRateHz = classicRateHz(static_cast<unsigned>(state.classicModulation));
             controls_.set(state); break;
         case Row::Function: {
@@ -1478,13 +1610,17 @@ void PerformanceController::editMenuItem(Row row, int direction) {
             break;
         }
         case Row::Mode:
-            pot.mode = pot.mode == PotMode::Zones ? PotMode::Continuous : PotMode::Zones;
-            if (pot.mode == PotMode::Zones) {
-                const float *defaults = pot.target == PotTarget::Pitch
-                    ? PerformanceConfig::kClassicPitchHz : PerformanceConfig::kClassicRateHz;
-                for (unsigned i = 0; i < 3; ++i) pot.zones[i] = defaults[i];
-            }
+            setPotMode(state, selectedPot_,
+                       pot.mode == PotMode::Zones ? PotMode::Continuous : PotMode::Zones);
+            controls_.set(state);
             break;
+        case Row::AllModes: {
+            // One switch for every pot; each keeps its own row on its page.
+            const PotMode mode = allPotsZoned() == 1 ? PotMode::Continuous : PotMode::Zones;
+            for (unsigned i = 0; i < 6; ++i) setPotMode(state, i, mode);
+            controls_.set(state);
+            break;
+        }
         case Row::Minimum:
         case Row::Maximum: {
             const TargetDescriptor &descriptor = *targetDescriptor(pot.target);
@@ -1516,17 +1652,7 @@ void PerformanceController::editMenuItem(Row row, int direction) {
                 button.latch = false;
             }
             break;
-        case Row::Sound:
-            button.sound = static_cast<PanelSound>(wrappedStep(
-                static_cast<int>(button.sound), direction,
-                static_cast<int>(PanelSound::Count)));
-            button.variant = 0;
-            if (!panelSoundSupportsLatch(button.sound)) button.latch = false;
-            break;
-        case Row::Variant:
-            button.variant = static_cast<uint8_t>(wrappedStep(button.variant, direction,
-                static_cast<int>(panelSoundVariantCount(button.sound))));
-            break;
+        case Row::Sound: stepPadVoice(button, direction); break;
         case Row::Latch: button.latch = !button.latch; break;
         case Row::HoldTurn:
             settings_.encoderHoldAction = settings_.encoderHoldAction == EncoderHoldAction::Off
@@ -1546,7 +1672,7 @@ void PerformanceController::editMenuItem(Row row, int direction) {
         case Row::Confirm: resetConfirmed_ = !resetConfirmed_; break;
         default: break;
     }
-    if (menuPage_ == MenuPage::Sound && (row == Row::Sound || row == Row::Variant)) {
+    if (menuPage_ == MenuPage::Sound && row == Row::Sound) {
         button.action = ButtonAction::PlaySound;
         applySound(state, selectedPad_, false);
         controls_.set(state);

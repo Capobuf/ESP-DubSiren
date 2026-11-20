@@ -135,20 +135,20 @@ SYNDRUM and GUNSHOT are transient modes. A trigger activation event starts their
 independent amplitude envelope; HOLD, the normal LFO, DIVE/RISE and Dynamic
 Sweep do not affect them. Syndrum reuses the oscillator phase for a true sine,
 PolyBLEP-integrated triangle or PolyBLEP square carrier and applies its own
-signed pitch sweep. Gunshot uses a fixed-seed xorshift32 stream blended with an
-existing one-pole low-pass. Neither allocates memory or resets the delay.
+signed pitch sweep. Gunshot uses a fixed-seed xorshift32 stream that darkens
+through a one-pole low-pass as it decays, over a falling sine thump, saturated. Neither allocates memory or resets the delay.
 Transitions involving a transient use the same 6 ms transition budget to avoid
 an abrupt boundary.
 
 ## Performance controller
 
 `PerformanceController` is compiled into both firmware and the Android app.
-`PanelSettings` (schema 4) owns the single versioned POT and BTN mapping,
+`PanelSettings` (schema 5) owns the single versioned POT and BTN mapping,
 zones/ranges, the live-pitch encoder gesture and the
 four sound patches. Raw numbered POT inputs, target curves, hysteresis and the
 filter macro are interpreted only in shared C++. The controller also owns the
-Trigger voice list stepped by the encoder; Play Sound pads keep last-pressed
-priority, combinations and their encoder+button shortcuts.
+one sound list stepped by the encoder; Play Sound pads keep last-pressed
+priority and the Hold gesture (a held pad plus the encoder push).
 
 The firmware reports the same compact logical display state in STATUS
 `panel.display`: 320x172 dimensions, Home/Menu mode, controller-formatted title,

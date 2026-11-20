@@ -13,7 +13,7 @@ public:
     static constexpr unsigned kMenuBackButton = 4;
 
     enum class DisplayMode : uint8_t { Home, Menu };
-    enum class MenuPage : uint8_t { Root, Setup, Sound, Mod, Echo, Pots, Pot, Buttons, Button, Encoder, Reset };
+    enum class MenuPage : uint8_t { Root, Setup, Sound, Mod, Echo, Tempo, Pot, Button, Encoder, Reset };
 
     // Legacy TRIGGER/HOLD/MOD/ECHO commands, kept separate so panel events
     // recomputing the gate from physical buttons do not cancel them.
@@ -88,6 +88,8 @@ public:
     int activePad() const { return activePad_ < 0 ? 0 : activePad_ + 1; }
     const char *padSoundName(unsigned padNumber) const;
     const char *padVariantName(unsigned padNumber) const;
+    // One-line name of a pad's sound, as shown on its key and in the menu.
+    const char *padVoiceName(unsigned padNumber) const;
     unsigned padVariant(unsigned padNumber) const;
     bool padHold(unsigned padNumber) const;
     bool padHoldSupported(unsigned padNumber) const;
@@ -115,6 +117,8 @@ public:
     // Mod Up only acts in MANUAL; with any other shape its key taps the tempo.
     bool modUpTaps() const;
     float potValueNormalized(unsigned potNumber) const;
+    // What a pot does now: its assignment, or its stand-in for the current sound.
+    PotConfig potConfig(unsigned potNumber) const;
     float classicPitchHz(unsigned index) const;
     float classicRateHz(unsigned index) const;
     void formatCurrentValue(PotTarget target, char *buffer,
@@ -122,17 +126,17 @@ public:
 
 private:
     enum class Row : uint8_t {
-        Pots, Buttons, Encoder, ResetDefaults, Back,
-        Pot1, Pot2, Pot3, Pot4, Pot5, Pot6, Function, Mode,
+        Encoder, ResetDefaults, Back,
+        Pot1, Pot2, Pot3, Pot4, Pot5, Pot6, Function, Mode, AllModes,
         Low, Middle, High, Minimum, Maximum,
-        Button1, Button2, Button3, Button4, Action, Sound, Variant, Latch,
+        Button1, Button2, Button3, Button4, Action, Sound, Latch,
         HoldTurn, Step, Range, Confirm,
-        SoundPage, ModPage, EchoPage, SetupPage, SelectedPad, Voice,
+        SoundPage, ModPage, EchoPage, TempoPage, SetupPage, SelectedPad, Voice,
         Tune, Rate, Depth, Decay, Sweep, SweepTime, DrumSweep,
         Length, Punch, PitchTime, Tone, Contour, ContourTime,
         Shape, Modulation, Retrigger, ClassicRate,
-        EchoLevel, EchoTime, Feedback, Filter, Color, Loop, Spin, Cut, SavePatch, RecallPatch,
-        TapTempo, Bpm, EchoSync, LfoSync, EchoDivision, LfoDivision,
+        EchoLevel, EchoTime, Feedback, Filter, Color, Loop, SavePatch, RecallPatch,
+        Bpm, EchoSync, LfoSync, EchoDivision, LfoDivision,
 
     };
     struct MenuRowView {
@@ -145,6 +149,8 @@ private:
     void applySound(ControlState &state, unsigned buttonIndex, bool activate);
     void applyVoice(ControlState &state, PanelSound sound, unsigned variant);
     void stepVoice(ControlState &state, int direction);
+    PotConfig effectivePot(const PotConfig &config, const ControlState &state) const;
+    void reapplyRatePots(ControlState &state);
     void syncZoneValues(ControlState &state) const;
     static void captureActivation(ControlState &state);
     void updateGate(ControlState &state);
@@ -162,6 +168,9 @@ private:
     void normalizeMenuIndex();
     void setMenuPage(MenuPage page);
     void rebuildMenuView() const;
+    const char *rowHelp(Row row, const ControlState &state) const;
+    void setPotMode(ControlState &state, unsigned index, PotMode mode);
+    int allPotsZoned() const;
     void addMenuRow(Row row, const char *key, const char *label,
                     const char *value = "") const;
     void commitSettingsChange();
@@ -202,6 +211,7 @@ private:
     RemoteGates remoteGates_;
     // Per pot: false until its first reading since power-on.
     bool potReported_[6] = {};
+    float potPosition_[6] = {};
     bool masterReported_ = false;
     // Per key: a Mod Up press that tapped the tempo instead.
     bool modUpTapping_[4] = {};
@@ -218,7 +228,7 @@ private:
     mutable MenuRowView menuRows_[24] = {};
     mutable unsigned menuRowCount_ = 0;
     mutable char menuTitleBuffer_[32] = "SETTINGS";
-    mutable char menuFooterBuffer_[48] = "TURN SELECT / PUSH OPEN";
+    mutable char menuFooterBuffer_[48] = "RUOTA SCEGLI / PREMI APRI";
     char overlayTitle_[24] = "";
     char overlayValue_[40] = "";
     unsigned overlayPot_ = 0;

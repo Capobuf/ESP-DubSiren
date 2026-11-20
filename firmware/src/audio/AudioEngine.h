@@ -36,6 +36,7 @@ private:
     OneShotEnvelope syndrumEnvelope_;
     OneShotEnvelope gunshotEnvelope_;
     OnePoleLowPass gunshotFilter_;
+    float gunshotPhase_ = 0.0f;
     Delay delay_;
     SmoothedParameter tuneHz_;
     SmoothedParameter depthOctaves_;
@@ -63,5 +64,5 @@ private:
     unsigned eventGateRemaining_;
 
     static bool isTonalMode(SirenMode mode);
-    float nextGunshot(float envelopeLevel);
+    float nextGunshot(float envelopeLevel, float tuneHz);
 };

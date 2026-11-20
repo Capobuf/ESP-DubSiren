@@ -84,6 +84,10 @@ public:
     const char *padVariantName(unsigned pad) const {
         return performance_.padVariantName(pad);
     }
+    PotConfig potConfig(unsigned pot) const { return performance_.potConfig(pot); }
+    const char *padVoiceName(unsigned pad) const {
+        return performance_.padVoiceName(pad);
+    }
     unsigned padVariant(unsigned pad) const {
         return performance_.padVariant(pad);
     }
