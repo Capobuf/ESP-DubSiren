@@ -5,15 +5,15 @@ elaborato esce soltanto via I2S verso un DAC PCM5102A. La USB serve per
 alimentazione, upload del firmware e un protocollo seriale di controllo e
 diagnostica; non trasporta audio.
 
-Il pannello ha un solo layout con opzioni. Quello di fabbrica offre SINE 1,
-SINE 2, TEST TONE e SQUARE, Pitch a tre posizioni e Rate a tre velocità più
+Il pannello ha un solo layout con opzioni. Quello di fabbrica offre tre pad
+(SINE 1, TWO TONE, GUNSHOT), Pitch a tre posizioni e Rate a tre velocità più
 Manual. Con Decay a zero (default) il dry usa solo un gate anti-click di 2 ms
 in attacco e 3 ms in rilascio. Echo Level zero esclude
 completamente il wet. Le voci e la risposta dei controlli hanno una taratura
 di progetto; una corrispondenza sonora con strumenti esterni non è misurata.
 
-L'encoder scorre in tutto 18 voci: alle quattro di base si aggiungono Sonar,
-Saw, Triangle, due Two Tone, cinque Lickshot, tre Ping (Syndrum) e Gunshot.
+L'encoder scorre sei suoni: Sine 1, Sine 2, Two Tone, Sonar, Ping (Syndrum) e
+Gunshot. Le altre voci del DSP restano raggiungibili solo dal protocollo seriale.
 Dynamic Sweep, forme LFO aggiuntive, Tone/Contour ed Echo Color/Loop/Spin sono
 opzioni dello stesso layout, raggiungibili dal menu; Sonar emette ping
 pulsanti con cadenza regolata da Rate.
@@ -71,9 +71,10 @@ Per provare la sirena senza hardware si usa l'[app Android](Android/README.md),
 che compila gli stessi sorgenti C++ del firmware.
 
 La superficie predefinita presenta PITCH, RATE, ECHO LEVEL, ECHO TIME,
-ECHO FEEDBACK ed ECHO FILTER; BTN1 TRIGGER, BTN2 HOLD, BTN3 MOD UP e
-BTN4 ECHO CUT. L'encoder scorre le voci del Trigger; premendolo si apre il menu
-al rilascio del click. I sei pot e i quattro pulsanti sono configurabili da
+ECHO FEEDBACK ed ECHO FILTER; BTN1-BTN3 sono pad con un suono ciascuno
+(SINE 1, TWO TONE, GUNSHOT) e BTN4 è TAP TEMPO, che in MANUAL diventa MOD UP.
+L'encoder scorre i suoni dell'ultimo pad premuto; premendolo si apre il menu
+al rilascio del click, mentre premuto insieme a un pad attiva o toglie HOLD. I sei pot e i quattro pulsanti sono configurabili da
 SETUP nel controller C++ condiviso; ogni pot agisce subito appena si muove,
 anche all'accensione e dopo un cambio di voce. Un pulsante può diventare un pad Play Sound con
 un suono proprio: quando è selezionato, la rotazione libera cambia la variante

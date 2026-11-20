@@ -137,9 +137,44 @@ template <typename Parser> bool padLayout(Parser &parser) {
     return ok;
 }
 
-// The factory layout: Trigger / Hold / Mod / Echo Cut with zoned Pitch and Rate.
+// The former factory keys, still assignable: Trigger / Hold / Mod Up / Echo Cut.
+template <typename Parser> bool classicKeys(Parser &parser) {
+    return parser.parse("PANEL BUTTON 1 ACTION TRIGGER") &&
+        parser.parse("PANEL BUTTON 2 ACTION HOLD") &&
+        parser.parse("PANEL BUTTON 3 ACTION MOD_UP") &&
+        parser.parse("PANEL BUTTON 4 ACTION ECHO_CUT");
+}
+
+// The menu way to change a sound, next to turning the encoder at Home: from
+// Home, steps the SOUND row of the selected pad (VOICE for a Trigger) and
+// returns Home.
+template <typename Parser> void stepSound(Parser &parser, int steps) {
+    auto click = [&]() {
+        assert(parser.parse("ENCODER_SWITCH 1")); assert(parser.parse("ENCODER_SWITCH 0"));
+    };
+    auto at = [&](const char *key) {
+        return strcmp(parser.menuItemKey(parser.menuIndex()), key) == 0;
+    };
+    click();
+    while (!at("SOUND")) assert(parser.parse("ENCODER_ROTATE NEXT"));
+    click();  // The SUONO page opens on its first row, never the sound row.
+    assert(parser.parse("ENCODER_ROTATE PREV"));
+    while (!at("SOUND") && !at("VOICE")) assert(parser.parse("ENCODER_ROTATE NEXT"));
+    click();
+    for (int i = 0; i < abs(steps); ++i)
+        assert(parser.parse(steps < 0 ? "ENCODER_ROTATE PREV" : "ENCODER_ROTATE NEXT"));
+    click();
+    for (int level = 0; level < 2; ++level) {
+        while (!at("BACK")) assert(parser.parse("ENCODER_ROTATE PREV"));
+        click();
+    }
+    assert(strcmp(parser.displayModeName(), "HOME") == 0);
+}
+
+// Those keys with the factory zoned Pitch and Rate.
 template <typename Parser> bool factoryLayout(Parser &parser) {
-    return parser.parse("PANEL RESET_DEFAULTS") && parser.parse("SET DECAY_MS 0");
+    return parser.parse("PANEL RESET_DEFAULTS") && classicKeys(parser) &&
+        parser.parse("SET DECAY_MS 0");
 }
 
 // Raw state equivalent of the pad layout defaults.
@@ -284,22 +319,26 @@ void testPadController() {
     assert(parser.parse("PAD 1 0"));
     assert(!store.snapshot().trigger && parser.activePad() == 0);
 
+    // Hold gesture: a playing key together with the encoder push, in either
+    // order. It toggles Hold and the encoder release does not open the menu.
     const unsigned menuBefore = parser.panelMenuRevision();
+    assert(parser.parse("PAD 1 1"));
     assert(parser.parse("ENCODER_SWITCH 1"));
-    assert(parser.parse("PAD 3 1"));
-    assert(parser.parse("PAD 3 0"));
     assert(parser.parse("ENCODER_SWITCH 0"));
+    assert(parser.parse("PAD 1 0"));
+    assert(store.snapshot().hold && !store.snapshot().trigger);
     assert(parser.panelMenuRevision() == menuBefore);
-    assert(strcmp(parser.padVariantName(1), "SINE 2") == 0);
-    assert(!store.snapshot().trigger);
-
+    // Hold survives a change of the pad's sound.
+    assert(parser.parse("PANEL BUTTON 1 SOUND CLASSIC 1 0"));
+    assert(strcmp(parser.padVoiceName(1), "SINE 2") == 0);
+    assert(store.snapshot().hold && store.snapshot().mode == SirenMode::Sine2);
+    assert(parser.parse("PANEL BUTTON 1 SOUND CLASSIC 0 0"));
     assert(parser.parse("ENCODER_SWITCH 1"));
-    assert(parser.parse("PAD 4 1"));
-    assert(store.snapshot().echoCut);
+    assert(parser.parse("PAD 1 1"));
+    assert(parser.parse("PAD 1 0"));
     assert(parser.parse("ENCODER_SWITCH 0"));
-    assert(!store.snapshot().echoCut);
-    assert(parser.parse("PAD 4 0"));
-    assert(!store.snapshot().trigger);
+    assert(!store.snapshot().hold && !store.snapshot().trigger);
+    assert(parser.panelMenuRevision() == menuBefore);
 
     assert(parser.parse("ENCODER_SWITCH 1"));
     assert(parser.parse("ENCODER_SWITCH 0"));
@@ -312,7 +351,7 @@ void testPadController() {
     assert(parser.parse("PAD_ASSIGN NEXT"));
     assert(strcmp(parser.padSoundName(3), "PING") == 0);
     assert(parser.padHold(1));
-    assert(store.snapshot().mode == SirenMode::Sine2);
+    assert(store.snapshot().mode == SirenMode::Sine1);
     assert(store.snapshot().hold);
     assert(parser.parse("PAD 3 1"));
     assert(parser.padHold(1));
@@ -363,6 +402,13 @@ void testPanelDisplayState() {
     assert(padLayout(parser));
     assert(parser.displayWidth() == 320 && parser.displayHeight() == 172);
     assert(strcmp(parser.displayModeName(), "HOME") == 0);
+    // Free rotation at Home steps the sound of the last pressed pad, and so
+    // does the SOUND row of the menu.
+    assert(parser.parse("ENCODER_ROTATE NEXT"));
+    assert(parser.padVariant(1) == 1 && store.snapshot().mode == SirenMode::Sine2);
+    assert(strcmp(parser.voiceName(), parser.padVoiceName(1)) == 0);
+    stepSound(parser, -1);
+    assert(parser.padVariant(1) == 0 && store.snapshot().mode == SirenMode::Sine1);
     assert(parser.parse("ENCODER_ROTATE NEXT"));
     assert(parser.padVariant(1) == 1);
     assert(store.snapshot().mode == SirenMode::Sine2);
@@ -374,20 +420,62 @@ void testPanelDisplayState() {
     assert(strcmp(parser.displayModeName(), "MENU") == 0);
     assert(parser.menuIndex() == 0 && !parser.menuEditing());
     assert(parser.menuItemCount() == 6);
-    assert(strcmp(parser.menuTitle(), "PERFORMANCE") == 0);
-    for (int i = 0; i < 3; ++i) assert(parser.parse("ENCODER_ROTATE NEXT"));
+    assert(strcmp(parser.menuTitle(), "MENU") == 0);
+    // COMANDI comes first.
+    assert(strcmp(parser.menuItemLabel(0), "COMANDI") == 0);
     assert(parser.parse("ENCODER_SWITCH 1")); assert(parser.parse("ENCODER_SWITCH 0"));
-    assert(strcmp(parser.menuTitle(), "SETUP") == 0);
-    assert(strcmp(parser.menuItemKey(0), "POTS") == 0);
-    assert(strcmp(parser.menuItemLabel(1), "BUTTONS") == 0);
+    // One list for every control: the general switch, six pots, four keys,
+    // encoder, reset, back.
+    assert(strcmp(parser.menuTitle(), "COMANDI") == 0);
+    assert(parser.menuItemCount() == 14);
+    assert(strcmp(parser.menuItemKey(1), "POT_1") == 0);
+    assert(strcmp(parser.menuItemLabel(7), "TASTO 1") == 0);
+    assert(strcmp(parser.menuItemValue(7), "SINE 2") == 0);
 
-    assert(parser.menuIndex() == 0);
-    assert(parser.parse("ENCODER_SWITCH 1"));
-    assert(parser.parse("ENCODER_SWITCH 0"));
+    // VALORI switches every pot that has positions at once; each pot keeps
+    // its own switch on its page.
+    assert(strcmp(parser.menuItemKey(0), "VALUES") == 0);
+    assert(strcmp(parser.menuItemValue(0), "LIBERI") == 0);
+    assert(parser.parse("ENCODER_SWITCH 1")); assert(parser.parse("ENCODER_SWITCH 0"));
+    assert(parser.menuEditing());
+    assert(parser.parse("ENCODER_ROTATE NEXT"));
+    assert(strcmp(parser.menuItemValue(0), "LOW/MID/HIGH") == 0);
+    assert(parser.panelSettings().pots[0].mode == PotMode::Zones);
+    assert(parser.panelSettings().pots[1].mode == PotMode::Zones);
+    assert(store.snapshot().pitchZonesActive && store.snapshot().rateZonesActive);
+    assert(parser.parse("PANEL POT 2 MODE CONTINUOUS"));
+    assert(strcmp(parser.menuItemValue(0), "MISTI") == 0);
+    assert(parser.parse("ENCODER_ROTATE NEXT"));
+    assert(strcmp(parser.menuItemValue(0), "LOW/MID/HIGH") == 0);
+    assert(parser.parse("ENCODER_ROTATE NEXT"));
+    assert(strcmp(parser.menuItemValue(0), "LIBERI") == 0);
+    assert(parser.panelSettings().pots[0].mode == PotMode::Continuous);
+    assert(!store.snapshot().pitchZonesActive && !store.snapshot().rateZonesActive);
+    assert(parser.parse("ENCODER_SWITCH 1")); assert(parser.parse("ENCODER_SWITCH 0"));
     assert(!parser.menuEditing());
-    assert(strcmp(parser.menuTitle(), "POT CONTROLS") == 0);
-    assert(strcmp(parser.menuItemKey(0), "POT_1") == 0);
 
+    // From that list a moved pot or a pressed key opens its own page; the key
+    // does not play.
+    assert(parser.parse("POT 3 0.2"));  // Power-on scan: not a gesture.
+    assert(strcmp(parser.menuTitle(), "COMANDI") == 0);
+    assert(parser.parse("POT 3 0.4"));
+    assert(strcmp(parser.menuTitle(), "POT 3 - ECHO LEVEL") == 0);
+    assert(parser.parse("POT 4 0.4"));
+    assert(strcmp(parser.menuTitle(), "POT 3 - ECHO LEVEL") == 0);
+    assert(parser.setPhysicalPad(PerformanceController::kMenuBackButton, true));
+    assert(parser.setPhysicalPad(PerformanceController::kMenuBackButton, false));
+    assert(strcmp(parser.menuTitle(), "COMANDI") == 0);
+    const unsigned activations = store.snapshot().activationSequence;
+    assert(parser.parse("PAD 2 1"));
+    assert(!store.snapshot().trigger && store.snapshot().activationSequence == activations);
+    assert(parser.parse("PAD 2 0"));
+    assert(strcmp(parser.menuTitle(), "TASTO 2") == 0);
+    assert(parser.setPhysicalPad(PerformanceController::kMenuBackButton, true));
+    assert(parser.setPhysicalPad(PerformanceController::kMenuBackButton, false));
+    assert(strcmp(parser.menuTitle(), "COMANDI") == 0);
+    assert(parser.menuIndex() == 0);
+
+    assert(parser.parse("ENCODER_ROTATE NEXT"));
     assert(parser.parse("ENCODER_SWITCH 1"));
     assert(parser.parse("ENCODER_SWITCH 0"));
     assert(strcmp(parser.menuTitle(), "POT 1 - PITCH") == 0);
@@ -416,11 +504,9 @@ void testPanelDisplayState() {
     assert(!parser.menuEditing());
     assert(parser.panelSettings().pots[0].target == PotTarget::Rate);
     back();
-    assert(strcmp(parser.menuTitle(), "POT CONTROLS") == 0);
+    assert(strcmp(parser.menuTitle(), "COMANDI") == 0);
     back();
-    assert(strcmp(parser.menuTitle(), "SETUP") == 0);
-    back();
-    assert(strcmp(parser.menuTitle(), "PERFORMANCE") == 0);
+    assert(strcmp(parser.menuTitle(), "MENU") == 0);
     back();
     assert(strcmp(parser.displayModeName(), "HOME") == 0);
 }
@@ -439,7 +525,7 @@ void testPowerOnPotReading() {
 
     // After a new voice the next turn applies at once and shows its value.
     assert(parser.setPhysicalPot(1, 0.5f));
-    assert(parser.parse("ENCODER_ROTATE NEXT"));
+    stepSound(parser, 1);
     assert(parser.setPhysicalPot(1, 0.95f));
     assert(store.snapshot().classicPitch == ClassicPitch::High);
     assert(strcmp(parser.overlayTitle(), "PITCH") == 0);
@@ -449,6 +535,8 @@ void testExtendedEncoderGestures() {
     ControlStore store;
     CommandParser parser(store);
     assert(padLayout(parser));
+    // The SOUND row walks the selected pad through the one sound list and
+    // wraps; a sound outside it (pad 3, set over serial) steps to the first.
     for (unsigned pad = 1; pad <= 4; ++pad) {
         char command[24];
         snprintf(command, sizeof(command), "PAD_SELECT %u", pad);
@@ -456,15 +544,13 @@ void testExtendedEncoderGestures() {
         const float depth = store.snapshot().lfoDepthOctaves;
         const float tune = store.snapshot().tuneHz;
         const unsigned sequence = store.snapshot().activationSequence;
-        const unsigned count = panelSoundVariantCount(
-            parser.panelSettings().buttons[pad - 1].sound);
-        assert(parser.parse("ENCODER_ROTATE PREV"));
-        assert(parser.padVariant(pad) == count - 1);
-        assert(parser.parse("ENCODER_ROTATE NEXT"));
-        assert(parser.padVariant(pad) == 0);
-        for (unsigned variant = 1; variant <= count; ++variant) {
-            assert(parser.parse("ENCODER_ROTATE NEXT"));
-            assert(parser.padVariant(pad) == variant % count);
+        stepSound(parser, 1);
+        if (pad == 3) assert(strcmp(parser.padVoiceName(3), "SINE 1") == 0);
+        const ButtonConfig first = parser.panelSettings().buttons[pad - 1];
+        for (int step = 0; step < 6; ++step) {
+            stepSound(parser, 1);
+            const ButtonConfig &now = parser.panelSettings().buttons[pad - 1];
+            assert((now.sound == first.sound && now.variant == first.variant) == (step == 5));
             assert(store.snapshot().lfoDepthOctaves == depth);
             assert(store.snapshot().tuneHz == tune);
             assert(store.snapshot().liveTransposeSemitones == 0);
@@ -482,14 +568,15 @@ void testExtendedEncoderGestures() {
     assert(strcmp(parser.overlayTitle(), "LIVE PITCH") == 0);
     assert(parser.parse("PAD 1 0"));
     assert(store.snapshot().liveTransposeSemitones == 0);
+    // With no key held the rotation steps the sound instead.
     assert(parser.parse("ENCODER_ROTATE NEXT"));
-    assert(parser.padVariant(1) == (variant + 1) % panelSoundVariantCount(PanelSound::Classic));
+    assert(strcmp(parser.padVoiceName(1), "TWO TONE") == 0);
 
     // A latched sound is not a physically held button.
     assert(parser.parse("PANEL BUTTON 1 SOUND CLASSIC 0 1"));
     assert(store.snapshot().hold);
     assert(parser.parse("ENCODER_ROTATE NEXT"));
-    assert(parser.padVariant(1) == 1);
+    assert(parser.padVariant(1) == 1 && store.snapshot().liveTransposeSemitones == 0);
 
     // Other sound buttons keep the configured transient pitch gesture.
     assert(parser.parse("PAD 2 1"));
@@ -675,6 +762,88 @@ void testGunshot() {
     state.trigger = true;
     engine->render(state, block, 480);
     assert(blockRms(block, 480) > 100.0f);
+}
+
+void testPotsFollowSound() {
+    // A one-shot has no LFO: its Rate pot sets the Decay instead, and the
+    // knob keeps owning its value across a change of sound.
+    ControlStore store;
+    CommandParser parser(store);
+    assert(parser.setPhysicalPot(2, 0.05f));  // Power-on scan: SLOW.
+    assert(store.snapshot().classicModulation == ClassicModulation::Slow);
+    assert(parser.potConfig(2).target == PotTarget::Rate);
+    assert(parser.parse("PAD 3 1")); assert(parser.parse("PAD 3 0"));
+    assert(store.snapshot().mode == SirenMode::Gunshot);
+    assert(parser.potConfig(2).target == PotTarget::Decay);
+    // Taken from where the pot already is, never below the one-shot default.
+    assert(store.snapshot().decayMs >= PerformanceConfig::kExtendedDecayMs);
+    assert(store.snapshot().decayMs < 150.0f);
+    assert(parser.setPhysicalPot(2, 0.8f));
+    assert(strcmp(parser.overlayTitle(), "DECAY") == 0);
+    assert(store.snapshot().decayMs > 900.0f);
+    assert(store.snapshot().classicModulation == ClassicModulation::Slow);
+    // Back on a siren the same pot is Rate again, at its new position.
+    assert(parser.parse("PAD 1 1")); assert(parser.parse("PAD 1 0"));
+    assert(parser.potConfig(2).target == PotTarget::Rate);
+    assert(store.snapshot().classicModulation == ClassicModulation::Manual);
+    assert(store.snapshot().decayMs == 0.0f);
+
+    // Sonar has three Rate zones: the top of the travel is FAST, not MANUAL.
+    assert(parser.parse("PANEL BUTTON 1 SOUND CLASSIC 2 0"));
+    assert(store.snapshot().mode == SirenMode::Sonar);
+    assert(store.snapshot().classicModulation == ClassicModulation::Fast);
+    assert(parser.setPhysicalPot(2, 0.98f));
+    assert(store.snapshot().classicModulation == ClassicModulation::Fast);
+    assert(parser.setPhysicalPot(2, 0.5f));
+    assert(store.snapshot().classicModulation == ClassicModulation::Medium);
+
+    // Pitch sizes the gunshot instead of doing nothing.
+    int16_t shots[2][480];
+    unsigned index = 0;
+    for (float tune : {330.0f, 1000.0f}) {
+        ControlState state;
+        state.mode = SirenMode::Gunshot;
+        state.decayMs = 120.0f;
+        state.tuneHz = tune;
+        state.echoLevel = 0.0f;
+        state.trigger = true;
+        auto engine = std::make_unique<AudioEngine>();
+        engine->begin();
+        engine->render(state, shots[index++], 480);
+    }
+    assert(memcmp(shots[0], shots[1], sizeof(shots[0])) != 0);
+}
+
+void testSonarIsNeverManual() {
+    // Sonar is its LFO: with Rate on MANUAL, or the MANUAL shape, it keeps
+    // pinging at the last rate instead of going silent.
+    ControlState state;
+    state.mode = SirenMode::Sonar;
+    state.classicModulation = ClassicModulation::Manual;
+    state.rateZonesActive = true;
+    assert(effectiveLfoShape(state) == LfoShape::Classic);
+    state.lfoShape = LfoShape::Manual;
+    assert(effectiveLfoShape(state) == LfoShape::Classic);
+    state.lfoShape = LfoShape::Classic;
+    state.lfoRateHz = 4.0f;
+    state.echoLevel = 0.0f;
+    state.masterVolume = 0.8f;
+    state.hold = true;
+    auto engine = std::make_unique<AudioEngine>();
+    engine->begin();
+    int16_t block[480];
+    int pings = 0;
+    bool sounding = false;
+    for (int i = 0; i < 100; ++i) {  // One second: four cycles.
+        engine->render(state, block, 480);
+        const bool loud = blockRms(block, 480) > 100.0f;
+        if (loud && !sounding) ++pings;
+        sounding = loud;
+    }
+    assert(pings >= 3 && pings <= 5);
+    // The other voices still go manual on that zone.
+    state.mode = SirenMode::Sine1;
+    assert(effectiveLfoShape(state) == LfoShape::Manual);
 }
 
 void testLfoShape() {
@@ -1177,24 +1346,26 @@ void testModeChangeKeepsTail() {
 void testClassicControls() {
     ControlStore store;
     CommandParser parser(store);
-    // BTN1 is the Trigger in the factory layout, not a configurable sound pad.
+    assert(classicKeys(parser));
+    // BTN1 is a Trigger here, not a configurable sound pad.
     assert(!parser.parse("PAD_CONFIG 1 LICKSHOT 0 0"));
-    assert(store.snapshot().mode == SirenMode::Sine1);
-    for (int i = 0; i < 4; ++i) {
-        assert(static_cast<int>(store.snapshot().mode) == i);
-        assert(parser.parse("ENCODER_ROTATE NEXT"));
+    // The Trigger voice walks the one sound list of the panel and wraps.
+    for (SirenMode voice : {SirenMode::Sine1, SirenMode::Sine2, SirenMode::Square,
+                            SirenMode::Sonar, SirenMode::Syndrum, SirenMode::Gunshot}) {
+        assert(store.snapshot().mode == voice);
+        if (voice == SirenMode::Sonar) assert(strcmp(parser.voiceName(), "SONAR") == 0);
+        // The banner names the sound as the keys and the menu do.
+        if (voice == SirenMode::Square) assert(strcmp(parser.voiceName(), "TWO TONE") == 0);
+        if (voice == SirenMode::Syndrum) assert(strcmp(parser.voiceName(), "PING") == 0);
+        stepSound(parser, 1);
         assert(store.snapshot().lfoDepthOctaves == 1.0f);
         assert(fabsf(store.snapshot().tuneHz - PerformanceConfig::kClassicPitchHz[1]) < .001f);
     }
-    // The Trigger voice list continues past the four original voices.
-    assert(store.snapshot().mode == SirenMode::Sonar);
-    assert(strcmp(parser.voiceName(), "SONAR") == 0);
-    assert(parser.parse("ENCODER_ROTATE PREV"));
-    assert(store.snapshot().mode == SirenMode::Square);
-    for (int i = 0; i < 4; ++i) assert(parser.parse("ENCODER_ROTATE PREV"));
+    assert(store.snapshot().mode == SirenMode::Sine1);
+    stepSound(parser, -1);
     assert(store.snapshot().mode == SirenMode::Gunshot);
     assert(store.snapshot().decayMs == PerformanceConfig::kExtendedDecayMs);
-    assert(parser.parse("ENCODER_ROTATE NEXT"));
+    stepSound(parser, 1);
     assert(store.snapshot().mode == SirenMode::Sine1 && store.snapshot().decayMs == 0.0f);
     assert(parser.parse("PAD 1 1"));
     assert(store.snapshot().trigger);
@@ -1224,9 +1395,8 @@ void testClassicControls() {
     assert(strcmp(parser.displayModeName(), "HOME") == 0);
     assert(parser.parse("ENCODER_SWITCH 0"));
     assert(strcmp(parser.displayModeName(), "MENU") == 0);
-    for (int i = 0; i < 3; ++i) assert(parser.parse("ENCODER_ROTATE NEXT"));
     assert(parser.parse("ENCODER_SWITCH 1")); assert(parser.parse("ENCODER_SWITCH 0"));
-    assert(strcmp(parser.menuItemKey(0), "POTS") == 0);
+    assert(strcmp(parser.menuItemKey(1), "POT_1") == 0);
 }
 
 void testClassicCalibration() {
@@ -1307,10 +1477,13 @@ void testConfigurablePanel() {
     assert(factory.pots[0].target == PotTarget::Pitch);
     assert(factory.pots[0].mode == PotMode::Zones);
     assert(factory.pots[1].target == PotTarget::Rate);
-    assert(factory.buttons[0].action == ButtonAction::Trigger);
-    assert(factory.buttons[1].action == ButtonAction::Hold);
-    assert(factory.buttons[2].action == ButtonAction::ModUp);
-    assert(factory.buttons[3].action == ButtonAction::EchoCut);
+    // Three sound pads, then the tempo tap that is Mod Up in MANUAL.
+    for (unsigned i = 0; i < 3; ++i)
+        assert(factory.buttons[i].action == ButtonAction::PlaySound);
+    assert(factory.buttons[0].sound == PanelSound::Classic);
+    assert(factory.buttons[1].sound == PanelSound::TwoTone);
+    assert(factory.buttons[2].sound == PanelSound::Gunshot);
+    assert(factory.buttons[3].action == ButtonAction::ModUp);
 
     // A knob applies at once, also after an external parameter change.
     assert(parser.parse("POT 1 0.5"));
@@ -1415,7 +1588,7 @@ void testConfigurablePanel() {
 
     assert(parser.parse("PANEL RESET_DEFAULTS"));
     assert(parser.panelSettings().pots[0].mode == PotMode::Zones);
-    assert(parser.panelSettings().buttons[3].action == ButtonAction::EchoCut);
+    assert(parser.panelSettings().buttons[3].action == ButtonAction::ModUp);
 
     assert(parser.parse("PANEL BEGIN"));
     assert(parser.parse("PANEL POT 1 TARGET NONE"));
@@ -1832,9 +2005,18 @@ void testPerformanceMenu() {
         }
         click();
     };
-    click(); go("SOUND"); go("SOUND");
+    // TEMPO holds the BPM and both clocks; there is no tap row in the menu.
+    click(); go("TEMPO");
+    assert(strcmp(parser.menuTitle(), "TEMPO") == 0 && parser.menuItemCount() == 4);
+    go("LFO_SYNC"); assert(parser.parse("ENCODER_ROTATE NEXT"));
+    assert(strcmp(parser.menuFooter(), "IL RATE SEGUE IL BPM") == 0);
+    click();
+    assert(store.snapshot().tempo.lfoSync);
+    go("LFO_SYNC"); assert(parser.parse("ENCODER_ROTATE NEXT")); click();
+    assert(!store.snapshot().tempo.lfoSync);
+    go("BACK"); go("SOUND"); go("SOUND");
     assert(parser.parse("ENCODER_ROTATE NEXT")); assert(parser.parse("ENCODER_ROTATE NEXT")); click();
-    assert(store.snapshot().mode == SirenMode::Lickshot);
+    assert(store.snapshot().mode == SirenMode::Square);
     go("BACK"); go("MOD"); go("MODULATION");
     assert(parser.parse("ENCODER_ROTATE NEXT")); click();
     assert(!store.snapshot().modulationEnabled);
@@ -1846,7 +2028,8 @@ void testPerformanceMenu() {
     assert(store.snapshot().decayMs > before);
     assert(parser.parse("PAD 1 1")); assert(parser.parse("PAD 1 0"));
     assert(store.snapshot().decayMs > before);
-    go("SOUND"); assert(parser.parse("ENCODER_ROTATE NEXT")); assert(parser.parse("ENCODER_ROTATE NEXT")); click();
+    go("SOUND"); for (int i = 0; i < 3; ++i) assert(parser.parse("ENCODER_ROTATE NEXT"));
+    click();
     assert(store.snapshot().mode == SirenMode::Gunshot);
     assert(parser.parse("PAD 1 1")); assert(parser.parse("PAD 1 0"));
     assert(store.snapshot().mode == SirenMode::Gunshot);
@@ -1970,12 +2153,13 @@ void testPanelValidationAndCancelledClicks() {
     assert(parser.parse("ENCODER_SWITCH 0"));
     assert(strcmp(parser.displayModeName(), "MENU") == 0);
     // The power-on reading is silent; the next movement shows in the footer.
+    // Until then the footer describes the selected row.
     assert(parser.parse("POT 3 0.5"));
-    assert(strcmp(parser.menuFooter(), "TURN SELECT / PUSH OPEN") == 0);
+    assert(strcmp(parser.menuFooter(), "ASSEGNA POT E TASTI") == 0);
     assert(parser.parse("POT 3 0"));
     assert(strstr(parser.menuFooter(), "ECHO LEVEL") != nullptr);
     assert(parser.parse("ENCODER_ROTATE NEXT"));
-    assert(strcmp(parser.menuFooter(), "TURN SELECT / PUSH OPEN") == 0);
+    assert(strcmp(parser.menuFooter(), "SUONO E SUOI PARAMETRI") == 0);
 }
 
 void testPatchTransactionAndRemoteGates() {
@@ -2031,7 +2215,7 @@ void testPatchTransactionAndRemoteGates() {
     parser.setPersistenceStatus("");
     assert(parser.parse("ENCODER_SWITCH 1"));
     assert(parser.parse("ENCODER_SWITCH 0"));
-    assert(strcmp(parser.menuFooter(), "TURN SELECT / PUSH OPEN") == 0);
+    assert(strcmp(parser.menuFooter(), "ASSEGNA POT E TASTI") == 0);
 }
 
 void testVariantSaveRule() {
@@ -2049,11 +2233,11 @@ void testVariantSaveRule() {
         click();
     };
     unsigned revision = parser.panelSettingsRevision();
-    assert(parser.parse("ENCODER_ROTATE NEXT"));
-    assert(parser.panelSettingsRevision() == revision + 1);
+    stepSound(parser, 1);
+    assert(parser.panelSettingsRevision() > revision);
     click(); go("SOUND");
     revision = parser.panelSettingsRevision();
-    go("VARIANT"); assert(parser.parse("ENCODER_ROTATE NEXT")); click();
+    go("SOUND"); assert(parser.parse("ENCODER_ROTATE NEXT")); click();
     assert(parser.panelSettingsRevision() > revision);
     revision = parser.panelSettingsRevision();
     go("TUNE"); assert(parser.parse("ENCODER_ROTATE NEXT")); click();
@@ -2284,6 +2468,8 @@ int main() {
     testDynamicSweep();
     testSyndrum();
     testGunshot();
+    testPotsFollowSound();
+    testSonarIsNeverManual();
     testLfoShape();
     testLfoReset();
     testNewVoices();

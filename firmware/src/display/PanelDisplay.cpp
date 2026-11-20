@@ -10,8 +10,7 @@
 
 namespace {
 
-// Gold on black, sound system flyer style. Red and green mark state only:
-// red = latched, green = selected pad or shortcut.
+// Gold on black, sound system flyer style. Red marks a latched state only.
 constexpr uint16_t kInk = 0x0000;
 constexpr uint16_t kGold = 0xFDE5;      // 255, 190, 40
 constexpr uint16_t kGoldDim = 0x7AA1;   // 120, 85, 15
@@ -21,7 +20,6 @@ constexpr uint16_t kTrack = 0x41A3;     // 64, 52, 24
 constexpr uint16_t kCream = 0xFF79;     // 250, 236, 200
 constexpr uint16_t kMuted = 0x838B;     // 130, 115, 90
 constexpr uint16_t kRed = 0xE143;       // 230, 40, 30
-constexpr uint16_t kGreen = 0x2DE8;     // 40, 190, 70
 
 constexpr int16_t kWidth = PerformanceController::kDisplayWidth;
 constexpr int16_t kHeight = PerformanceController::kDisplayHeight;
@@ -152,7 +150,7 @@ void PanelDisplay::renderHome(const ControlState &state, bool linked) {
 
 void PanelDisplay::drawPot(unsigned pot, int16_t x, int16_t y,
                            const ControlState &state) {
-    const PotConfig &config = controller_.panelSettings().pots[pot - 1];
+    const PotConfig config = controller_.potConfig(pot);
     const bool focus = overlayActive_ && overlayPot_ == pot;
     const bool unused = config.target == PotTarget::None;
     canvas_->fillRoundRect(x, y, kColumnW, kRowH, kRadius, focus ? kGold : kCell);
@@ -178,12 +176,12 @@ void PanelDisplay::drawPot(unsigned pot, int16_t x, int16_t y,
 void PanelDisplay::drawBar(unsigned pot, int16_t x, int16_t y, int16_t w,
                            const ControlState &state, uint16_t on, uint16_t off) {
     constexpr int16_t h = 4;
-    const PotConfig &config = controller_.panelSettings().pots[pot - 1];
+    const PotConfig config = controller_.potConfig(pot);
     const bool pitch = config.target == PotTarget::Pitch;
     const bool rate = config.target == PotTarget::Rate;
     if (config.mode == PotMode::Zones && (pitch || (rate && !state.tempo.lfoSync))) {
         // One segment per zone, left to right; the current one lit.
-        const int16_t count = pitch ? 3 : 4;
+        const int16_t count = pitch ? 3 : rateZoneCount(state);
         const int16_t zone = pitch ? static_cast<int16_t>(state.classicPitch)
                                    : static_cast<int16_t>(state.classicModulation);
         const int16_t segment = (w - (count - 1) * 3) / count;
@@ -244,56 +242,43 @@ void PanelDisplay::drawBanner(const ControlState &state, bool linked) {
 void PanelDisplay::drawKey(unsigned button, int16_t x, int16_t y,
                            const ControlState &state) {
     const ButtonConfig &config = controller_.panelSettings().buttons[button - 1];
-    const bool pad = config.action == ButtonAction::PlaySound;
     const bool down = controller_.buttonDown(button);
-    const bool shortcut = pad && controller_.encoderPressed();
     char label[24] = "", detail[24] = "";
     bool latched = false;
-    if (shortcut) {
-        // Encoder held: a pad key does its shortcut instead of playing.
-        static const char *shortcuts[] = {"LATCH", "VARIANT -", "VARIANT +", "ECHO CUT"};
-        snprintf(label, sizeof(label), "%s", shortcuts[button - 1]);
-    } else {
-        switch (config.action) {
-            case ButtonAction::PlaySound:
-                snprintf(label, sizeof(label), "%s", controller_.padSoundName(button));
-                snprintf(detail, sizeof(detail), "%s", controller_.padVariantName(button));
-                latched = state.hold && controller_.padHold(button) &&
-                          controller_.currentPad() == button;
+    switch (config.action) {
+        case ButtonAction::PlaySound:
+            snprintf(label, sizeof(label), "%s", controller_.padVoiceName(button));
+            // Red while held on, by the Hold gesture or by its latch.
+            latched = state.hold && controller_.currentPad() == button;
+            break;
+        case ButtonAction::ModUp:
+            // Outside MANUAL a Mod Up key taps the tempo.
+            if (!controller_.modUpTaps()) {
+                snprintf(label, sizeof(label), "MOD UP");
                 break;
-            case ButtonAction::ModUp:
-                // Outside MANUAL a Mod Up key taps the tempo.
-                if (!controller_.modUpTaps()) {
-                    snprintf(label, sizeof(label), "MOD UP");
-                    break;
-                }
-                [[fallthrough]];
-            case ButtonAction::TapTempo:
-                snprintf(label, sizeof(label), "TAP TEMPO");
-                if (state.tempo.known) snprintf(detail, sizeof(detail), "%.0f BPM", state.tempo.bpm);
-                break;
-            case ButtonAction::Hold:
-                snprintf(label, sizeof(label), "HOLD");
-                latched = state.hold;
-                break;
-            case ButtonAction::EchoLoop:
-                snprintf(label, sizeof(label), "ECHO LOOP");
-                latched = state.echoLoop;
-                break;
-            default:
-                snprintf(label, sizeof(label), "%s", controller_.buttonActionNameFor(button));
-                break;
-        }
+            }
+            [[fallthrough]];
+        case ButtonAction::TapTempo:
+            snprintf(label, sizeof(label), "TAP TEMPO");
+            if (state.tempo.known) snprintf(detail, sizeof(detail), "%.0f BPM", state.tempo.bpm);
+            break;
+        case ButtonAction::Hold:
+            snprintf(label, sizeof(label), "HOLD");
+            latched = state.hold;
+            break;
+        case ButtonAction::EchoLoop:
+            snprintf(label, sizeof(label), "ECHO LOOP");
+            latched = state.echoLoop;
+            break;
+        default:
+            snprintf(label, sizeof(label), "%s", controller_.buttonActionNameFor(button));
+            break;
     }
-    const bool unused = config.action == ButtonAction::None && !shortcut;
+    const bool unused = config.action == ButtonAction::None;
     const uint16_t background = down ? kGold : latched ? kRed : kCell;
     const uint16_t color = down ? kInk : latched ? kCream
-                         : shortcut ? kGreen : unused ? kMuted : kGold;
+                         : unused ? kMuted : kGold;
     canvas_->fillRoundRect(x, y, kKeyW, kRowH, kRadius, background);
-    if (pad && !down && !shortcut && controller_.selectedPad() == button) {
-        canvas_->drawRoundRect(x, y, kKeyW, kRowH, kRadius, kGreen);
-        canvas_->drawRoundRect(x + 1, y + 1, kKeyW - 2, kRowH - 2, kRadius - 1, kGreen);
-    }
 
     // One centred line, or two: label and detail, or a label split in two.
     const int16_t width = kKeyW - 4;
@@ -369,11 +354,11 @@ void PanelDisplay::renderMenu() {
 
     // Footer hint, then the key that steps back: BTN4, under the encoder.
     canvas_->fillRect(0, kFooterY, kWidth, kHeight - kFooterY, kCell);
-    const int16_t backW = 18 + textWidth("BACK", kMedium) + 7;
+    const int16_t backW = 18 + textWidth("INDIETRO", kMedium) + 7;
     const int16_t backX = kWidth - 14 - backW, backY = kFooterY + 4, backH = 23;
     canvas_->fillRoundRect(backX, backY, backW, backH, kRadius, kGold);
     arrow(backX + 6, backY + backH / 2 - 4, 8, Arrow::Left, kInk);
-    text(backX + 18, backY + (backH + capHeight(kMedium)) / 2, "BACK", kMedium, kInk);
+    text(backX + 18, backY + (backH + capHeight(kMedium)) / 2, "INDIETRO", kMedium, kInk);
     snprintf(line, sizeof(line), "%s", controller_.menuFooter());
     const GFXfont *font = fitted(line, backX - 28, kLabelFonts, 2);
     text(20, backY + (backH + capHeight(font)) / 2, line, font, kCream);

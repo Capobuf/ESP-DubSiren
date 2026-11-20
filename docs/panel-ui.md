@@ -26,22 +26,23 @@ never produces a false acceptance indication.
 | Control | Factory mapping / command |
 |---|---|
 | POT1..POT6 | `POT <1..6> <0..1>`; C++ applies the stored mapping |
-| BTN1 TRIGGER | `PAD 1 0|1` |
-| BTN2 HOLD | `PAD 2 0|1`; toggle on rising edge |
-| BTN3 MOD UP | `PAD 3 0|1`; TAP TEMPO outside MANUAL |
-| BTN4 ECHO CUT | `PAD 4 0|1` |
-| Encoder turn | `ENCODER_ROTATE PREV|NEXT`; steps the Trigger voice, or the selected pad's variant |
-| Encoder push | `ENCODER_SWITCH 0|1`; opens Menu on completed click/release |
+| BTN1 pad SINE 1 | `PAD 1 0|1` |
+| BTN2 pad TWO TONE | `PAD 2 0|1` |
+| BTN3 pad GUNSHOT | `PAD 3 0|1` |
+| BTN4 TAP TEMPO | `PAD 4 0|1`; MOD UP in MANUAL |
+| Encoder turn | `ENCODER_ROTATE PREV|NEXT`; steps the sound of the last pressed pad, or the Trigger voice; live pitch while a pad is held |
+| Encoder push | `ENCODER_SWITCH 0|1`; opens Menu on completed click/release; with a held pad toggles Hold |
 | Rear Master | `SET MASTER` |
 
 There is one panel layout. The factory mapping is POT1 Pitch (zones), POT2 Rate
-(zones plus MANUAL), POT3-POT6 Echo Level/Time/Feedback/Filter, BTN1 Trigger,
-BTN2 Hold, BTN3 Mod Up and BTN4 Echo Cut; every POT target and BTN action,
-including Play Sound, Echo Loop, Echo Spin and Tap Tempo, is assignable in
-SETUP. Pitch and Rate can use zones or continuous ranges;
+(zones plus MANUAL), POT3-POT6 Echo Level/Time/Feedback/Filter, BTN1-BTN3
+sound pads (SINE 1, TWO TONE, GUNSHOT) and BTN4 Mod Up, which taps the tempo
+outside MANUAL; every POT target and BTN action, including Trigger, Hold, Echo
+Cut, Echo Loop, Echo Spin and Tap Tempo, is assignable in SETUP. Pitch and Rate can use zones or continuous ranges;
 target-specific curves, validation and formatting live in C++. Every pot
 reading applies at once, also after a voice change, a patch recall or a new
-assignment: the knob always owns its value. The first reading of each pot
+assignment: the knob always owns its value. On PING and GUNSHOT a Rate pot
+sets Decay instead and its cell reads DECAY ([controls](controls.md)). The first reading of each pot
 after power-on is taken silently, so a Rate pot sitting at SLOW is SLOW from
 the start. Rear Master is fixed and immediately live; turning it shows MASTER
 and the level in percent as an overlay, except for its first reading after
@@ -54,27 +55,38 @@ last row stands for the four keys. A pot cell shows only
 the assigned function and a horizontal bar with the current position: one
 segment per zone with zoned Pitch and Rate, centred for the bipolar Echo
 Filter. No number is shown in the cell. A key cell shows its action (for a
-Play Sound pad the family and variant), gold while pressed, red while latched
-(Hold, Echo Loop, a latched pad) and outlined green when it is the selected
-pad; Tap Tempo shows the BPM. While the encoder is held, pad keys show their
-shortcut in green. The gold banner, across the whole width, shows the Trigger voice or the pad sound, the live transpose and USB
+Play Sound pad its sound), gold while pressed, red while latched
+(Hold, Echo Loop, a pad held on); Tap Tempo shows the BPM. The gold banner, across the whole width, shows the current sound, named as on its key, the live transpose and USB
 when linked; a moved pot lights its cell and the banner shows the
 controller's title and value for 1100 ms. Persistence and device errors turn
 the banner red. Labels and values come from the C++ controller; Python does
 not implement a second selector or any DSP.
 
-The root menu contains Sound, Mod, Echo, Setup, Tap Tempo and Back. Setup
-contains Pots, Buttons, Encoder, Reset Defaults and Back. Submenus expose only applicable
-fields and the controller supplies the
-page title, ordered rows, labels, values and footer to both renderers. Moving a
-pot while Menu is open updates the footer without replacing the menu. Reset
-Defaults requires an explicit YES confirmation.
+The menu is in Italian: titles, row labels and the footer. The names of
+sounds, pot functions, button actions and LFO shapes stay as Home shows them.
+The root menu, titled MENU, contains COMANDI, SUONO, MODULAZIONE, ECO, TEMPO
+and INDIETRO. COMANDI is one list of every control: VALORI, POT 1-6, TASTO
+1-4, ENCODER, RIPRISTINA and INDIETRO. VALORI is the general switch between
+fixed positions (LOW/MID/HIGH) and a free sweep (LIBERI) for every pot that has
+positions, Pitch and Rate; it reads MISTI when they differ, and each pot keeps
+its own VALORI row on its page. From that list, moving a pot or pressing a
+key (other than BTN4, which is BACK) opens that control's page; the key does
+not play. A pot page has FUNZIONE and, for Pitch and Rate, VALORI (LOW/MID/HIGH
+or SLOW/MID/FAST for fixed positions, LIBERI for a continuous sweep), then the
+value of each position (LOW, MID, HIGH or SLOW, MID, FAST) or MINIMO and MASSIMO. TEMPO holds BPM, LFO A TEMPO and ECO A TEMPO (ON/OFF);
+the tempo is tapped on its key, not in the menu. The footer describes the
+selected row in one line (for example `IL RATE SEGUE IL BPM` or `RATE LIBERO,
+IN HZ` on LFO A TEMPO) and falls back to the navigation hint where the label
+says it all. Submenus expose only applicable fields and
+the controller supplies the page title, ordered rows, labels, values and
+footer. Moving a pot on any other page updates the footer without replacing
+the menu. RIPRISTINA requires an explicit SI confirmation.
 
 While Menu is open, BTN4 (the key under the encoder) is BACK, whatever its
 assigned action: it ends editing like the push (a Reset confirmation is
 cancelled instead), otherwise it does what the page's BACK row does, up to
-Home. It neither plays nor runs its own action; with the encoder held it
-behaves as it does at Home. The menu footer shows it as `◄ BACK`.
+Home. It neither plays nor runs its own action. The menu footer shows it as
+`◄ INDIETRO`.
 
 The pot footer yields to the navigation hint on the next encoder turn/click.
 Target descriptors own range limits, mapping and numeric units/formatting.
@@ -83,20 +95,18 @@ use the controller's title (including Live Pitch) instead of a
 fixed Tune label. Text sizing is presentation only; the C++ content remains
 authoritative.
 
-At Home, free encoder rotation steps the Trigger voice through 18 voices:
-SINE 1, SINE 2, TEST TONE, SQUARE, SONAR, SAW, TRIANGLE, TWO TONE TRIANGLE,
-TWO TONE SQUARE, the five LICKSHOT variants, the three PING variants and
-GUNSHOT. When the selected button is a Play Sound pad, rotation steps that
-pad's variant instead. Depth is edited in the MOD menu or from a pot assigned
+At Home, free encoder rotation steps the sound of the last pressed Play Sound
+pad (or the Trigger voice) through the six sounds of the panel: SINE 1, SINE 2,
+TWO TONE, SONAR, PING and GUNSHOT. No outline marks that pad: its key and the
+banner show the new name. MENU > SUONO does the same. Depth is edited in the MOD menu or from a pot assigned
 to LFO Depth.
 
 Holding a physical Trigger or Play Sound button while turning the encoder
 applies transient live pitch. The factory step is one semitone with a +/-12
 range. It never changes base Tune and resets when the final relevant physical
-button is released. Gunshot reports N/A. Encoder push plus a button is a
-shortcut only when the pressed button is a Play Sound pad (BTN1 pad latch,
-BTN2/BTN3 variant down/up, BTN4 Echo Cut); it then takes precedence over
-playing the pad and over the menu click.
+button is released. Gunshot reports N/A. A Trigger or Play Sound button held
+together with the encoder push, in either order, toggles Hold; that push does
+not open the menu.
 
 The default filter is FLAT. Its centered deadband bypasses wet filtering;
 left/right movement applies the project LP/HP calibration in the core.
@@ -113,7 +123,7 @@ commands keep
 one 25 ms timer per control, flush periodically and send the final position
 on release.
 
-The ESP32 stores schema-4 `PanelSettings` in Preferences/NVS and reports corrupt
+The ESP32 stores schema-5 `PanelSettings` in Preferences/NVS and reports corrupt
 loads and save failures. A layout stored by another schema is discarded at
 load, without migration: factory settings apply. The device is authoritative on
 connection: the PC adopts STATUS and never pushes a mapping or stale local
@@ -160,20 +170,20 @@ On the PCB, U5 is the Adafruit 5393 SPI display.
 
 ## Menu performance (#10)
 
-Il click da Home apre SOUND, MOD, ECHO, SETUP, TAP TEMPO, BACK. Tre righe
-visibili con scroll. SOUND mostra VOICE (la voce del Trigger) oppure, se il
-pulsante selezionato è un pad Play Sound, PAD, FAMILY e VARIANT; seguono per
-ogni voce i parametri applicabili (Pitch, Decay oppure Length/Punch/Pitch Tau,
-Sweep, Tone e Contour) e, per un pad, SAVE PATCH e RECALL PATCH. MOD mostra la
-zona RATE quando Rate è a zone, poi SHAPE (la prima forma è SIREN), MODULATION,
-RATE in Hz solo quando Rate non è a zone, e DEPTH e RETRIGGER solo per le forme
-diverse da SIREN e MANUAL; le voci che non usano il LFO non mostrano queste
-righe. ECHO espone sempre Level/Time/Feedback/Filter/Color e Loop, con Spin e
-Cut come stati momentanei di sola lettura.
+Il click da Home apre COMANDI, SUONO, MODULAZIONE, ECO, TEMPO, INDIETRO. Tre
+righe visibili con scroll. SUONO mostra il suono del Trigger oppure, se il
+pulsante selezionato è un pad Play Sound, TASTO e SUONO; seguono per
+ogni voce i parametri applicabili (PITCH, DECAY, SWEEP e TEMPO SWEEP, TONO,
+CONTOUR e TEMPO CONTOUR) e, per un pad, SALVA e RICHIAMA. MODULAZIONE mostra la
+zona RATE quando Rate è a zone, poi FORMA (la prima forma è SIREN), MODULAZIONE,
+RATE in Hz solo quando Rate non è a zone, e AMPIEZZA e RETRIGGER solo per le
+forme diverse da SIREN e MANUAL; le voci che non usano il LFO non mostrano
+queste righe. ECO espone LIVELLO, RITARDO, FEEDBACK, FILTRO, COLORE e LOOP.
+Con un clock in SYNC, RATE e RITARDO diventano DIVISIONE.
 
-Le famiglie Play Sound sono SIREN, TWO TONE, LICKSHOT, PING, GUNSHOT e TEST
-TONE. I parametri del suono corrente
-restano al nuovo trigger dello stesso pad; cambiare famiglia applica i default.
+I suoni di un pad sono SINE 1, SINE 2, TWO TONE, SONAR, PING e GUNSHOT. I
+parametri del suono corrente
+restano al nuovo trigger dello stesso pad; cambiare suono applica i default.
 Decay TAU indica la costante esponenziale, non il tempo al silenzio; a 0
 seleziona il gate finito di 2 ms in attacco e 3 ms in rilascio.
 Le modifiche sonore sono live e il click termina l'editing (DONE); il salvataggio
@@ -191,8 +201,8 @@ una patch assente o modificata. Il retrigger dello stesso pad conserva gli edit
 live; passando a un altro pad si richiama la sua memoria salvata (se presente).
 Tornando al primo si perdono gli edit non salvati. Nessun autosave sonoro:
 i parametri restano live fino a SAVE PATCH. Famiglia e variante del pad sono
-invece assegnazioni del pulsante e vengono salvate sia dalla Home (encoder,
-scorciatoie BTN) sia dalla pagina SOUND, con la stessa attesa di 2 s prima
+invece assegnazioni del pulsante e vengono salvate sia dalla Home (encoder)
+sia dalla pagina SUONO, con la stessa attesa di 2 s prima
 della scrittura NVS.
 
 La patch contiene voce/variante, Tune, Rate, Depth, Decay, Sweep, parametri
@@ -200,7 +210,7 @@ Lickshot, Tone/Contour, Syndrum, modulazione, retrigger e voicing. Echo e Master
 restano globali; Recall non cancella il delay. Gli eventi audio
 catturano l'intero stato sonoro.
 
-Schema 4: un layout salvato con uno schema precedente viene scartato al
+Schema 5: un layout salvato con uno schema precedente viene scartato al
 caricamento e valgono le impostazioni di fabbrica, con quattro memorie vuote.
 Trigger, Hold, latch attivo, Loop e transpose non fanno parte della patch.
 
@@ -211,6 +221,7 @@ prima di applicarlo. La persistenza NVS fisica resta da verificare al riavvio.
 
 ## Tap tempo
 
-PERFORMANCE include TAP TEMPO; MOD ed ECHO includono CLOCK, BPM e divisione.
+La pagina TEMPO del menu contiene BPM, LFO A TEMPO ed ECO A TEMPO; le divisioni
+stanno in MODULAZIONE ed ECO.
 L'azione pulsante TAP TEMPO è assegnabile in SETUP.
 Semantica, limiti e persistenza: [Tap tempo e sincronizzazione](tempo.md).

@@ -112,18 +112,17 @@ The encoder menu opens on release of an unconsumed click.
 While a physical Trigger or Play Sound button is held, Home rotation applies
 the configured transient live transpose (default one semitone per detent,
 clamped to +/-12); releasing the final relevant button resets it to zero.
-Free rotation steps the selected pad's variant when the selected button is a
-Play Sound pad, and the Trigger voice otherwise.
+Free rotation steps the sound of the last pressed Play Sound pad, and the
+Trigger voice when the selected button is a Trigger.
 
 `PAD`, `ENCODER_SWITCH`, and `ENCODER_ROTATE` are raw front-panel actions
 interpreted by the shared C++ `PerformanceController`. With the factory layout
-PAD 1 is Trigger, PAD 2 toggles Hold on press, PAD 3 is Mod Up, PAD 4 is
-Echo Cut. Home rotation steps the Trigger voice through 18 voices: SINE 1,
-SINE 2, TEST TONE, SQUARE, SONAR, SAW, TRIANGLE, TWO TONE TRIANGLE, TWO TONE
-SQUARE, LICKSHOT (5 variants), PING (3 variants), GUNSHOT; push opens Menu.
-Encoder push plus a button is a shortcut only when the pressed button is a
-Play Sound pad: PAD 1 toggles the selected pad's latch, PAD 2/3 step its
-variant, PAD 4 cuts the echo.
+PAD 1-3 are sound pads (SINE 1, TWO TONE, GUNSHOT) and PAD 4 is Mod Up, which
+taps the tempo outside MANUAL. Home rotation steps the selected pad through
+the six sounds of the panel: SINE 1, SINE 2, TWO TONE, SONAR, PING, GUNSHOT;
+push opens Menu. A held Trigger or Play Sound pad together with the encoder
+push, in either order, toggles Hold. The other families and variants below
+stay reachable only through these commands.
 `PANEL_RESET` releases momentaries and preserves intentional Hold and delay.
 `TRIGGER`, `HOLD`, `MOD_UP`, `MOD_DOWN`, `ECHO_CUT` and `ECHO_SPIN` are kept as
 remote states OR-ed with the panel buttons, so a later panel event does not
@@ -213,7 +212,7 @@ Every packet begins with this packed, 10-byte little-endian header:
 A STATUS payload is UTF-8 JSON. `HELLO` currently returns:
 
 ```json
-{"name":"DubSiren","protocol":2,"sampleRate":48000,"blockSamples":480,"firmware":"0.9.0","i2sReady":true,"panel":{"revision":1,"settings":{"schema":4,"revision":1,"encoder":{"holdTurn":"LIVE_PITCH","step":1,"range":12},"pots":[{"target":"PITCH","mode":"ZONES","min":80.00000,"max":1600.00000,"zones":[330.00000,680.00000,1000.00000]}],"buttons":[{"action":"TRIGGER","sound":"SIREN","variant":0,"latch":false}],"patches":[]},"persistenceStatus":"","display":{"width":320,"height":172,"mode":"HOME","menuIndex":0,"editing":false,"title":"PERFORMANCE","rows":[{"key":"SOUND","label":"SOUND","value":""}],"buttons":["TRIGGER","HOLD","MOD UP","ECHO CUT"],"padSelected":false,"voice":"SINE 1","pitch":"MID","pitchMode":"ZONES","rate":"MID","rateMode":"ZONES","tuneHz":680.0000,"rateHz":3.0000,"liveTranspose":0}}}
+{"name":"DubSiren","protocol":2,"sampleRate":48000,"blockSamples":480,"firmware":"0.9.0","i2sReady":true,"panel":{"revision":1,"settings":{"schema":5,"revision":1,"encoder":{"holdTurn":"LIVE_PITCH","step":1,"range":12},"pots":[{"target":"PITCH","mode":"ZONES","min":80.00000,"max":1600.00000,"zones":[330.00000,680.00000,1000.00000]}],"buttons":[{"action":"TRIGGER","sound":"SIREN","variant":0,"latch":false}],"patches":[]},"persistenceStatus":"","display":{"width":320,"height":172,"mode":"HOME","menuIndex":0,"editing":false,"title":"PERFORMANCE","rows":[{"key":"SOUND","label":"SOUND","value":""}],"buttons":["TRIGGER","HOLD","MOD UP","ECHO CUT"],"padSelected":false,"voice":"SINE 1","pitch":"MID","pitchMode":"ZONES","rate":"MID","rateMode":"ZONES","tuneHz":680.0000,"rateHz":3.0000,"liveTranspose":0}}}
 ```
 
 `COMMAND_RESULT` has a 2–512 byte payload: byte 0 is `1` (accepted) or `0`
@@ -244,7 +243,7 @@ or menu state changes, at most every 200 ms, and at least once per second after
 HELLO while USB has space available; accepted commands no longer trigger an
 immediate STATUS. Failed periodic sends are retried no faster than every 200 ms.
 
-In firmware 0.9.0, `panel.settings` contains the complete schema-4 persistent
+In firmware 0.9.0, `panel.settings` contains the complete schema-5 persistent
 panel configuration and its revision: `encoder`, and `pots`,
 `buttons` and `patches` at top level. A configuration stored by another schema
 is discarded at load and the factory settings apply. `panel.display.rows` contains ordered

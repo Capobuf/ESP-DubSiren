@@ -54,15 +54,29 @@ IRAM_ATTR bool AudioEngine::isTonalMode(SirenMode mode) {
            mode == SirenMode::Saw || mode == SirenMode::Triangle;
 }
 
-IRAM_ATTR float AudioEngine::nextGunshot(float envelopeLevel) {
+IRAM_ATTR float AudioEngine::nextGunshot(float envelopeLevel, float tuneHz) {
     noiseState_ ^= noiseState_ << 13;
     noiseState_ ^= noiseState_ >> 17;
     noiseState_ ^= noiseState_ << 5;
     const float raw = static_cast<float>(noiseState_ & 0x00ffffffu) *
                           (2.0f / 16777215.0f) -
                       1.0f;
-    const float shaped = 0.68f * raw + 0.32f * gunshotFilter_.process(raw);
-    return shaped * envelopeLevel * PerformanceConfig::kGunshotOutputGain;
+    // Pitch sizes the shot: it scales the thump and the darkness of the tail.
+    float size = tuneHz / PerformanceConfig::kGunshotReferenceHz;
+    size = size < 0.5f ? 0.5f : (size > 2.5f ? 2.5f : size);
+    gunshotFilter_.setCutoff(PerformanceConfig::kGunshotFilterHz * size, Config::kSampleRate);
+    // Full-band noise at the hit, low-passed in the tail.
+    const float bright = envelopeLevel * envelopeLevel;
+    const float dark = gunshotFilter_.process(raw);
+    const float noise = dark + (raw - dark) * bright;
+    gunshotPhase_ += size * (PerformanceConfig::kGunshotBodyLowHz +
+                             PerformanceConfig::kGunshotBodySweepHz * bright) / Config::kSampleRate;
+    if (gunshotPhase_ >= 1.0f) gunshotPhase_ -= 1.0f;
+    const float body = sinf(kTwoPi * gunshotPhase_);
+    return fastTanh(PerformanceConfig::kGunshotDrive * envelopeLevel *
+                    (PerformanceConfig::kGunshotNoiseMix * noise +
+                     PerformanceConfig::kGunshotBodyMix * body)) *
+           PerformanceConfig::kGunshotOutputGain;
 }
 
 IRAM_ATTR void AudioEngine::render(const ControlState &controls, int16_t *output, size_t count) {
@@ -163,6 +177,7 @@ IRAM_ATTR void AudioEngine::renderSegment(const ControlState &liveControls, cons
     }
     if (triggerEvent && requestedMode == SirenMode::Gunshot) {
         gunshotEnvelope_.trigger();
+        gunshotPhase_ = 0.0f;
     }
     const bool sonarRestart = requestedMode == SirenMode::Sonar &&
         (activationEdge || !modeInitialized_ || requestedMode != currentMode_);
@@ -313,7 +328,7 @@ IRAM_ATTR void AudioEngine::renderSegment(const ControlState &liveControls, cons
                     controls.syndrumWave, frequency, Config::kSampleRate) *
                       syndrumLevel;
             } else {
-                dry = nextGunshot(gunshotLevel);
+                dry = nextGunshot(gunshotLevel, tune);
             }
             if (modeTransitionRemaining_ > 0) {
                 const float mix = 1.0f -

@@ -102,8 +102,17 @@ constexpr float kSweepPitchOctaves = 2.0f;
 constexpr float kSweepRateOctaves = 3.0f;
 constexpr float kGunshotMinDecayMs = 20.0f;
 constexpr float kGunshotMaxDecayMs = 1500.0f;
+// Gunshot: a noise crack that darkens to kGunshotFilterHz as it decays, over a
+// thump falling from (low + sweep) to low, driven into saturation.
+// These hold at kGunshotReferenceHz (the MID pitch zone) and scale with Pitch.
+constexpr float kGunshotReferenceHz = 680.0f;
 constexpr float kGunshotFilterHz = 1800.0f;
-constexpr float kGunshotOutputGain = 0.42f;
+constexpr float kGunshotBodyLowHz = 45.0f;
+constexpr float kGunshotBodySweepHz = 180.0f;
+constexpr float kGunshotNoiseMix = 0.6f;
+constexpr float kGunshotBodyMix = 0.9f;
+constexpr float kGunshotDrive = 3.0f;
+constexpr float kGunshotOutputGain = 0.75f;
 constexpr unsigned kFilterUpdateSamples = 64;
 
 // Non-resonant HP/LP filters avoid adding gain inside the feedback loop.

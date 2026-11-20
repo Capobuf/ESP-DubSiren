@@ -1,31 +1,31 @@
 # Tap tempo e sincronizzazione
 
 Il controller C++ condiviso da ESP e app Android gestisce la issue #13.
-Nel menu PERFORMANCE, **TAP TEMPO** acquisisce un tap a ogni click completo.
-La stessa azione si può assegnare a qualsiasi pulsante in SETUP → BUTTONS:
+Il tempo si batte su un tasto: l'azione **TAP TEMPO** si assegna a qualsiasi
+pulsante in MENU → COMANDI e
 acquisisce solo la pressione, non il rilascio né la ripetizione di uno stato
-già premuto. Anche un pulsante MOD UP (BTN3 di fabbrica) batte il tempo
+già premuto. Anche un pulsante MOD UP (BTN4 di fabbrica) batte il tempo
 quando la forma effettiva del LFO non è MANUAL: fa MOD UP solo in MANUAL, e il
 display mostra sul tasto la funzione del momento.
 
 Il tap serve ad agganciare il riddim: quando un tap acquisisce il tempo e
 l'echo è in FREE, l'echo passa in SYNC alla sua divisione (1/4 di fabbrica).
-Il LFO resta come è: entra in SYNC solo dal menu MOD.
+Il LFO resta come è: entra in SYNC solo dalla pagina TEMPO del menu.
 
 Due tap validi definiscono il tempo; i successivi usano la media degli ultimi
 quattro intervalli. Sono ammessi intervalli da 200 a 2000 ms (300–30 BPM).
 Un tap prima di 200 ms mostra `TOO FAST - IGNORED` e non sposta il riferimento.
 Dopo più di 2000 ms parte una nuova sequenza con `TAP AGAIN`: il tempo audio
 precedente resta attivo fino al secondo tap valido. Nessuna quantizzazione
-automatica a BPM interi. MOD ed ECHO permettono anche di impostare BPM
+automatica a BPM interi. La pagina TEMPO permette anche di impostare BPM
 manualmente, da 30 a 300; questa operazione azzera la sequenza di tap.
 Il valore iniziale proposto per l'editing è 120 BPM, ma non è acquisito finché
 non viene regolato, confermato nel menu o ricevuto tramite due tap.
 
 ## FREE e SYNC
 
-MOD ed ECHO hanno ciascuno CLOCK = FREE/SYNC e condividono il BPM.
-In SYNC compare DIVISION; i pot assegnati a RATE/ECHO TIME selezionano le
+La pagina TEMPO ha LFO A TEMPO ed ECO A TEMPO, ciascuno ON/OFF, e un solo BPM.
+In SYNC compare DIVISIONE in MODULAZIONE o in ECO; i pot assegnati a RATE/ECHO TIME selezionano le
 stesse quattro zone, usando l'isteresi già presente nel controller.
 La sequenza delle zone è 1/4, 1/8, 1/8D, 1/8T.
 

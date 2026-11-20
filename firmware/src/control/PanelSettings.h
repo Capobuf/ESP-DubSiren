@@ -77,7 +77,7 @@ struct SoundPatch {
 
 // One panel layout: older stored schemas are discarded, not migrated.
 struct PanelSettings {
-    static constexpr uint16_t kSchemaVersion = 4;
+    static constexpr uint16_t kSchemaVersion = 5;
     uint16_t schemaVersion = kSchemaVersion;
     EncoderHoldAction encoderHoldAction = EncoderHoldAction::LivePitch;
     uint8_t encoderStepSemitones = 1;
@@ -274,10 +274,12 @@ inline PanelSettings factoryPanelSettings() {
     settings.pots[3] = continuousPot(PotTarget::EchoTime);
     settings.pots[4] = continuousPot(PotTarget::EchoFeedback);
     settings.pots[5] = continuousPot(PotTarget::EchoFilter);
-    settings.buttons[0].action = ButtonAction::Trigger;
-    settings.buttons[1].action = ButtonAction::Hold;
-    settings.buttons[2].action = ButtonAction::ModUp;
-    settings.buttons[3].action = ButtonAction::EchoCut;
+    // Three sound pads; the last key taps the tempo, Mod Up in MANUAL.
+    for (unsigned index = 0; index < 3; ++index)
+        settings.buttons[index].action = ButtonAction::PlaySound;
+    settings.buttons[1].sound = PanelSound::TwoTone;
+    settings.buttons[2].sound = PanelSound::Gunshot;
+    settings.buttons[3].action = ButtonAction::ModUp;
     return settings;
 }
 

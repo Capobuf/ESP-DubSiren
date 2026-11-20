@@ -1,9 +1,9 @@
 # Controls
 
 The firmware and the Android app share one panel layout with
-options. The factory layout plays four basic voices (SINE 1, SINE 2, TEST TONE,
-SQUARE) with zoned Pitch and Rate; every other voice, pot target, button action
-and sound option is reached from the encoder and its menu.
+options. The factory layout has three sound pads (SINE 1, TWO TONE, GUNSHOT)
+and a tempo tap, with zoned Pitch and Rate; the other sounds, pot targets,
+button actions and sound options are reached from the encoder and its menu.
 
 ## Functional behavior and calibration
 
@@ -32,7 +32,7 @@ same 120 ms constant.
 The other shapes (TRIANGLE, SQUARE, SAW UP, SAW DOWN, ASYM UP, ASYM DOWN,
 PULSE 25, PULSE 75) modulate the pitch symmetrically by Depth (0-2 octaves),
 honour Retrigger and turn Mod Down into a -1 octave bend. A MOD UP button taps
-the tempo outside MANUAL (see BTN3 below); the +1 octave bend remains for
+the tempo outside MANUAL (see BTN4 below); the +1 octave bend remains for
 the `MOD_UP` command.
 
 These are this project's implemented behaviors and tuning values. No matched
@@ -62,15 +62,15 @@ Musical calibration, voice defaults and DSP safety constants live in
 | POT4 | ECHO TIME: 50-1000 ms, logarithmic travel (midpoint about 224 ms) |
 | POT5 | ECHO FEEDBACK: 0-1.05, protected feedback |
 | POT6 | ECHO FILTER: LP <- FLAT -> HP |
-| BTN1 | momentary TRIGGER |
-| BTN2 | HOLD toggle on press; release and keyboard repeat do not toggle |
-| BTN3 | MOD UP in MANUAL: pitch up while held and slow fall after release. With any other shape it is TAP TEMPO: a free echo follows the tapped tempo ([tempo](tempo.md)) |
-| BTN4 | momentary ECHO CUT; BACK while the menu is open |
-| Encoder | previous/next Trigger voice, one step per detent, wraps |
-| Encoder push | MENU |
+| BTN1 | sound pad, SINE 1 |
+| BTN2 | sound pad, TWO TONE |
+| BTN3 | sound pad, GUNSHOT |
+| BTN4 | TAP TEMPO: a free echo follows the tapped tempo ([tempo](tempo.md)). In MANUAL it is MOD UP: pitch up while held and slow fall after release. BACK while the menu is open |
+| Encoder | previous/next sound of the last pressed pad, one step per detent, wraps; live pitch while a pad is held |
+| Encoder push | MENU; together with a held pad it toggles HOLD |
 | Rear MASTER | final output gain |
 
-SETUP reassigns every pot and button. A pot takes NONE, PITCH, RATE, LFO DEPTH,
+MENU > COMANDI reassigns every pot and button. A pot takes NONE, PITCH, RATE, LFO DEPTH,
 ECHO LEVEL, ECHO TIME, ECHO FEEDBACK, ECHO FILTER, DECAY, SWEEP AMOUNT or SWEEP
 TIME; Pitch and Rate choose between ZONES and CONTINUOUS (factory continuous
 ranges 80-1600 Hz and 0.15-20 Hz). A button takes NONE, TRIGGER, PLAY SOUND,
@@ -117,8 +117,9 @@ off (modulation on).
   gaps even while HOLD is active. Pitch modulation still applies (the fixed
   sweep with SIREN, DEPTH with the other shapes); disabling pitch modulation
   keeps the amplitude pulses. A new trigger, Hold activation or selection of
-  Sonar starts the pulse cycle immediately, even with RETRIGGER off. MANUAL
-  produces a ping on each MOD UP press. DECAY shapes the outer release after
+  Sonar starts the pulse cycle immediately, even with RETRIGGER off. Sonar is
+  never manual: a zoned Rate pot has three zones for it, SLOW, MID and FAST
+  across the whole travel, and a stored MANUAL shape plays as SIREN. DECAY shapes the outer release after
   Trigger/Hold ends; echo can fill the gaps, so use ECHO LEVEL zero to hear
   the dry ping pattern.
 - TEST TONE: fixed base-pitch sine beep; half-cycle automatic gate with the
@@ -133,6 +134,18 @@ off (modulation on).
   DC blocking and the normal pitch/modulation/gate/echo chain.
 - LICKSHOT, PING (Syndrum) and GUNSHOT are described below; Ping and Gunshot
   are one-shots that respond only to a trigger, not to Hold.
+- GUNSHOT: white noise that is full-band at the hit and darkens to a 1.8 kHz
+  low-pass as it decays, over a sine thump falling from 225 to 45 Hz, both
+  driven into saturation. DECAY (20-1500 ms) sets the one envelope that
+  drives level, brightness and the fall of the thump. PITCH sizes the shot:
+  those frequencies hold at 680 Hz and scale with it, from 0.5x to 2.5x.
+  Tuned by code only: it still needs listening.
+
+On the one-shots (PING and GUNSHOT) a pot assigned to RATE has no LFO to
+drive, so it sets DECAY instead, from 120 to 1500 ms, and its cell at Home
+reads DECAY. The assignment itself does not change. When the sound changes,
+such a pot applies its current position to its new function, so the knob
+always owns its value; a recalled patch keeps its own values.
 
 MANUAL does not advance the automatic LFO.
 Stored pot zones keep earlier pitch and rate values until Reset Defaults.
@@ -161,22 +174,22 @@ safety limiter. Echo never controls the dry gate.
 
 ## Voices, pads and encoder
 
-At Home the encoder steps the Trigger voice through 18 voices, in this order:
-SINE 1, SINE 2, TEST TONE, SQUARE, SONAR, SAW, TRIANGLE, TWO TONE TRIANGLE,
-TWO TONE SQUARE, LICKSHOT (SAW DOWN, ASYM DOWN, SHOT, ROLL, HORN), PING (SINE,
-TRIANGLE, SQUARE) and GUNSHOT. The same list is the VOICE row of the SOUND
-menu. Selecting a voice applies its defaults: the sustained voices get the
-SIREN shape and DECAY 0, the Two Tone voices their own shape with Retrigger on,
-the one-shots a 120 ms DECAY.
+The panel has one list of six sounds, in this order: SINE 1, SINE 2, TWO
+TONE, SONAR, PING and GUNSHOT. Selecting a sound applies its defaults: the
+sustained ones get the SIREN shape and DECAY 0, Two Tone also Retrigger on,
+the one-shots a 120 ms DECAY. The other families and variants (Saw, Triangle,
+Test Tone, Lickshot, the Two Tone and Ping variants) remain in the DSP and are
+reachable only over the serial protocol.
 
-A button assigned to PLAY SOUND is a sound pad with its own family, variant and
-optional latch: SIREN (Sine 1/Sine 2/Sonar/Saw/Triangle), TWO TONE (Siren/
-Triangle/Square), LICKSHOT, PING (Syndrum), GUNSHOT, TEST TONE. Last pad wins.
-While the selected button is a pad, free encoder rotation cycles that pad's
-variant instead of the Trigger voice, and encoder push plus a pad button is a
-shortcut: BTN1 toggles the selected pad's latch, BTN2/BTN3 step its variant
-down/up, BTN4 cuts the echo. The shortcuts apply only when the pressed button
-is a pad.
+A button assigned to PLAY SOUND is a sound pad with its own sound and optional
+latch. Last pad wins. At Home, free encoder rotation steps the sound of the
+last pressed pad through the list, and MENU > SUONO does the same. A button
+assigned to TRIGGER plays the Trigger voice, stepped the same two ways.
+
+Holding a Trigger or Play Sound button and pushing the encoder, in either
+order, toggles HOLD: the sound stays on after the button is released and the
+pad's key turns red. The same gesture releases it. The push then does not open
+the menu. A button assigned to HOLD toggles the same state.
 
 Holding a Trigger or Play Sound button while turning the encoder is always the
 live-pitch gesture. Depth is edited in the MOD menu or assigned to a pot.
