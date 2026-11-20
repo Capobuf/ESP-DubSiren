@@ -124,7 +124,8 @@ void PanelDisplay::update(bool linked) {
     lastRefreshMs_ = now;
     const uint32_t renderStart = micros();
     canvas_->fillScreen(kInk);
-    if (mode == PerformanceController::DisplayMode::Menu) renderMenu();
+    if (controller_.controlsMap()) renderControlsMap(state);
+    else if (mode == PerformanceController::DisplayMode::Menu) renderMenu();
     else renderHome(state, linked);
     lcd_.send(canvas_->getBuffer());
     lastRenderUs_ = micros() - renderStart;
@@ -140,34 +141,70 @@ void PanelDisplay::update(bool linked) {
 
 void PanelDisplay::renderHome(const ControlState &state, bool linked) {
     for (unsigned column = 0; column < 3; ++column) {
-        drawPot(column + 1, kColumnX[column], kTopY, state);
-        drawPot(column + 4, kColumnX[column], kBottomY, state);
+        drawPot(column + 1, kColumnX[column], kTopY, state, overlayActive_ && overlayPot_ == column + 1);
+        drawPot(column + 4, kColumnX[column], kBottomY, state, overlayActive_ && overlayPot_ == column + 4);
     }
     drawBanner(state, linked);
     for (unsigned button = 1; button <= 4; ++button)
         drawKey(button, kKeyX[button - 1], kKeyY, state);
 }
 
+// MENU > COMANDI: the Home map, the selected cell lit, the banner explaining it.
+void PanelDisplay::renderControlsMap(const ControlState &state) {
+    const unsigned selected = controller_.mapControl();
+    const bool choosing = controller_.menuEditing();
+    for (unsigned column = 0; column < 3; ++column) {
+        drawPot(column + 1, kColumnX[column], kTopY, state, selected == column + 1, choosing);
+        drawPot(column + 4, kColumnX[column], kBottomY, state, selected == column + 4, choosing);
+    }
+    for (unsigned button = 1; button <= 4; ++button)
+        drawKey(button, kKeyX[button - 1], kKeyY, state, selected == button + 6, choosing);
+
+    // Middle row: what the selected control does, then ESCI where the
+    // encoder sits on the panel, at the right of the display.
+    constexpr int16_t exitW = 64, infoW = kBannerW - exitW - 4, exitX = kBannerX + infoW + 4;
+    const int16_t y = kMiddleY, width = infoW - 16;
+    char line[48];
+    canvas_->fillRoundRect(kBannerX, y, infoW, kRowH, kRadius, kGold);
+    snprintf(line, sizeof(line), "%s", controller_.menuTitle());
+    text(kBannerX + 8, y + 13, line, fitted(line, width, &kSmall, 1), kInk);
+    snprintf(line, sizeof(line), "%s", controller_.menuFooter());
+    text(kBannerX + 8, y + 34, line, fitted(line, width, kLabelFonts, 2), kInk);
+
+    const bool exit = selected == 11;
+    canvas_->fillRoundRect(exitX, y, exitW, kRowH, kRadius, exit ? kGold : kCell);
+    text(exitX + (exitW - textWidth("ESCI", kMedium)) / 2, y + (kRowH + capHeight(kMedium)) / 2,
+         "ESCI", kMedium, exit ? kInk : kGold);
+}
+
 void PanelDisplay::drawPot(unsigned pot, int16_t x, int16_t y,
-                           const ControlState &state) {
-    const PotConfig config = controller_.potConfig(pot);
-    const bool focus = overlayActive_ && overlayPot_ == pot;
+                           const ControlState &state, bool focus, bool choosing) {
+    // While its function is chosen the cell shows the stored assignment.
+    const PotConfig config = focus && choosing ? controller_.panelSettings().pots[pot - 1]
+                                               : controller_.potConfig(pot);
+    choosing = focus && choosing;
     const bool unused = config.target == PotTarget::None;
     canvas_->fillRoundRect(x, y, kColumnW, kRowH, kRadius, focus ? kGold : kCell);
 
     // Function only: the value appears in the banner while the pot moves.
     // A name too long for one line puts its first word small above the rest.
     const uint16_t color = focus ? kInk : unused ? kMuted : kGold;
-    const int16_t width = kColumnW - 12;
+    // Being chosen: the turn arrows at the sides, the name between them.
+    const int16_t inset = choosing ? 11 : 0;
+    const int16_t width = kColumnW - 12 - 2 * inset;
+    if (choosing) {
+        arrow(x + 3, y + kRowH / 2 - 4, 8, Arrow::Left, kInk);
+        arrow(x + kColumnW - 11, y + kRowH / 2 - 4, 8, Arrow::Right, kInk);
+    }
     char label[24], rest[24];
     snprintf(label, sizeof(label), "%s", potTargetName(config.target));
     if (textWidth(label, kMedium) <= width || !splitFirstWord(label, rest)) {
-        text(x + 6, y + 23, label, fitted(label, width, kLabelFonts, 2), color);
+        text(x + 6 + inset, y + 23, label, fitted(label, width, kLabelFonts, 2), color);
     } else {
-        text(x + 6, y + 12, label, fitted(label, width, &kSmall, 1), color);
-        text(x + 6, y + 28, rest, fitted(rest, width, kLabelFonts, 2), color);
+        text(x + 6 + inset, y + 12, label, fitted(label, width, &kSmall, 1), color);
+        text(x + 6 + inset, y + 28, rest, fitted(rest, width, kLabelFonts, 2), color);
     }
-    if (unused) return;
+    if (unused || choosing) return;
 
     drawBar(pot, x + 6, y + kRowH - 7, kColumnW - 12, state, focus ? kInk : kGold,
             focus ? kGoldDeep : kTrack);
@@ -231,21 +268,19 @@ void PanelDisplay::drawBanner(const ControlState &state, bool linked) {
     const GFXfont *font = fitted(line, width, kNameFonts, 3);
     text(kBannerX + (kBannerW - textWidth(line, font)) / 2,
          y + (kRowH + capHeight(font)) / 2, line, font, kInk);
-    if (state.liveTransposeSemitones != 0) {
-        snprintf(line, sizeof(line), "%+d ST", state.liveTransposeSemitones);
-        text(kBannerX + 6, y + kRowH - 4, line, kSmall, kInk);
-    }
     if (linked) text(kBannerX + kBannerW - 6 - textWidth("USB", kSmall), y + kRowH - 4,
                      "USB", kSmall, kInk);
 }
 
 void PanelDisplay::drawKey(unsigned button, int16_t x, int16_t y,
-                           const ControlState &state) {
+                           const ControlState &state, bool focus, bool choosing) {
     const ButtonConfig &config = controller_.panelSettings().buttons[button - 1];
-    const bool down = controller_.buttonDown(button);
+    const bool down = controller_.buttonDown(button) || focus;
+    choosing = focus && choosing;
     char label[24] = "", detail[24] = "";
     bool latched = false;
-    switch (config.action) {
+    // While its action is chosen the key shows the action, not its sound.
+    switch (choosing ? ButtonAction::Count : config.action) {
         case ButtonAction::PlaySound:
             snprintf(label, sizeof(label), "%s", controller_.padVoiceName(button));
             // Red while held on, by the Hold gesture or by its latch.
@@ -274,26 +309,46 @@ void PanelDisplay::drawKey(unsigned button, int16_t x, int16_t y,
             snprintf(label, sizeof(label), "%s", controller_.buttonActionNameFor(button));
             break;
     }
+    // Locked on by the Hold gesture: red, with a padlock before the name.
+    const bool locked = !choosing && controller_.lockedButton() == button;
+    latched |= locked;
     const bool unused = config.action == ButtonAction::None;
     const uint16_t background = down ? kGold : latched ? kRed : kCell;
     const uint16_t color = down ? kInk : latched ? kCream
                          : unused ? kMuted : kGold;
     canvas_->fillRoundRect(x, y, kKeyW, kRowH, kRadius, background);
+    const int16_t inset = choosing ? 10 : 0;
+    if (choosing) {
+        arrow(x + 2, y + kRowH / 2 - 4, 8, Arrow::Left, kInk);
+        arrow(x + kKeyW - 10, y + kRowH / 2 - 4, 8, Arrow::Right, kInk);
+    }
+    const int16_t lockW = locked ? 13 : 0;
+    if (locked) padlock(x + 5, y + (kRowH - 12) / 2, color, background);
 
-    // One centred line, or two: label and detail, or a label split in two.
-    const int16_t width = kKeyW - 4;
+    // One centred line, or two: label and detail, or a label split in two,
+    // centred in what the arrows or the padlock leave.
+    const int16_t left = x + lockW, room = kKeyW - lockW;
+    const int16_t width = room - 4 - 2 * inset;
     if (!detail[0] && textWidth(label, kMedium) > width) splitFirstWord(label, detail);
     if (!detail[0]) {
         const GFXfont *font = fitted(label, width, kLabelFonts, 2);
-        text(x + (kKeyW - textWidth(label, font)) / 2, y + (kRowH + capHeight(font)) / 2,
+        text(left + (room - textWidth(label, font)) / 2, y + (kRowH + capHeight(font)) / 2,
              label, font, color);
         return;
     }
     const GFXfont *font = fitted(label, width, kLabelFonts, 2);
-    text(x + (kKeyW - textWidth(label, font)) / 2, y + 18, label, font, color);
+    text(left + (room - textWidth(label, font)) / 2, y + 18, label, font, color);
     font = fitted(detail, width, kLabelFonts, 2);
-    text(x + (kKeyW - textWidth(detail, font)) / 2, y + 35, detail, font,
+    text(left + (room - textWidth(detail, font)) / 2, y + 35, detail, font,
          down ? kInk : latched ? kCream : color);
+}
+
+void PanelDisplay::padlock(int16_t x, int16_t y, uint16_t color, uint16_t background) {
+    // 9 x 12 px: a two-pixel shackle over the body, a keyhole in the body.
+    canvas_->drawRoundRect(x + 1, y, 7, 9, 3, color);
+    canvas_->drawRoundRect(x + 2, y + 1, 5, 8, 2, color);
+    canvas_->fillRoundRect(x, y + 5, 9, 7, 1, color);
+    canvas_->fillRect(x + 4, y + 7, 1, 3, background);
 }
 
 // ---- Menu --------------------------------------------------------------
@@ -431,7 +486,6 @@ bool PanelDisplay::displayedStateChanged(const ControlState &before,
         before.rateZonesActive != after.rateZonesActive ||
         before.hold != after.hold || before.echoCut != after.echoCut ||
         before.echoSpin != after.echoSpin || before.echoLoop != after.echoLoop ||
-        before.liveTransposeSemitones != after.liveTransposeSemitones ||
         differs(before.tuneHz, after.tuneHz) || differs(before.lfoRateHz, after.lfoRateHz) ||
         differs(before.lfoDepthOctaves, after.lfoDepthOctaves) ||
         differs(before.decayMs, after.decayMs) || differs(before.sweepAmount, after.sweepAmount) ||

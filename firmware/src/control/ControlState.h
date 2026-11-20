@@ -86,7 +86,6 @@ struct ControlState : SoundState {
     bool hold = false;
     bool modUp = false;
     bool modDown = false;
-    int8_t liveTransposeSemitones = 0;
     float delayMs = 360.0f;
     float feedback = 0.62f;
     float echoLevel = 0.45f;

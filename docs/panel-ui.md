@@ -30,8 +30,8 @@ never produces a false acceptance indication.
 | BTN2 pad TWO TONE | `PAD 2 0|1` |
 | BTN3 pad GUNSHOT | `PAD 3 0|1` |
 | BTN4 TAP TEMPO | `PAD 4 0|1`; MOD UP in MANUAL |
-| Encoder turn | `ENCODER_ROTATE PREV|NEXT`; steps the sound of the last pressed pad, or the Trigger voice; live pitch while a pad is held |
-| Encoder push | `ENCODER_SWITCH 0|1`; opens Menu on completed click/release; with a held pad toggles Hold |
+| Encoder turn | `ENCODER_ROTATE PREV|NEXT`; steps the sound of the last pressed pad, or the Trigger voice; the up/down lever while a pad is held |
+| Encoder push | `ENCODER_SWITCH 0|1`; opens Menu on completed click/release; with a held pad locks Hold, while locked a click unlocks |
 | Rear Master | `SET MASTER` |
 
 There is one panel layout. The factory mapping is POT1 Pitch (zones), POT2 Rate
@@ -56,7 +56,7 @@ the assigned function and a horizontal bar with the current position: one
 segment per zone with zoned Pitch and Rate, centred for the bipolar Echo
 Filter. No number is shown in the cell. A key cell shows its action (for a
 Play Sound pad its sound), gold while pressed, red while latched
-(Hold, Echo Loop, a pad held on); Tap Tempo shows the BPM. The gold banner, across the whole width, shows the current sound, named as on its key, the live transpose and USB
+(Hold, Echo Loop, a pad held on); Tap Tempo shows the BPM. The gold banner, across the whole width, shows the current sound, named as on its key, and USB
 when linked; a moved pot lights its cell and the banner shows the
 controller's title and value for 1100 ms. Persistence and device errors turn
 the banner red. Labels and values come from the C++ controller; Python does
@@ -64,20 +64,34 @@ not implement a second selector or any DSP.
 
 The menu is in Italian: titles, row labels and the footer. The names of
 sounds, pot functions, button actions and LFO shapes stay as Home shows them.
-The root menu, titled MENU, contains COMANDI, SUONO, MODULAZIONE, ECO, TEMPO
-and INDIETRO. COMANDI is one list of every control: VALORI, POT 1-6, TASTO
-1-4, ENCODER, RIPRISTINA and INDIETRO. VALORI is the general switch between
-fixed positions (LOW/MID/HIGH) and a free sweep (LIBERI) for every pot that has
-positions, Pitch and Rate; it reads MISTI when they differ, and each pot keeps
-its own VALORI row on its page. From that list, moving a pot or pressing a
-key (other than BTN4, which is BACK) opens that control's page; the key does
-not play. A pot page has FUNZIONE and, for Pitch and Rate, VALORI (LOW/MID/HIGH
-or SLOW/MID/FAST for fixed positions, LIBERI for a continuous sweep), then the
-value of each position (LOW, MID, HIGH or SLOW, MID, FAST) or MINIMO and MASSIMO. TEMPO holds BPM, LFO A TEMPO and ECO A TEMPO (ON/OFF);
+The root menu, titled MENU, contains COMANDI, SUONO, MODULAZIONE, ECO, TEMPO,
+ALTRO and INDIETRO. COMANDI is drawn as the Home map instead of a list: the six pot
+cells and the four key cells. The middle row splits in two: about 80% is a
+gold box with the selected control and what it does (`POT 3 - ECHO LEVEL`
+above, `VOLUME DELL'ECO` below), the rest is ESCI, where the encoder sits at
+the right of the display.
+Moving a pot or pressing a key (other than BTN4, which is BACK) selects its
+cell; the key does not play and a pot's power-on scan selects nothing. The
+encoder steps through POT 1-6, TASTO 1-4 and ESCI, which returns straight to
+Home (settings are saved anyway); BTN4 steps back to MENU instead. Pushing on a pot or key
+cell chooses its function or action in the cell itself, between turn arrows,
+and the banner explains each choice as it comes. A second push keeps it and
+opens its options, when it has any: a pot that is not NONE, a key that plays
+its own sound; BACK keeps it and stays on the map. ALTRO holds what has no
+control on the panel: VALORI POT, RIPRISTINA and INDIETRO. VALORI POT is the general
+switch between fixed positions (LOW/MID/HIGH) and a free sweep (LIBERI) for
+every pot that has positions, Pitch and Rate; it reads MISTI when they differ,
+and each pot keeps its own VALORI row on its page. A pot page has, for Pitch
+and Rate, VALORI (LOW/MID/HIGH or SLOW/MID/FAST for fixed positions, LIBERI
+for a continuous sweep), then the value of each position (LOW, MID, HIGH or
+SLOW, MID, FAST) or MINIMO and MASSIMO. A key page has SUONO and, where the
+sound allows it, LATCH. BACK from a page returns to its cell on the map. TEMPO holds BPM, LFO A TEMPO and ECO A TEMPO (ON/OFF);
 the tempo is tapped on its key, not in the menu. The footer describes the
 selected row in one line (for example `IL RATE SEGUE IL BPM` or `RATE LIBERO,
 IN HZ` on LFO A TEMPO) and falls back to the navigation hint where the label
-says it all. Submenus expose only applicable fields and
+says it all. While a choice is changed it describes that choice: each LFO
+shape (`SALE PIANO, CADE DI COLPO` for SIREN), each sound of SUONO, each pot
+function and key action on the map. Submenus expose only applicable fields and
 the controller supplies the page title, ordered rows, labels, values and
 footer. Moving a pot on any other page updates the footer without replacing
 the menu. RIPRISTINA requires an explicit SI confirmation.
@@ -91,7 +105,7 @@ Home. It neither plays nor runs its own action. The menu footer shows it as
 The pot footer yields to the navigation hint on the next encoder turn/click.
 Target descriptors own range limits, mapping and numeric units/formatting.
 Both renderers fit long text within the safe width; firmware overlays
-use the controller's title (including Live Pitch) instead of a
+use the controller's title (including LEVA and HOLD) instead of a
 fixed Tune label. Text sizing is presentation only; the C++ content remains
 authoritative.
 
@@ -101,12 +115,23 @@ TWO TONE, SONAR, PING and GUNSHOT. No outline marks that pad: its key and the
 banner show the new name. MENU > SUONO does the same. Depth is edited in the MOD menu or from a pot assigned
 to LFO Depth.
 
-Holding a physical Trigger or Play Sound button while turning the encoder
-applies transient live pitch. The factory step is one semitone with a +/-12
-range. It never changes base Tune and resets when the final relevant physical
-button is released. Gunshot reports N/A. A Trigger or Play Sound button held
-together with the encoder push, in either order, toggles Hold; that push does
-not open the menu.
+Holding a Trigger or Play Sound button while turning the encoder moves a
+three-position lever, DOWN / CENTRE / UP, one detent per position; it springs
+back to the centre when the last playing key is released. Right raises, left
+lowers, with every shape: in MANUAL it is MOD UP / MOD DOWN, with SIREN and the
+other shapes a one-octave bend. The banner shows LEVA and MOD UP, MOD DOWN,
++1 OTTAVA, -1 OTTAVA or CENTRO. PING and GUNSHOT have no bend: N/A. It never
+changes base Tune.
+
+Holding a Trigger or Play Sound button and pushing the encoder, in either
+order, locks the sound on (HOLD): it stays on after the button is released,
+and that key turns red with a padlock before its name; the banner shows HOLD
+BLOCCATO. One press of the locked key, or one encoder click, unlocks it
+(SBLOCCATO) and does nothing else: the key does not play again and the click
+does not open the menu. Pressing another playing key while locked plays its
+sound and moves the lock to it. The push of the gesture never opens the menu.
+A button assigned to HOLD toggles the same state; it turns red itself, with no
+padlock on a sound key, and an encoder click releases it too.
 
 The default filter is FLAT. Its centered deadband bypasses wet filtering;
 left/right movement applies the project LP/HP calibration in the core.
@@ -123,12 +148,12 @@ commands keep
 one 25 ms timer per control, flush periodically and send the final position
 on release.
 
-The ESP32 stores schema-5 `PanelSettings` in Preferences/NVS and reports corrupt
+The ESP32 stores schema-6 `PanelSettings` in Preferences/NVS and reports corrupt
 loads and save failures. A layout stored by another schema is discarded at
 load, without migration: factory settings apply. The device is authoritative on
 connection: the PC adopts STATUS and never pushes a mapping or stale local
 default. No pressed
-state, gate, live transpose or other transient state is restored from disk.
+state, gate, lever, lock or other transient state is restored from disk.
 
 Malformed configuration commands invalidate an entire staged restore, including
 syntax errors. Integer fields are checked before narrowing and corrupt enum or
@@ -210,9 +235,9 @@ Lickshot, Tone/Contour, Syndrum, modulazione, retrigger e voicing. Echo e Master
 restano globali; Recall non cancella il delay. Gli eventi audio
 catturano l'intero stato sonoro.
 
-Schema 5: un layout salvato con uno schema precedente viene scartato al
+Schema 6 (senza le impostazioni del live pitch): un layout salvato con uno schema precedente viene scartato al
 caricamento e valgono le impostazioni di fabbrica, con quattro memorie vuote.
-Trigger, Hold, latch attivo, Loop e transpose non fanno parte della patch.
+Trigger, Hold, latch attivo, Loop e leva non fanno parte della patch.
 
 STATUS include `settings.patches`, quattro vettori numerici versionati di 23
 campi, definiti da `soundPatchValue` in PanelSettings.h. Un ripristino

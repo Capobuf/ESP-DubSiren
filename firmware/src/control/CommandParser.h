@@ -54,6 +54,9 @@ public:
     const char *displayModeName() const { return performance_.displayModeName(); }
     unsigned menuIndex() const { return performance_.menuIndex(); }
     bool menuEditing() const { return performance_.menuEditing(); }
+    bool controlsMap() const { return performance_.controlsMap(); }
+    unsigned mapControl() const { return performance_.mapControl(); }
+    unsigned lockedButton() const { return performance_.lockedButton(); }
     unsigned menuItemCount() const { return performance_.menuItemCount(); }
     const char *menuItemKey(unsigned index) const {
         return performance_.menuItemKey(index);
