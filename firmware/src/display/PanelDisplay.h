@@ -1,12 +1,13 @@
 #pragma once
 
-#include <Adafruit_ST7789.h>
+#include <Adafruit_GFX.h>
 #include <Arduino.h>
 
 #include <memory>
 
 #include "control/CommandParser.h"
 #include "control/ControlState.h"
+#include "display/PanelLcd.h"
 
 // Home is a map of the front panel, which has no silkscreen: the top and
 // bottom rows stand for the pots above and below the display, the middle row
@@ -49,10 +50,9 @@ private:
 
     ControlStore &controls_;
     CommandParser &controller_;
-    Adafruit_ST7789 tft_;
+    PanelLcd lcd_;
     // Full frame drawn off screen, then sent at once: no visible clear.
     std::unique_ptr<GFXcanvas16> canvas_;
-    Adafruit_GFX *gfx_ = nullptr;
     bool ready_ = false;
     bool firstRender_ = true;
     bool lastLinked_ = false;

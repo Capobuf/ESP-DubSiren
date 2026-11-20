@@ -17,7 +17,7 @@
 #include <string>
 #include <thread>
 
-#include "Adafruit_ST7789.h"
+#include "PanelLcdFrame.h"
 #include "Config.h"
 #include "audio/AudioEngine.h"
 #include "control/CommandParser.h"
@@ -313,14 +313,12 @@ JNIEXPORT jint JNICALL JNI_FN(nativeTick)(JNIEnv *env, jobject, jintArray pixels
     tuneLatency();
     savePanelSettingsIfNeeded();
     siren->display.update(false);
-    const Adafruit_ST7789 *tft = Adafruit_ST7789::active();
-    if (tft == nullptr) return since;
-    const jint frame = static_cast<jint>(tft->frameCounter());
+    const jint frame = static_cast<jint>(panelLcdFrameCounter());
     if (frame == since) return since;
-    const int count = tft->width() * tft->height();
+    const int count = PanelLcd::kWidth * PanelLcd::kHeight;
     if (env->GetArrayLength(pixels) < count) return since;
     jint *out = env->GetIntArrayElements(pixels, nullptr);
-    const uint16_t *source = tft->pixels();
+    const uint16_t *source = panelLcdPixels();
     for (int i = 0; i < count; ++i) out[i] = static_cast<jint>(rgb565ToArgb(source[i]));
     env->ReleaseIntArrayElements(pixels, out, 0);
     return frame;

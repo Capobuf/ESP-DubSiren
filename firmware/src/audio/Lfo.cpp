@@ -1,6 +1,7 @@
 #include "Lfo.h"
 
 #include <math.h>
+#include "DspUtils.h"
 #include "PerformanceConfig.h"
 
 Lfo::Lfo()
@@ -8,7 +9,7 @@ Lfo::Lfo()
       currentShape_(LfoShape::Classic), lastOutput_(-1.0f), shapeOffset_(0.0f),
       shapeTransitionRemaining_(0) {}
 
-void Lfo::reset(LfoShape shape) {
+IRAM_ATTR void Lfo::reset(LfoShape shape) {
     phase_ = 0.0f;
     manualGate_ = false;
     sirenLevel_ = shape == LfoShape::Manual ? PerformanceConfig::kSirenManualTriggerLevel
@@ -20,12 +21,12 @@ void Lfo::reset(LfoShape shape) {
     shapeTransitionRemaining_ = 0;
 }
 
-void Lfo::kickManual() {
+IRAM_ATTR void Lfo::kickManual() {
     if (sirenLevel_ < PerformanceConfig::kSirenManualTriggerLevel)
         sirenLevel_ = PerformanceConfig::kSirenManualTriggerLevel;
 }
 
-float Lfo::next(LfoShape shape, float rateHz, bool modUp, bool modDown,
+IRAM_ATTR float Lfo::next(LfoShape shape, float rateHz, bool modUp, bool modDown,
                 float sampleRate) {
     if (sirenShape(shape))
         return transition(shape, nextSiren(shape == LfoShape::Manual, rateHz, modUp,
@@ -38,7 +39,7 @@ float Lfo::next(LfoShape shape, float rateHz, bool modUp, bool modDown,
     return transition(shape, value, sampleRate);
 }
 
-float Lfo::nextSiren(bool manual, float rateHz, bool modUp, bool modDown,
+IRAM_ATTR float Lfo::nextSiren(bool manual, float rateHz, bool modUp, bool modDown,
                      float sampleRate) {
     using namespace PerformanceConfig;
     float target, tauSeconds;
@@ -63,7 +64,7 @@ float Lfo::nextSiren(bool manual, float rateHz, bool modUp, bool modDown,
     return sirenLevel_ * 2.0f - 1.0f;
 }
 
-float Lfo::transition(LfoShape shape, float value, float sampleRate) {
+IRAM_ATTR float Lfo::transition(LfoShape shape, float value, float sampleRate) {
     const unsigned duration = static_cast<unsigned>(
         PerformanceConfig::kLfoShapeTransitionMs * sampleRate * 0.001f);
     if (shape != currentShape_) {
@@ -80,7 +81,7 @@ float Lfo::transition(LfoShape shape, float value, float sampleRate) {
     return value;
 }
 
-float Lfo::automaticValue(LfoShape shape, float phase) {
+IRAM_ATTR float Lfo::automaticValue(LfoShape shape, float phase) {
     switch (shape) {
         case LfoShape::Classic:
             return 0.0f;  // Rendered by nextSiren.

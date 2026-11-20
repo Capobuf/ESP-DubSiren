@@ -28,7 +28,9 @@ ControlState -> gate + activation sequence -> tonal oscillator + gated envelope
 ```
 
 `audioTask` produces exactly 480 mono samples per iteration and is paced with
-`vTaskDelayUntil` every 10 ms. The DSP uses floats internally and converts to
+`vTaskDelayUntil` every 10 ms. It owns core 0, while `loop()` runs on core 1;
+the DSP functions are `IRAM_ATTR`, so audio does not depend on the instruction
+cache both cores share (measurements in [standalone](standalone.md)). The DSP uses floats internally and converts to
 signed little-endian int16 only at the final output. The task takes one locked
 snapshot of `ControlState` at each block boundary; command parsing never mutates
 the state concurrently.
@@ -43,16 +45,18 @@ write reports failure.
 
 `PanelDisplay` is outside `audioTask`. The main loop reads controller and
 `ControlStore` state and renders Home or Menu with Adafruit GFX into a
-320x172 `GFXcanvas16` (110 kB of heap), then sends the frame to the ST7789 in
-one transfer; without the buffer it draws on the panel directly. It redraws on
-state changes or parameter-overlay expiry, at most once every 100 ms. STATUS exposes
-`displayRenderUs` and `maxDisplayRenderUs` separately from audio timing.
+320x172 `GFXcanvas16` (110 kB of internal heap). `PanelLcd` sends the frame
+to the ST7789 through ESP-IDF `esp_lcd` (SPI2 with DMA, 40 MHz, about 22 ms per
+frame) and returns at once; the next frame is drawn only after the transfer
+callback, so `loop()` never waits for the bus. It redraws on state changes or
+parameter-overlay expiry, at most once every 100 ms. STATUS exposes
+`displayRenderUs` and `maxDisplayRenderUs` (drawing time in `loop()`, not the
+DMA transfer) separately from audio timing.
 The audio task contains no SPI or display calls.
 
 Home maps the panel controls to their position; see
 [panel UI](panel-ui.md). ST7789 initialization targets Adafruit
-Product 5393 at 320x172 in landscape; physical wiring and mounting remain
-unverified. The existing SPI GPIO assignments are retained.
+Product 5393 at 320x172 in landscape, verified on the first PCB. The existing SPI GPIO assignments are retained.
 
 `I2sPcm5102Sink` duplicates each of the 480 mono int16 samples into a stereo
 left/right frame and writes the resulting 960 values to I2S DMA. ESP32-S3 is

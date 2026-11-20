@@ -231,8 +231,8 @@ Timing zeros above are placeholders, not measured performance. `renderUs` is the
 most recent 480-sample render time and `maxRenderUs` is the
 maximum observed since boot. `cycleUs` and `maxCycleUs` include the I2S
 write, whose maximum alone is `maxI2sWriteUs`. `displayRenderUs` and
-`maxDisplayRenderUs` measure complete ST7789 redraws independently from the
-audio counters. `i2sReady` reports whether I2S initialization succeeded. `panel` reports controller-owned runtime
+`maxDisplayRenderUs` measure the time `loop()` spends drawing a frame and
+starting its DMA transfer to the ST7789, independently from the audio counters. `i2sReady` reports whether I2S initialization succeeded. `panel` reports controller-owned runtime
 and settings state; the example intentionally omits timing and other fields
 and shortens `pots` (six entries), `buttons` (four), `patches` (four) and the
 menu rows. `panel.display` is logical state, not pixels: it reports the fixed

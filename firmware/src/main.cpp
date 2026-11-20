@@ -345,7 +345,8 @@ void setup() {
 #if defined(DUBSIREN_PHYSICAL_PANEL) && DUBSIREN_PHYSICAL_PANEL
     if (!panelInputs.begin()) commandParser.setDeviceStatus("PANEL INIT FAILED");
 #endif
-    if (xTaskCreatePinnedToCore(audioTask, "audio", 8192, nullptr, 2, nullptr, 1) != pdPASS)
+    // Core 0 is the audio task's own; loop() runs on core 1 (docs/standalone.md).
+    if (xTaskCreatePinnedToCore(audioTask, "audio", 8192, nullptr, 2, nullptr, 0) != pdPASS)
         commandParser.setDeviceStatus("AUDIO TASK FAILED");
     if (!panelDisplay.begin()) commandParser.setDeviceStatus("DISPLAY INIT FAILED");
 }

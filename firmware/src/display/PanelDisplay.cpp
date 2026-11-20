@@ -1,7 +1,5 @@
 #include "PanelDisplay.h"
 
-#include <SPI.h>
-
 #include <new>
 
 #include "Config.h"
@@ -27,6 +25,7 @@ constexpr uint16_t kGreen = 0x2DE8;     // 40, 190, 70
 
 constexpr int16_t kWidth = PerformanceController::kDisplayWidth;
 constexpr int16_t kHeight = PerformanceController::kDisplayHeight;
+static_assert(kWidth == PanelLcd::kWidth && kHeight == PanelLcd::kHeight, "panel size");
 
 // Panel map: three columns for RV1-RV3 / RV4-RV6, encoder at the right of
 // the middle row, the four keys below. The glass has 3 mm (about 30 px)
@@ -72,35 +71,26 @@ void compact(char *value) {
 }  // namespace
 
 PanelDisplay::PanelDisplay(ControlStore &controls, CommandParser &controller)
-    : controls_(controls), controller_(controller),
-      tft_(&SPI, Config::kDisplayCsPin, Config::kDisplayDcPin,
-           Config::kDisplayResetPin) {}
+    : controls_(controls), controller_(controller) {}
 
 bool PanelDisplay::begin() {
     pinMode(Config::kDisplayBacklightPin, OUTPUT);
     digitalWrite(Config::kDisplayBacklightPin, HIGH);
-    SPI.begin(Config::kSpiSckPin, Config::kSpiMisoPin,
-              Config::kSpiMosiPin, Config::kDisplayCsPin);
-    // Adafruit Product 5393: 172x320 native, 320x172 landscape. Rotation 3
-    // matches how U5 is mounted on the PCB (rotation 1 shows it upside down).
-    tft_.init(172, 320);
-    tft_.setRotation(3);
-    ready_ = tft_.width() == kWidth && tft_.height() == kHeight;
-    if (!ready_) return false;
-
-    // 110 kB frame buffer; without it the frame is drawn on the panel itself.
+    // 110 kB frame buffer in internal RAM, where the SPI DMA reads it.
     canvas_.reset(new (std::nothrow) GFXcanvas16(kWidth, kHeight));
-    if (canvas_ && canvas_->getBuffer() == nullptr) canvas_.reset();
-    gfx_ = canvas_ ? static_cast<Adafruit_GFX *>(canvas_.get()) : &tft_;
-    gfx_->setTextWrap(false);
-    tft_.fillScreen(kInk);
-    return true;
+    if (!canvas_ || canvas_->getBuffer() == nullptr || !lcd_.begin()) return false;
+    canvas_->setTextWrap(false);
+    canvas_->fillScreen(kInk);
+    ready_ = lcd_.send(canvas_->getBuffer());
+    return ready_;
 }
 
 void PanelDisplay::update(bool linked) {
     if (!ready_) return;
     const uint32_t now = millis();
     if (!firstRender_ && now - lastRefreshMs_ < kRefreshMs) return;
+    // The canvas belongs to the DMA until the last frame is out: next loop().
+    if (!lcd_.idle()) return;
 
     const ControlState state = controls_.snapshot();
     const unsigned revision = controller_.panelRevision();
@@ -135,10 +125,10 @@ void PanelDisplay::update(bool linked) {
 
     lastRefreshMs_ = now;
     const uint32_t renderStart = micros();
-    gfx_->fillScreen(kInk);
+    canvas_->fillScreen(kInk);
     if (mode == PerformanceController::DisplayMode::Menu) renderMenu();
     else renderHome(state, linked);
-    if (canvas_) tft_.drawRGBBitmap(0, 0, canvas_->getBuffer(), kWidth, kHeight);
+    lcd_.send(canvas_->getBuffer());
     lastRenderUs_ = micros() - renderStart;
     if (lastRenderUs_ > maximumRenderUs_) maximumRenderUs_ = lastRenderUs_;
     firstRender_ = false;
@@ -165,7 +155,7 @@ void PanelDisplay::drawPot(unsigned pot, int16_t x, int16_t y,
     const PotConfig &config = controller_.panelSettings().pots[pot - 1];
     const bool focus = overlayActive_ && overlayPot_ == pot;
     const bool unused = config.target == PotTarget::None;
-    gfx_->fillRoundRect(x, y, kColumnW, kRowH, kRadius, focus ? kGold : kCell);
+    canvas_->fillRoundRect(x, y, kColumnW, kRowH, kRadius, focus ? kGold : kCell);
 
     // Function only: the value appears in the banner while the pot moves.
     // A name too long for one line puts its first word small above the rest.
@@ -198,20 +188,20 @@ void PanelDisplay::drawBar(unsigned pot, int16_t x, int16_t y, int16_t w,
                                    : static_cast<int16_t>(state.classicModulation);
         const int16_t segment = (w - (count - 1) * 3) / count;
         for (int16_t index = 0; index < count; ++index)
-            gfx_->fillRect(x + index * (segment + 3), y, segment, h, index == zone ? on : off);
+            canvas_->fillRect(x + index * (segment + 3), y, segment, h, index == zone ? on : off);
         return;
     }
     const float value = controller_.potValueNormalized(pot);
-    gfx_->fillRect(x, y, w, h, off);
+    canvas_->fillRect(x, y, w, h, off);
     if (config.target == PotTarget::EchoFilter) {
         // Bipolar: LP left of the centre, HP right of it.
         const int16_t middle = x + w / 2;
         const int16_t level = x + static_cast<int16_t>(value * w + 0.5f);
-        gfx_->fillRect(level < middle ? level : middle, y, abs(level - middle) + 1, h, on);
-        gfx_->drawFastVLine(middle, y - 2, h + 4, on);
+        canvas_->fillRect(level < middle ? level : middle, y, abs(level - middle) + 1, h, on);
+        canvas_->drawFastVLine(middle, y - 2, h + 4, on);
         return;
     }
-    gfx_->fillRect(x, y, static_cast<int16_t>(value * w + 0.5f), h, on);
+    canvas_->fillRect(x, y, static_cast<int16_t>(value * w + 0.5f), h, on);
 }
 
 void PanelDisplay::drawBanner(const ControlState &state, bool linked) {
@@ -222,14 +212,14 @@ void PanelDisplay::drawBanner(const ControlState &state, bool linked) {
     char line[48];
 
     if (alert[0]) {
-        gfx_->fillRoundRect(kBannerX, y, kBannerW, kRowH, kRadius, kRed);
+        canvas_->fillRoundRect(kBannerX, y, kBannerW, kRowH, kRadius, kRed);
         snprintf(line, sizeof(line), "%s", alert);
         const GFXfont *font = fitted(line, width, kLabelFonts, 2);
         text(kBannerX + (kBannerW - textWidth(line, font)) / 2,
              y + (kRowH + capHeight(font)) / 2, line, font, kCream);
         return;
     }
-    gfx_->fillRoundRect(kBannerX, y, kBannerW, kRowH, kRadius, kGold);
+    canvas_->fillRoundRect(kBannerX, y, kBannerW, kRowH, kRadius, kGold);
     if (overlayActive_) {
         // What just moved: name above, value below, the cell is lit too.
         snprintf(line, sizeof(line), "%s", overlayTitle_);
@@ -299,10 +289,10 @@ void PanelDisplay::drawKey(unsigned button, int16_t x, int16_t y,
     const uint16_t background = down ? kGold : latched ? kRed : kCell;
     const uint16_t color = down ? kInk : latched ? kCream
                          : shortcut ? kGreen : unused ? kMuted : kGold;
-    gfx_->fillRoundRect(x, y, kKeyW, kRowH, kRadius, background);
+    canvas_->fillRoundRect(x, y, kKeyW, kRowH, kRadius, background);
     if (pad && !down && !shortcut && controller_.selectedPad() == button) {
-        gfx_->drawRoundRect(x, y, kKeyW, kRowH, kRadius, kGreen);
-        gfx_->drawRoundRect(x + 1, y + 1, kKeyW - 2, kRowH - 2, kRadius - 1, kGreen);
+        canvas_->drawRoundRect(x, y, kKeyW, kRowH, kRadius, kGreen);
+        canvas_->drawRoundRect(x + 1, y + 1, kKeyW - 2, kRowH - 2, kRadius - 1, kGreen);
     }
 
     // One centred line, or two: label and detail, or a label split in two.
@@ -325,7 +315,7 @@ void PanelDisplay::drawKey(unsigned button, int16_t x, int16_t y,
 
 void PanelDisplay::renderMenu() {
     char line[48];
-    gfx_->fillRect(0, 0, kWidth, kTitleH, kGold);
+    canvas_->fillRect(0, 0, kWidth, kTitleH, kGold);
     snprintf(line, sizeof(line), "%s", controller_.menuTitle());
     text(18, 20, line, fitted(line, kWidth - 36, kLabelFonts, 2), kInk);
 
@@ -341,8 +331,8 @@ void PanelDisplay::renderMenu() {
         const bool active = item == index;
         const bool editing = active && controller_.menuEditing();
         if (active) {
-            gfx_->fillRoundRect(0, y, rowW, kMenuRowH, kRadius, kCell);
-            gfx_->fillRect(0, y, 4, kMenuRowH, kGold);
+            canvas_->fillRoundRect(0, y, rowW, kMenuRowH, kRadius, kCell);
+            canvas_->fillRect(0, y, 4, kMenuRowH, kGold);
         }
         // Value first: the label takes the room it leaves.
         int16_t valueX = rowW - 6;
@@ -355,7 +345,7 @@ void PanelDisplay::renderMenu() {
             const int16_t baseline = y + (kMenuRowH + capHeight(font)) / 2;
             if (editing) {
                 // Being changed: boxed between the turn arrows.
-                gfx_->fillRoundRect(valueX - arrows - 4, y + 3, width + 2 * arrows + 8,
+                canvas_->fillRoundRect(valueX - arrows - 4, y + 3, width + 2 * arrows + 8,
                                     kMenuRowH - 6, 4, kGold);
                 arrow(valueX - arrows - 1, y + kMenuRowH / 2 - 4, 8, Arrow::Left, kInk);
                 arrow(valueX + width + 4, y + kMenuRowH / 2 - 4, 8, Arrow::Right, kInk);
@@ -373,15 +363,15 @@ void PanelDisplay::renderMenu() {
         const int16_t trackY = kMenuRowY, trackH = kMenuRowPitch * kMenuRows - 2;
         const int16_t thumbH = trackH * kMenuRows / count;
         const int16_t thumbY = trackY + (trackH - thumbH) * start / (count - kMenuRows);
-        gfx_->fillRect(kWidth - 4, trackY, 3, trackH, kCell);
-        gfx_->fillRect(kWidth - 4, thumbY, 3, thumbH, kGold);
+        canvas_->fillRect(kWidth - 4, trackY, 3, trackH, kCell);
+        canvas_->fillRect(kWidth - 4, thumbY, 3, thumbH, kGold);
     }
 
     // Footer hint, then the key that steps back: BTN4, under the encoder.
-    gfx_->fillRect(0, kFooterY, kWidth, kHeight - kFooterY, kCell);
+    canvas_->fillRect(0, kFooterY, kWidth, kHeight - kFooterY, kCell);
     const int16_t backW = 18 + textWidth("BACK", kMedium) + 7;
     const int16_t backX = kWidth - 14 - backW, backY = kFooterY + 4, backH = 23;
-    gfx_->fillRoundRect(backX, backY, backW, backH, kRadius, kGold);
+    canvas_->fillRoundRect(backX, backY, backW, backH, kRadius, kGold);
     arrow(backX + 6, backY + backH / 2 - 4, 8, Arrow::Left, kInk);
     text(backX + 18, backY + (backH + capHeight(kMedium)) / 2, "BACK", kMedium, kInk);
     snprintf(line, sizeof(line), "%s", controller_.menuFooter());
@@ -425,10 +415,10 @@ bool PanelDisplay::splitFirstWord(char *value, char *rest) {
 
 void PanelDisplay::text(int16_t x, int16_t baseline, const char *value,
                         const GFXfont *font, uint16_t color) {
-    gfx_->setFont(font);
-    gfx_->setTextColor(color);
-    gfx_->setCursor(x, baseline);
-    gfx_->print(value);
+    canvas_->setFont(font);
+    canvas_->setTextColor(color);
+    canvas_->setCursor(x, baseline);
+    canvas_->print(value);
 }
 
 void PanelDisplay::arrow(int16_t x, int16_t y, int16_t size, Arrow direction,
@@ -436,10 +426,10 @@ void PanelDisplay::arrow(int16_t x, int16_t y, int16_t size, Arrow direction,
     // Solid triangle inside a size x size box at (x, y).
     const int16_t r = x + size - 1, b = y + size - 1, mx = x + size / 2, my = y + size / 2;
     switch (direction) {
-        case Arrow::Up: gfx_->fillTriangle(x, b, r, b, mx, y, color); break;
-        case Arrow::Down: gfx_->fillTriangle(x, y, r, y, mx, b, color); break;
-        case Arrow::Left: gfx_->fillTriangle(r, y, r, b, x, my, color); break;
-        case Arrow::Right: gfx_->fillTriangle(x, y, x, b, r, my, color); break;
+        case Arrow::Up: canvas_->fillTriangle(x, b, r, b, mx, y, color); break;
+        case Arrow::Down: canvas_->fillTriangle(x, y, r, y, mx, b, color); break;
+        case Arrow::Left: canvas_->fillTriangle(r, y, r, b, x, my, color); break;
+        case Arrow::Right: canvas_->fillTriangle(x, y, x, b, r, my, color); break;
     }
 }
 

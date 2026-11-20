@@ -10,6 +10,8 @@ file(GLOB FIRMWARE_SOURCES CONFIGURE_DEPENDS
     "${FIRMWARE}/src/control/*.cpp"
     "${FIRMWARE}/src/display/*.cpp"
 )
+# The panel driver (esp_lcd, SPI DMA) becomes a framebuffer: stubs/PanelLcd.cpp.
+list(REMOVE_ITEM FIRMWARE_SOURCES "${FIRMWARE}/src/display/PanelLcd.cpp")
 
 # Adafruit GFX at the version pinned in firmware/platformio.ini. Only the
 # sources are fetched: its own CMakeLists.txt is an ESP-IDF component.
@@ -25,13 +27,13 @@ endif()
 
 add_library(dubsiren SHARED
     siren_bridge.cpp
-    stubs/Adafruit_ST7789.cpp
+    stubs/PanelLcd.cpp
     "${adafruit_gfx_SOURCE_DIR}/Adafruit_GFX.cpp"
     ${FIRMWARE_SOURCES}
 )
 
-# stubs/ first: Arduino.h, Print.h, SPI.h and Adafruit_ST7789.h replace the
-# ESP32 SDK; the GFX folder also provides Fonts/ for the display.
+# stubs/ first: Arduino.h, Print.h and the BusIO headers replace the ESP32
+# SDK; the GFX folder also provides Fonts/ for the display.
 target_include_directories(dubsiren PRIVATE
     "${CMAKE_CURRENT_SOURCE_DIR}/stubs"
     "${adafruit_gfx_SOURCE_DIR}"
