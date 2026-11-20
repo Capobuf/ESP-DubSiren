@@ -9,7 +9,7 @@ Biquad::Biquad()
     : b0_(1.0f), b1_(0.0f), b2_(0.0f), a1_(0.0f), a2_(0.0f), z1_(0.0f),
       z2_(0.0f) {}
 
-void Biquad::setHighPass(float cutoffHz, float sampleRate, float q) {
+IRAM_ATTR void Biquad::setHighPass(float cutoffHz, float sampleRate, float q) {
     const float omega = kTwoPi * cutoffHz / sampleRate;
     const float cosine = cosf(omega);
     const float alpha = sinf(omega) / (2.0f * q);
@@ -18,7 +18,7 @@ void Biquad::setHighPass(float cutoffHz, float sampleRate, float q) {
                     -2.0f * cosine, 1.0f - alpha);
 }
 
-void Biquad::setLowPass(float cutoffHz, float sampleRate, float q) {
+IRAM_ATTR void Biquad::setLowPass(float cutoffHz, float sampleRate, float q) {
     const float omega = kTwoPi * cutoffHz / sampleRate;
     const float cosine = cosf(omega);
     const float alpha = sinf(omega) / (2.0f * q);
@@ -27,14 +27,14 @@ void Biquad::setLowPass(float cutoffHz, float sampleRate, float q) {
                     -2.0f * cosine, 1.0f - alpha);
 }
 
-float Biquad::process(float input) {
+IRAM_ATTR float Biquad::process(float input) {
     const float output = b0_ * input + z1_;
     z1_ = b1_ * input - a1_ * output + z2_;
     z2_ = b2_ * input - a2_ * output;
     return output;
 }
 
-void Biquad::setCoefficients(float b0, float b1, float b2, float a0,
+IRAM_ATTR void Biquad::setCoefficients(float b0, float b1, float b2, float a0,
                              float a1, float a2) {
     b0_ = b0 / a0;
     b1_ = b1 / a0;

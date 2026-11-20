@@ -1,12 +1,13 @@
 #include "Envelope.h"
 
 #include <math.h>
+#include "DspUtils.h"
 #include "PerformanceConfig.h"
 
 Envelope::Envelope()
     : level_(0.0f), lastDecayMs_(-1.0f), releaseMultiplier_(0.0f) {}
 
-float Envelope::nextGate(bool gate, float sampleRate) {
+IRAM_ATTR float Envelope::nextGate(bool gate, float sampleRate) {
     const float duration = gate ? PerformanceConfig::kGateAttackMs
                                 : PerformanceConfig::kGateReleaseMs;
     const float step = 1.0f / (duration * 0.001f * sampleRate);
@@ -14,7 +15,7 @@ float Envelope::nextGate(bool gate, float sampleRate) {
     return level_;
 }
 
-float Envelope::next(bool gate, float decayMs, float sampleRate) {
+IRAM_ATTR float Envelope::next(bool gate, float decayMs, float sampleRate) {
     if (gate) {
         const float coefficient = 1.0f / (0.004f * sampleRate);
         level_ += (1.0f - level_) * coefficient;
@@ -36,11 +37,11 @@ float Envelope::next(bool gate, float decayMs, float sampleRate) {
 OneShotEnvelope::OneShotEnvelope()
     : level_(0.0f), lastDecayMs_(-1.0f), multiplier_(0.0f) {}
 
-void OneShotEnvelope::trigger() {
+IRAM_ATTR void OneShotEnvelope::trigger() {
     level_ = 1.0f;
 }
 
-float OneShotEnvelope::next(float decayMs, float sampleRate) {
+IRAM_ATTR float OneShotEnvelope::next(float decayMs, float sampleRate) {
     if (decayMs <= 0.0f || sampleRate <= 0.0f) {
         level_ = 0.0f;
         return level_;
@@ -55,6 +56,6 @@ float OneShotEnvelope::next(float decayMs, float sampleRate) {
     return level_;
 }
 
-void OneShotEnvelope::reset() {
+IRAM_ATTR void OneShotEnvelope::reset() {
     level_ = 0.0f;
 }

@@ -13,7 +13,7 @@ Delay::Delay()
     memset(buffer_, 0, sizeof(buffer_));
 }
 
-void Delay::begin(float initialDelayMs, float highPassHz, float lowPassHz,
+IRAM_ATTR void Delay::begin(float initialDelayMs, float highPassHz, float lowPassHz,
                   float sampleRate, bool flat) {
     color_.configure(20.0f, sampleRate);
     flatMix_.configure(PerformanceConfig::kFilterMs, sampleRate);
@@ -31,7 +31,7 @@ void Delay::begin(float initialDelayMs, float highPassHz, float lowPassHz,
     setParameters(initialDelayMs, highPassHz, lowPassHz, sampleRate, flat);
 }
 
-void Delay::setParameters(float delayMs, float highPassHz, float lowPassHz,
+IRAM_ATTR void Delay::setParameters(float delayMs, float highPassHz, float lowPassHz,
                           float sampleRate, bool flat) {
     (void)sampleRate;
     flatMix_.setTarget(flat ? 1.0f : 0.0f);
@@ -40,7 +40,7 @@ void Delay::setParameters(float delayMs, float highPassHz, float lowPassHz,
     lowPassHz_.setTarget(lowPassHz);
 }
 
-float Delay::process(float dry, float feedback, bool echoLoop,
+IRAM_ATTR float Delay::process(float dry, float feedback, bool echoLoop,
                      float sampleRate) {
     const float oldDelay = delayMs_.current();
     const float proposedDelay = delayMs_.next();

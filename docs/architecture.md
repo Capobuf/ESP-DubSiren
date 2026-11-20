@@ -28,7 +28,9 @@ ControlState -> gate + activation sequence -> tonal oscillator + gated envelope
 ```
 
 `audioTask` produces exactly 480 mono samples per iteration and is paced with
-`vTaskDelayUntil` every 10 ms. The DSP uses floats internally and converts to
+`vTaskDelayUntil` every 10 ms. It owns core 0, while `loop()` runs on core 1;
+the DSP functions are `IRAM_ATTR`, so audio does not depend on the instruction
+cache both cores share (measurements in [standalone](standalone.md)). The DSP uses floats internally and converts to
 signed little-endian int16 only at the final output. The task takes one locked
 snapshot of `ControlState` at each block boundary; command parsing never mutates
 the state concurrently.

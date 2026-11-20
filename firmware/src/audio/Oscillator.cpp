@@ -20,7 +20,7 @@ float clampCutoff(float cutoff, float sampleRate) {
 
 Oscillator::Oscillator() : phase_(0.0f), syndrumTriangle_(0.0f) {}
 
-float Oscillator::next(SirenMode mode, float frequencyHz, float modulation,
+IRAM_ATTR float Oscillator::next(SirenMode mode, float frequencyHz, float modulation,
                        float envelopeLevel, bool lfoGate, float sampleRate,
                        bool voicingV2) {
     const float output = renderVoice(mode, frequencyHz, modulation,
@@ -30,7 +30,7 @@ float Oscillator::next(SirenMode mode, float frequencyHz, float modulation,
     return output;
 }
 
-float Oscillator::nextTransition(SirenMode from, SirenMode to, float mix,
+IRAM_ATTR float Oscillator::nextTransition(SirenMode from, SirenMode to, float mix,
                                  float frequencyHz, float modulation,
                                  float envelopeLevel, bool lfoGate,
                                  float sampleRate, bool voicingV2) {
@@ -44,7 +44,7 @@ float Oscillator::nextTransition(SirenMode from, SirenMode to, float mix,
     return oldVoice + (newVoice - oldVoice) * mix;
 }
 
-float Oscillator::nextSyndrum(SyndrumWave wave, float frequencyHz,
+IRAM_ATTR float Oscillator::nextSyndrum(SyndrumWave wave, float frequencyHz,
                               float sampleRate) {
     const float increment = frequencyHz / sampleRate;
     float output = 0.0f;
@@ -66,7 +66,7 @@ float Oscillator::nextSyndrum(SyndrumWave wave, float frequencyHz,
     return output;
 }
 
-float Oscillator::renderVoice(SirenMode mode, float frequencyHz,
+IRAM_ATTR float Oscillator::renderVoice(SirenMode mode, float frequencyHz,
                               float modulation, float envelopeLevel,
                               bool lfoGate, float sampleRate, bool voicingV2) {
     const float increment = frequencyHz / sampleRate;
@@ -100,14 +100,14 @@ float Oscillator::renderVoice(SirenMode mode, float frequencyHz,
     return output;
 }
 
-void Oscillator::advance(float increment) {
+IRAM_ATTR void Oscillator::advance(float increment) {
     phase_ += increment;
     if (phase_ >= 1.0f) {
         phase_ -= floorf(phase_);
     }
 }
 
-float Oscillator::nextLegacy(SirenMode mode, float phaseIncrement) const {
+IRAM_ATTR float Oscillator::nextLegacy(SirenMode mode, float phaseIncrement) const {
     const float fundamental = sinf(phase_ * kTwoPi);
     switch (mode) {
         case SirenMode::TestTone:
@@ -128,7 +128,7 @@ float Oscillator::nextLegacy(SirenMode mode, float phaseIncrement) const {
     return 0.0f;
 }
 
-float Oscillator::nextSine1(float frequencyHz, float modulation,
+IRAM_ATTR float Oscillator::nextSine1(float frequencyHz, float modulation,
                             float, float phaseIncrement,
                             float sampleRate) {
     VoiceState &state = voices_[static_cast<int>(SirenMode::Sine1)];
@@ -155,7 +155,7 @@ float Oscillator::nextSine1(float frequencyHz, float modulation,
     return state.dcBlocker.process(value) * kSine1Voicing.outputGain;
 }
 
-float Oscillator::nextSine2(float frequencyHz, float modulation,
+IRAM_ATTR float Oscillator::nextSine2(float frequencyHz, float modulation,
                             float, float phaseIncrement,
                             float sampleRate) {
     VoiceState &state = voices_[static_cast<int>(SirenMode::Sine2)];
@@ -182,12 +182,12 @@ float Oscillator::nextSine2(float frequencyHz, float modulation,
     return state.dcBlocker.process(value) * kSine2Voicing.outputGain;
 }
 
-float Oscillator::nextTestTone(float, float, bool lfoGate, float, float sampleRate) {
+IRAM_ATTR float Oscillator::nextTestTone(float, float, bool lfoGate, float, float sampleRate) {
     return sinf(phase_ * kTwoPi) * PerformanceConfig::kTestGain *
            testGate_.nextGate(lfoGate, sampleRate);
 }
 
-float Oscillator::nextSquare(float frequencyHz, float modulation,
+IRAM_ATTR float Oscillator::nextSquare(float frequencyHz, float modulation,
                              float envelopeLevel, float phaseIncrement,
                              float sampleRate) {
     VoiceState &state = voices_[static_cast<int>(SirenMode::Square)];
@@ -213,13 +213,13 @@ float Oscillator::nextSquare(float frequencyHz, float modulation,
     return state.dcBlocker.process(value) * kSquareVoicing.outputGain;
 }
 
-float Oscillator::nextSaw(float phaseIncrement) {
+IRAM_ATTR float Oscillator::nextSaw(float phaseIncrement) {
     VoiceState &state = voices_[static_cast<int>(SirenMode::Saw)];
     const float value = bandLimitedSaw(phase_, phaseIncrement);
     return state.dcBlocker.process(value) * PerformanceConfig::kSawGain;
 }
 
-float Oscillator::nextTriangle() {
+IRAM_ATTR float Oscillator::nextTriangle() {
     VoiceState &state = voices_[static_cast<int>(SirenMode::Triangle)];
     // A triangle is continuous at the phase wrap and its harmonics already
     // decay as 1/n^2, so the stateless form stays clean without crossfade state.
@@ -227,7 +227,7 @@ float Oscillator::nextTriangle() {
     return state.dcBlocker.process(value) * PerformanceConfig::kTriangleGain;
 }
 
-float Oscillator::nextLickshot(float frequencyHz, float modulation,
+IRAM_ATTR float Oscillator::nextLickshot(float frequencyHz, float modulation,
                                float envelopeLevel, float phaseIncrement,
                                float sampleRate) {
     VoiceState &state = voices_[static_cast<int>(SirenMode::Lickshot)];
@@ -253,13 +253,13 @@ float Oscillator::nextLickshot(float frequencyHz, float modulation,
     return state.dcBlocker.process(value) * kLickshotVoicing.outputGain;
 }
 
-void Oscillator::resetSonarPulse() {
+IRAM_ATTR void Oscillator::resetSonarPulse() {
     sonarPing_.reset();
     sonarGate_ = Envelope();
     previousSonarGate_ = false;
 }
 
-float Oscillator::nextSonar(bool lfoGate, float sampleRate) {
+IRAM_ATTR float Oscillator::nextSonar(bool lfoGate, float sampleRate) {
     if (lfoGate && !previousSonarGate_) sonarPing_.trigger();
     previousSonarGate_ = lfoGate;
     // A decaying ping on each rising LFO gate, with a finite gate for silent

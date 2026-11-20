@@ -41,16 +41,26 @@ per i pot da 20k, 2244,9 mV per Master da 10k). Ogni lettura è la media di 16
 conversioni, con soglia di variazione 8 mV: sul primo PCB montato, a manopole
 ferme, una conversione singola oscilla fino a 27 mV picco-picco, la media entro
 5 mV. Estremi ADC e diafonia restano da misurare.
-Master parte da zero fino alla prima lettura valida. `loop()` e il task audio
-condividono il core 1, con l'audio a priorità più alta. Con l'invio SPI
-bloccante di Adafruit un ridisegno completo durava sul primo PCB circa 160 ms,
-con buchi di polling fino a circa 240 ms; spostare `loop()` sul core 0 portava
-il render audio oltre i 10 ms del blocco (contesa fra i core). Ora il frame
-parte via DMA (`esp_lcd`) e `loop()` non aspetta il bus. Con anche `-O2` al posto
-di `-Os`, sul primo PCB con il PC collegato e i pot in movimento: render audio
-5,5 ms medi e 7,1 ms massimi sui 10 ms del blocco, disegno del display circa
-20 ms (max 29), buco di polling massimo 47-60 ms, nessun errore I2S. Con il PC
-collegato `loop()` costruisce anche STATUS, quindi il buco senza PC non è misurato. STATUS espone `maxInputPollGapUs`; il PCNT continua a contare.
+Master parte da zero fino alla prima lettura valida.
+
+Il task audio ha il core 0 tutto per sé; `loop()` (pannello, display, NVS,
+USB) gira sul core 1. Le funzioni DSP sono in IRAM (`IRAM_ATTR`): i due core
+condividono 16 kB di cache istruzioni e, con il DSP in flash, sul core 0 il
+render era il 23% più lento a parità di stato. Il frame del display parte via
+DMA (`esp_lcd`), quindi `loop()` non aspetta il bus, e il firmware è compilato
+con `-O2` al posto di `-Os`. Misure sul primo PCB, con il PC collegato:
+
+| Configurazione | Render audio medio / max | Disegno display | Buco di polling max |
+|---|---|---|---|
+| Adafruit SPI bloccante, `-Os`, tutto sul core 1 | 7,4 / 9,2 ms | circa 160 ms | circa 240 ms |
+| DMA + `-O2`, tutto sul core 1 | 5,5 / 7,1 ms | circa 20 ms | 47-61 ms |
+| DMA + `-O2`, audio sul core 0, DSP in flash | 7,0 / 8,3 ms | circa 10 ms | 14-31 ms |
+| DMA + `-O2`, audio sul core 0, DSP in IRAM | 5,5 / 5,7 ms | circa 9 ms | 26 ms |
+
+Nessun errore I2S in tutte le prove. Con il PC collegato `loop()` costruisce
+anche STATUS, quindi il buco di polling senza PC non è misurato. STATUS espone
+`maxInputPollGapUs`; il PCNT continua a contare. Restano in flash le funzioni
+matematiche di libreria (`sinf`, `exp2f`, ...) e i costruttori.
 Questi tempi non sono una promessa di latenza pulsante/uscita.
 
 ## Audio e USB

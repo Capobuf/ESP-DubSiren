@@ -3,6 +3,14 @@
 #include <math.h>
 #include <stdint.h>
 
+// The render path runs from IRAM: it must not depend on the 16 kB instruction
+// cache that both cores share (on core 0 the DSP was 23% slower without it).
+#if __has_include(<esp_attr.h>)
+#include <esp_attr.h>
+#else
+#define IRAM_ATTR  // host builds: native tests and the Android app
+#endif
+
 // arduino-esp32 defines TWO_PI as a double literal; keep the audio path in float.
 constexpr float kTwoPi = 6.28318531f;
 

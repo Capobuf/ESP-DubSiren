@@ -29,7 +29,7 @@ AudioEngine::AudioEngine()
       modeInitialized_(false), previousTrigger_(false), previousHold_(false),
       eventGateRemaining_(0) {}
 
-void AudioEngine::begin() {
+IRAM_ATTR void AudioEngine::begin() {
     dryToneHz_.configure(10.0f, Config::kSampleRate);
     contourOctaves_.configure(10.0f, Config::kSampleRate);
     dryFilterMix_.configure(5.0f, Config::kSampleRate);
@@ -47,14 +47,14 @@ void AudioEngine::begin() {
                              Config::kSampleRate);
 }
 
-bool AudioEngine::isTonalMode(SirenMode mode) {
+IRAM_ATTR bool AudioEngine::isTonalMode(SirenMode mode) {
     return mode == SirenMode::Sine1 || mode == SirenMode::Sine2 ||
            mode == SirenMode::TestTone || mode == SirenMode::Square ||
            mode == SirenMode::Lickshot || mode == SirenMode::Sonar ||
            mode == SirenMode::Saw || mode == SirenMode::Triangle;
 }
 
-float AudioEngine::nextGunshot(float envelopeLevel) {
+IRAM_ATTR float AudioEngine::nextGunshot(float envelopeLevel) {
     noiseState_ ^= noiseState_ << 13;
     noiseState_ ^= noiseState_ >> 17;
     noiseState_ ^= noiseState_ << 5;
@@ -65,7 +65,7 @@ float AudioEngine::nextGunshot(float envelopeLevel) {
     return shaped * envelopeLevel * PerformanceConfig::kGunshotOutputGain;
 }
 
-void AudioEngine::render(const ControlState &controls, int16_t *output, size_t count) {
+IRAM_ATTR void AudioEngine::render(const ControlState &controls, int16_t *output, size_t count) {
     if (count == 0) return;
     uint32_t unseen = controls.activationSequence - capturedActivationSequence_;
     if (unseen > kActivationEventCapacity) {
@@ -103,7 +103,7 @@ void AudioEngine::render(const ControlState &controls, int16_t *output, size_t c
     }
 }
 
-void AudioEngine::renderSegment(const ControlState &liveControls, const ActivationEvent *event,
+IRAM_ATTR void AudioEngine::renderSegment(const ControlState &liveControls, const ActivationEvent *event,
                                 int16_t *output, size_t count) {
     ControlState controls = liveControls;
     if (event) static_cast<SoundState &>(controls) = *event;
