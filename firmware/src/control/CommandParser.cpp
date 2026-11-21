@@ -211,23 +211,7 @@ bool CommandParser::parse(const String &rawCommand) {
     }
 
     controls_.set(state);
-    PotTarget changedTarget = PotTarget::None;
-    if (command.indexOf(' ') >= 0) {
-        if (command.startsWith("SET PITCH_POSITION") || command.startsWith("SET TUNE_HZ") ||
-            command.startsWith("SET CLASSIC_PITCH")) changedTarget = PotTarget::Pitch;
-        else if (command.startsWith("SET RATE_POSITION") || command.startsWith("SET LFO_RATE_HZ") ||
-                 command.startsWith("SET CLASSIC_MOD")) changedTarget = PotTarget::Rate;
-        else if (command.startsWith("SET LFO_DEPTH_OCT")) changedTarget = PotTarget::LfoDepth;
-        else if (command.startsWith("SET ECHO_LEVEL")) changedTarget = PotTarget::EchoLevel;
-        else if (command.startsWith("SET DELAY_MS")) changedTarget = PotTarget::EchoTime;
-        else if (command.startsWith("SET FEEDBACK")) changedTarget = PotTarget::EchoFeedback;
-        else if (command.startsWith("SET ECHO_FILTER")) changedTarget = PotTarget::EchoFilter;
-        else if (command.startsWith("SET DECAY_MS")) changedTarget = PotTarget::Decay;
-        else if (command.startsWith("SET SWEEP ")) changedTarget = PotTarget::SweepAmount;
-        else if (command.startsWith("SET SWEEP_MS")) changedTarget = PotTarget::SweepTime;
-    }
-    if (changedTarget == PotTarget::None) performance_.notifyControlsChanged();
-    else performance_.notifyExternalChange(changedTarget);
+    performance_.notifyExternalChange();
     return true;
 }
 

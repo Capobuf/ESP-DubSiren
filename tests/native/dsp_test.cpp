@@ -2273,6 +2273,16 @@ void testPatchTransactionAndRemoteGates() {
     assert(parser.parse(patch));
     assert(parser.parse("PANEL COMMIT"));
     assert(parser.panelSettings().patches[1].valid);
+    for (unsigned i = 0; i < kSoundPatchValueCount; ++i)
+        assert(soundPatchValue(parser.panelSettings().patches[1], i) ==
+               soundPatchValue(parser.panelSettings().patches[0], i));
+    float bad[kSoundPatchValueCount];
+    SoundPatch decoded;
+    for (unsigned i = 0; i < kSoundPatchValueCount; ++i) bad[i] = soundPatchValue(parser.panelSettings().patches[0], i);
+    bad[3] = 200;  // no such mode
+    assert(!decodeSoundPatch(bad, decoded));
+    bad[3] = 0; bad[7] = 2;  // flags are 0 or 1
+    assert(!decodeSoundPatch(bad, decoded));
 
     // Legacy remote gates survive gate recomputation from panel events.
     assert(parser.parse("HOLD 1"));
@@ -2329,6 +2339,39 @@ void testVariantSaveRule() {
     revision = parser.panelSettingsRevision();
     go("TUNE"); assert(parser.parse("ENCODER_ROTATE NEXT")); click();
     assert(parser.panelSettingsRevision() == revision);
+}
+
+void testRemapClearsHold() {
+    // Remapping the HOLD key from the SETUP map must release the latch it set.
+    ControlStore store;
+    CommandParser parser(store);
+    assert(factoryLayout(parser));
+    auto click = [&]() { assert(parser.parse("ENCODER_SWITCH 1")); assert(parser.parse("ENCODER_SWITCH 0")); };
+    auto go = [&](const char *key) {
+        unsigned steps = 0;
+        while (strcmp(parser.menuItemKey(parser.menuIndex()), key) != 0) {
+            assert(++steps <= parser.menuItemCount()); assert(parser.parse("ENCODER_ROTATE NEXT"));
+        }
+        click();
+    };
+    // At Home the encoder click only unlocks: latch HOLD with the menu open.
+    click();
+    assert(parser.parse("PAD 2 1")); assert(parser.parse("PAD 2 0"));
+    assert(store.snapshot().hold);
+    go("SETUP"); go("BTN_2");
+    assert(parser.parse("ENCODER_ROTATE NEXT"));  // HOLD -> MOD UP
+    assert(parser.panelSettings().buttons[1].action == ButtonAction::ModUp);
+    click();
+    assert(!store.snapshot().hold);
+    // Same path for a zoned Pitch pot given another function.
+    assert(store.snapshot().pitchZonesActive);
+    unsigned pitch = 0;
+    while (parser.panelSettings().pots[pitch].target != PotTarget::Pitch) assert(++pitch < 6);
+    char key[8]; snprintf(key, sizeof(key), "POT_%u", pitch + 1);
+    while (strcmp(parser.menuItemKey(parser.menuIndex()), key) != 0) assert(parser.parse("ENCODER_ROTATE PREV"));
+    click(); assert(parser.parse("ENCODER_ROTATE NEXT")); click();
+    assert(parser.panelSettings().pots[pitch].target != PotTarget::Pitch);
+    assert(!store.snapshot().pitchZonesActive);
 }
 
 void testTapTempo() {
@@ -2521,6 +2564,7 @@ int main() {
     testPanelValidationAndCancelledClicks();
     testPatchTransactionAndRemoteGates();
     testVariantSaveRule();
+    testRemapClearsHold();
     testPhysicalAndRemoteOwnership();
     testPadMemories();
     testPerformanceMenu();

@@ -305,62 +305,45 @@ inline float soundPatchValue(const SoundPatch &patch, unsigned index) {
     }
 }
 
+// Mirror of soundPatchValue; the limits live only in validateSoundPatch.
+inline void setSoundPatchValue(SoundPatch &patch, unsigned index, float value) {
+    const auto small = static_cast<uint8_t>(value);
+    SoundState &s = patch.state;
+    switch (index) {
+        case 0: patch.valid = small; break;
+        case 1: patch.sound = static_cast<PanelSound>(small); break;
+        case 2: patch.variant = small; break;
+        case 3: s.mode = static_cast<SirenMode>(small); break;
+        case 4: s.lfoShape = static_cast<LfoShape>(small); break;
+        case 5: s.syndrumWave = static_cast<SyndrumWave>(small); break;
+        case 6: s.lickshotArticulation = static_cast<LickshotArticulation>(small); break;
+        case 7: s.modulationEnabled = small; break;
+        case 8: s.retrigger = small; break;
+        case 9: s.voicingV2 = small; break;
+        case 10: s.tuneHz = value; break;
+        case 11: s.lfoRateHz = value; break;
+        case 12: s.lfoDepthOctaves = value; break;
+        case 13: s.decayMs = value; break;
+        case 14: s.sweepAmount = value; break;
+        case 15: s.sweepMs = value; break;
+        case 16: s.syndrumSweepOctaves = value; break;
+        case 17: s.lickshotLengthMs = value; break;
+        case 18: s.lickshotPunchOctaves = value; break;
+        case 19: s.lickshotPitchMs = value; break;
+        case 20: s.dryToneHz = value; break;
+        case 21: s.filterContourOctaves = value; break;
+        case 22: s.filterContourMs = value; break;
+        default: break;
+    }
+}
+
 inline bool decodeSoundPatch(const float *values, SoundPatch &patch) {
-    if (!isfinite(values[0])) return false;
-    if (values[0] < 0 || values[0] > 1 || floorf(values[0]) != values[0]) return false;
-    patch.valid = static_cast<uint8_t>(values[0]);
-    if (!isfinite(values[1])) return false;
-    if (values[1] < 0 || values[1] > 5 || floorf(values[1]) != values[1]) return false;
-    patch.sound = static_cast<PanelSound>(values[1]);
-    if (!isfinite(values[2])) return false;
-    if (values[2] < 0 || values[2] > 4 || floorf(values[2]) != values[2]) return false;
-    patch.variant = static_cast<uint8_t>(values[2]);
-    if (!isfinite(values[3])) return false;
-    if (values[3] < 0 || values[3] > 9 || floorf(values[3]) != values[3]) return false;
-    patch.state.mode = static_cast<SirenMode>(values[3]);
-    if (!isfinite(values[4])) return false;
-    if (values[4] < 0 || values[4] > 9 || floorf(values[4]) != values[4]) return false;
-    patch.state.lfoShape = static_cast<LfoShape>(values[4]);
-    if (!isfinite(values[5])) return false;
-    if (values[5] < 0 || values[5] > 2 || floorf(values[5]) != values[5]) return false;
-    patch.state.syndrumWave = static_cast<SyndrumWave>(values[5]);
-    if (!isfinite(values[6])) return false;
-    if (values[6] < 0 || values[6] > 3 || floorf(values[6]) != values[6]) return false;
-    patch.state.lickshotArticulation = static_cast<LickshotArticulation>(values[6]);
-    if (!isfinite(values[7])) return false;
-    if (values[7] < 0 || values[7] > 1 || floorf(values[7]) != values[7]) return false;
-    patch.state.modulationEnabled = static_cast<bool>(values[7]);
-    if (!isfinite(values[8])) return false;
-    if (values[8] < 0 || values[8] > 1 || floorf(values[8]) != values[8]) return false;
-    patch.state.retrigger = static_cast<bool>(values[8]);
-    if (!isfinite(values[9])) return false;
-    if (values[9] < 0 || values[9] > 1 || floorf(values[9]) != values[9]) return false;
-    patch.state.voicingV2 = static_cast<bool>(values[9]);
-    if (!isfinite(values[10])) return false;
-    patch.state.tuneHz = static_cast<float>(values[10]);
-    if (!isfinite(values[11])) return false;
-    patch.state.lfoRateHz = static_cast<float>(values[11]);
-    if (!isfinite(values[12])) return false;
-    patch.state.lfoDepthOctaves = static_cast<float>(values[12]);
-    if (!isfinite(values[13])) return false;
-    patch.state.decayMs = static_cast<float>(values[13]);
-    if (!isfinite(values[14])) return false;
-    patch.state.sweepAmount = static_cast<float>(values[14]);
-    if (!isfinite(values[15])) return false;
-    patch.state.sweepMs = static_cast<float>(values[15]);
-    if (!isfinite(values[16])) return false;
-    patch.state.syndrumSweepOctaves = static_cast<float>(values[16]);
-    if (!isfinite(values[17])) return false;
-    patch.state.lickshotLengthMs = static_cast<float>(values[17]);
-    if (!isfinite(values[18])) return false;
-    patch.state.lickshotPunchOctaves = static_cast<float>(values[18]);
-    if (!isfinite(values[19])) return false;
-    patch.state.lickshotPitchMs = static_cast<float>(values[19]);
-    if (!isfinite(values[20])) return false;
-    patch.state.dryToneHz = static_cast<float>(values[20]);
-    if (!isfinite(values[21])) return false;
-    patch.state.filterContourOctaves = static_cast<float>(values[21]);
-    if (!isfinite(values[22])) return false;
-    patch.state.filterContourMs = static_cast<float>(values[22]);
+    for (unsigned i = 0; i < kSoundPatchValueCount; ++i) {
+        const float value = values[i];
+        if (!isfinite(value)) return false;
+        // Enum and flag fields (0-9) are whole bytes before the cast.
+        if (i < 10 && (value < 0 || value > 255 || floorf(value) != value)) return false;
+        setSoundPatchValue(patch, i, value);
+    }
     return validateSoundPatch(patch);
 }

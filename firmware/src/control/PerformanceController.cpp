@@ -181,7 +181,7 @@ bool PerformanceController::setTempoDivision(bool echo, TempoDivision division) 
     (echo ? state.tempo.echoDivision : state.tempo.lfoDivision) = division;
     updateTempoTiming(state.tempo);
     controls_.set(state);
-    notifyExternalChange(echo ? PotTarget::EchoTime : PotTarget::Rate);
+    notifyExternalChange();
     return true;
 }
 
@@ -389,7 +389,7 @@ void PerformanceController::applySound(ControlState &state, unsigned index,
         reapplyRatePots(state);
     appliedSound_ = config.sound;
     appliedVariant_ = variant;
-    if (activate) captureActivation(state);
+    if (activate) recordActivation(state);
 }
 
 bool PerformanceController::savePad(unsigned padNumber) {
@@ -454,10 +454,6 @@ bool PerformanceController::patchDirty(unsigned padNumber) const {
     for (unsigned i = 0; i < kSoundPatchValueCount; ++i)
         if (soundPatchValue(live, i) != soundPatchValue(saved, i)) return true;
     return false;
-}
-
-void PerformanceController::captureActivation(ControlState &state) {
-    recordActivation(state);
 }
 
 bool PerformanceController::isRelevantButton(unsigned index) const {
@@ -552,7 +548,6 @@ void PerformanceController::updateGate(ControlState &state) {
 int PerformanceController::latestPressedSoundButton() const {
     int latest = -1;
     unsigned order = 0;
-    const ControlState state = controls_.snapshot();
     const auto &buttons = settings_.buttons;
     for (unsigned index = 0; index < 4; ++index) {
         if (padDown_[index] && !consumed_[index] &&
@@ -620,7 +615,7 @@ bool PerformanceController::setPad(unsigned padNumber, bool pressed) {
                 reapplyRatePots(state);
             }
             selectedPad_ = index;
-            captureActivation(state);
+            recordActivation(state);
         }
         else if (button.action == ButtonAction::EchoLoop) state.echoLoop = !state.echoLoop;
         else if (button.action == ButtonAction::TapTempo) {
@@ -1145,6 +1140,13 @@ void PerformanceController::resetDefaults() {
 }
 
 void PerformanceController::commitSettingsChange() {
+    // A HOLD latch (not a key lock) ends when no key can release it any more.
+    if (holdToggle_ && lockedButton_ < 0) {
+        bool holdKey = false;
+        for (const ButtonConfig &button : settings_.buttons)
+            holdKey |= button.action == ButtonAction::Hold;
+        holdToggle_ = holdKey;
+    }
     ControlState state = controls_.snapshot();
     updateGate(state);
     updateZoneFlags(state);
@@ -1208,7 +1210,7 @@ void PerformanceController::cancelSettingsTransaction() {
     stagedSettings_ = settings_;
 }
 
-void PerformanceController::notifyExternalChange(PotTarget target) {
+void PerformanceController::notifyExternalChange() {
     overlayTitle_[0] = '\0';
     overlayValue_[0] = '\0';
     ControlState state = controls_.snapshot();
@@ -1613,7 +1615,7 @@ void PerformanceController::pressMenuItem() {
         // encoder path; sound, MOD and ECHO values stay live until SAVE PATCH.
         const bool assignment = row == Row::Sound;
         if ((assignment || (menuPage_ != MenuPage::Sound && menuPage_ != MenuPage::Mod &&
-            menuPage_ != MenuPage::Echo && menuPage_ != MenuPage::Tempo))) ++settingsRevision_;
+            menuPage_ != MenuPage::Echo && menuPage_ != MenuPage::Tempo))) commitSettingsChange();
         // On the map the chosen function opens its options, when it has any.
         if (menuPage_ == MenuPage::Setup && row >= Row::Pot1 && row <= Row::Pot6 &&
             settings_.pots[selectedPot_].target != PotTarget::None) {
@@ -1697,8 +1699,7 @@ void PerformanceController::menuBack() {
     // On the map BACK keeps the choice and stays there, without the options.
     if (menuPage_ == MenuPage::Setup) {
         menuEditing_ = false;
-        ++settingsRevision_;
-        changed();
+        commitSettingsChange();
         return;
     }
     pressMenuItem();

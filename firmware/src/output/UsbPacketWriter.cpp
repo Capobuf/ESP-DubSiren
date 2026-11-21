@@ -20,20 +20,6 @@ static_assert(sizeof(PacketHeader) == 10, "Unexpected packet header size");
 
 }  // namespace
 
-UsbPacketWriter::UsbPacketWriter()
-    : mutex_(nullptr), statusSequence_(0) {}
-
-UsbPacketWriter::~UsbPacketWriter() {
-    if (mutex_ != nullptr) {
-        vSemaphoreDelete(mutex_);
-    }
-}
-
-bool UsbPacketWriter::begin() {
-    mutex_ = xSemaphoreCreateMutex();
-    return mutex_ != nullptr;
-}
-
 bool UsbPacketWriter::writeStatus(const char *payload, size_t length) {
     if (length > UINT16_MAX) {
         return false;
@@ -53,19 +39,12 @@ bool UsbPacketWriter::writeCommandResult(const char *command, size_t length, boo
 
 bool UsbPacketWriter::writePacket(uint8_t type, const uint8_t *payload,
                              size_t length, uint32_t sequence) {
-    if (mutex_ == nullptr || length + sizeof(PacketHeader) > sizeof(packetBuffer_) ||
-        !Serial.isConnected() || xSemaphoreTake(mutex_, 0) != pdTRUE) return false;
+    if (!Serial.isConnected()) return false;
     const PacketHeader header{{'D', 'S'}, Config::kProtocolVersion, type,
                               static_cast<uint16_t>(length), sequence};
     const size_t total = sizeof(header) + length;
-    // Reserve enough free driver space before writing one complete packet.
-    // With our mutex held, no other packet writer can consume that space.
-    bool written = false;
-    if (Serial.availableForWrite() >= static_cast<int>(total)) {
-        memcpy(packetBuffer_, &header, sizeof(header));
-        memcpy(packetBuffer_ + sizeof(header), payload, length);
-        written = Serial.write(packetBuffer_, total) == total;
-    }
-    xSemaphoreGive(mutex_);
-    return written;
+    // Write a packet only when the driver has room for all of it.
+    if (Serial.availableForWrite() < static_cast<int>(total)) return false;
+    return Serial.write(reinterpret_cast<const uint8_t *>(&header), sizeof(header)) == sizeof(header) &&
+        Serial.write(payload, length) == length;
 }
