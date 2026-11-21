@@ -57,7 +57,7 @@ HarmonicSnapshot measureVoice(SirenMode mode, float modulation,
     Oscillator oscillator;
     for (int i = 0; i < kWarmupSamples; ++i) {
         oscillator.next(mode, frequencyHz, modulation, 1.0f,
-                        true, kRate, true);
+                        true, kRate);
     }
 
     double real[5] = {};
@@ -68,7 +68,7 @@ HarmonicSnapshot measureVoice(SirenMode mode, float modulation,
     for (int i = 0; i < kMeasureSamples; ++i) {
         const float value = oscillator.next(
             mode, frequencyHz, modulation, 1.0f,
-            true, kRate, true);
+            true, kRate);
         assert(isfinite(value));
         energy += static_cast<double>(value) * value;
         sum += value;
@@ -951,7 +951,7 @@ void testNewVoices() {
         float previous = 0.0f;
         for (int i = 0; i < 4800; ++i) {
             const float value = oscillator.next(mode, 220.0f, 0.25f, 1.0f,
-                                                true, kRate, true);
+                                                true, kRate);
             assert(isfinite(value));
             energy += value * value;
             if (previous <= 0.0f && value > 0.0f) ++crossings;
@@ -1112,15 +1112,15 @@ void testModeTransitionStartsContinuously() {
     Oscillator transitioning;
     for (int i = 0; i < 1000; ++i) {
         oldOnly.next(SirenMode::Sine1, 220.0f, 0.0f, 1.0f,
-                     true, kRate, true);
+                     true, kRate);
         transitioning.next(SirenMode::Sine1, 220.0f, 0.0f, 1.0f,
-                           true, kRate, true);
+                           true, kRate);
     }
     const float expected = oldOnly.next(SirenMode::Sine1, 220.0f, 0.0f,
-                                        1.0f, true, kRate, true);
+                                        1.0f, true, kRate);
     const float actual = transitioning.nextTransition(
         SirenMode::Sine1, SirenMode::Square, 0.0f, 220.0f, 0.0f,
-        1.0f, true, kRate, true);
+        1.0f, true, kRate);
     assert(isfinite(actual) && fabsf(actual - expected) < 0.000001f);
 }
 
@@ -1222,14 +1222,14 @@ void testSine2Stability() {
             Oscillator oscillator;
             for (int i = 0; i < 24000; ++i) {
                 oscillator.next(SirenMode::Sine2, frequency, modulation, 1.0f,
-                                true, kRate, true);
+                                true, kRate);
             }
             double sum = 0.0;
             float peak = 0.0f;
             for (int i = 0; i < 48000; ++i) {
                 const float value = oscillator.next(
                     SirenMode::Sine2, frequency, modulation, 1.0f,
-                    true, kRate, true);
+                    true, kRate);
                 assert(isfinite(value));
                 sum += value;
                 if (fabsf(value) > peak) peak = fabsf(value);
@@ -1247,7 +1247,7 @@ void testSine1SafetyDcAndGain() {
             for (int i = 0; i < 96000; ++i) {
                 const float value = oscillator.next(
                     SirenMode::Sine1, frequency, modulation, 1.0f,
-                    true, kRate, true);
+                    true, kRate);
                 assert(isfinite(value) && fabsf(value) < 2.0f);
             }
         }
@@ -1256,12 +1256,12 @@ void testSine1SafetyDcAndGain() {
     Oscillator oscillator;
     for (int i = 0; i < 24000; ++i) {
         oscillator.next(SirenMode::Sine1, 375.0f, -1.0f, 1.0f,
-                        true, kRate, true);
+                        true, kRate);
     }
     double mean = 0.0;
     for (int i = 0; i < 96000; ++i) {
         mean += oscillator.next(SirenMode::Sine1, 375.0f, -1.0f, 1.0f,
-                                true, kRate, true);
+                                true, kRate);
     }
     assert(fabs(mean / 96000.0) < 0.001f);
 
@@ -1865,7 +1865,7 @@ void testClassicAutomaticVoices() {
         double real = 0, imaginary = 0, energy = 0;
         for (int i = 0; i < 48000; ++i) {
             const float value = osc.next(static_cast<SirenMode>(voice), 220, 0,
-                                         1, true, kRate, true);
+                                         1, true, kRate);
             real += value * cos(TWO_PI * 440.0 * i / kRate);
             imaginary += value * sin(TWO_PI * 440.0 * i / kRate);
             energy += value * value;

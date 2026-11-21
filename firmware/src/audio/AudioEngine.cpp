@@ -275,7 +275,7 @@ IRAM_ATTR void AudioEngine::renderSegment(const ControlState &liveControls, cons
                 tune * (lfo_.gate() ? 1.0f : PerformanceConfig::kClassicSquareLowRatio) *
                 exp2f(performanceBend + sweepPitch));
             frequencySmoothing = 0.00829871f;  // 2.5 ms anti-click slew.
-        } else if (controls.voicingV2 && currentMode_ == SirenMode::TestTone) {
+        } else if (currentMode_ == SirenMode::TestTone) {
             frequencyTarget = clampFrequency(
                 tune * exp2f(performanceBend + sweepPitch));
         } else if (tonal && sirenSweep) {
@@ -313,14 +313,12 @@ IRAM_ATTR void AudioEngine::renderSegment(const ControlState &liveControls, cons
                 (PerformanceConfig::kModeTransitionMs * Config::kSampleRate * 0.001f);
             dry = oscillator_.nextTransition(previousMode_, currentMode_, mix,
                 oscillatorFrequencyHz_, oscillatorModulation, envelopeLevel,
-                voiceGate, Config::kSampleRate,
-                controls.voicingV2) * envelopeLevel;
+                voiceGate, Config::kSampleRate) * envelopeLevel;
         } else {
             if (tonal) {
                 dry = oscillator_.next(currentMode_, oscillatorFrequencyHz_,
                     oscillatorModulation, envelopeLevel,
-                    voiceGate, Config::kSampleRate,
-                    controls.voicingV2) * envelopeLevel;
+                    voiceGate, Config::kSampleRate) * envelopeLevel;
             } else if (currentMode_ == SirenMode::Syndrum) {
                 const float frequency = clampFrequency(
                     tune * exp2f(controls.syndrumSweepOctaves * syndrumLevel));

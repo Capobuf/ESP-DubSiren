@@ -76,7 +76,7 @@ struct SoundPatch {
 
 // One panel layout: older stored schemas are discarded, not migrated.
 struct PanelSettings {
-    static constexpr uint16_t kSchemaVersion = 6;
+    static constexpr uint16_t kSchemaVersion = 7;
     uint16_t schemaVersion = kSchemaVersion;
     PotConfig pots[6];
     ButtonConfig buttons[4];
@@ -211,7 +211,7 @@ inline bool validateSoundPatch(const SoundPatch &patch) {
     if (patch.valid > 1) return false;
     if (!patch.valid) return true;
     const SoundState &s = patch.state;
-    if (s.modulationEnabled > 1 || s.retrigger > 1 || s.voicingV2 > 1) return false;
+    if (s.modulationEnabled > 1 || s.retrigger > 1) return false;
     if (patch.sound >= PanelSound::Count || patch.variant >= panelSoundVariantCount(patch.sound) ||
         static_cast<unsigned>(s.mode) >= static_cast<unsigned>(SirenMode::Count) ||
         static_cast<unsigned>(s.lfoShape) > static_cast<unsigned>(LfoShape::Manual) ||
@@ -275,7 +275,7 @@ inline PanelSettings factoryPanelSettings() {
     return settings;
 }
 
-constexpr unsigned kSoundPatchValueCount = 23;
+constexpr unsigned kSoundPatchValueCount = 22;
 inline float soundPatchValue(const SoundPatch &patch, unsigned index) {
     switch (index) {
         case 0: return static_cast<float>(patch.valid);
@@ -287,20 +287,19 @@ inline float soundPatchValue(const SoundPatch &patch, unsigned index) {
         case 6: return static_cast<float>(patch.state.lickshotArticulation);
         case 7: return static_cast<float>(patch.state.modulationEnabled);
         case 8: return static_cast<float>(patch.state.retrigger);
-        case 9: return static_cast<float>(patch.state.voicingV2);
-        case 10: return static_cast<float>(patch.state.tuneHz);
-        case 11: return static_cast<float>(patch.state.lfoRateHz);
-        case 12: return static_cast<float>(patch.state.lfoDepthOctaves);
-        case 13: return static_cast<float>(patch.state.decayMs);
-        case 14: return static_cast<float>(patch.state.sweepAmount);
-        case 15: return static_cast<float>(patch.state.sweepMs);
-        case 16: return static_cast<float>(patch.state.syndrumSweepOctaves);
-        case 17: return static_cast<float>(patch.state.lickshotLengthMs);
-        case 18: return static_cast<float>(patch.state.lickshotPunchOctaves);
-        case 19: return static_cast<float>(patch.state.lickshotPitchMs);
-        case 20: return static_cast<float>(patch.state.dryToneHz);
-        case 21: return static_cast<float>(patch.state.filterContourOctaves);
-        case 22: return static_cast<float>(patch.state.filterContourMs);
+        case 9: return static_cast<float>(patch.state.tuneHz);
+        case 10: return static_cast<float>(patch.state.lfoRateHz);
+        case 11: return static_cast<float>(patch.state.lfoDepthOctaves);
+        case 12: return static_cast<float>(patch.state.decayMs);
+        case 13: return static_cast<float>(patch.state.sweepAmount);
+        case 14: return static_cast<float>(patch.state.sweepMs);
+        case 15: return static_cast<float>(patch.state.syndrumSweepOctaves);
+        case 16: return static_cast<float>(patch.state.lickshotLengthMs);
+        case 17: return static_cast<float>(patch.state.lickshotPunchOctaves);
+        case 18: return static_cast<float>(patch.state.lickshotPitchMs);
+        case 19: return static_cast<float>(patch.state.dryToneHz);
+        case 20: return static_cast<float>(patch.state.filterContourOctaves);
+        case 21: return static_cast<float>(patch.state.filterContourMs);
         default: return 0;
     }
 }
@@ -319,20 +318,19 @@ inline void setSoundPatchValue(SoundPatch &patch, unsigned index, float value) {
         case 6: s.lickshotArticulation = static_cast<LickshotArticulation>(small); break;
         case 7: s.modulationEnabled = small; break;
         case 8: s.retrigger = small; break;
-        case 9: s.voicingV2 = small; break;
-        case 10: s.tuneHz = value; break;
-        case 11: s.lfoRateHz = value; break;
-        case 12: s.lfoDepthOctaves = value; break;
-        case 13: s.decayMs = value; break;
-        case 14: s.sweepAmount = value; break;
-        case 15: s.sweepMs = value; break;
-        case 16: s.syndrumSweepOctaves = value; break;
-        case 17: s.lickshotLengthMs = value; break;
-        case 18: s.lickshotPunchOctaves = value; break;
-        case 19: s.lickshotPitchMs = value; break;
-        case 20: s.dryToneHz = value; break;
-        case 21: s.filterContourOctaves = value; break;
-        case 22: s.filterContourMs = value; break;
+        case 9: s.tuneHz = value; break;
+        case 10: s.lfoRateHz = value; break;
+        case 11: s.lfoDepthOctaves = value; break;
+        case 12: s.decayMs = value; break;
+        case 13: s.sweepAmount = value; break;
+        case 14: s.sweepMs = value; break;
+        case 15: s.syndrumSweepOctaves = value; break;
+        case 16: s.lickshotLengthMs = value; break;
+        case 17: s.lickshotPunchOctaves = value; break;
+        case 18: s.lickshotPitchMs = value; break;
+        case 19: s.dryToneHz = value; break;
+        case 20: s.filterContourOctaves = value; break;
+        case 21: s.filterContourMs = value; break;
         default: break;
     }
 }
@@ -341,8 +339,8 @@ inline bool decodeSoundPatch(const float *values, SoundPatch &patch) {
     for (unsigned i = 0; i < kSoundPatchValueCount; ++i) {
         const float value = values[i];
         if (!isfinite(value)) return false;
-        // Enum and flag fields (0-9) are whole bytes before the cast.
-        if (i < 10 && (value < 0 || value > 255 || floorf(value) != value)) return false;
+        // Enum and flag fields (0-8) are whole bytes before the cast.
+        if (i < 9 && (value < 0 || value > 255 || floorf(value) != value)) return false;
         setSoundPatchValue(patch, i, value);
     }
     return validateSoundPatch(patch);

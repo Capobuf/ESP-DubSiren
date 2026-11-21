@@ -85,7 +85,7 @@ PANEL POT <1..6> ZONES <low> <middle> <high>
 PANEL BUTTON <1..4> ACTION NONE|TRIGGER|PLAY_SOUND|HOLD|MOD_UP|MOD_DOWN|ECHO_CUT|ECHO_LOOP|ECHO_SPIN|TAP_TEMPO
 PANEL BUTTON <1..4> SOUND SIREN|TWO_TONE|LICKSHOT|PING|GUNSHOT|TEST_TONE <variant-index> <latch:0|1>
 PANEL SAVE|RECALL <1..4>
-PANEL PATCH <1..4> <23 values>
+PANEL PATCH <1..4> <22 values>
 PANEL RESET_DEFAULTS
 PANEL BEGIN|COMMIT|CANCEL
 ```
@@ -135,13 +135,6 @@ small circular queue of the configurations that caused recent attacks. The
 audio task therefore sees distinct rapid attacks even when another pad kept the
 gate high, or when press/release pairs arrived between two block snapshots.
 Returning to a previously held pad does not enqueue an attack.
-
-Development A/B command (it selects the legacy TEST_TONE and SQUARE oscillators;
-V2 is the default):
-
-```text
-SET VOICING LEGACY|V2
-```
 
 These limits are absolute DSP/protocol ranges. PITCH_POSITION and RATE_POSITION
 are additive normalized inputs that follow the stored mode of the Pitch or
@@ -213,7 +206,7 @@ Every packet begins with this packed, 10-byte little-endian header:
 A STATUS payload is UTF-8 JSON. `HELLO` currently returns:
 
 ```json
-{"name":"DubSiren","protocol":2,"sampleRate":48000,"blockSamples":480,"firmware":"0.9.0","i2sReady":true,"panel":{"revision":1,"settings":{"schema":6,"revision":1,"pots":[{"target":"PITCH","mode":"ZONES","min":80.00000,"max":1600.00000,"zones":[330.00000,680.00000,1000.00000]}],"buttons":[{"action":"TRIGGER","sound":"SIREN","variant":0,"latch":false}],"patches":[]},"persistenceStatus":"","display":{"width":320,"height":172,"mode":"HOME","menuIndex":0,"editing":false,"title":"PERFORMANCE","rows":[{"key":"SOUND","label":"SOUND","value":""}],"buttons":["TRIGGER","HOLD","MOD UP","ECHO CUT"],"padSelected":false,"voice":"SINE 1","pitch":"MID","pitchMode":"ZONES","rate":"MID","rateMode":"ZONES","tuneHz":680.0000,"rateHz":3.0000}}}
+{"name":"DubSiren","protocol":2,"sampleRate":48000,"blockSamples":480,"firmware":"0.9.0","i2sReady":true,"panel":{"revision":1,"settings":{"schema":7,"revision":1,"pots":[{"target":"PITCH","mode":"ZONES","min":80.00000,"max":1600.00000,"zones":[330.00000,680.00000,1000.00000]}],"buttons":[{"action":"TRIGGER","sound":"SIREN","variant":0,"latch":false}],"patches":[]},"persistenceStatus":"","display":{"width":320,"height":172,"mode":"HOME","menuIndex":0,"editing":false,"title":"PERFORMANCE","rows":[{"key":"SOUND","label":"SOUND","value":""}],"buttons":["TRIGGER","HOLD","MOD UP","ECHO CUT"],"padSelected":false,"voice":"SINE 1","pitch":"MID","pitchMode":"ZONES","rate":"MID","rateMode":"ZONES","tuneHz":680.0000,"rateHz":3.0000}}}
 ```
 
 `COMMAND_RESULT` has a 2–512 byte payload: byte 0 is `1` (accepted) or `0`

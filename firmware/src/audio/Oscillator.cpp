@@ -21,11 +21,9 @@ float clampCutoff(float cutoff, float sampleRate) {
 Oscillator::Oscillator() : phase_(0.0f), syndrumTriangle_(0.0f) {}
 
 IRAM_ATTR float Oscillator::next(SirenMode mode, float frequencyHz, float modulation,
-                       float envelopeLevel, bool lfoGate, float sampleRate,
-                       bool voicingV2) {
+                       float envelopeLevel, bool lfoGate, float sampleRate) {
     const float output = renderVoice(mode, frequencyHz, modulation,
-                                     envelopeLevel, lfoGate, sampleRate,
-                                     voicingV2);
+                                     envelopeLevel, lfoGate, sampleRate);
     advance(frequencyHz / sampleRate);
     return output;
 }
@@ -33,13 +31,11 @@ IRAM_ATTR float Oscillator::next(SirenMode mode, float frequencyHz, float modula
 IRAM_ATTR float Oscillator::nextTransition(SirenMode from, SirenMode to, float mix,
                                  float frequencyHz, float modulation,
                                  float envelopeLevel, bool lfoGate,
-                                 float sampleRate, bool voicingV2) {
+                                 float sampleRate) {
     const float oldVoice = renderVoice(from, frequencyHz, modulation,
-                                      envelopeLevel, lfoGate, sampleRate,
-                                      voicingV2);
+                                      envelopeLevel, lfoGate, sampleRate);
     const float newVoice = renderVoice(to, frequencyHz, modulation,
-                                      envelopeLevel, lfoGate, sampleRate,
-                                      voicingV2);
+                                      envelopeLevel, lfoGate, sampleRate);
     advance(frequencyHz / sampleRate);
     return oldVoice + (newVoice - oldVoice) * mix;
 }
@@ -68,7 +64,7 @@ IRAM_ATTR float Oscillator::nextSyndrum(SyndrumWave wave, float frequencyHz,
 
 IRAM_ATTR float Oscillator::renderVoice(SirenMode mode, float frequencyHz,
                               float modulation, float envelopeLevel,
-                              bool lfoGate, float sampleRate, bool voicingV2) {
+                              bool lfoGate, float sampleRate) {
     const float increment = frequencyHz / sampleRate;
     float output;
     if (mode == SirenMode::Lickshot) {
@@ -86,15 +82,14 @@ IRAM_ATTR float Oscillator::renderVoice(SirenMode mode, float frequencyHz,
     } else if (mode == SirenMode::Sine2) {
         output = nextSine2(frequencyHz, modulation, envelopeLevel, increment,
                            sampleRate);
-    } else if (voicingV2 && mode == SirenMode::TestTone) {
+    } else if (mode == SirenMode::TestTone) {
         output = nextTestTone(frequencyHz, envelopeLevel, lfoGate, increment,
                               sampleRate);
-    } else if (voicingV2 && mode == SirenMode::Square) {
+    } else if (mode == SirenMode::Square) {
         output = nextSquare(frequencyHz, modulation, envelopeLevel, increment,
                             sampleRate);
     } else {
-        output = nextLegacy(mode, increment);
-        if (mode == SirenMode::TestTone && !lfoGate) output = 0.0f;
+        output = 0.0f;  // Syndrum and Gunshot have their own renderers.
     }
 
     return output;
@@ -105,27 +100,6 @@ IRAM_ATTR void Oscillator::advance(float increment) {
     if (phase_ >= 1.0f) {
         phase_ -= floorf(phase_);
     }
-}
-
-IRAM_ATTR float Oscillator::nextLegacy(SirenMode mode, float phaseIncrement) const {
-    const float fundamental = sinf(phase_ * kTwoPi);
-    switch (mode) {
-        case SirenMode::TestTone:
-            return fundamental;
-        case SirenMode::Square:
-            return bandLimitedPulse(phase_, phaseIncrement, 0.5f);
-        case SirenMode::Lickshot:
-        case SirenMode::Sine1:
-        case SirenMode::Sine2:
-        case SirenMode::Sonar:
-        case SirenMode::Syndrum:
-        case SirenMode::Gunshot:
-        case SirenMode::Saw:
-        case SirenMode::Triangle:
-        case SirenMode::Count:
-            return 0.0f;
-    }
-    return 0.0f;
 }
 
 IRAM_ATTR float Oscillator::nextSine1(float frequencyHz, float modulation,

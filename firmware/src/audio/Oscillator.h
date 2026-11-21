@@ -8,19 +8,16 @@ class Oscillator {
 public:
     Oscillator();
     float next(SirenMode mode, float frequencyHz, float modulation,
-               float envelopeLevel, bool lfoGate, float sampleRate,
-               bool voicingV2);
+               float envelopeLevel, bool lfoGate, float sampleRate);
     float nextTransition(SirenMode from, SirenMode to, float mix,
                          float frequencyHz, float modulation,
-                         float envelopeLevel, bool lfoGate, float sampleRate,
-                         bool voicingV2);
+                         float envelopeLevel, bool lfoGate, float sampleRate);
     float nextSyndrum(SyndrumWave wave, float frequencyHz, float sampleRate);
     void resetSonarPulse();
 
 private:
     float renderVoice(SirenMode mode, float frequencyHz, float modulation,
-                      float envelopeLevel, bool lfoGate, float sampleRate,
-                      bool voicingV2);
+                      float envelopeLevel, bool lfoGate, float sampleRate);
     void advance(float increment);
     struct VoiceState {
         OnePoleLowPass filters[1];
@@ -29,7 +26,6 @@ private:
         uint8_t cutoffUpdateCountdown = 0;
     };
 
-    float nextLegacy(SirenMode mode, float phaseIncrement) const;
     float nextSine1(float frequencyHz, float modulation,
                     float envelopeLevel, float phaseIncrement,
                     float sampleRate);
