@@ -272,18 +272,6 @@ bool CommandParser::parsePanelCommand(const String &command) {
         performance_.cancelSettingsTransaction();
         return true;
     }
-    if (command.startsWith("PANEL ENCODER ")) {
-        char actionText[20] = {};
-        unsigned step = 0, range = 0;
-        char extra = 0;
-        if (sscanf(command.c_str(), "PANEL ENCODER %19s %9u %9u %c",
-                   actionText, &step, &range, &extra) != 3) return false;
-        EncoderHoldAction action;
-        if (strcmp(actionText, "OFF") == 0) action = EncoderHoldAction::Off;
-        else if (strcmp(actionText, "LIVE_PITCH") == 0) action = EncoderHoldAction::LivePitch;
-        else return false;
-        return performance_.configureEncoder(action, step, range);
-    }
     if (command.startsWith("PANEL POT ")) {
         char field[12] = {}, valueText[24] = {};
         unsigned pot = 0;

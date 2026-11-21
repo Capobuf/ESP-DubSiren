@@ -31,7 +31,8 @@ same 120 ms constant.
 
 The other shapes (TRIANGLE, SQUARE, SAW UP, SAW DOWN, ASYM UP, ASYM DOWN,
 PULSE 25, PULSE 75) modulate the pitch symmetrically by Depth (0-2 octaves),
-honour Retrigger and turn Mod Down into a -1 octave bend. A MOD UP button taps
+honour Retrigger and turn Mod Down into a -1 octave bend; so does SIREN, whose
+fixed sweep is bent as a whole. A MOD UP button taps
 the tempo outside MANUAL (see BTN4 below); the +1 octave bend remains for
 the `MOD_UP` command.
 
@@ -66,8 +67,8 @@ Musical calibration, voice defaults and DSP safety constants live in
 | BTN2 | sound pad, TWO TONE |
 | BTN3 | sound pad, GUNSHOT |
 | BTN4 | TAP TEMPO: a free echo follows the tapped tempo ([tempo](tempo.md)). In MANUAL it is MOD UP: pitch up while held and slow fall after release. BACK while the menu is open |
-| Encoder | previous/next sound of the last pressed pad, one step per detent, wraps; live pitch while a pad is held |
-| Encoder push | MENU; together with a held pad it toggles HOLD |
+| Encoder | previous/next sound of the last pressed pad, one step per detent, wraps; with a pad held, the up/down lever |
+| Encoder push | MENU; together with a held pad it locks the sound on (HOLD); while locked, one click unlocks |
 | Rear MASTER | final output gain |
 
 MENU > COMANDI reassigns every pot and button. A pot takes NONE, PITCH, RATE, LFO DEPTH,
@@ -187,12 +188,23 @@ last pressed pad through the list, and MENU > SUONO does the same. A button
 assigned to TRIGGER plays the Trigger voice, stepped the same two ways.
 
 Holding a Trigger or Play Sound button and pushing the encoder, in either
-order, toggles HOLD: the sound stays on after the button is released and the
-pad's key turns red. The same gesture releases it. The push then does not open
-the menu. A button assigned to HOLD toggles the same state.
+order, locks the sound on (HOLD): it stays on after the button is released,
+and that key turns red with a padlock before its name; the banner shows HOLD
+BLOCCATO. One press of the locked key, or one encoder click, unlocks it
+(SBLOCCATO) and does nothing else: the key does not play again and the click
+does not open the menu. Pressing another playing key while locked plays its
+sound and moves the lock to it. The push of the gesture never opens the menu.
+A button assigned to HOLD toggles the same state; it turns red itself, with no
+padlock on a sound key, and an encoder click releases it too.
 
-Holding a Trigger or Play Sound button while turning the encoder is always the
-live-pitch gesture. Depth is edited in the MOD menu or assigned to a pot.
+Holding a Trigger or Play Sound button while turning the encoder moves a
+three-position lever, DOWN / CENTRE / UP, one detent per position; it springs
+back to the centre when the last playing key is released. Right raises, left
+lowers, with every shape: in MANUAL it is MOD UP / MOD DOWN, with SIREN and the
+other shapes a one-octave bend. The banner shows LEVA and MOD UP, MOD DOWN,
++1 OTTAVA, -1 OTTAVA or CENTRO. PING and GUNSHOT have no bend: N/A. It never
+changes base Tune.
+Depth is edited in the MOD menu or assigned to a pot.
 Tone/Contour, articulation, Color and tempo controls are available through the
 shared encoder menu and protocol.
 

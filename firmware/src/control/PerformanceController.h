@@ -13,7 +13,7 @@ public:
     static constexpr unsigned kMenuBackButton = 4;
 
     enum class DisplayMode : uint8_t { Home, Menu };
-    enum class MenuPage : uint8_t { Root, Setup, Sound, Mod, Echo, Tempo, Pot, Button, Encoder, Reset };
+    enum class MenuPage : uint8_t { Root, Setup, Sound, Mod, Echo, Tempo, Pot, Button, Reset, Other };
 
     // Legacy TRIGGER/HOLD/MOD/ECHO commands, kept separate so panel events
     // recomputing the gate from physical buttons do not cancel them.
@@ -67,8 +67,6 @@ public:
                                ButtonAction action);
     bool configureButtonSound(unsigned buttonNumber,
                               PanelSound sound, unsigned variant, bool latch);
-    bool configureEncoder(EncoderHoldAction action, unsigned step,
-                          unsigned range);
     bool beginSettingsTransaction();
     bool commitSettingsTransaction();
     void cancelSettingsTransaction();
@@ -103,6 +101,12 @@ public:
     const char *menuFooter() const;
     unsigned menuIndex() const { return menuIndex_; }
     bool menuEditing() const { return menuEditing_; }
+    // MENU > COMANDI is drawn as the Home map; title and footer fill its banner.
+    bool controlsMap() const {
+        return displayMode_ == DisplayMode::Menu && menuPage_ == MenuPage::Setup;
+    }
+    // Selected cell of the map: 1..6 a pot, 7..10 a key, 11 ESCI.
+    unsigned mapControl() const;
     unsigned menuItemCount() const;
     const char *menuItemKey(unsigned index) const;
     const char *menuItemLabel(unsigned index) const;
@@ -114,6 +118,8 @@ public:
     // Display helpers: physical input state and a pot's target position 0..1.
     bool buttonDown(unsigned buttonNumber) const;
     bool encoderPressed() const { return encoderPressed_; }
+    // Key (1..4) locked on by the Hold gesture, 0 if none: it shows a padlock.
+    unsigned lockedButton() const;
     // Mod Up only acts in MANUAL; with any other shape its key taps the tempo.
     bool modUpTaps() const;
     float potValueNormalized(unsigned potNumber) const;
@@ -126,12 +132,12 @@ public:
 
 private:
     enum class Row : uint8_t {
-        Encoder, ResetDefaults, Back,
+        ResetDefaults, Back,
         Pot1, Pot2, Pot3, Pot4, Pot5, Pot6, Function, Mode, AllModes,
         Low, Middle, High, Minimum, Maximum,
         Button1, Button2, Button3, Button4, Action, Sound, Latch,
-        HoldTurn, Step, Range, Confirm,
-        SoundPage, ModPage, EchoPage, TempoPage, SetupPage, SelectedPad, Voice,
+        Confirm,
+        SoundPage, ModPage, EchoPage, TempoPage, SetupPage, OtherPage, SelectedPad, Voice,
         Tune, Rate, Depth, Decay, Sweep, SweepTime, DrumSweep,
         Length, Punch, PitchTime, Tone, Contour, ContourTime,
         Shape, Modulation, Retrigger, ClassicRate,
@@ -158,6 +164,8 @@ private:
     bool isRelevantButton(unsigned index) const;
     bool anyRelevantButtonDown() const;
     bool pitchAvailable(const ControlState &state) const;
+    void setLock(bool on, int button);
+    int latestPressedRelevantButton() const;
     void openMenu();
     void pressMenuItem();
     void leaveMenuPage();
@@ -207,6 +215,10 @@ private:
     bool encoderPressed_ = false;
     bool modifierUsed_ = false;
     bool holdToggle_ = false;
+    // Key that took the Hold gesture lock, -1 for none or for a HOLD key.
+    int lockedButton_ = -1;
+    // Lever of a held key turned with the encoder: -1 down, 0 centre, +1 up.
+    int8_t leverPosition_ = 0;
     bool soundLatchArmed_ = false;
     RemoteGates remoteGates_;
     // Per pot: false until its first reading since power-on.

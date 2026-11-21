@@ -74,12 +74,14 @@ La superficie predefinita presenta PITCH, RATE, ECHO LEVEL, ECHO TIME,
 ECHO FEEDBACK ed ECHO FILTER; BTN1-BTN3 sono pad con un suono ciascuno
 (SINE 1, TWO TONE, GUNSHOT) e BTN4 è TAP TEMPO, che in MANUAL diventa MOD UP.
 L'encoder scorre i suoni dell'ultimo pad premuto; premendolo si apre il menu
-al rilascio del click, mentre premuto insieme a un pad attiva o toglie HOLD. I sei pot e i quattro pulsanti sono configurabili da
+al rilascio del click, mentre premuto insieme a un pad blocca il suono (HOLD,
+con un lucchetto sul tasto); un tocco sul tasto bloccato o un click lo sblocca. I sei pot e i quattro pulsanti sono configurabili da
 SETUP nel controller C++ condiviso; ogni pot agisce subito appena si muove,
 anche all'accensione e dopo un cambio di voce. Un pulsante può diventare un pad Play Sound con
 un suono proprio: quando è selezionato, la rotazione libera cambia la variante
 del pad. Con un pulsante Trigger o Play Sound
-fisicamente premuto, l'encoder applica un transpose live temporaneo; Depth si
+fisicamente premuto, l'encoder fa da leva su/giù (MOD UP/DOWN in MANUAL, bend
+di un'ottava con le altre forme); Depth si
 regola dal menu MOD o da un pot. Il Master resta separato e non assegnabile sul
 retro; girandolo il display mostra MASTER e il livello. Il PCB non ha serigrafia: la Home 320x172 è una mappa del pannello, con
 ogni pot e tasto nella sua posizione, la funzione assegnata, la posizione dei

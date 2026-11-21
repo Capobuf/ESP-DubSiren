@@ -49,11 +49,7 @@ String panelSettingsJson() {
     const PanelSettings &settings = commandParser.panelSettings();
     String json = String("{\"schema\":") + settings.schemaVersion +
         ",\"revision\":" + commandParser.panelSettingsRevision() +
-        ",\"encoder\":{\"holdTurn\":\"" +
-        (settings.encoderHoldAction == EncoderHoldAction::LivePitch
-            ? "LIVE_PITCH" : "OFF") +
-        "\",\"step\":" + static_cast<unsigned>(settings.encoderStepSemitones) +
-        ",\"range\":" + static_cast<unsigned>(settings.encoderRangeSemitones) + "},\"pots\":[";
+        ",\"pots\":[";
     for (unsigned pot = 0; pot < 6; ++pot) {
         if (pot) json += ",";
         const PotConfig &config = settings.pots[pot];
@@ -240,7 +236,6 @@ bool sendStatus() {
         ",\"tuneHz\":" + String(displayState.tuneHz, 4) +
         ",\"rateHz\":" + String(displayState.tempo.lfoSync ? displayState.tempo.lfoHz : displayState.lfoRateHz, 4) +
         ",\"tempo\":" + tempoJson +
-        ",\"liveTranspose\":" + static_cast<int>(displayState.liveTransposeSemitones) +
         ",\"pitchPosition\":" + String(displayState.pitchPosition, 4) +
         ",\"ratePosition\":" + String(displayState.ratePosition, 4) +
         ",\"echoLevel\":" + String(displayState.echoLevel, 4) +

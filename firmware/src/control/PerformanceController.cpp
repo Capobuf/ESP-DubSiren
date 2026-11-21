@@ -49,6 +49,47 @@ void stepPadVoice(ButtonConfig &button, int direction) {
     if (!panelSoundSupportsLatch(button.sound)) button.latch = false;
 }
 
+// What each choice does, one footer line (about 27 characters) in the order
+// of its enum or of kVoices.
+const char *potTargetHelp(PotTarget target) {
+    static const char *help[] = {"NON FA NULLA", "NOTA: DA GRAVE AD ACUTO",
+        "QUANTO VELOCE VA SU E GIU", "AMPIEZZA DEL SU E GIU", "VOLUME DELL'ECO",
+        "RITARDO TRA LE RIPETIZIONI", "QUANTE VOLTE SI RIPETE", "SX ECO CUPA, DX ECO SOTTILE",
+        "QUANTO DURA LA CODA", "QUANTO SALE ALL'ATTACCO", "DURATA DELLA SALITA"};
+    static_assert(sizeof(help) / sizeof(help[0]) == static_cast<unsigned>(PotTarget::Count), "help");
+    const unsigned index = static_cast<unsigned>(target);
+    return index < static_cast<unsigned>(PotTarget::Count) ? help[index] : nullptr;
+}
+
+const char *buttonActionHelp(ButtonAction action) {
+    static const char *help[] = {"NON FA NULLA", "SUONA FINCHE LO TIENI",
+        "SUONA IL SUONO DEL TASTO", "PREMI: RESTA ACCESO", "IN MANUAL ALZA IL PITCH",
+        "ABBASSA IL PITCH (NO SIREN)", "SPEGNE L'ECO MENTRE PREMI", "L'ECO GIRA ALL'INFINITO",
+        "ECO CHE MONTA MENTRE PREMI", "BATTI A TEMPO PIU VOLTE"};
+    static_assert(sizeof(help) / sizeof(help[0]) == static_cast<unsigned>(ButtonAction::Count), "help");
+    const unsigned index = static_cast<unsigned>(action);
+    return index < static_cast<unsigned>(ButtonAction::Count) ? help[index] : nullptr;
+}
+
+const char *shapeHelp(LfoShape shape) {
+    static const char *help[] = {"SALE PIANO, CADE DI COLPO", "SALE E SCENDE REGOLARE",
+        "SALTA TRA ALTO E BASSO", "SALE E RIPARTE DA SOTTO", "SCENDE E RIPARTE DA SOPRA",
+        "SALE LENTO, SCENDE VELOCE", "SALE VELOCE, SCENDE LENTO", "ALTO PER 1/4 DEL CICLO",
+        "ALTO PER 3/4 DEL CICLO", "SALE COL TASTO MOD UP"};
+    const unsigned index = static_cast<unsigned>(shape);
+    return index < sizeof(help) / sizeof(help[0]) ? help[index] : nullptr;
+}
+
+const char *voiceHelp(PanelSound sound, unsigned variant) {
+    static const char *help[] = {"IMPULSO LARGO FILTRATO", "IMPULSO STRETTO, BRILLANTE",
+        "ALTERNA DUE NOTE", "UN PING A OGNI CICLO LFO", "COLPO TIPO SYNDRUM",
+        "SPARO DI RUMORE"};
+    static_assert(sizeof(help) / sizeof(help[0]) == kVoiceCount, "help");
+    for (int i = 0; i < kVoiceCount; ++i)
+        if (kVoices[i].sound == sound && kVoices[i].variant == variant) return help[i];
+    return nullptr;
+}
+
 }  // namespace
 
 PerformanceController::PerformanceController(ControlStore &controls)
@@ -445,8 +486,33 @@ float PerformanceController::potValueNormalized(unsigned potNumber) const {
         effectivePot(settings_.pots[potNumber - 1], state), state), 0.0f, 1.0f);
 }
 
+// The lever bends tonal voices only: the one-shots have no bend.
 bool PerformanceController::pitchAvailable(const ControlState &state) const {
-    return state.mode != SirenMode::Gunshot;
+    return state.mode != SirenMode::Gunshot && state.mode != SirenMode::Syndrum;
+}
+
+void PerformanceController::setLock(bool on, int button) {
+    holdToggle_ = on;
+    lockedButton_ = on ? button : -1;
+    snprintf(overlayTitle_, sizeof(overlayTitle_), "HOLD");
+    snprintf(overlayValue_, sizeof(overlayValue_), on ? "BLOCCATO" : "SBLOCCATO");
+    overlayPot_ = 0;
+}
+
+unsigned PerformanceController::lockedButton() const {
+    return holdToggle_ && lockedButton_ >= 0 ? static_cast<unsigned>(lockedButton_) + 1 : 0;
+}
+
+int PerformanceController::latestPressedRelevantButton() const {
+    int latest = -1;
+    unsigned order = 0;
+    for (unsigned index = 0; index < 4; ++index)
+        if (padDown_[index] && !consumed_[index] && isRelevantButton(index) &&
+            pressOrder_[index] >= order) {
+            order = pressOrder_[index];
+            latest = static_cast<int>(index);
+        }
+    return latest;
 }
 
 void PerformanceController::updateGate(ControlState &state) {
@@ -468,6 +534,8 @@ void PerformanceController::updateGate(ControlState &state) {
             default: break;
         }
     }
+    modUp |= leverPosition_ > 0;
+    modDown |= leverPosition_ < 0;
     state.trigger = trigger || remoteGates_.trigger;
     state.modUp = modUp || remoteGates_.modUp;
     state.modDown = modDown || remoteGates_.modDown;
@@ -504,8 +572,11 @@ bool PerformanceController::setPad(unsigned padNumber, bool pressed) {
     padDown_[index] = pressed;
     ControlState state = controls_.snapshot();
     ButtonConfig &button = settings_.buttons[index];
-    // A quick tap can press and release between display refreshes.
-    if (pressed || (button.action != ButtonAction::TapTempo && !modUpTapping_[index])) {
+    // A quick tap can press and release between display refreshes; so can
+    // the Hold gesture, whose message outlives the release of its key.
+    const bool lockMessage = strcmp(overlayTitle_, "HOLD") == 0;
+    if (pressed || (button.action != ButtonAction::TapTempo && !modUpTapping_[index] &&
+                    !lockMessage)) {
         overlayTitle_[0] = '\0';
         overlayValue_[0] = '\0';
     }
@@ -517,20 +588,30 @@ bool PerformanceController::setPad(unsigned padNumber, bool pressed) {
         consumed_[index] = true;
         menuBack();
         state = controls_.snapshot();
-    // In the controls list any other key opens its own page instead of acting.
+    // On the controls map any other key selects its own cell instead of acting.
     } else if (pressed && displayMode_ == DisplayMode::Menu && menuPage_ == MenuPage::Setup) {
         consumed_[index] = true;
-        selectedButton_ = index;
-        setMenuPage(MenuPage::Button);
+        if (!menuEditing_) menuIndex_ = static_cast<uint8_t>(6 + index);
+    // A locked key unlocks with one press of its own, and does nothing else.
+    } else if (pressed && displayMode_ == DisplayMode::Home && !encoderPressed_ &&
+               lockedButton() == padNumber) {
+        consumed_[index] = true;
+        setLock(false, -1);
     } else if (pressed) {
         consumed_[index] = false;
         pressOrder_[index] = nextOrder_++;
         // The Hold gesture in the other order: encoder first, then the key.
         if (encoderPressed_ && displayMode_ == DisplayMode::Home && isRelevantButton(index)) {
-            holdToggle_ = !holdToggle_;
+            setLock(!holdToggle_, static_cast<int>(index));
             modifierUsed_ = true;
+        // Another playing key takes the lock over with its sound.
+        } else if (lockedButton() != 0 && isRelevantButton(index)) {
+            lockedButton_ = static_cast<int>(index);
         }
-        if (button.action == ButtonAction::Hold) holdToggle_ = !holdToggle_;
+        if (button.action == ButtonAction::Hold) {
+            holdToggle_ = !holdToggle_;
+            lockedButton_ = -1;  // A HOLD key is red itself: no lock on a sound key.
+        }
         else if (button.action == ButtonAction::Trigger) {
             // The Trigger always plays its own voice, also after a sound pad.
             if (!triggerVoiceApplied_) {
@@ -567,7 +648,8 @@ bool PerformanceController::setPad(unsigned padNumber, bool pressed) {
         }
         consumed_[index] = false;
     }
-    if (!anyRelevantButtonDown()) state.liveTransposeSemitones = 0;
+    // The lever springs back to the centre when no playing key is held.
+    if (!anyRelevantButtonDown()) leverPosition_ = 0;
     updateGate(state);
     controls_.set(state);
     changed();
@@ -722,11 +804,9 @@ bool PerformanceController::setPot(unsigned potNumber, float position) {
     controls_.set(state);
     // The power-on scan is not a gesture: no overlay for it.
     if (firstReading) overlayTitle_[0] = overlayValue_[0] = '\0';
-    // In the controls list a moved pot opens its own page.
-    else if (displayMode_ == DisplayMode::Menu && menuPage_ == MenuPage::Setup) {
-        selectedPot_ = index;
-        setMenuPage(MenuPage::Pot);
-    }
+    // On the controls map a moved pot selects its own cell.
+    else if (displayMode_ == DisplayMode::Menu && menuPage_ == MenuPage::Setup && !menuEditing_)
+        menuIndex_ = static_cast<uint8_t>(index);
     changed();
     return true;
 }
@@ -751,18 +831,23 @@ void PerformanceController::setMaster(float position) {
 void PerformanceController::setEncoderPressed(bool pressed, bool cancelClick) {
     if (encoderPressed_ == pressed) return;
     if (cancelClick && !pressed) modifierUsed_ = true;
-    overlayTitle_[0] = '\0';
-    overlayValue_[0] = '\0';
+    // The release keeps what the press showed (the Hold gesture message).
+    if (pressed) {
+        overlayTitle_[0] = '\0';
+        overlayValue_[0] = '\0';
+    }
     encoderPressed_ = pressed;
     if (pressed) {
         modifierUsed_ = false;
         // Hold gesture: a playing key together with the encoder push.
         if (displayMode_ == DisplayMode::Home && anyRelevantButtonDown()) {
-            holdToggle_ = !holdToggle_;
+            setLock(!holdToggle_, latestPressedRelevantButton());
             modifierUsed_ = true;
         }
     } else if (displayMode_ == DisplayMode::Menu) {
         if (!modifierUsed_) pressMenuItem();
+    } else if (!modifierUsed_ && holdToggle_) {
+        setLock(false, -1);  // While locked, the first click only unlocks.
     } else if (!modifierUsed_) {
         openMenu();
     }
@@ -776,24 +861,23 @@ void PerformanceController::rotateEncoder(int direction) {
     if (direction == 0) return;
     if (displayMode_ == DisplayMode::Home) {
         ControlState state = controls_.snapshot();
-        if (anyRelevantButtonDown() &&
-            settings_.encoderHoldAction == EncoderHoldAction::LivePitch) {
+        if (anyRelevantButtonDown()) {
+            // A three-position lever, DOWN / CENTRE / UP, one detent per step:
+            // Mod Up / Mod Down in MANUAL, a one-octave bend with other shapes.
             modifierUsed_ = true;
-            snprintf(overlayTitle_, sizeof(overlayTitle_), "LIVE PITCH");
+            snprintf(overlayTitle_, sizeof(overlayTitle_), "LEVA");
             overlayPot_ = 0;
             if (!pitchAvailable(state)) {
                 snprintf(overlayValue_, sizeof(overlayValue_), "N/A");
             } else {
-                const int amount = state.liveTransposeSemitones +
-                    (direction < 0 ? -settings_.encoderStepSemitones
-                                   : settings_.encoderStepSemitones);
-                state.liveTransposeSemitones = static_cast<int8_t>(clampFloat(
-                    static_cast<float>(amount),
-                    -static_cast<float>(settings_.encoderRangeSemitones),
-                    static_cast<float>(settings_.encoderRangeSemitones)));
-                snprintf(overlayValue_, sizeof(overlayValue_), "%+d st - %.0f Hz",
-                    state.liveTransposeSemitones,
-                    state.tuneHz * powf(2.0f, state.liveTransposeSemitones / 12.0f));
+                leverPosition_ = static_cast<int8_t>(clampFloat(
+                    static_cast<float>(leverPosition_ + (direction < 0 ? -1 : 1)), -1.0f, 1.0f));
+                const bool manual = effectiveLfoShape(state) == LfoShape::Manual;
+                snprintf(overlayValue_, sizeof(overlayValue_), "%s",
+                    leverPosition_ == 0 ? "CENTRO"
+                    : manual ? (leverPosition_ > 0 ? "MOD UP" : "MOD DOWN")
+                             : (leverPosition_ > 0 ? "+1 OTTAVA" : "-1 OTTAVA"));
+                updateGate(state);
                 controls_.set(state);
             }
             changed();
@@ -848,8 +932,8 @@ void PerformanceController::resetMomentaries() {
     activePad_ = -1;
     encoderPressed_ = false;
     modifierUsed_ = false;
+    leverPosition_ = 0;
     ControlState state = controls_.snapshot();
-    state.liveTransposeSemitones = 0;
     updateGate(state);
     controls_.set(state);
     changed();
@@ -1034,19 +1118,6 @@ bool PerformanceController::configureButtonSound(unsigned buttonNumber, PanelSou
     return true;
 }
 
-bool PerformanceController::configureEncoder(EncoderHoldAction action,
-        unsigned step, unsigned range) {
-    if (step < 1 || step > 12 || range < step || range > 24)
-        return rejectSettingsChange();
-    PanelSettings candidate = settingsTransaction_ ? stagedSettings_ : settings_;
-    candidate.encoderHoldAction = action;
-    candidate.encoderStepSemitones = static_cast<uint8_t>(step);
-    candidate.encoderRangeSemitones = static_cast<uint8_t>(range);
-    if (!validatePanelSettings(candidate)) return rejectSettingsChange();
-    acceptSettingsCandidate(candidate);
-    return true;
-}
-
 bool PerformanceController::applySettings(const PanelSettings &settings) {
     if (!validatePanelSettings(settings)) return false;
     settingsTransaction_ = false;
@@ -1064,6 +1135,7 @@ void PerformanceController::resetDefaults() {
     settingsTransactionInvalid_ = false;
     settings_ = factoryPanelSettings();
     holdToggle_ = false;
+    lockedButton_ = -1;
     ControlState state = controls_.snapshot();
     state.tempo = TempoState{};
     tapStarted_ = false;
@@ -1228,9 +1300,7 @@ void PerformanceController::rebuildMenuView() const {
     const ControlState state = controls_.snapshot();
     char value[32];
     snprintf(menuFooterBuffer_, sizeof(menuFooterBuffer_), "%s",
-        menuEditing_ ? "RUOTA CAMBIA / PREMI OK"
-        : menuPage_ == MenuPage::Setup ? "MUOVI POT / PREMI TASTO"
-                                       : "RUOTA SCEGLI / PREMI APRI");
+        menuEditing_ ? "RUOTA CAMBIA / PREMI OK" : "RUOTA SCEGLI / PREMI APRI");
     switch (menuPage_) {
         case MenuPage::Root:
             snprintf(menuTitleBuffer_, sizeof(menuTitleBuffer_), "MENU");
@@ -1239,14 +1309,13 @@ void PerformanceController::rebuildMenuView() const {
             addMenuRow(Row::ModPage, "MOD", "MODULAZIONE");
             addMenuRow(Row::EchoPage, "ECHO", "ECO");
             addMenuRow(Row::TempoPage, "TEMPO", "TEMPO");
+            addMenuRow(Row::OtherPage, "OTHER", "ALTRO");
             addMenuRow(Row::Back, "BACK", "INDIETRO");
             break;
         case MenuPage::Setup: {
-            // Every control in one list; moving a pot or pressing a key opens it.
-            snprintf(menuTitleBuffer_, sizeof(menuTitleBuffer_), "COMANDI");
-            const int zoned = allPotsZoned();
-            addMenuRow(Row::AllModes, "VALUES", "VALORI",
-                       zoned == 1 ? "LOW/MID/HIGH" : zoned == 0 ? "LIBERI" : "MISTI");
+            // The map of the panel: every control in panel order, then ESCI at
+            // the encoder's place. Moving a pot or pressing a key selects it:
+            // setPot and setPad count on pots at rows 0-5 and keys at rows 6-9.
             static const Row potRows[] = {Row::Pot1, Row::Pot2, Row::Pot3,
                 Row::Pot4, Row::Pot5, Row::Pot6};
             static const char *potKeys[] = {"POT_1", "POT_2", "POT_3", "POT_4", "POT_5", "POT_6"};
@@ -1261,7 +1330,26 @@ void PerformanceController::rebuildMenuView() const {
                 addMenuRow(buttonRows[i], buttonKeys[i], buttonLabels[i],
                     settings_.buttons[i].action == ButtonAction::PlaySound
                         ? padVoiceName(i + 1) : buttonActionName(settings_.buttons[i].action));
-            addMenuRow(Row::Encoder, "ENCODER", "ENCODER");
+            addMenuRow(Row::Back, "BACK", "ESCI");
+            // The banner of the map: the selected control and what it does.
+            const MenuRowView &selected = menuRows_[menuIndex_ < menuRowCount_ ? menuIndex_ : 0];
+            const bool pot = selected.row >= Row::Pot1 && selected.row <= Row::Pot6;
+            const bool key = selected.row >= Row::Button1 && selected.row <= Row::Button4;
+            if (menuEditing_ && (pot || key))
+                snprintf(menuTitleBuffer_, sizeof(menuTitleBuffer_), "%s - %s", selected.label,
+                         pot ? "SCEGLI LA FUNZIONE" : "SCEGLI L'AZIONE");
+            else if (selected.value[0])
+                snprintf(menuTitleBuffer_, sizeof(menuTitleBuffer_), "%s - %s",
+                         selected.label, selected.value);
+            else snprintf(menuTitleBuffer_, sizeof(menuTitleBuffer_), "%s", selected.label);
+            break;
+        }
+        case MenuPage::Other: {
+            // Settings without a control on the panel.
+            snprintf(menuTitleBuffer_, sizeof(menuTitleBuffer_), "ALTRO");
+            const int zoned = allPotsZoned();
+            addMenuRow(Row::AllModes, "VALUES", "VALORI POT",
+                       zoned == 1 ? "LOW/MID/HIGH" : zoned == 0 ? "LIBERI" : "MISTI");
             addMenuRow(Row::ResetDefaults, "RESET_DEFAULTS", "RIPRISTINA");
             addMenuRow(Row::Back, "BACK", "INDIETRO");
             break;
@@ -1349,7 +1437,7 @@ void PerformanceController::rebuildMenuView() const {
             const PotConfig &pot = settings_.pots[selectedPot_];
             snprintf(menuTitleBuffer_, sizeof(menuTitleBuffer_), "POT %u - %s",
                      selectedPot_ + 1, potTargetName(pot.target));
-            addMenuRow(Row::Function, "FUNCTION", "FUNZIONE", potTargetName(pot.target));
+            // The options of the function chosen on the map, in its cell.
             const TargetDescriptor *descriptor = targetDescriptor(pot.target);
             if (descriptor != nullptr && descriptor->zones)
                 addMenuRow(Row::Mode, "MODE", "VALORI", pot.mode != PotMode::Zones ? "LIBERI"
@@ -1372,8 +1460,8 @@ void PerformanceController::rebuildMenuView() const {
         }
         case MenuPage::Button: {
             const ButtonConfig &button = settings_.buttons[selectedButton_];
-            snprintf(menuTitleBuffer_, sizeof(menuTitleBuffer_), "TASTO %u", selectedButton_ + 1);
-            addMenuRow(Row::Action, "ACTION", "AZIONE", buttonActionName(button.action));
+            snprintf(menuTitleBuffer_, sizeof(menuTitleBuffer_), "TASTO %u - %s", selectedButton_ + 1,
+                     buttonActionName(button.action));
             if (button.action == ButtonAction::PlaySound) {
                 addMenuRow(Row::Sound, "SOUND", "SUONO", padVoiceName(selectedButton_ + 1));
                 if (panelSoundSupportsLatch(button.sound))
@@ -1382,16 +1470,6 @@ void PerformanceController::rebuildMenuView() const {
             addMenuRow(Row::Back, "BACK", "INDIETRO");
             break;
         }
-        case MenuPage::Encoder:
-            snprintf(menuTitleBuffer_, sizeof(menuTitleBuffer_), "ENCODER");
-            addMenuRow(Row::HoldTurn, "HOLD_TURN", "TIENI+RUOTA",
-                settings_.encoderHoldAction == EncoderHoldAction::LivePitch ? "LIVE PITCH" : "OFF");
-            snprintf(value, sizeof(value), "%u st", settings_.encoderStepSemitones);
-            addMenuRow(Row::Step, "STEP", "PASSO", value);
-            snprintf(value, sizeof(value), "+/-%u st", settings_.encoderRangeSemitones);
-            addMenuRow(Row::Range, "RANGE", "ESCURSIONE", value);
-            addMenuRow(Row::Back, "BACK", "INDIETRO");
-            break;
         case MenuPage::Reset:
             snprintf(menuTitleBuffer_, sizeof(menuTitleBuffer_), "RIPRISTINA");
             addMenuRow(Row::Confirm, "CONFIRM", "CONFERMA", resetConfirmed_ ? "SI" : "NO");
@@ -1401,7 +1479,8 @@ void PerformanceController::rebuildMenuView() const {
     // The footer describes the selected row; a moved pot or an error replaces it.
     const char *help = menuIndex_ < menuRowCount_ ? rowHelp(menuRows_[menuIndex_].row, state) : nullptr;
     if (help) snprintf(menuFooterBuffer_, sizeof(menuFooterBuffer_), "%s", help);
-    if (displayMode_ == DisplayMode::Menu && overlayTitle_[0])
+    // On the map a moved pot only selects its cell: the banner keeps explaining.
+    if (displayMode_ == DisplayMode::Menu && menuPage_ != MenuPage::Setup && overlayTitle_[0])
         snprintf(menuFooterBuffer_, sizeof(menuFooterBuffer_), "%s %s",
                  overlayTitle_, overlayValue_);
     if (persistenceStatus_[0]) snprintf(menuFooterBuffer_, sizeof(menuFooterBuffer_),
@@ -1411,12 +1490,26 @@ void PerformanceController::rebuildMenuView() const {
 // One short line per row, null where the label says it all. The footer is
 // 184 px wide in the 16 px font: about 27 characters.
 const char *PerformanceController::rowHelp(Row row, const ControlState &state) const {
+    // On the map the help is what the control does; elsewhere, while a choice
+    // is being changed, what that choice does.
+    if (row >= Row::Pot1 && row <= Row::Pot6)
+        return potTargetHelp(settings_.pots[static_cast<unsigned>(row) - static_cast<unsigned>(Row::Pot1)].target);
+    if (row >= Row::Button1 && row <= Row::Button4)
+        return buttonActionHelp(settings_.buttons[static_cast<unsigned>(row) - static_cast<unsigned>(Row::Button1)].action);
+    if (menuEditing_ && row == Row::Shape) return shapeHelp(state.lfoShape);
+    if (menuEditing_ && row == Row::Voice)
+        return voiceHelp(kVoices[voiceIndex_].sound, kVoices[voiceIndex_].variant);
+    if (menuEditing_ && row == Row::Sound) {
+        const ButtonConfig &button = settings_.buttons[menuPage_ == MenuPage::Sound ? selectedPad_ : selectedButton_];
+        return voiceHelp(button.sound, button.variant);
+    }
     switch (row) {
         case Row::SoundPage: return "SUONO E SUOI PARAMETRI";
         case Row::ModPage: return "MOVIMENTO DEL PITCH (LFO)";
         case Row::EchoPage: return "LIVELLO, RITARDO, FILTRO";
         case Row::TempoPage: return "BPM, LFO ED ECO A TEMPO";
         case Row::SetupPage: return "ASSEGNA POT E TASTI";
+        case Row::OtherPage: return "VALORI DEI POT, RIPRISTINA";
         case Row::ResetDefaults:
         case Row::Confirm: return "RIPORTA TUTTO DI FABBRICA";
         case Row::Bpm: return "SI BATTE SUL TASTO TAP";
@@ -1441,23 +1534,35 @@ const char *PerformanceController::rowHelp(Row row, const ControlState &state) c
         case Row::Filter: return "SINISTRA LP, DESTRA HP";
         case Row::Color: return "SCURISCE E SATURA LE CODE";
         case Row::Loop: return "ON: L'ECO GIRA SENZA FINE";
-        case Row::Function: return "COSA REGOLA IL POT";
         case Row::Mode:
             return settings_.pots[selectedPot_].mode == PotMode::Zones
                 ? "ORA A POSIZIONI FISSE" : "ORA SCORRE DA MIN A MAX";
-        case Row::AllModes: return "VALE PER TUTTI I POT";
+        case Row::AllModes: {
+            const int zoned = allPotsZoned();
+            return zoned == 1 ? "PITCH E RATE A SCATTI" : zoned == 0 ? "PITCH E RATE LIBERI"
+                                                                    : "MISTI: OGNI POT A MODO SUO";
+        }
+        case Row::Back: return menuPage_ == MenuPage::Setup ? "TORNA A SUONARE" : nullptr;
         case Row::Low:
         case Row::Middle:
         case Row::High: return "VALORE DI QUESTA POSIZIONE";
         case Row::Minimum: return "VALORE A POT TUTTO GIU";
         case Row::Maximum: return "VALORE A POT TUTTO SU";
-        case Row::Action: return "COSA FA IL TASTO";
         case Row::Latch: return "ON: RESTA ACCESO DA SOLO";
-        case Row::HoldTurn: return "TASTO TENUTO + ENCODER";
-        case Row::Step: return "SEMITONI PER SCATTO";
-        case Row::Range: return "LIMITE IN SEMITONI";
         default: return nullptr;
     }
+}
+
+unsigned PerformanceController::mapControl() const {
+    if (!controlsMap()) return 0;
+    rebuildMenuView();
+    if (menuIndex_ >= menuRowCount_) return 0;
+    const unsigned row = static_cast<unsigned>(menuRows_[menuIndex_].row);
+    if (row >= static_cast<unsigned>(Row::Pot1) && row <= static_cast<unsigned>(Row::Pot6))
+        return 1 + row - static_cast<unsigned>(Row::Pot1);
+    if (row >= static_cast<unsigned>(Row::Button1) && row <= static_cast<unsigned>(Row::Button4))
+        return 7 + row - static_cast<unsigned>(Row::Button1);
+    return row == static_cast<unsigned>(Row::Back) ? 11 : 0;
 }
 
 unsigned PerformanceController::menuItemCount() const {
@@ -1509,6 +1614,17 @@ void PerformanceController::pressMenuItem() {
         const bool assignment = row == Row::Sound;
         if ((assignment || (menuPage_ != MenuPage::Sound && menuPage_ != MenuPage::Mod &&
             menuPage_ != MenuPage::Echo && menuPage_ != MenuPage::Tempo))) ++settingsRevision_;
+        // On the map the chosen function opens its options, when it has any.
+        if (menuPage_ == MenuPage::Setup && row >= Row::Pot1 && row <= Row::Pot6 &&
+            settings_.pots[selectedPot_].target != PotTarget::None) {
+            setMenuPage(MenuPage::Pot);
+            return;
+        }
+        if (menuPage_ == MenuPage::Setup && row >= Row::Button1 && row <= Row::Button4 &&
+            settings_.buttons[selectedButton_].action == ButtonAction::PlaySound) {
+            setMenuPage(MenuPage::Button);
+            return;
+        }
         changed();
         return;
     }
@@ -1519,16 +1635,23 @@ void PerformanceController::pressMenuItem() {
     else if (row == Row::EchoPage) setMenuPage(MenuPage::Echo);
     else if (row == Row::TempoPage) setMenuPage(MenuPage::Tempo);
     else if (row == Row::SetupPage) setMenuPage(MenuPage::Setup);
+    else if (row == Row::OtherPage) setMenuPage(MenuPage::Other);
+    // On the map a control's function is chosen in its own cell.
     else if (row >= Row::Pot1 && row <= Row::Pot6) {
         selectedPot_ = static_cast<unsigned>(row) - static_cast<unsigned>(Row::Pot1);
-        setMenuPage(MenuPage::Pot);
+        menuEditing_ = true;
+        changed();
     } else if (row >= Row::Button1 && row <= Row::Button4) {
         selectedButton_ = static_cast<unsigned>(row) - static_cast<unsigned>(Row::Button1);
-        setMenuPage(MenuPage::Button);
-    } else if (row == Row::Encoder) setMenuPage(MenuPage::Encoder);
-    else if (row == Row::ResetDefaults) {
+        menuEditing_ = true;
+        changed();
+    } else if (row == Row::ResetDefaults) {
         resetConfirmed_ = false;
         setMenuPage(MenuPage::Reset);
+    } else if (row == Row::Back && menuPage_ == MenuPage::Setup) {
+        // ESCI on the map: straight back to playing; settings are saved anyway.
+        displayMode_ = DisplayMode::Home;
+        changed();
     } else if (row == Row::Back) {
         leaveMenuPage();
     } else {
@@ -1542,8 +1665,19 @@ void PerformanceController::leaveMenuPage() {
         displayMode_ = DisplayMode::Home;
         changed();
     } else if (menuPage_ == MenuPage::Pot || menuPage_ == MenuPage::Button ||
-               menuPage_ == MenuPage::Encoder || menuPage_ == MenuPage::Reset) setMenuPage(MenuPage::Setup);
-    else setMenuPage(MenuPage::Root);
+               menuPage_ == MenuPage::Reset) {
+        // Back where the page was opened: its cell on the map, or its row.
+        const Row from = menuPage_ == MenuPage::Pot
+            ? static_cast<Row>(static_cast<unsigned>(Row::Pot1) + selectedPot_)
+            : menuPage_ == MenuPage::Button
+            ? static_cast<Row>(static_cast<unsigned>(Row::Button1) + selectedButton_)
+            : Row::ResetDefaults;
+        setMenuPage(menuPage_ == MenuPage::Pot || menuPage_ == MenuPage::Button
+                    ? MenuPage::Setup : MenuPage::Other);
+        rebuildMenuView();
+        for (unsigned i = 0; i < menuRowCount_; ++i)
+            if (menuRows_[i].row == from) menuIndex_ = static_cast<uint8_t>(i);
+    } else setMenuPage(MenuPage::Root);
 }
 
 void PerformanceController::menuBack() {
@@ -1560,11 +1694,21 @@ void PerformanceController::menuBack() {
         changed();
         return;
     }
+    // On the map BACK keeps the choice and stays there, without the options.
+    if (menuPage_ == MenuPage::Setup) {
+        menuEditing_ = false;
+        ++settingsRevision_;
+        changed();
+        return;
+    }
     pressMenuItem();
 }
 
 void PerformanceController::editMenuItem(Row row, int direction) {
     ControlState state = controls_.snapshot();
+    // A map cell edits the function of its pot or the action of its key.
+    if (row >= Row::Pot1 && row <= Row::Pot6) row = Row::Function;
+    else if (row >= Row::Button1 && row <= Row::Button4) row = Row::Action;
     if (row == Row::Bpm) {
         setTempoBpm(clampFloat(state.tempo.bpm + direction, 30.0f, 300.0f)); return;
     }
@@ -1654,21 +1798,6 @@ void PerformanceController::editMenuItem(Row row, int direction) {
             break;
         case Row::Sound: stepPadVoice(button, direction); break;
         case Row::Latch: button.latch = !button.latch; break;
-        case Row::HoldTurn:
-            settings_.encoderHoldAction = settings_.encoderHoldAction == EncoderHoldAction::Off
-                ? EncoderHoldAction::LivePitch : EncoderHoldAction::Off;
-            break;
-        case Row::Step:
-            settings_.encoderStepSemitones = static_cast<uint8_t>(clampFloat(
-                settings_.encoderStepSemitones + (direction < 0 ? -1 : 1), 1, 12));
-            if (settings_.encoderRangeSemitones < settings_.encoderStepSemitones)
-                settings_.encoderRangeSemitones = settings_.encoderStepSemitones;
-            break;
-        case Row::Range:
-            settings_.encoderRangeSemitones = static_cast<uint8_t>(clampFloat(
-                settings_.encoderRangeSemitones + (direction < 0 ? -1 : 1),
-                settings_.encoderStepSemitones, 24));
-            break;
         case Row::Confirm: resetConfirmed_ = !resetConfirmed_; break;
         default: break;
     }

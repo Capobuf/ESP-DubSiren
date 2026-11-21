@@ -37,7 +37,6 @@ enum class ButtonAction : uint8_t {
     Count,
 };
 enum class PanelSound : uint8_t { Classic, TwoTone, Lickshot, Ping, Gunshot, TestTone, Count };
-enum class EncoderHoldAction : uint8_t { Off, LivePitch };
 enum class MappingType : uint8_t { Linear, Logarithmic, Power, Bipolar };
 
 struct TargetDescriptor {
@@ -77,11 +76,8 @@ struct SoundPatch {
 
 // One panel layout: older stored schemas are discarded, not migrated.
 struct PanelSettings {
-    static constexpr uint16_t kSchemaVersion = 5;
+    static constexpr uint16_t kSchemaVersion = 6;
     uint16_t schemaVersion = kSchemaVersion;
-    EncoderHoldAction encoderHoldAction = EncoderHoldAction::LivePitch;
-    uint8_t encoderStepSemitones = 1;
-    uint8_t encoderRangeSemitones = 12;
     PotConfig pots[6];
     ButtonConfig buttons[4];
     SoundPatch patches[4];
@@ -237,11 +233,7 @@ inline bool validateSoundPatch(const SoundPatch &patch) {
 }
 
 inline bool validatePanelSettings(const PanelSettings &settings) {
-    if (settings.schemaVersion != PanelSettings::kSchemaVersion ||
-        settings.encoderHoldAction > EncoderHoldAction::LivePitch ||
-        settings.encoderStepSemitones < 1 || settings.encoderStepSemitones > 12 ||
-        settings.encoderRangeSemitones < settings.encoderStepSemitones ||
-        settings.encoderRangeSemitones > 24) return false;
+    if (settings.schemaVersion != PanelSettings::kSchemaVersion) return false;
     for (const PotConfig &pot : settings.pots)
         if (!validatePotConfig(pot)) return false;
     for (const ButtonConfig &button : settings.buttons)

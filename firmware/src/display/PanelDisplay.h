@@ -29,15 +29,20 @@ private:
 
     void renderHome(const ControlState &state, bool linked);
     void renderMenu();
-    void drawPot(unsigned pot, int16_t x, int16_t y, const ControlState &state);
+    void renderControlsMap(const ControlState &state);
+    // focus lights the cell; choosing adds the turn arrows to a lit cell.
+    void drawPot(unsigned pot, int16_t x, int16_t y, const ControlState &state,
+                 bool focus, bool choosing = false);
     void drawBar(unsigned pot, int16_t x, int16_t y, int16_t w,
                  const ControlState &state, uint16_t on, uint16_t off);
     void drawBanner(const ControlState &state, bool linked);
-    void drawKey(unsigned button, int16_t x, int16_t y, const ControlState &state);
+    void drawKey(unsigned button, int16_t x, int16_t y, const ControlState &state,
+                 bool focus = false, bool choosing = false);
     // Text at a baseline, in one of the GFX fonts of PanelDisplay.cpp.
     void text(int16_t x, int16_t baseline, const char *value, const GFXfont *font,
               uint16_t color);
     void arrow(int16_t x, int16_t y, int16_t size, Arrow direction, uint16_t color);
+    void padlock(int16_t x, int16_t y, uint16_t color, uint16_t background);
     // Largest font of the list that fits; the text is cut to fit the last one.
     static const GFXfont *fitted(char *value, int16_t width, const GFXfont *const *fonts,
                                  unsigned count);

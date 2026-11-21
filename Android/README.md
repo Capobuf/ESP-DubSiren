@@ -93,7 +93,7 @@ i pixel restano quelli del firmware.
 | Doppio tocco sul display | scala reale o ingrandito; ingrandito in automatico se il pannello è disegnato sotto 1,2 volte la grandezza reale |
 
 Il multitouch permette le combinazioni dell'hardware: tasto tenuto più
-rotazione dell'encoder (Live Pitch), push più tasto, più tasti insieme, più
+rotazione dell'encoder (leva su/giù), push più tasto, più tasti insieme, più
 pot insieme (un dito ciascuno).
 
 Pot e Master passano dallo stesso percorso di `PanelInputs.cpp`: la posizione

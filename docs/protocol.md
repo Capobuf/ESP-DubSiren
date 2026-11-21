@@ -84,7 +84,6 @@ PANEL POT <1..6> RANGE <minimum> <maximum>
 PANEL POT <1..6> ZONES <low> <middle> <high>
 PANEL BUTTON <1..4> ACTION NONE|TRIGGER|PLAY_SOUND|HOLD|MOD_UP|MOD_DOWN|ECHO_CUT|ECHO_LOOP|ECHO_SPIN|TAP_TEMPO
 PANEL BUTTON <1..4> SOUND SIREN|TWO_TONE|LICKSHOT|PING|GUNSHOT|TEST_TONE <variant-index> <latch:0|1>
-PANEL ENCODER OFF|LIVE_PITCH <step-semitones> <range-semitones>
 PANEL SAVE|RECALL <1..4>
 PANEL PATCH <1..4> <23 values>
 PANEL RESET_DEFAULTS
@@ -109,9 +108,10 @@ validates and applies them together and `PANEL CANCEL` discards them, so a
 rejected field cannot partially replace the running configuration.
 
 The encoder menu opens on release of an unconsumed click.
-While a physical Trigger or Play Sound button is held, Home rotation applies
-the configured transient live transpose (default one semitone per detent,
-clamped to +/-12); releasing the final relevant button resets it to zero.
+While a physical Trigger or Play Sound button is held, Home rotation moves
+the up/down lever: it drives `modUp`/`modDown` (MOD UP/DOWN in MANUAL, a
+one-octave bend with the other shapes) and returns to the centre when the
+final relevant button is released.
 Free rotation steps the sound of the last pressed Play Sound pad, and the
 Trigger voice when the selected button is a Trigger.
 
@@ -121,7 +121,8 @@ PAD 1-3 are sound pads (SINE 1, TWO TONE, GUNSHOT) and PAD 4 is Mod Up, which
 taps the tempo outside MANUAL. Home rotation steps the selected pad through
 the six sounds of the panel: SINE 1, SINE 2, TWO TONE, SONAR, PING, GUNSHOT;
 push opens Menu. A held Trigger or Play Sound pad together with the encoder
-push, in either order, toggles Hold. The other families and variants below
+push, in either order, locks Hold on; one press of the locked pad or one
+encoder click unlocks it without playing or opening Menu. The other families and variants below
 stay reachable only through these commands.
 `PANEL_RESET` releases momentaries and preserves intentional Hold and delay.
 `TRIGGER`, `HOLD`, `MOD_UP`, `MOD_DOWN`, `ECHO_CUT` and `ECHO_SPIN` are kept as
@@ -149,7 +150,7 @@ the configured zone values; with CONTINUOUS they map to 80-1600 Hz and
 0.15-20 Hz. Direct enum commands remain supported; MEDIUM is retained as an
 alias for MID. `SET CLASSIC_MOD MANUAL` selects the MANUAL zone, which takes
 effect while a pot is assigned to Rate in ZONES mode. SAW and TRIANGLE are
-tonal carriers; they use the normal Tune, LFO, Dynamic Sweep, live transpose,
+tonal carriers; they use the normal Tune, LFO, Dynamic Sweep, bend,
 gate and echo paths.
 ECHO_FILTER is an atomic bipolar macro with a central FLAT bypass; explicit
 HPF_HZ/LPF_HZ commands disable that bypass. Other controls retain physical units.
@@ -212,7 +213,7 @@ Every packet begins with this packed, 10-byte little-endian header:
 A STATUS payload is UTF-8 JSON. `HELLO` currently returns:
 
 ```json
-{"name":"DubSiren","protocol":2,"sampleRate":48000,"blockSamples":480,"firmware":"0.9.0","i2sReady":true,"panel":{"revision":1,"settings":{"schema":5,"revision":1,"encoder":{"holdTurn":"LIVE_PITCH","step":1,"range":12},"pots":[{"target":"PITCH","mode":"ZONES","min":80.00000,"max":1600.00000,"zones":[330.00000,680.00000,1000.00000]}],"buttons":[{"action":"TRIGGER","sound":"SIREN","variant":0,"latch":false}],"patches":[]},"persistenceStatus":"","display":{"width":320,"height":172,"mode":"HOME","menuIndex":0,"editing":false,"title":"PERFORMANCE","rows":[{"key":"SOUND","label":"SOUND","value":""}],"buttons":["TRIGGER","HOLD","MOD UP","ECHO CUT"],"padSelected":false,"voice":"SINE 1","pitch":"MID","pitchMode":"ZONES","rate":"MID","rateMode":"ZONES","tuneHz":680.0000,"rateHz":3.0000,"liveTranspose":0}}}
+{"name":"DubSiren","protocol":2,"sampleRate":48000,"blockSamples":480,"firmware":"0.9.0","i2sReady":true,"panel":{"revision":1,"settings":{"schema":6,"revision":1,"pots":[{"target":"PITCH","mode":"ZONES","min":80.00000,"max":1600.00000,"zones":[330.00000,680.00000,1000.00000]}],"buttons":[{"action":"TRIGGER","sound":"SIREN","variant":0,"latch":false}],"patches":[]},"persistenceStatus":"","display":{"width":320,"height":172,"mode":"HOME","menuIndex":0,"editing":false,"title":"PERFORMANCE","rows":[{"key":"SOUND","label":"SOUND","value":""}],"buttons":["TRIGGER","HOLD","MOD UP","ECHO CUT"],"padSelected":false,"voice":"SINE 1","pitch":"MID","pitchMode":"ZONES","rate":"MID","rateMode":"ZONES","tuneHz":680.0000,"rateHz":3.0000}}}
 ```
 
 `COMMAND_RESULT` has a 2–512 byte payload: byte 0 is `1` (accepted) or `0`
@@ -243,14 +244,14 @@ or menu state changes, at most every 200 ms, and at least once per second after
 HELLO while USB has space available; accepted commands no longer trigger an
 immediate STATUS. Failed periodic sends are retried no faster than every 200 ms.
 
-In firmware 0.9.0, `panel.settings` contains the complete schema-5 persistent
-panel configuration and its revision: `encoder`, and `pots`,
-`buttons` and `patches` at top level. A configuration stored by another schema
+In firmware 0.9.0, `panel.settings` contains the complete schema-6 persistent
+panel configuration and its revision: `pots`, `buttons` and `patches` at top
+level. A configuration stored by another schema
 is discarded at load and the factory settings apply. `panel.display.rows` contains ordered
 objects with controller-owned `key`, `label` and already-formatted `value`,
 plus `title`, `footer` and `overlay`. Renderers consume these strings rather
-than reconstructing menu presentation. Effective pitch/rate/echo/master values
-and `liveTranspose` are included for connection reconstruction.
+than reconstructing menu presentation. Effective pitch/rate/echo/master values are included for connection
+reconstruction.
 `panel.persistenceStatus` is non-empty when NVS loading or saving failed.
 `panel.deviceStatus` separately reports I2S, panel-input or audio-task errors.
 NVS is written once the settings revision has been stable for 2 s; a failed
