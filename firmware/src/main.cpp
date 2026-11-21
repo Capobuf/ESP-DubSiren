@@ -44,6 +44,9 @@ constexpr uint32_t kPanelSaveSettleMs = 2000;
 // release remote inputs: HWCDC stays connected while the cable is plugged.
 constexpr uint32_t kHostSilenceTimeoutMs = 3000;
 uint32_t lastHostByteMs = 0;
+// HELLO and rejected commands ask loop() for a STATUS instead of building one
+// themselves: several in a single loop() pass would add up (about 7 ms each).
+bool statusRequested = false;
 
 String panelSettingsJson() {
     const PanelSettings &settings = commandParser.panelSettings();
@@ -257,7 +260,7 @@ void handleCommand(String command) {
     bool accepted = true;
     if (command == "HELLO") {
         hostLinked = true;
-        sendStatus();
+        statusRequested = true;
         return;
     } else {
         // STATUS follows from loop() at most every 200 ms: one per POT command
@@ -266,7 +269,7 @@ void handleCommand(String command) {
     }
     pendingCommandResult = command;
     pendingCommandAccepted = accepted;
-    if (!accepted) sendStatus();
+    if (!accepted) statusRequested = true;
 }
 
 void pollCommands() {
@@ -375,8 +378,12 @@ void loop() {
     static uint32_t lastStatusMs = 0;
     static uint32_t lastStatusAttemptMs = 0;
     static unsigned statusRevision = 0;
-    if (hostLinked && millis() - lastStatusAttemptMs >= 200 &&
-        (statusRevision != commandParser.panelRevision() || millis() - lastStatusMs >= 1000)) {
+    bool statusBuilt = false;
+    if (hostLinked && (statusRequested || (millis() - lastStatusAttemptMs >= 200 &&
+        (statusRevision != commandParser.panelRevision() || millis() - lastStatusMs >= 1000)))) {
+        // A failed requested send is not retried at once: periodic STATUS covers it.
+        statusRequested = false;
+        statusBuilt = true;
         lastStatusAttemptMs = millis();
         if (sendStatus()) {
             lastStatusMs = millis();
@@ -384,6 +391,8 @@ void loop() {
         }
     }
     savePanelSettingsIfNeeded();
-    panelDisplay.update(hostLinked);
+    // One heavy job per pass: a frame (up to ~10 ms) after a STATUS (~7 ms)
+    // would delay the next input poll by both. The frame waits one pass.
+    if (!statusBuilt) panelDisplay.update(hostLinked);
     delay(1);
 }
