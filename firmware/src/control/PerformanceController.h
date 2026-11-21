@@ -29,7 +29,7 @@ public:
     void clearRemoteGates();
 
     void notifyControlsChanged() { changed(); }
-    void notifyExternalChange(PotTarget target);
+    void notifyExternalChange();
     bool setPad(unsigned padNumber, bool pressed);
     bool setPot(unsigned potNumber, float position);
     // Rear Master: live; shows an overlay like the front pots.
@@ -158,7 +158,6 @@ private:
     PotConfig effectivePot(const PotConfig &config, const ControlState &state) const;
     void reapplyRatePots(ControlState &state);
     void syncZoneValues(ControlState &state) const;
-    static void captureActivation(ControlState &state);
     void updateGate(ControlState &state);
     int latestPressedSoundButton() const;
     bool isRelevantButton(unsigned index) const;

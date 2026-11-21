@@ -40,6 +40,11 @@ import kotlin.math.sin
 class PanelView(context: Context, private val prefs: SharedPreferences) : View(context) {
 
     private companion object {
+        const val SLOT_MODULE = 0
+        const val SLOT_GLASS = 1     // + zoomed
+        const val SLOT_ENCODER = 3   // + pressed
+        const val SLOT_KEYS = 5      // + key * 4 + pressed * 2 + dish
+        const val SHADER_SLOTS = SLOT_KEYS + 4 * 4
         const val BOARD_W = 86f
         const val BOARD_TOP = -6f
         const val BOARD_BOTTOM = 120f
@@ -163,6 +168,12 @@ class PanelView(context: Context, private val prefs: SharedPreferences) : View(c
         intArrayOf(Color.rgb(0x1A, 0x1B, 0x1E), Color.rgb(0x3E, 0x40, 0x46), Color.rgb(0x1A, 0x1B, 0x1E),
             Color.rgb(0x36, 0x38, 0x3E), Color.rgb(0x1A, 0x1B, 0x1E)), null)
 
+    // Shaders whose geometry changes only with a press or the zoom: one per
+    // slot, built on first use. Zoomed glass depends on the view size.
+    private val shaders = arrayOfNulls<Shader>(SHADER_SLOTS)
+    private inline fun shader(slot: Int, make: () -> Shader): Shader =
+        shaders[slot] ?: make().also { shaders[slot] = it }
+
     init {
         isHapticFeedbackEnabled = true
     }
@@ -210,6 +221,7 @@ class PanelView(context: Context, private val prefs: SharedPreferences) : View(c
         // Real-size display unless the panel is drawn smaller than ~1.2x life size.
         val pixelsPerRealMm = resources.displayMetrics.xdpi / 25.4f
         zoomDisplay = if (zoomSetting == ZOOM_UNSET) scale / pixelsPerRealMm < 1.2f else zoomSetting == 1
+        shaders.fill(null)
         buildBackground(w, h)
     }
 
@@ -286,8 +298,8 @@ class PanelView(context: Context, private val prefs: SharedPreferences) : View(c
             rect.set(MOD_X - MOD_W / 2, MOD_Y - MOD_H / 2, MOD_X + MOD_W / 2, MOD_Y + MOD_H / 2)
             canvas.drawRoundRect(rect, MOD_R, MOD_R, fill)
             rect.offset(0f, -lift)
-            fill.shader = LinearGradient(rect.left, rect.top, rect.right, rect.bottom,
-                Color.rgb(0x1C, 0x1E, 0x1F), Color.rgb(0x0A, 0x0B, 0x0B), Shader.TileMode.CLAMP)
+            fill.shader = shader(SLOT_MODULE) { LinearGradient(rect.left, rect.top, rect.right, rect.bottom,
+                Color.rgb(0x1C, 0x1E, 0x1F), Color.rgb(0x0A, 0x0B, 0x0B), Shader.TileMode.CLAMP) }
             canvas.drawRoundRect(rect, MOD_R, MOD_R, fill)
             fill.shader = null
             // Module mounting holes, 2.5 mm (footprint NPTH).
@@ -328,9 +340,11 @@ class PanelView(context: Context, private val prefs: SharedPreferences) : View(c
             }
         }
         // Glass reflection.
-        fill.shader = LinearGradient(rect.left, rect.top, rect.left + rect.width() * 0.55f, rect.bottom,
-            intArrayOf(Color.argb(34, 255, 255, 255), Color.argb(8, 255, 255, 255), Color.argb(0, 255, 255, 255)),
-            floatArrayOf(0f, 0.45f, 0.46f), Shader.TileMode.CLAMP)
+        fill.shader = shader(SLOT_GLASS + if (zoomDisplay) 1 else 0) {
+            LinearGradient(rect.left, rect.top, rect.left + rect.width() * 0.55f, rect.bottom,
+                intArrayOf(Color.argb(34, 255, 255, 255), Color.argb(8, 255, 255, 255), Color.argb(0, 255, 255, 255)),
+                floatArrayOf(0f, 0.45f, 0.46f), Shader.TileMode.CLAMP)
+        }
         canvas.drawRect(rect, fill)
         fill.shader = null
         canvas.restore()
@@ -400,8 +414,8 @@ class PanelView(context: Context, private val prefs: SharedPreferences) : View(c
         }
         canvas.restore()
         // Smooth centre face.
-        fill.shader = RadialGradient(ENC_X - 1.6f, top - 1.8f, ENC_R,
-            Color.rgb(0x4A, 0x4D, 0x54), Color.rgb(0x14, 0x15, 0x17), Shader.TileMode.CLAMP)
+        fill.shader = shader(SLOT_ENCODER + if (pressed) 1 else 0) { RadialGradient(ENC_X - 1.6f, top - 1.8f, ENC_R,
+            Color.rgb(0x4A, 0x4D, 0x54), Color.rgb(0x14, 0x15, 0x17), Shader.TileMode.CLAMP) }
         canvas.drawCircle(ENC_X, top, ENC_R - 1.5f, fill)
         fill.shader = null
         stroke.color = Color.argb(if (pressed) 40 else 80, 255, 255, 255)
@@ -439,12 +453,13 @@ class PanelView(context: Context, private val prefs: SharedPreferences) : View(c
         face(tone(0x26), br, bt, br, bb, tr, tb, tr, tt) // right
         face(tone(0x2E), bl, bb, tl, tb, tr, tb, br, bb) // front, towards the viewer
         rect.set(tl, tt, tr, tb)
-        fill.shader = LinearGradient(tl, tt, tr, tb, tone(0x5C), tone(0x3C), Shader.TileMode.CLAMP)
+        val keySlot = SLOT_KEYS + index * 4 + if (pressed) 2 else 0
+        fill.shader = shader(keySlot) { LinearGradient(tl, tt, tr, tb, tone(0x5C), tone(0x3C), Shader.TileMode.CLAMP) }
         canvas.drawRoundRect(rect, 1.8f, 1.8f, fill)
         fill.shader = null
         // Spherical dish of the top face.
-        fill.shader = RadialGradient(x + 0.8f, (tt + tb) / 2 + 0.8f, (tr - tl) * 0.55f,
-            Color.argb(50, 0, 0, 0), Color.argb(0, 0, 0, 0), Shader.TileMode.CLAMP)
+        fill.shader = shader(keySlot + 1) { RadialGradient(x + 0.8f, (tt + tb) / 2 + 0.8f, (tr - tl) * 0.55f,
+            Color.argb(50, 0, 0, 0), Color.argb(0, 0, 0, 0), Shader.TileMode.CLAMP) }
         canvas.drawRoundRect(rect, 1.8f, 1.8f, fill)
         fill.shader = null
         if (pressed) {

@@ -332,7 +332,6 @@ void setup() {
     Serial.begin(115200);
     Serial.setTxTimeoutMs(0);
     commandBuffer.reserve(512);
-    if (!usbLink.begin()) commandParser.setDeviceStatus("USB LINK INIT FAILED");
     i2sReady = i2sSink.begin();
     if (!i2sReady) commandParser.setDeviceStatus("I2S INIT FAILED");
     engine.begin();

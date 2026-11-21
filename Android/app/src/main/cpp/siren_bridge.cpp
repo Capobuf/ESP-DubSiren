@@ -72,17 +72,21 @@ void loadPanelSettings() {
     savedPanelSettingsRevision = parser.panelSettingsRevision();
 }
 
-void savePanelSettingsIfNeeded() {
+// immediate: the app is stopping and may be killed before another tick.
+void savePanelSettingsIfNeeded(bool immediate = false) {
     CommandParser &parser = siren->parser;
     const unsigned revision = parser.panelSettingsRevision();
     if (revision == savedPanelSettingsRevision) return;
     const uint32_t now = millis();
-    if (revision != pendingPanelSettingsRevision) {
-        pendingPanelSettingsRevision = revision;
-        panelSettingsChangedMs = now;
-        return;
+    // The settle delay protects the ESP flash; a phone file needs none on stop.
+    if (!immediate) {
+        if (revision != pendingPanelSettingsRevision) {
+            pendingPanelSettingsRevision = revision;
+            panelSettingsChangedMs = now;
+            return;
+        }
+        if (now - panelSettingsChangedMs < kPanelSaveSettleMs) return;
     }
-    if (now - panelSettingsChangedMs < kPanelSaveSettleMs) return;
     const PanelSettings &settings = parser.panelSettings();
     const std::string temporary = settingsPath + ".tmp";
     FILE *file = fopen(temporary.c_str(), "wb");
@@ -288,6 +292,7 @@ JNIEXPORT void JNICALL JNI_FN(nativeStopAudio)(JNIEnv *, jobject) {
     std::lock_guard<std::mutex> lock(streamMutex);
     audioWanted = false;
     closeStreamLocked();
+    savePanelSettingsIfNeeded(true);  // onStop: no more ticks to save later
 }
 
 JNIEXPORT void JNICALL JNI_FN(nativeSetPot)(JNIEnv *, jobject, jint channel, jfloat position) {
