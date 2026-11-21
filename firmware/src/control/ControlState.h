@@ -63,7 +63,6 @@ struct SoundState {
     float syndrumSweepOctaves = 2.0f;
     uint8_t modulationEnabled = 1;
     uint8_t retrigger = 0;
-    uint8_t voicingV2 = 1;
 };
 
 struct ActivationEvent : SoundState {

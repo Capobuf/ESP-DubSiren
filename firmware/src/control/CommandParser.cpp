@@ -98,10 +98,6 @@ bool CommandParser::parse(const String &rawCommand) {
             else return false;
         } else if (name == "SYNDRUM_WAVE") {
             if (!parseSyndrumWave(valueText, state.syndrumWave)) return false;
-        } else if (name == "VOICING") {
-            if (valueText == "V2") state.voicingV2 = true;
-            else if (valueText == "LEGACY") state.voicingV2 = false;
-            else return false;
         } else if (!parseFloat(valueText, value)) {
             return false;
         } else if (name == "PITCH_POSITION" || name == "RATE_POSITION") {

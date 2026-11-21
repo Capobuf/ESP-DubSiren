@@ -231,7 +231,7 @@ sia dalla pagina SUONO, con la stessa attesa di 2 s prima
 della scrittura NVS.
 
 La patch contiene voce/variante, Tune, Rate, Depth, Decay, Sweep, parametri
-Lickshot, Tone/Contour, Syndrum, modulazione, retrigger e voicing. Echo e Master
+Lickshot, Tone/Contour, Syndrum, modulazione e retrigger. Echo e Master
 restano globali; Recall non cancella il delay. Gli eventi audio
 catturano l'intero stato sonoro.
 

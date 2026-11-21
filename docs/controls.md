@@ -103,8 +103,7 @@ tap pressed and released between audio snapshots still opens the gate, for the
 applied at a 480-sample block boundary (up to 10 ms), plus output buffering:
 the 3 ms bound describes DSP fade time, not total host-to-speaker latency.
 
-Dynamic Sweep, dry Tone/Contour, Echo Color/Loop/Spin, the legacy voicing flag
-and modulation on/off are honoured for every voice; their defaults leave them
+Dynamic Sweep, dry Tone/Contour, Echo Color/Loop/Spin and modulation on/off are honoured for every voice; their defaults leave them
 off (modulation on).
 
 - SINE 1: PolyBLEP pulse with modulation-dependent duty 0.27-0.45,
