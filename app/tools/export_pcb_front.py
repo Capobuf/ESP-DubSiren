@@ -1,7 +1,7 @@
-"""Export the front-side geometry of the KiCad board for the Android render.
+"""Export the front-side geometry of the KiCad board for the panel render.
 
 Reads hardware/kicad/ESP-DubSiren.kicad_pcb and writes
-app/assets/pcb_front.json (Kotlin and Flutter apps) with, in board millimetres:
+app/assets/pcb_front.json (lib/pcb_art.dart) with, in board millimetres:
   outline  closed Edge.Cuts loops (board contour and milled slots)
   pour     F.Cu filled zone polygons
   tracks   F.Cu segments [width, x1, y1, x2, y2]
@@ -10,7 +10,7 @@ app/assets/pcb_front.json (Kotlin and Flutter apps) with, in board millimetres:
            kind: "pth" plated, "npth" bare hole, "smd" front copper only
   silk     F.SilkS polylines [width, x1, y1, ...] and texts
 
-Run after every PCB change:  python Android/tools/export_pcb_front.py
+Run after every PCB change:  python app/tools/export_pcb_front.py
 """
 
 import json

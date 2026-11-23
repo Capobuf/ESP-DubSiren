@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.22.1)
 
 # siren_core: the shared firmware sources (compiled unmodified), the host stubs
 # and the C surface in siren_core.h, plus the platform audio output. Added
-# with add_subdirectory() by the Android app (and by the Flutter app).
+# with add_subdirectory() by the Flutter Windows and Android builds.
 
 get_filename_component(REPO_ROOT "${CMAKE_CURRENT_LIST_DIR}/../.." ABSOLUTE)
 set(FIRMWARE "${REPO_ROOT}/firmware")
@@ -27,9 +27,8 @@ if(NOT adafruit_gfx_POPULATED)
     FetchContent_Populate(adafruit_gfx)
 endif()
 
-# Static for the Kotlin JNI library; the Flutter Windows build sets
-# BUILD_SHARED_LIBS and gets siren_core.dll for dart:ffi.
-add_library(siren_core
+# siren_core.dll / libsiren_core.so, loaded by lib/siren_native.dart (dart:ffi).
+add_library(siren_core SHARED
     siren_core.cpp
     stubs/PanelLcd.cpp
     "${adafruit_gfx_SOURCE_DIR}/Adafruit_GFX.cpp"
@@ -52,7 +51,6 @@ elseif(WIN32)
     target_include_directories(siren_core PRIVATE "${miniaudio_SOURCE_DIR}")
 endif()
 
-set_target_properties(siren_core PROPERTIES POSITION_INDEPENDENT_CODE ON)
 # siren_core.h is the public surface; stubs/ first: Arduino.h, Print.h and the
 # BusIO headers replace the ESP32 SDK; the GFX folder also provides Fonts/.
 target_include_directories(siren_core PUBLIC "${CMAKE_CURRENT_LIST_DIR}")

@@ -5,6 +5,7 @@
 #include <android/log.h>
 
 #include <atomic>
+#include <chrono>
 #include <mutex>
 #include <thread>
 
@@ -26,6 +27,11 @@ std::atomic<int32_t> streamRate{0};
 std::atomic<int32_t> streamBurst{0};
 std::atomic<int32_t> streamBuffer{0};
 int32_t lastXRuns = 0;
+std::chrono::steady_clock::time_point streamStarted;
+// Underruns while a new stream settles come with app start-up, not with a short
+// buffer (Xiaomi Pad 5: on most Flutter launches, in the first ~30 ms, while the
+// siren is silent). They are counted but do not grow the buffer.
+constexpr auto kSettleTime = std::chrono::milliseconds(200);
 
 aaudio_data_callback_result_t dataCallback(AAudioStream *, void *, void *audioData, int32_t frames) {
     const int32_t channels = streamChannels;
@@ -87,6 +93,7 @@ bool openStreamLocked() {
     streamBurst.store(burst);
     streamBuffer.store(AAudioStream_setBufferSizeInFrames(stream, burst * 2));
     lastXRuns = 0;
+    streamStarted = std::chrono::steady_clock::now();
     if (AAudioStream_requestStart(stream) != AAUDIO_OK) {
         closeStreamLocked();
         return false;
@@ -127,9 +134,14 @@ void audioOutputTune() {
     const int32_t xruns = AAudioStream_getXRunCount(stream);
     if (xruns > lastXRuns) {
         lastXRuns = xruns;
+        if (std::chrono::steady_clock::now() - streamStarted < kSettleTime) {
+            LOGI("AAudio xrun %d while settling, buffer kept", xruns);
+            return;
+        }
         const int32_t size = AAudioStream_getBufferSizeInFrames(stream) + streamBurst.load();
         if (size <= AAudioStream_getBufferCapacityInFrames(stream))
             streamBuffer.store(AAudioStream_setBufferSizeInFrames(stream, size));
+        LOGI("AAudio xrun %d, buffer %d", xruns, streamBuffer.load());
     }
 }
 

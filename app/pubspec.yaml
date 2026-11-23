@@ -1,7 +1,7 @@
 name: dubsiren
 description: "DubSiren simulator: the shared ESP32 firmware core behind the front panel."
 publish_to: 'none'
-version: 0.1.0+1
+version: 0.2.0+10
 
 environment:
   sdk: ^3.14.0

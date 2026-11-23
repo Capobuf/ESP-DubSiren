@@ -18,7 +18,7 @@ Dynamic Sweep, forme LFO aggiuntive, Tone/Contour ed Echo Color/Loop/Spin sono
 opzioni dello stesso layout, raggiungibili dal menu; Sonar emette ping
 pulsanti con cadenza regolata da Rate.
 Il DSP/control C++ è condiviso da firmware
-e [app Android](Android/README.md). Tarature, fonti e limiti sono in [controls](docs/controls.md);
+e [app simulatore](app/README.md) per Windows e Android. Tarature, fonti e limiti sono in [controls](docs/controls.md);
 le verifiche della revisione sono in [baseline validation](docs/baseline-validation.md).
 
 ## Requisiti
@@ -67,8 +67,8 @@ PCM5102A FMT -> GND
 
 ## Uso
 
-Per provare la sirena senza hardware si usa l'[app Android](Android/README.md),
-che compila gli stessi sorgenti C++ del firmware.
+Per provare la sirena senza hardware si usa l'[app simulatore](app/README.md)
+per Windows e Android, che compila gli stessi sorgenti C++ del firmware.
 
 La superficie predefinita presenta PITCH, RATE, ECHO LEVEL, ECHO TIME,
 ECHO FEEDBACK ed ECHO FILTER; BTN1-BTN3 sono pad con un suono ciascuno
@@ -113,11 +113,11 @@ di sweep e verificare che restino sotto 10.000 µs per blocco.
 `displayRenderUs` e `maxDisplayRenderUs` misurano separatamente il tempo che
 `loop()` passa a disegnare un frame; l'invio all'ST7789 avviene poi via DMA.
 
-## App Android
+## App simulatore
 
-[Android](Android/README.md) è il simulatore della sirena e dell'ESP32, in
-un'unica APK. Compila con l'NDK gli stessi sorgenti `firmware/src` audio, control e
-display, e riproduce il pannello fisico con le misure del PCB.
+[app](app/README.md) è il simulatore della sirena e dell'ESP32, un'unica app
+Flutter per Windows e Android. Compila gli stessi sorgenti `firmware/src` audio,
+control e display, e riproduce il pannello fisico con le misure del PCB.
 
 ## Hardware
 
