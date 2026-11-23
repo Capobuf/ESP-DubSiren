@@ -1,49 +1,12 @@
 cmake_minimum_required(VERSION 3.22.1)
 project(dubsiren CXX C)
 
-# Shared firmware sources, compiled unmodified from the repository root.
+# Shared host core (firmware sources, stubs, AAudio output) in app/native.
 get_filename_component(REPO_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../../../../.." ABSOLUTE)
-set(FIRMWARE "${REPO_ROOT}/firmware")
+add_subdirectory("${REPO_ROOT}/app/native" "${CMAKE_CURRENT_BINARY_DIR}/siren_core")
 
-file(GLOB FIRMWARE_SOURCES CONFIGURE_DEPENDS
-    "${FIRMWARE}/src/audio/*.cpp"
-    "${FIRMWARE}/src/control/*.cpp"
-    "${FIRMWARE}/src/display/*.cpp"
-)
-# The panel driver (esp_lcd, SPI DMA) becomes a framebuffer: stubs/PanelLcd.cpp.
-list(REMOVE_ITEM FIRMWARE_SOURCES "${FIRMWARE}/src/display/PanelLcd.cpp")
-
-# Adafruit GFX at the version pinned in firmware/platformio.ini. Only the
-# sources are fetched: its own CMakeLists.txt is an ESP-IDF component.
-include(FetchContent)
-FetchContent_Declare(adafruit_gfx
-    URL https://github.com/adafruit/Adafruit-GFX-Library/archive/refs/tags/1.12.6.tar.gz
-    URL_HASH SHA256=3874218e5b9947ea11132cea5d6e8945f48306a5dada5b5b52f8f9ded53ee88f
-)
-FetchContent_GetProperties(adafruit_gfx)
-if(NOT adafruit_gfx_POPULATED)
-    FetchContent_Populate(adafruit_gfx)
-endif()
-
-add_library(dubsiren SHARED
-    siren_bridge.cpp
-    stubs/PanelLcd.cpp
-    "${adafruit_gfx_SOURCE_DIR}/Adafruit_GFX.cpp"
-    ${FIRMWARE_SOURCES}
-)
-
-# stubs/ first: Arduino.h, Print.h and the BusIO headers replace the ESP32
-# SDK; the GFX folder also provides Fonts/ for the display.
-target_include_directories(dubsiren PRIVATE
-    "${CMAKE_CURRENT_SOURCE_DIR}/stubs"
-    "${adafruit_gfx_SOURCE_DIR}"
-    "${FIRMWARE}/src"
-    "${FIRMWARE}/include"
-)
-
+# JNI surface for the Kotlin app.
+add_library(dubsiren SHARED siren_bridge.cpp)
 target_compile_features(dubsiren PRIVATE cxx_std_17)
-# Arduino 1.x API level: Adafruit_GFX.h tests it before including Arduino.h.
-target_compile_definitions(dubsiren PRIVATE ARDUINO=10819)
-# Plain IEEE float like the firmware build: no fast-math reassociation.
 target_compile_options(dubsiren PRIVATE -O2)
-target_link_libraries(dubsiren PRIVATE aaudio log)
+target_link_libraries(dubsiren PRIVATE siren_core)

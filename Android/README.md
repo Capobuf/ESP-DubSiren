@@ -10,6 +10,10 @@ modifiche:
 | Controller, menu, mappature | `firmware/src/control/*.cpp` | input fisici dal pannello touch |
 | Display | `firmware/src/display/PanelDisplay.cpp` e Adafruit GFX 1.12.6 | framebuffer 320x172 RGB565 al posto dell'ST7789 |
 
+Il codice nativo condiviso con la futura app Flutter sta in `app/native/`:
+stub Arduino, nucleo `siren_core` (persistenza, pot, render, framebuffer) e
+uscita AAudio. Qui resta solo la superficie JNI, `src/main/cpp/siren_bridge.cpp`.
+
 Nessuna logica della sirena è riscritta in Kotlin. L'app offre solo i gesti
 del pannello fisico: sei pot frontali, quattro tasti momentanei, encoder a
 scatti e push. Tutto il resto (voci, mappature, impostazioni) passa
@@ -110,7 +114,7 @@ la funzione di ogni comando si legge sul display.
 
 La libreria Adafruit GFX è la stessa versione fissata in
 `firmware/platformio.ini`: CMake la scarica (URL e SHA256 in
-`app/src/main/cpp/CMakeLists.txt`). `stubs/PanelLcd.cpp` sostituisce il driver
+`app/native/CMakeLists.txt` nella radice del repository). `app/native/stubs/PanelLcd.cpp` sostituisce il driver
 `esp_lcd` del firmware e copia il frame nel framebuffer. Font, primitive e canvas sono quelli della libreria.
 
 ## Limiti

@@ -8,15 +8,16 @@
 
 - **Cosa fa:** è il simulatore della sirena e dell'ESP32 (il Virtual ESP desktop non esiste più): simula la sirena in una sola APK, sia nel suono sia nell'aspetto, ed è il banco di prova del firmware prima dell'hardware. Non deve mai offrire funzioni che il pannello fisico non ha: sei pot, quattro tasti MX, encoder con push, display. Il Master posteriore è fisso al massimo; il volume si regola con i tasti del dispositivo.
 - **Come funziona:** l'NDK compila senza modifiche `firmware/src/audio/*.cpp`, `firmware/src/control/*.cpp` e `firmware/src/display/PanelDisplay.cpp`. In Kotlin non c'è logica della sirena.
-- **Strato nativo** (`app/src/main/cpp/`):
+- **Strato nativo condiviso** (`app/native/` nella radice del repository, usato anche dalla futura app Flutter, issue #67):
   - `stubs/` sostituisce Arduino, FreeRTOS e il driver del pannello (`PanelLcd.cpp`, esp_lcd): il display usa la vera Adafruit GFX 1.12.6, scaricata da CMake, e finisce in un framebuffer 320x172. Gli stessi stub servono ai test nativi (`tests/native/run.py`).
-  - `siren_bridge.cpp` fa da `main.cpp`: il thread UI fa da loop() e passa gli input fisici al controller; il callback AAudio fa da `audioTask` e produce blocchi da 480 campioni mono a 48 kHz.
-  - Persistenza di `PanelSettings` e quantizzazione ADC dei pot sono ricopiate a mano da `main.cpp` e `PanelInputs.cpp`: se cambiano lì, vanno aggiornate qui.
+  - `siren_core.cpp` (API C in `siren_core.h`) fa da `main.cpp`: il thread UI fa da loop() e passa gli input fisici al controller; il callback audio fa da `audioTask` e produce blocchi da 480 campioni mono a 48 kHz. `audio_aaudio.cpp` è l'uscita AAudio.
+  - Persistenza di `PanelSettings` e quantizzazione ADC dei pot in `siren_core.cpp` sono ricopiate a mano da `main.cpp` e `PanelInputs.cpp`: se cambiano lì, vanno aggiornate qui.
+  - `Android/app/src/main/cpp/siren_bridge.cpp` è solo la superficie JNI verso `siren_core.h`.
 - **Grafica** (`app/src/main/java/com/capobuf/dubsiren/`):
   - `PcbArt.kt` disegna la faccia frontale del PCB da `app/src/main/assets/pcb_front.json`, generato da `python Android/tools/export_pcb_front.py`. Va rilanciato dopo ogni modifica di `hardware/kicad/ESP-DubSiren.kicad_pcb`.
   - `PanelView.kt` disegna manopole, encoder, tasti e display e gestisce il multitouch. Nessuna scritta oltre alla serigrafia del PCB: le funzioni dei comandi le mostra il display. Le posizioni dei comandi sono costanti in mm prese dal PCB: i tasti sono al centro dello switch, non sull'origine del footprint MX.
 - **Cosa segue il firmware:** le modifiche a DSP, controller e `PanelDisplay.cpp` arrivano nell'app ricompilando. I font del display (Teko SemiBold, OFL) sono in `firmware/src/display/fonts/` e si rigenerano con `python firmware/tools/make_display_fonts.py`.
-- **Cosa la rompe:** se cambia la versione di Adafruit GFX in `firmware/platformio.ini`, vanno aggiornati URL e SHA256 in `app/src/main/cpp/CMakeLists.txt`; un nuovo simbolo Arduino usato dal firmware va aggiunto negli stub.
+- **Cosa la rompe:** se cambia la versione di Adafruit GFX in `firmware/platformio.ini`, vanno aggiornati URL e SHA256 in `app/native/CMakeLists.txt`; un nuovo simbolo Arduino usato dal firmware va aggiunto negli stub.
 - **Build:** dalla cartella `Android`, con `JAVA_HOME` sulla JBR di Android Studio o su un JDK 17+, eseguire `.\gradlew.bat assembleRelease`. Gradle scrive in `%USERPROFILE%\.dubsiren-android`, fuori da OneDrive, che bloccava il packaging. Se un build fallisce non installare: l'APK in uscita sarebbe quella precedente.
 - **Installazione sui dispositivi:**
   - Elencare i dispositivi con `adb devices -l`.

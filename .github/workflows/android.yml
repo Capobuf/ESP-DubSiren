@@ -8,12 +8,14 @@ on:
   push:
     paths:
       - 'Android/**'
+      - 'app/native/**'
       - 'firmware/src/**'
       - 'firmware/include/**'
       - '.github/workflows/android.yml'
   pull_request:
     paths:
       - 'Android/**'
+      - 'app/native/**'
       - 'firmware/src/**'
       - 'firmware/include/**'
       - '.github/workflows/android.yml'

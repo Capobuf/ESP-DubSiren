@@ -51,7 +51,7 @@ def main() -> None:
         executable = Path(directory) / ("dsp_test.exe" if os.name == "nt" else "dsp_test")
         command = compiler_command() + [
             "-w", "-std=c++17", "-O2",
-            "-IAndroid/app/src/main/cpp/stubs", "-Ifirmware/src", "-Ifirmware/include",
+            "-Iapp/native/stubs", "-Ifirmware/src", "-Ifirmware/include",
             *SOURCES, "-o", str(executable),
         ]
         subprocess.run(command, cwd=ROOT, check=True)

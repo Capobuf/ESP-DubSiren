@@ -1,8 +1,8 @@
 #pragma once
 
 // Minimal Arduino/FreeRTOS surface needed to compile the shared firmware
-// sources (audio, control, display) on Android. It extends the host stub in
-// tests/native/stubs with a real mutex (UI thread and AAudio thread share the
+// sources (audio, control, display) on the host apps and the native tests.
+// It has a real mutex (UI thread and audio thread share the
 // ControlStore) and the String operations used by display/PanelDisplay.cpp.
 
 #include <math.h>

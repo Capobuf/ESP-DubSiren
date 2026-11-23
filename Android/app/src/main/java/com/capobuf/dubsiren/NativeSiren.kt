@@ -1,6 +1,6 @@
 package com.capobuf.dubsiren
 
-/** JNI surface of libdubsiren (src/main/cpp/siren_bridge.cpp). */
+/** JNI surface of libdubsiren (src/main/cpp/siren_bridge.cpp over app/native/siren_core.h). */
 object NativeSiren {
     init {
         System.loadLibrary("dubsiren")
