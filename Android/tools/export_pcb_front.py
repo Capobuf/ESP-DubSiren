@@ -1,7 +1,7 @@
 """Export the front-side geometry of the KiCad board for the Android render.
 
 Reads hardware/kicad/ESP-DubSiren.kicad_pcb and writes
-app/src/main/assets/pcb_front.json with, in board millimetres:
+app/assets/pcb_front.json (Kotlin and Flutter apps) with, in board millimetres:
   outline  closed Edge.Cuts loops (board contour and milled slots)
   pour     F.Cu filled zone polygons
   tracks   F.Cu segments [width, x1, y1, x2, y2]
@@ -19,7 +19,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 PCB = ROOT / "hardware" / "kicad" / "ESP-DubSiren.kicad_pcb"
-OUT = ROOT / "Android" / "app" / "src" / "main" / "assets" / "pcb_front.json"
+OUT = ROOT / "app" / "assets" / "pcb_front.json"
 
 
 # ---- s-expression parsing -------------------------------------------------

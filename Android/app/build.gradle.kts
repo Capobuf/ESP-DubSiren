@@ -29,6 +29,9 @@ android {
         }
     }
 
+    // pcb_front.json is shared with the Flutter app.
+    sourceSets.getByName("main").assets.srcDirs("../../app/assets")
+
     externalNativeBuild {
         cmake {
             path = file("src/main/cpp/CMakeLists.txt")
