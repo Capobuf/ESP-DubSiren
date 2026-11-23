@@ -65,7 +65,7 @@ solo le due release APK più recenti.
 ## Pannello
 
 La geometria viene da `hardware/kicad/ESP-DubSiren.kicad_pcb` (8/11/2026). La
-faccia frontale è esportata in `app/src/main/assets/pcb_front.json`: contorno
+faccia frontale è esportata in `app/assets/pcb_front.json` (nella radice, condiviso con l'app Flutter): contorno
 con asole, piano GND e piste F.Cu, vie coperte dalla maschera, pad ENIG e
 serigrafia. Dopo ogni modifica del PCB va rigenerata:
 

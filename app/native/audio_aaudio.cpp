@@ -8,7 +8,6 @@
 #include <mutex>
 #include <thread>
 
-#include "Config.h"
 #include "audio_output.h"
 #include "siren_core.h"
 
@@ -57,13 +56,15 @@ void closeStreamLocked() {
 
 void errorCallback(AAudioStream *, void *, aaudio_result_t error);
 
+uint32_t requestedRate = 0;  // set by audioOutputStart() before any open
+
 bool openStreamLocked() {
     closeStreamLocked();
     for (int attempt = 0; attempt < 2 && stream == nullptr; ++attempt) {
         AAudioStreamBuilder *builder = nullptr;
         if (AAudio_createStreamBuilder(&builder) != AAUDIO_OK) return false;
         AAudioStreamBuilder_setDirection(builder, AAUDIO_DIRECTION_OUTPUT);
-        AAudioStreamBuilder_setSampleRate(builder, static_cast<int32_t>(Config::kSampleRate));
+        AAudioStreamBuilder_setSampleRate(builder, static_cast<int32_t>(requestedRate));
         AAudioStreamBuilder_setChannelCount(builder, 1);  // mono, like the firmware PCM
         AAudioStreamBuilder_setFormat(builder, AAUDIO_FORMAT_PCM_I16);
         AAudioStreamBuilder_setPerformanceMode(builder, AAUDIO_PERFORMANCE_MODE_LOW_LATENCY);
@@ -106,9 +107,10 @@ void errorCallback(AAudioStream *, void *, aaudio_result_t error) {
 
 }  // namespace
 
-bool audioOutputStart() {
+bool audioOutputStart(uint32_t sampleRate) {
     std::lock_guard<std::mutex> lock(streamMutex);
     audioWanted = true;
+    requestedRate = sampleRate;
     return openStreamLocked();
 }
 

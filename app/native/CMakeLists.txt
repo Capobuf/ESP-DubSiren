@@ -27,7 +27,9 @@ if(NOT adafruit_gfx_POPULATED)
     FetchContent_Populate(adafruit_gfx)
 endif()
 
-add_library(siren_core STATIC
+# Static for the Kotlin JNI library; the Flutter Windows build sets
+# BUILD_SHARED_LIBS and gets siren_core.dll for dart:ffi.
+add_library(siren_core
     siren_core.cpp
     stubs/PanelLcd.cpp
     "${adafruit_gfx_SOURCE_DIR}/Adafruit_GFX.cpp"
@@ -36,6 +38,18 @@ add_library(siren_core STATIC
 if(ANDROID)
     target_sources(siren_core PRIVATE audio_aaudio.cpp)
     target_link_libraries(siren_core PUBLIC aaudio log)
+elseif(WIN32)
+    # miniaudio single header; public domain or MIT No Attribution.
+    FetchContent_Declare(miniaudio
+        URL https://github.com/mackron/miniaudio/archive/refs/tags/0.11.26.tar.gz
+        URL_HASH SHA256=838ba55a21c9142adf7b76bdc4351e5cd8b7ae128f46b25ec25f94ae9969c600
+    )
+    FetchContent_GetProperties(miniaudio)
+    if(NOT miniaudio_POPULATED)
+        FetchContent_Populate(miniaudio)
+    endif()
+    target_sources(siren_core PRIVATE audio_miniaudio.cpp)
+    target_include_directories(siren_core PRIVATE "${miniaudio_SOURCE_DIR}")
 endif()
 
 set_target_properties(siren_core PROPERTIES POSITION_INDEPENDENT_CODE ON)
@@ -52,7 +66,11 @@ target_include_directories(siren_core PRIVATE
 target_compile_features(siren_core PRIVATE cxx_std_17)
 # Arduino 1.x API level: Adafruit_GFX.h tests it before including Arduino.h.
 target_compile_definitions(siren_core PRIVATE ARDUINO=10819)
-# Plain IEEE float like the firmware build: no fast-math reassociation.
-if(NOT MSVC)
+# Plain IEEE float like the firmware build: no fast-math reassociation
+# (MSVC: /fp:precise is the default, /O2 comes with the Release config).
+if(MSVC)
+    # The firmware and GFX use the C library as on the ESP32 (sscanf, strcpy).
+    target_compile_definitions(siren_core PRIVATE _CRT_SECURE_NO_WARNINGS)
+else()
     target_compile_options(siren_core PRIVATE -O2)
 endif()

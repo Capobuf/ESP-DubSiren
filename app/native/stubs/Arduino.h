@@ -28,6 +28,11 @@ inline uint32_t millis() {
 
 inline void delay(uint32_t) {}
 
+#if defined(_MSC_VER)
+// GCC/Clang builtin used by Adafruit GFX (GFXcanvas16::byteSwap).
+#define __builtin_bswap16 _byteswap_ushort
+#endif
+
 constexpr float TWO_PI = 6.2831853071795864769f;
 inline double radians(double degrees) { return degrees * 0.017453292519943295; }
 

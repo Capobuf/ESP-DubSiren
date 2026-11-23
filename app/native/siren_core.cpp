@@ -7,6 +7,7 @@
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
+#include <filesystem>
 #include <memory>
 #include <string>
 
@@ -16,12 +17,6 @@
 #include "audio_output.h"
 #include "control/CommandParser.h"
 #include "display/PanelDisplay.h"
-
-#if defined(_WIN32)
-#define NOMINMAX
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-#endif
 
 namespace {
 
@@ -42,13 +37,11 @@ unsigned pendingPanelSettingsRevision = 0;
 uint32_t panelSettingsChangedMs = 0;
 constexpr uint32_t kPanelSaveSettleMs = 2000;  // same as firmware
 
-// Atomic replace: POSIX rename() overwrites, Windows rename() refuses to.
+// Replaces an existing file on every platform (Windows rename() refuses to).
 bool replaceFile(const std::string &from, const std::string &to) {
-#if defined(_WIN32)
-    return MoveFileExA(from.c_str(), to.c_str(), MOVEFILE_REPLACE_EXISTING) != 0;
-#else
-    return std::rename(from.c_str(), to.c_str()) == 0;
-#endif
+    std::error_code error;
+    std::filesystem::rename(from, to, error);
+    return !error;
 }
 
 void loadPanelSettings() {
@@ -179,7 +172,7 @@ bool siren_init(const char *settings_path) {
 
 bool siren_start_audio(void) {
     if (!siren) return false;
-    const bool ok = audioOutputStart();
+    const bool ok = audioOutputStart(Config::kSampleRate);
     siren->parser.setDeviceStatus(ok ? "" : "AUDIO OUTPUT FAILED");
     return ok;
 }

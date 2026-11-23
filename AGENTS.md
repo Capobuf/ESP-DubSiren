@@ -14,7 +14,7 @@
   - Persistenza di `PanelSettings` e quantizzazione ADC dei pot in `siren_core.cpp` sono ricopiate a mano da `main.cpp` e `PanelInputs.cpp`: se cambiano lì, vanno aggiornate qui.
   - `Android/app/src/main/cpp/siren_bridge.cpp` è solo la superficie JNI verso `siren_core.h`.
 - **Grafica** (`app/src/main/java/com/capobuf/dubsiren/`):
-  - `PcbArt.kt` disegna la faccia frontale del PCB da `app/src/main/assets/pcb_front.json`, generato da `python Android/tools/export_pcb_front.py`. Va rilanciato dopo ogni modifica di `hardware/kicad/ESP-DubSiren.kicad_pcb`.
+  - `PcbArt.kt` disegna la faccia frontale del PCB da `app/assets/pcb_front.json` (nella radice, condiviso con Flutter), generato da `python Android/tools/export_pcb_front.py`. Va rilanciato dopo ogni modifica di `hardware/kicad/ESP-DubSiren.kicad_pcb`.
   - `PanelView.kt` disegna manopole, encoder, tasti e display e gestisce il multitouch. Nessuna scritta oltre alla serigrafia del PCB: le funzioni dei comandi le mostra il display. Le posizioni dei comandi sono costanti in mm prese dal PCB: i tasti sono al centro dello switch, non sull'origine del footprint MX.
 - **Cosa segue il firmware:** le modifiche a DSP, controller e `PanelDisplay.cpp` arrivano nell'app ricompilando. I font del display (Teko SemiBold, OFL) sono in `firmware/src/display/fonts/` e si rigenerano con `python firmware/tools/make_display_fonts.py`.
 - **Cosa la rompe:** se cambia la versione di Adafruit GFX in `firmware/platformio.ini`, vanno aggiornati URL e SHA256 in `app/native/CMakeLists.txt`; un nuovo simbolo Arduino usato dal firmware va aggiunto negli stub.
@@ -31,3 +31,10 @@
   - Gli screenshot si catturano con `adb -s <seriale> exec-out screencap -p`.
   - Lo stato dell'audio si legge nei log con `adb logcat -s DubSiren` (una riga ogni 5 s).
 - **Riferimento:** dettagli e limiti in [Android/README.md](Android/README.md).
+
+## App Flutter (`app/`)
+
+- **Cosa fa:** lo stesso simulatore per Windows (issue #67), che sostituirà l'app Kotlin (issue #68). Valgono le stesse regole: solo i comandi del pannello fisico, nessuna logica della sirena in Dart. Su Windows tastiera e rotella azionano gli stessi comandi (tasti 1-4, spazio, rotella su pot ed encoder), non funzioni nuove.
+- **Come funziona:** `native/` (condivisa con l'app Kotlin) diventa `siren_core.dll`, caricata da `lib/siren_native.dart` con `dart:ffi`; audio con miniaudio. `lib/panel.dart` e `lib/pcb_art.dart` sono il port di `PanelView.kt` e `PcbArt.kt`: una modifica alla grafica o ai gesti va fatta in entrambi finché esiste l'app Kotlin.
+- **Build:** Flutter stable in `C:\src\flutter` e VS 2022 Build Tools con il carico C++; dalla cartella `app`, `flutter build windows --release`. Lo stato audio compare nella console di `flutter run -d windows --release` (una riga ogni 5 s).
+- **Riferimento:** [app/README.md](app/README.md).
