@@ -53,12 +53,14 @@ thread UI Flutter fa da `loop()`. Dart non entra mai nel callback audio.
 
 ## App Flutter
 
-- Progetto creato con `flutter create --template=plugin_ffi` (o app +
-  pacchetto FFI): CMake compila lo stesso nucleo per Windows e Android.
-- Binding generati con `ffigen` da `siren_core.h`, non scritti a mano.
-- Display: il nucleo converte RGB565 in RGBA8888 (oggi lo fa già verso ARGB),
-  Dart crea l'immagine con `ui.decodeImageFromPixels` solo quando il contatore
-  del frame cambia, e la disegna scalata con filtro.
+- Un solo progetto app (`flutter create`): il CMake Windows dell'app aggiunge
+  `app/native` e produce `siren_core.dll`; su Android lo stesso CMake (Fase 2).
+- Binding `dart:ffi` scritti a mano in `lib/siren_native.dart`: sono 14
+  funzioni, e `ffigen` richiederebbe LLVM installato.
+- Display: il nucleo converte RGB565 in parole 0xAARRGGBB (le stesse dell'app
+  Kotlin), che in memoria little-endian sono BGRA; Dart crea l'immagine con
+  `ui.decodeImageFromPixels` solo quando il contatore del frame cambia, e la
+  disegna scalata con filtro.
 - Ciclo: un `Ticker` a ogni vsync chiama `siren_tick`, come `Choreographer`.
 - Gesti: `Listener` sui `PointerEvent` grezzi, un `Grab` per puntatore come in
   `PanelView.kt`; stesse costanti in mm dal PCB.
@@ -127,7 +129,7 @@ dipendenza senza uso.
 2. MSVC: nucleo e test nativi compilati con `cl`.
 3. Stub e nucleo spostati in `app/native/`, `siren_bridge.cpp` diviso in nucleo + AAudio + JNI; APK ricompilata
    e provata sul dispositivo (nessun cambiamento atteso).
-4. Progetto Flutter, CMake, `ffigen`, audio miniaudio: suono dalla prima
+4. Progetto Flutter, CMake, binding `dart:ffi`, audio miniaudio: suono dalla prima
    finestra con i pot a valori fissi.
 5. Display dal framebuffer.
 6. Pannello: PCB, manopole, encoder, tasti, gesti.
