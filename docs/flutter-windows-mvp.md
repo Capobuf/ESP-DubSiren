@@ -90,18 +90,17 @@ Una libreria in stile shadcn diventa utile con le schermate fuori scope
 allora; oggi `shadcn_ui` è la più usata. Aggiungerla adesso sarebbe una
 dipendenza senza uso.
 
-## Da decidere prima di partire
+## Decisioni (23/11/2026)
 
-1. **Input simultanei con il mouse.** Un mouse è un solo puntatore: tasto
-   tenuto + rotazione encoder, push + tasto o due pot insieme non si possono
-   fare. Il touch screen Windows funziona come su Android. Serve un'equivalenza
-   per il mouse (per esempio tasti tastiera tenuti = tasti MX, rotella = pot o
-   encoder sotto il cursore) o si accetta il limite?
-2. **Dove vive il codice nativo.** In Fase 1 la cartella Flutter può puntare a
-   `Android/app/src/main/cpp/stubs` e al nucleo lì dentro (zero spostamenti);
-   in Fase 2, tolto Kotlin, si spostano nella cartella Flutter e si aggiornano
-   `tests/native/run.py` e `AGENTS.md`.
-3. **Nome e posizione del progetto Flutter** (per esempio `app/`).
+1. **Input simultanei senza touch screen:** la rotella gira il pot o l'encoder
+   sotto il cursore; i tasti 1-4 tenuti premuti sono i tasti MX e lo spazio è
+   il push dell'encoder. Sono solo un altro modo di azionare i comandi del
+   pannello, non funzioni nuove. Con un touch screen vale il multitouch come su
+   Android.
+2. **Progetto Flutter in `app/`.**
+3. **Codice nativo spostato subito** in `app/native/`: stub, nucleo
+   `siren_core` e uscita AAudio. L'app Kotlin, `tests/native/run.py` e la CI
+   puntano lì già in Fase 1.
 
 ## Prerequisiti e rischi
 
@@ -126,7 +125,7 @@ dipendenza senza uso.
 
 1. Toolchain: Flutter + VS Build Tools, `flutter doctor` pulito.
 2. MSVC: nucleo e test nativi compilati con `cl`.
-3. Divisione di `siren_bridge.cpp` in nucleo + AAudio + JNI; APK ricompilata
+3. Stub e nucleo spostati in `app/native/`, `siren_bridge.cpp` diviso in nucleo + AAudio + JNI; APK ricompilata
    e provata sul dispositivo (nessun cambiamento atteso).
 4. Progetto Flutter, CMake, `ffigen`, audio miniaudio: suono dalla prima
    finestra con i pot a valori fissi.
@@ -140,7 +139,7 @@ dipendenza senza uso.
 - **Migrazione Android a Flutter**: stessa app su Android con AAudio, touch e
   multitouch, vibrazione negli scatti dell'encoder, tasti volume sullo stream
   media, firma release e workflow `Android APK` portati sulla build Flutter;
-  rimozione dell'app Kotlin e spostamento degli stub.
+  rimozione dell'app Kotlin.
 
 Fuori scope (ESP32 via USB, aggiornamento firmware, editor preset, synth,
 MIDI): nessuna predisposizione ora.
