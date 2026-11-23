@@ -1,23 +1,20 @@
 name: Android APK
 
-# Builds the simulator APK on every change to the app or the shared firmware
-# sources. Pushes and manual runs also publish it as a GitHub Release (one
-# installable .apk), keeping only the two newest; pull requests only build.
+# Builds the Flutter simulator APK (app/) on every change to the app or the
+# shared firmware sources. Pushes and manual runs also publish it as a GitHub
+# Release (one installable .apk), keeping only the two newest; pull requests
+# only build.
 
 on:
   push:
     paths:
-      - 'Android/**'
-      - 'app/native/**'
-      - 'app/assets/**'
+      - 'app/**'
       - 'firmware/src/**'
       - 'firmware/include/**'
       - '.github/workflows/android.yml'
   pull_request:
     paths:
-      - 'Android/**'
-      - 'app/native/**'
-      - 'app/assets/**'
+      - 'app/**'
       - 'firmware/src/**'
       - 'firmware/include/**'
       - '.github/workflows/android.yml'
@@ -42,7 +39,13 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      # Same file the Gradle build reads locally (Android/app/build.gradle.kts).
+      # Same Flutter as the local builds, from the official repository.
+      - name: Flutter 3.50.1
+        run: |
+          git clone --depth 1 --branch 3.50.1 https://github.com/flutter/flutter.git "$RUNNER_TEMP/flutter"
+          echo "$RUNNER_TEMP/flutter/bin" >> "$GITHUB_PATH"
+
+      # Same file the Gradle build reads locally (app/android/app/build.gradle.kts).
       # Without the secrets (pull requests from forks) the APK gets a debug key.
       - name: Release key from secrets
         env:
@@ -60,14 +63,14 @@ jobs:
             > ~/.dubsiren-signing/signing.properties
 
       - name: Build release APK
-        working-directory: Android
-        run: ./gradlew assembleRelease --no-daemon --console=plain
+        working-directory: app
+        run: flutter build apk --release
 
       - name: Name the APK
         id: apk
         run: |
           name="DubSiren-${GITHUB_RUN_NUMBER}-${GITHUB_SHA::7}.apk"
-          cp ~/.dubsiren-android/app/outputs/apk/release/app-release.apk "$name"
+          cp app/build/app/outputs/flutter-apk/app-release.apk "$name"
           echo "file=$name" >> "$GITHUB_OUTPUT"
           rm -rf ~/.dubsiren-signing
 

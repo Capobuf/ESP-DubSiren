@@ -129,7 +129,10 @@ class PanelController extends ChangeNotifier {
   final Set<LogicalKeyboardKey> _heldKeys = {};
 
   ui.Image? display;
-  ui.Picture? _background;
+  // Board, desk and shadows rasterized once, like the Kotlin background bitmap:
+  // Impeller has no raster cache, so a Picture would redraw the blurs every frame.
+  ui.Image? _background;
+  double _pixelRatio = 1;
   Size _size = Size.zero;
   double _scale = 1;
   double _originX = 0;
@@ -174,9 +177,10 @@ class PanelController extends ChangeNotifier {
 
   // ---- Layout ----
 
-  void layout(Size size, double logicalPerMm) {
-    if (size == _size || size.isEmpty) return;
+  void layout(Size size, double logicalPerMm, double pixelRatio) {
+    if ((size == _size && pixelRatio == _pixelRatio) || size.isEmpty) return;
     _size = size;
+    _pixelRatio = pixelRatio;
     const modelW = _boardW + 8;
     const modelH = _boardBottom - _boardTop + 10;
     _scale = math.min(size.width / modelW, size.height / modelH);
@@ -189,7 +193,7 @@ class PanelController extends ChangeNotifier {
 
   void _buildBackground() {
     final recorder = ui.PictureRecorder();
-    final canvas = Canvas(recorder);
+    final canvas = Canvas(recorder)..scale(_pixelRatio);
     final w = _size.width;
     final h = _size.height;
     // Studio desk: dark, lit from the top left.
@@ -219,8 +223,10 @@ class PanelController extends ChangeNotifier {
       PcbArt.shadowRoundRect(canvas, rect, _modR, 1.8, 3.0, 2.8, 170, _scale);
     }
     canvas.restore();
+    final picture = recorder.endRecording();
     _background?.dispose();
-    _background = recorder.endRecording();
+    _background = picture.toImageSync((w * _pixelRatio).ceil(), (h * _pixelRatio).ceil());
+    picture.dispose();
     notifyListeners();
   }
 
@@ -477,7 +483,13 @@ class _PanelPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final background = c._background;
-    if (background != null) canvas.drawPicture(background);
+    if (background != null) {
+      canvas.drawImageRect(
+          background,
+          Rect.fromLTWH(0, 0, background.width.toDouble(), background.height.toDouble()),
+          Rect.fromLTWH(0, 0, background.width / c._pixelRatio, background.height / c._pixelRatio),
+          Paint());
+    }
     canvas.save();
     canvas.translate(c._originX, c._originY);
     canvas.scale(c._scale);
@@ -707,7 +719,7 @@ class PanelView extends StatelessWidget {
       autofocus: true,
       onKeyEvent: (_, event) => controller.key(event) ? KeyEventResult.handled : KeyEventResult.ignored,
       child: LayoutBuilder(builder: (context, constraints) {
-        controller.layout(constraints.biggest, logicalPerMm);
+        controller.layout(constraints.biggest, logicalPerMm, View.of(context).devicePixelRatio);
         return Listener(
           behavior: HitTestBehavior.opaque,
           onPointerDown: (e) => controller.pointerDown(e.pointer, e.localPosition),

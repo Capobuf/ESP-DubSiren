@@ -1,12 +1,13 @@
 // DubSiren simulator: the shared firmware core (native/) behind the panel.
-// The vsync ticker plays the firmware loop(); the native audio callback plays
+// A periodic timer plays the firmware loop(); the native audio callback plays
 // audioTask(). Dart never enters the audio path.
+import 'dart:async';
 import 'dart:ffi';
-import 'dart:typed_data';
+import 'dart:io';
 import 'dart:ui' as ui;
 
 import 'package:ffi/ffi.dart';
-import 'package:flutter/scheduler.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -17,6 +18,9 @@ import 'siren_native.dart' as siren;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // Full screen like the panel; system bars come back with a swipe.
+  if (Platform.isAndroid) await SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+  // Android: filesDir, the same file the Kotlin app saved.
   final directory = await getApplicationSupportDirectory();
   // shortcut: fopen() takes the path in the ANSI code page on Windows; fine
   // for an ASCII profile path, switch to wide paths if a user's is not.
@@ -37,19 +41,29 @@ class SirenApp extends StatefulWidget {
   State<SirenApp> createState() => _SirenAppState();
 }
 
-class _SirenAppState extends State<SirenApp> with SingleTickerProviderStateMixin {
-  late final Ticker _ticker = createTicker(_onTick);
+class _SirenAppState extends State<SirenApp> {
+  // The firmware loop() runs on a timer, not on vsync: a Ticker would make
+  // Flutter render a frame every vsync even when nothing changed.
+  Timer? _loop;
+  final Stopwatch _clock = Stopwatch();
   late final AppLifecycleListener _lifecycle;
   final Pointer<Uint32> _pixels = malloc<Uint32>(siren.displayWidth * siren.displayHeight);
   int _frame = -1;
   bool _decoding = false;
   bool _running = false;
   Duration _lastStatus = Duration.zero;
+  // About one vsync at 120 Hz, the cadence of the Kotlin app's Choreographer loop.
+  static const Duration _loopPeriod = Duration(milliseconds: 8);
 
   @override
   void initState() {
     super.initState();
-    _lifecycle = AppLifecycleListener(onShow: _start, onHide: _stop, onExitRequested: () async {
+    _lifecycle = AppLifecycleListener(
+        onShow: _start,
+        onHide: _stop,
+        // Focus lost (system dialog, other window): no key stays held.
+        onInactive: widget.controller.releaseAll,
+        onExitRequested: () async {
       _stop();
       return ui.AppExitResponse.exit;
     });
@@ -59,15 +73,19 @@ class _SirenAppState extends State<SirenApp> with SingleTickerProviderStateMixin
   void _start() {
     if (_running) return;
     _running = true;
-    _lastStatus = Duration.zero; // the ticker restarts its clock
+    _lastStatus = Duration.zero;
+    _clock
+      ..reset()
+      ..start();
     siren.startAudio();
-    _ticker.start();
+    _loop = Timer.periodic(_loopPeriod, (_) => _onTick(_clock.elapsed));
   }
 
   void _stop() {
     if (!_running) return;
     _running = false;
-    _ticker.stop();
+    _loop?.cancel();
+    _clock.stop();
     widget.controller.releaseAll();
     widget.controller.savePositions();
     siren.stopAudio();
@@ -102,7 +120,6 @@ class _SirenAppState extends State<SirenApp> with SingleTickerProviderStateMixin
   void dispose() {
     _stop();
     _lifecycle.dispose();
-    _ticker.dispose();
     malloc.free(_pixels);
     super.dispose();
   }

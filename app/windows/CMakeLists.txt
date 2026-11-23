@@ -82,9 +82,7 @@ install(FILES "${FLUTTER_LIBRARY}" DESTINATION "${INSTALL_BUNDLE_LIB_DIR}"
   COMPONENT Runtime)
 
 # Shared siren core (app/native), loaded by lib/siren_native.dart.
-set(BUILD_SHARED_LIBS ON)
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/../native" "${CMAKE_BINARY_DIR}/siren_core")
-set(BUILD_SHARED_LIBS OFF)
 install(TARGETS siren_core RUNTIME DESTINATION "${INSTALL_BUNDLE_LIB_DIR}"
   COMPONENT Runtime)
 

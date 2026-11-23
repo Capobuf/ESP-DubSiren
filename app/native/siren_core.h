@@ -1,7 +1,7 @@
 #pragma once
 
-// C surface of the shared DubSiren host core, used by the Android JNI bridge
-// and by the Flutter FFI bindings. Threads mirror the firmware split:
+// C surface of the shared DubSiren host core, used by the Flutter FFI
+// bindings (lib/siren_native.dart). Threads mirror the firmware split:
 //   - UI thread ~ firmware loop(): every function below except the audio
 //     callback, which only calls siren_render_mono().
 //   - Audio callback ~ audioTask(): siren_render_mono().
